@@ -79,7 +79,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
 
 # function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
-help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,ross_var,year.diff,no.na,add.arg=NULL){
+help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff,no.na,add.arg=NULL){
 
 	# define names for estimates for each weight (normal weights and boostrap weights)
 	# makes it easier to (sort of) verctorize expressions
