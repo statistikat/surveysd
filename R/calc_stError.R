@@ -137,7 +137,8 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		# Sys.time()-t
 
 		#by.roll <- paste(c("ID",z),collapse = ",")
-		roll.est <- var.est[,list(V1=rollmean(V1,k=3),V2=yearsList),by=c("ID",z)]
+		roll.est <- var.est[,list(V1=rollMeanC(V1,k=3,type="c"),V2=yearsList),by=c("ID",z)]
+		#roll.est <- var.est[,list(V1=rollmean(V1,k=3,align="center"),V2=yearsList),by=c("ID",z)]
 		setnames(roll.est,"V2",year)
 
 		if(year.diff.b){

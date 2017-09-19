@@ -1,1 +1,7 @@
+useDynLib(surveysd, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+import(data.table)
+export(bootstrap.rep)
+export(calc.stError)
+export(recalib)

@@ -23,11 +23,15 @@
 
 bootstrap.rep <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",totals=NULL,boot.names=NULL){
 
-	if(class(dat)[1]=="data.frame"){dat <- as.data.table(dat)}
+  if(class(dat)[1]=="data.frame"){dat <- as.data.table(dat)}
 
-	if(is.null(totals)){
+ 	if(is.null(totals)){
 		totals <- "fpc"
+    #dat[,fpc:=sum(hgew),by=c(strata)]
 		dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(strata,collapse=","),")]")
+		#eval(parse(text=paste0("dat[,fpc:=sum(",weights,"),by=list(",paste(strata,collapse=","),")]")))
+		#test <- dt.eval("dat[,sum(",weights,"),by=list(",paste(strata,collapse=","),")]")
+
 	}
 
 	# make arguments usable for survey package
