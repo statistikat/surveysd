@@ -90,8 +90,13 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 	}else if(fun=="popSize"){
 		eval.fun <- paste0(res.names,"=sum(",c(weights,b.weights),")")
 	}else{
-		eval.fun <- paste0(res.names,"=",fun,"(",paste(paste(c(var,add.arg),collapse=","),c(weights,b.weights),sep=","),")")
-		eval.fun <- paste0(".(",paste(eval.fun,collapse=","),")")
+	  if(!is.null(add.arg)){
+	    eval.fun <- paste0(res.names,"=",fun,"(",paste(var,c(weights,b.weights),add.arg,sep=","),")")
+	  }else{
+	    eval.fun <- paste0(res.names,"=",fun,"(",paste(var,c(weights,b.weights),sep=","),")")
+	  }
+
+	  eval.fun <- paste0(".(",paste(eval.fun,collapse=","),")")
 	}
 
 	# if(fun=="sampSize"){
