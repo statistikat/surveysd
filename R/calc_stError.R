@@ -13,6 +13,7 @@
 #' @param cross_var list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}
 #' and \code{var} and \code{fun} are calculated for each of those groups.
 #' @param year.diff character vectors, defining the years for which the differenzes as well as the standard deviation of the differenzes should be computed. Each entry must have the form of \code{"year1 - year2"}. Can be NULL
+#' @param year.mean integer, defining the range of years over which mean of estimates will be defined. Can be NULL.
 #' @param add.arg list containing strings for additional function arguments. Must be the same length as \code{var} oder \code{fun}. Can be a list of \code{NULL}s.
 #' @return data.table containing yearly and 3-year estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which were calculated using the bootstrap weights.
 #' @author Johannes Gussenbauer, Statistik Austria
@@ -31,15 +32,8 @@
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
-calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",fun="weightedRatio",cross_var=list(NULL),year.diff=NULL,add.arg=vector("list",length(var))){
+calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",fun="weightedRatio",cross_var=list(NULL),year.diff=NULL,year.mean=3,add.arg=vector("list",length(var))){
 
-	# if(weightvar=="hgew"){
-	# 	weightvar2 <- "rb062"
-	# }else if(substr(weightvar,1,1)=="V"){
-	# 	weightvar2 <- paste0("B",substr(weightvar,2,10))
-	# }else{
-	# 	weightvar2 <- weightvar
-	# }
 
 	# define columns in which NAs are present (will be discarded for the evaluation)
 	col_cross <- unique(unlist(cross_var))
@@ -53,7 +47,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
 
 	outx <- list()
 	for(i in 1:length(var)){
-		out_i <- help.stError(dat=dat,year=year,var=var[i],weights=weights,b.weights=b.weights,fun=fun[i],cross_var=cross_var,year.diff=year.diff,no.na=no.na,add.arg=add.arg[[i]])
+		out_i <- help.stError(dat=dat,year=year,var=var[i],weights=weights,b.weights=b.weights,fun=fun[i],cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,no.na=no.na,add.arg=add.arg[[i]])
 		out_i[,variable:=paste(var[i],fun[i],sep="_")]
 		outx <- c(outx,list(out_i))
 	}
@@ -65,21 +59,12 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
 	outx <- dcast(outx,form,value.var=c("val","st.Error"),fill=NA)
 	return(outx)
 
-	# outx <- lapply(tab_spec ,function(z){
-	# 	if(z$var=="l_arosemehr2"){
-	# 		out_z <- tabhelp(z$var,dat=dat,fun=z$fun,var2=z$var2,w=weightvar2,var_group=var_group,no.na=no.na)
-	# 	}else{
-	# 		out_z <- tabhelp(z$var,dat=dat,fun=z$fun,var2=z$var2,w=weightvar,var_group=var_group,no.na=no.na)
-	# 	}
-	# 	out_z[,variable:=paste(z$var,z$fun,sep="_")]
-	# })
-
 }
 
 
 # function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
-help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff,no.na,add.arg=NULL){
+help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff=NULL,year.mean=NULL,no.na,add.arg=NULL){
 
 	# define names for estimates for each weight (normal weights and boostrap weights)
 	# makes it easier to (sort of) verctorize expressions
@@ -98,15 +83,6 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
 	  eval.fun <- paste0(".(",paste(eval.fun,collapse=","),")")
 	}
-
-	# if(fun=="sampSize"){
-	# 	eval.fun <- c("(V1:=.N)")
-	# }else if(fun=="popSize"){
-	# 	eval.fun <- paste0("sum(",c(weights,b.weights),")")
-	# }else{
-	# 	eval.fun <- paste0(fun,"(",paste(paste(c(var,add.arg),collapse=","),c(weights,b.weights),sep=","),")")
-	# 	eval.fun <- paste0("list(",paste(eval.fun,collapse=","),")")
-	# }
 
 	years <- dt.eval("dat[,unique(",year,")]")
 	# formulate 3 consecutive years
@@ -128,23 +104,17 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		}
 		by.eval <- paste(c(year,z),collapse=",")
 
-
-		#var.est <- dt.eval("dat[",na.eval,",",eval.fun,",by=list(",by.eval,")][,list(V1=rollapply(V1,width=3,mean),rollYear=yearsList),by=list(",by.roll,")]")
 		# calcualte estimate
 		var.est <- dt.eval("dat[",na.eval,",",eval.fun,",by=list(",by.eval,")]")
 		var.est <- melt(unique(var.est,by=c(year,z)),id.vars=c(year,z),measure.vars=res.names,value.name = "V1")
 		var.est[,ID:=substring(variable,2)]
 		var.est[,variable:=NULL]
 
-		# t <- Sys.time()
-		# var.est <- dt.eval("dat[",na.eval,",",eval.fun,",by=list(",by.eval,")]")
-		# var.est <- rbindlist(var.est,idcol="ID")
-		# Sys.time()-t
-
-		#by.roll <- paste(c("ID",z),collapse = ",")
-		roll.est <- var.est[,list(V1=rollMeanC(V1,k=3,type="c"),V2=yearsList),by=c("ID",z)]
-		#roll.est <- var.est[,list(V1=rollmean(V1,k=3,align="center"),V2=yearsList),by=c("ID",z)]
-		setnames(roll.est,"V2",year)
+		# calculate mean of estimate over 'year.mean'- years
+		if(!is.null(year.mean)){
+		  roll.est <- var.est[,list(V1=rollMeanC(V1,k=year.mean,type="c"),V2=yearsList),by=c("ID",z)]
+		  setnames(roll.est,"V2",year)
+		}
 
 		if(year.diff.b){
 		  by.diff <- paste(c("ID",z),collapse=",")
@@ -157,7 +127,9 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  diff.est <- rbindlist(diff.est)
 		}
 
-		var.est <- rbind(var.est,roll.est)
+		if(!is.null(year.mean)){
+		  var.est <- rbind(var.est,roll.est)
+		}
 		if(year.diff.b){
 		  var.est <- rbind(var.est,diff.est)
 		}

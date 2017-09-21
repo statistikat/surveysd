@@ -27,11 +27,7 @@ bootstrap.rep <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld
 
  	if(is.null(totals)){
 		totals <- "fpc"
-    #dat[,fpc:=sum(hgew),by=c(strata)]
-		dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(strata,collapse=","),")]")
-		#eval(parse(text=paste0("dat[,fpc:=sum(",weights,"),by=list(",paste(strata,collapse=","),")]")))
-		#test <- dt.eval("dat[,sum(",weights,"),by=list(",paste(strata,collapse=","),")]")
-
+   	dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(strata,collapse=","),")]")
 	}
 
 	# make arguments usable for survey package
@@ -49,8 +45,6 @@ bootstrap.rep <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld
 
 	# calculate bootstrap replicates
 	dat[,c(w.names):=gen.boot(.SD,REP=REP,hid=hid,weights=weights,strata=strata,totals=totals),by=c(year)]
-	# optional:
-	#	dt.eval("dat[,c(w.names):=gen.boot(.SD,REP=",REP,",hid=",hid,",weights=",weights,",strata=",strata,",totals=",totals,"),by=c(year)]")
 
 	# keep bootstrap replicates of first year for each household
 	dat[,c(w.names):=.SD[year==min(year),mget(w.names)],by=c(gsub("~","",hid)[2])]
