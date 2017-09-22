@@ -20,21 +20,18 @@
 #'
 
 recalib <- function(dat,hid="hid",weights="hgew",b.weights=paste0("w",1:1000),year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
-										conH.var=c("bundesld","hsize","recht")){
+										conH.var=c("bundesld","hsize","recht"),...){
 
 	# define default values for
-	# getElement("verbose",TRUE,...)
-	# getElement("epsP",1e-2,...)
-	# getElement("epsH",5e-2,...)
-	# getElement("bound",4,...)
-	# getElement("maxIter",50,...)
-	# getElement("meanHH",TRUE,...)
-  verbose <- TRUE
-  epsP <- 1e-2
-  epsH <- 5e-2
-  bound <- 4
-  maxIter <- 50
-  meanHH <- TRUE
+  ellipsis <- list(...)
+  ellipsis[["verbose"]] <- getEllipsis("verbose",TRUE,ellipsis)
+  ellipsis[["epsP"]] <- getEllipsis("epsP",1e-2,ellipsis)
+  ellipsis[["epsH"]] <- getEllipsis("epsH",5e-2,ellipsis)
+  ellipsis[["bound"]] <- getEllipsis("bound",4,ellipsis)
+  ellipsis[["maxIter"]] <- getEllipsis("maxIter",50,ellipsis)
+  ellipsis[["meanHH"]] <- getEllipsis("meanHH",TRUE,ellipsis)
+
+  eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
 
 	# calculate contingency tables
 	if(!is.null(conP.var)){

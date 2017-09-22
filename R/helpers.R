@@ -16,7 +16,7 @@ dt.eval2 <- function(...){
 	return(eval(parse(text=paste0(...)),envir=parent.frame()))
 }
 
-getElement <- function(element, default, list){
-	ifelse(is.null(list[[element]]), default, list[[element]])
+getEllipsis <- function(element, default, ell){
+  ifelse(is.null(ell[[element]]), default, ell[[element]])
 }
 
