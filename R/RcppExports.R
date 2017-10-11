@@ -5,3 +5,7 @@ rollMeanC <- function(x, k, type) {
     .Call(`_surveysd_rollMeanC`, x, k, type)
 }
 
+rollSumC <- function(x, k, type) {
+    .Call(`_surveysd_rollSumC`, x, k, type)
+}
+

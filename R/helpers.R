@@ -20,3 +20,15 @@ getEllipsis <- function(element, default, ell){
   ifelse(is.null(ell[[element]]), default, ell[[element]])
 }
 
+paste_ <- function(a,b){
+  paste(a,b,sep=".")
+}
+paste_c <- function(a,b){
+  paste(a,b,sep=",")
+}
+paste_addarg <- function(a,b){
+
+  a <- tstrsplit(a,",")
+
+  return(paste(a[[1]],b,paste(a[2:length(a)],collapse=","),sep=","))
+}
