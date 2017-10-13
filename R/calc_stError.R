@@ -67,6 +67,7 @@
 #'   \item \strong{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
 #'   \item \strong{stEHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{stE.limit}.
 #'   \item \strong{stEDecrease}: data.table indicating for each estimate what theoretical increase in sample size is gained when averaging over k years. Only returned if \code{year.mean} is not \code{NULL}.
+#'   \item \strong{param}: list of parameters used for function call, like number of bootstrap weights, used variables
 #' }
 #'
 #' @seealso \code{\link{bootstrap.rep}}\cr
@@ -198,9 +199,15 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   outx.names <- outx.names[c(1:(min(ord.names)-1),ord.names)]
   outx <- outx[,mget(outx.names)]
 
-  output <- list(Estimates=outx,smallGroups=size_group,stEHigh=sd_bool,stEDecrease=samp_eff)
+  # specify parameters for output
+  param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,
+                bias=bias,add.arg=add.arg,size.limit=size.limit,stE.limit=stE.limit)
 
-	return(outx)
+  output <- list(Estimates=outx,smallGroups=size_group,stEHigh=sd_bool,stEDecrease=samp_eff,param=param)
+
+  class(output) <- c("surveysd", class(output))
+
+	return(output)
 
 }
 
@@ -241,7 +248,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
 	# apply function to all elemnts of cross_var
 	# apply also mean and standard deviation for estimates
-	out <- lapply(cross_var[1],function(z){
+	out <- lapply(cross_var,function(z){
 
 		na.check <- z[!z%in%no.na]
 		if(length(na.check)>0){

@@ -128,6 +128,7 @@ err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr
 # for example ging() from laeken
 library(laeken)
 
+# set up help function that returns only the gini index
 help_gini <- function(x,w){
  return(gini(x,w)$value)
 }
