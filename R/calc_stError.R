@@ -200,7 +200,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   outx <- outx[,mget(outx.names)]
 
   # specify parameters for output
-  param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,
+  param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,package=find(fun),cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,
                 bias=bias,add.arg=add.arg,size.limit=size.limit,stE.limit=stE.limit)
 
   output <- list(Estimates=outx,smallGroups=size_group,stEHigh=sd_bool,stEDecrease=samp_eff,param=param)

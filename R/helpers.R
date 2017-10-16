@@ -43,7 +43,7 @@ print.surveysd <- function(sd.result){
   n.years <- length(n.years[!grepl("-|_",n.years)])
   n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["cross_var"]])))]))
 
-  cat("Calculated point estimates for variables\n\n",paste(sd.result[["param"]][["var"]],sep=","),"\n\nusing function",sd.result[["param"]][["fun"]],"from",sd.result[["param"]][["package"]][1],"\n\n")
+  cat("Calculated point estimates for variable(s)\n\n",paste(sd.result[["param"]][["var"]],sep=","),"\n\nusing function",sd.result[["param"]][["fun"]],"from",sd.result[["param"]][["package"]][1],"\n\n")
 
   cat("Results hold",n.estimates,"point estimates for",n.years,"years in",n.groups,"subgroups\n")
   cat("\n")
