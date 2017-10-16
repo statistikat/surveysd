@@ -28,7 +28,7 @@
 #' Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.
 #' @param stE.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{stE.limit}, for a point estimate, they are flagged and available in the function output.
 #'
-#' @details \code{calc.stError} takes survey data (\code{dat}) and estimates point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample year in \code{dat}.
+#' @details \code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample year in \code{dat}.
 #' \code{dat} must be household data where each row represents one household. In addition \code{dat} should containt at least the following columns:
 #' \itemize{
 #'   \item Column indicating the sample year;
@@ -64,16 +64,17 @@
 #' In addition all subsets for which this is the case can be selected from the output of \code{calc.stError} with \code{$smallGroups}.\cr
 #' With the parameter \code{stE.limit} one can set an upper bound on the share of the estimated standard error to it's point estimate. Estimates which exceed this bound are flagged with \code{TRUE} and available int the function output with \code{$stEHigh}.
 #' \code{stE.limit} must be a positive integer and is treated internally as \%, e.g. for \code{stE.limit=1} the estimate will be flagged if the estimated standard error exceeds 1\% of it's estimated point estimate.\cr
+#' For \code{fun='weightedRatio'} the returned values are already in \% and the values for point estimate and standard error are not set in relation but taken as is for \code{stE.limit}.
 #' \cr
 #' When specifying \code{year.mean}, the decrease in standard error for choosing this method is internally calcualted and a rough estimate for an implied increase in sample size is available in the output with \code{$stEDecrease}.
-#' The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
+#' The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error of most point estimates converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
 #'
 #' @return Returns a list containing:
 #' \itemize{
-#'   \item \strong{Estimates}: data.table containing yearly, differences and/or k year averages for estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
-#'   \item \strong{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
-#'   \item \strong{stEHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{stE.limit}.
-#'   \item \strong{stEDecrease}: data.table indicating for each estimate what theoretical increase in sample size is gained when averaging over k years. Only returned if \code{year.mean} is not \code{NULL}.
+#'   \item \code{Estimates}: data.table containing yearly, differences and/or k year averages for estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
+#'   \item \code{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
+#'   \item \code{stEHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{stE.limit}.
+#'   \item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is gained when averaging over k years. Only returned if \code{year.mean} is not \code{NULL}.
 #' }
 #'
 #' @seealso \code{\link{bootstrap.rep}} \cr
