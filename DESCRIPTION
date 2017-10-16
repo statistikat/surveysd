@@ -1,11 +1,10 @@
 Package: surveysd
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Estimates standard errors in complex surveys
 Version: 0.1.0
-Author: Johannes Gussenbauer
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
+Maintainer: Johannes Gussenbauer <Johannes.Gussenbauer@statistik.gv.at>
+Description: Estimate standard errors in complex surveys using bootstrap replicates. Bootstraping is layed out for panel surveys with rotation.
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)

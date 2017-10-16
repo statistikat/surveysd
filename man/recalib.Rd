@@ -4,8 +4,8 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",\cr
-               conP.var=c("ksex","kausl","al","erw","pension"),\cr
+recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",
+               conP.var=c("ksex","kausl","al","erw","pension"),
                conH.var=c("bundesld","hsize","recht"),...)
 }
 \arguments{
@@ -26,7 +26,7 @@ recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",\cr
 \item{...}{additional arguments passed on to function \code{\link[simpPop]{ipu2}} from the \code{simPop} package.}
 }
 \value{
-Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates, which are named \code{b.rep}
+Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates, which are labeled like the bootstrap replicates.
 }
 \description{
 Calibrate weights for bootstrap replicates by using iterative proportional updating to match population totals on various household and personal levels.
@@ -50,23 +50,29 @@ In this process the columns of the bootstrap replicates are overwritten by the c
 }
 \examples{
 # read in data (need to be changed)
-dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+library(data.table)
+dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
+                            bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
 # draw bootstrap replicates
-dat <- bootstrap.rep(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",year="jahr",totals=NULL,boot.names=NULL)
+dat <- bootstrap.rep(dat,REP=20,hid="hid",weights="hgew",
+                     strata="bundesld",year="jahr",totals=NULL,boot.names=NULL)
 
 # calibrate weight for bootstrap replicates
 # use sex for person-specific and hsize for household-specific marginals
-dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),year="jahr",conP.var=c("sex"),
-              conH.var=c("hsize"))
+dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
+                     year="jahr",conP.var=c("sex"),conH.var=c("hsize"))
+
 
 # do the same but expand person- and household specific variables
-dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),year="jahr",conP.var=c("sex","ageX"),
-              conH.var=c("bundesld","hsize"))
+dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
+                     year="jahr",conP.var=c("sex","ageX"),conH.var=c("bundesld","hsize"))
+
 
 # for many variables (household- or person-specific)
 # use increase maxIter to get convergence
-dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),year="jahr",conP.var=c("ksex","age","bildung","kausl","al","erw","pension"),
-              conH.var=c("bundesld","hsize","recht"),maxIter=100)
+dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
+                     year="jahr",conP.var=c("ksex","age","bildung","kausl","al","erw","pension"),
+                     conH.var=c("bundesld","hsize","recht"),maxIter=100)
 
 }
 \seealso{

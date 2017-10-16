@@ -4,7 +4,7 @@
 \alias{bootstrap.rep}
 \title{Draw bootstrap replicates}
 \usage{
-bootstrap.rep(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",\cr
+bootstrap.rep(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
                      year="jahr",totals=NULL,boot.names=NULL)
 }
 \arguments{
@@ -27,7 +27,7 @@ bootstrap.rep(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",\cr
 \value{
 the survey data with the number of REP bootstrap replicates added as columns.
 
-Returns a data.table containing the original data as well as the number of \code{REP} columns containing the bootstrap replicate for each repetition.
+Returns a data.table containing the original data as well as the number of \code{REP} columns containing the bootstrap replicates for each repetition.\cr
 The columns of the bootstrap replicates are by default labeled "w\emph{Number}" where \emph{Number} goes from 1 to \code{REP}.
 If the column names of the bootstrap replicates should start with a different character or string the parameter \code{boot.names} can be used.
 }
@@ -53,22 +53,27 @@ This ensures that the bootstrap replicates follow the same logic as the sampled 
 }
 \examples{
 # read in data (must be changed..)
-dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+library(data.table)
+dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
+                            bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
 
 # create 20 bootstrap replicates using the column "bundesld" as strata
-dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",strata="bundesld",year="jahr")
+dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
+                          strata="bundesld",year="jahr")
 
 # do the same with more strata
-dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",strata=c("bundesld","sex","hsize"),year="jahr")
+dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
+                          strata=c("bundesld","sex","hsize"),year="jahr")
 
 # change column names for bootstrap replicates
-dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",strata=c("bundesld"),year="jahr",boot.names="replicate")
+dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
+                          strata=c("bundesld"),year="jahr",boot.names="replicate")
 
 }
 \seealso{
 \code{\link[data.table]{data.table}} for more information on data.table objects.\cr
 \code{\link[survey]{svydesign}} for more information on how to create survey-objects.\cr
-\code{\link[survey]{as.svrepdesign}} for more information on how bootstrap replicates from survey-objects are drawn.
+\code{\link[survey]{as.svrepdesign}} for more information on how bootstrap replicates are drawn from survey-objects.
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria

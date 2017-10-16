@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rollMeanC <- function(x, k, type) {
-    .Call(`_surveysd_rollMeanC`, x, k, type)
+    .Call('_surveysd_rollMeanC', PACKAGE = 'surveysd', x, k, type)
 }
 
 rollSumC <- function(x, k, type) {
-    .Call(`_surveysd_rollSumC`, x, k, type)
+    .Call('_surveysd_rollSumC', PACKAGE = 'surveysd', x, k, type)
 }
 
