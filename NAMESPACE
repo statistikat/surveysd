@@ -3,5 +3,6 @@
 export(bootstrap.rep)
 export(calc.stError)
 export(recalib)
+import(Rcpp,data.table,simPop,survey)
 importFrom(Rcpp,sourceCpp)
 useDynLib(surveysd)

@@ -8,7 +8,7 @@ bootstrap.rep(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
                      year="jahr",totals=NULL,boot.names=NULL)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the sample survey for various years.}
+\item{dat}{either data.frame or data.table containing the survey data with rotating panel design.}
 
 \item{REP}{integer indicating the number of bootstrap replicates.}
 
@@ -32,12 +32,10 @@ The columns of the bootstrap replicates are by default labeled "w\emph{Number}" 
 If the column names of the bootstrap replicates should start with a different character or string the parameter \code{boot.names} can be used.
 }
 \description{
-Draw bootstrap replicates from survey data taken in consecutive years.
+Draw bootstrap replicates from survey data with rotating panel design.
 Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 }
 \details{
-bootstrap.rep
-
 \code{bootstrap.rep} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
 \code{dat} contains household survey data, where each row corresponds to one household. In addition the following columns should be included in \code{dat}:
 \itemize{

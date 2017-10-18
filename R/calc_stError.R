@@ -1,5 +1,3 @@
-#' calc.stError
-#'
 #' @title Calcualte point estimates and their standard errors using bootstrap weights.
 #'
 #' @description
@@ -135,7 +133,7 @@
 #'
 #' @useDynLib surveysd
 #' @importFrom Rcpp sourceCpp
-#'
+#' @import simPop data.table Rcpp
 
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
@@ -151,7 +149,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
 	# define columns in which NAs are present (will be discarded for the evaluation)
 
 	col_cross <- unique(unlist(cross_var))
-	no.na <- unlist(dat[,lapply(.SD,function(z){any(is.na(z))}),.SDcols=col_cross])
+	no.na <- unlist(dat[,lapply(.SD,function(z){all(!is.na(z))}),.SDcols=col_cross])
 	no.na <- colnames(dat)[colnames(dat)%in%col_cross][!no.na]
 
 	if(!is.null(year.diff)){

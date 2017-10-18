@@ -1,5 +1,3 @@
-#' bootstrap.rep
-#'
 #' @title Draw bootstrap replicates
 #'
 #' @description Draw bootstrap replicates from survey data with rotating panel design.
@@ -60,7 +58,7 @@
 #'                           strata=c("bundesld"),year="jahr",boot.names="replicate")
 #'
 #' @export bootstrap.rep
-#'
+#' @import survey data.table
 
 
 bootstrap.rep <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",totals=NULL,boot.names=NULL){
