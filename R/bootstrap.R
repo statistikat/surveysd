@@ -41,7 +41,6 @@
 #'
 #' @examples
 #' # read in data (must be changed..)
-#' library(data.table)
 #' dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
 #'                             bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
 #'
@@ -56,6 +55,11 @@
 #' # change column names for bootstrap replicates
 #' dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
 #'                           strata=c("bundesld"),year="jahr",boot.names="replicate")
+#'
+#' # save bootstrap replicates as .RData
+#' save(dat_boot,file="dat_replicates.RData")
+#' # or .csv-file
+#' write.csv2(dat_boot,file="dat_replicates.csv",row.names=FALSE)
 #'
 #' @export bootstrap.rep
 #' @import survey data.table

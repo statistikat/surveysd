@@ -6,7 +6,7 @@
 #'
 #' @usage calc.stError(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",
 #'                     fun="weightedRatio",cross_var=NULL,year.diff=NULL,
-#'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,stE.limit=10)
+#'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10)
 #'
 #'
 #' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{bootstrap.rep}} and \code{\link{recalib}}.
@@ -24,7 +24,7 @@
 #' @param add.arg list containing strings for additional function arguments. Must be the same length as \code{var} or \code{fun}. Can be a list of \code{NULL}s.
 #' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
 #' Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.
-#' @param stE.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{stE.limit}, for a point estimate, they are flagged and available in the function output.
+#' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.
 #'
 #' @details \code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample year in \code{dat}.
 #' \code{dat} must be household data where each row represents one household. In addition \code{dat} should containt at least the following columns:
@@ -60,9 +60,8 @@
 #' \cr
 #' The parameter \code{size.limit} indicates a lower bound of the sample size for subsets in \code{dat} created by \code{cross_var}. If the sample size of a subset falls below \code{size.limit} a warning will be displayed.\cr
 #' In addition all subsets for which this is the case can be selected from the output of \code{calc.stError} with \code{$smallGroups}.\cr
-#' With the parameter \code{stE.limit} one can set an upper bound on the share of the estimated standard error to it's point estimate. Estimates which exceed this bound are flagged with \code{TRUE} and available int the function output with \code{$stEHigh}.
-#' \code{stE.limit} must be a positive integer and is treated internally as \%, e.g. for \code{stE.limit=1} the estimate will be flagged if the estimated standard error exceeds 1\% of it's estimated point estimate.\cr
-#' For \code{fun='weightedRatio'} the returned values are already in \% and the values for point estimate and standard error are not set in relation but taken as is for \code{stE.limit}.
+#' With the parameter \code{cv.limit} one can set an upper bound on the coefficient of variantion. Estimates which exceed this bound are flagged with \code{TRUE} and are available in the function output with \code{$cvHigh}.
+#' \code{cv.limit} must be a positive integer and is treated internally as \%, e.g. for \code{cv.limit=1} the estimate will be flagged if the coefficient of variantion exceeds 1\%.\cr
 #' \cr
 #' When specifying \code{year.mean}, the decrease in standard error for choosing this method is internally calcualted and a rough estimate for an implied increase in sample size is available in the output with \code{$stEDecrease}.
 #' The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error of most point estimates converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
@@ -71,7 +70,7 @@
 #' \itemize{
 #'   \item \code{Estimates}: data.table containing yearly, differences and/or k year averages for estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
 #'   \item \code{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
-#'   \item \code{stEHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{stE.limit}.
+#'   \item \code{cvHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{cv.limit}.
 #'   \item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is gained when averaging over k years. Only returned if \code{year.mean} is not \code{NULL}.
 #' }
 #'
@@ -91,6 +90,9 @@
 #' dat <- recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:20),
 #'                year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
 #'                conH.var=c("bundesld","hsize","recht"))
+#'
+#' # or load file with calibrated bootstrap weights
+#' # load("dat_calibweight.RData")
 #'
 #' # estimate weightedRatio for povmd60 per year
 #' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
@@ -138,7 +140,7 @@
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
-calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,stE.limit=10){
+calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10){
 
   if(is.null(cross_var)){
     cross_var <- list(NULL)
@@ -162,11 +164,8 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   outx.names <- outx.names[!outx.names%in%c("val","N","est_type","stE","mean","size")]
   # get meta data like stE_high - size - increase in effektive sample size
   # flag stE if values are especially high
-  if(fun=="weightedRatio"){
-    outx[,stE_high:=stE>stE.limit]
-  }else{
-    outx[,stE_high:=((stE/val)*100)>stE.limit]
-  }
+  outx[,stE_high:=((stE/val)*100)>cv.limit]
+
   # create bool matrix for stE_high
   sd_bool <- subset(outx,select=c("stE_high",outx.names))
   form <- as.formula(paste(paste(outx.names[outx.names!="est"],collapse="+"),"est",sep="~"))
@@ -214,9 +213,9 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
 
   # specify parameters for output
   param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,package=find(fun),cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,
-                bias=bias,add.arg=add.arg,size.limit=size.limit,stE.limit=stE.limit)
+                bias=bias,add.arg=add.arg,size.limit=size.limit,cv.limit=cv.limit)
 
-  output <- list(Estimates=outx,smallGroups=size_group,stEHigh=sd_bool,stEDecrease=samp_eff,param=param)
+  output <- list(Estimates=outx,smallGroups=size_group,cvHigh=sd_bool,stEDecrease=samp_eff,param=param)
 
   class(output) <- c("surveysd", class(output))
 

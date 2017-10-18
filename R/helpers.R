@@ -54,7 +54,7 @@ print.surveysd <- function(sd.result){
     print(sd.result[["smallGroups"]])
   }
   cat("\n")
-  stEtoohigh <- colnames(sd.result[["stEHigh"]])
+  stEtoohigh <- colnames(sd.result[["cvHigh"]])
   stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(sd.result[["param"]][["year"]],unique(unlist(sd.result[["param"]][["cross_var"]])))]
   stEtoohigh <- as.matrix(subset(sd.result[["stEHigh"]],select=stEtoohigh))
   cat("Estimted standard error exceeds",sd.result[["param"]][["stE.limit"]],"% of the the point estimate in",sum(stEtoohigh),"cases\n")

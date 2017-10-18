@@ -44,6 +44,9 @@
 #' dat <- bootstrap.rep(dat,REP=20,hid="hid",weights="hgew",
 #'                      strata="bundesld",year="jahr",totals=NULL,boot.names=NULL)
 #'
+#' # or load data with replicates if they have already been saved
+#' # load("dat_replicates.RData")
+#'
 #' # calibrate weight for bootstrap replicates
 #' # use sex for person-specific and hsize for household-specific marginals
 #' dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
@@ -60,6 +63,11 @@
 #' dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
 #'                      year="jahr",conP.var=c("ksex","age","bildung","kausl","al","erw","pension"),
 #'                      conH.var=c("bundesld","hsize","recht"),maxIter=100)
+#'
+#' # save calibrated bootstrap weights as .RData
+#' save(dat_calib,file="dat_calibweight.RData")
+#' # or .csv-file
+#' write.csv2(dat_calib,file="dat_calibweight.csv",row.names=FALSE)
 #'
 #' @export recalib
 #' @import simPop data.table
