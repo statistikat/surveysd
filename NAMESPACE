@@ -2,7 +2,11 @@
 
 export(bootstrap.rep)
 export(calc.stError)
+export(print.surveysd)
 export(recalib)
-import(Rcpp,data.table,simPop,survey)
+import(Rcpp)
+import(data.table)
+import(simPop)
+import(survey)
 importFrom(Rcpp,sourceCpp)
 useDynLib(surveysd)
