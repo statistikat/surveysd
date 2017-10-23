@@ -2,41 +2,151 @@
 % Please edit documentation in R/calc_stError.R
 \name{calc.stError}
 \alias{calc.stError}
-\title{calc.stError}
+\title{Calcualte point estimates and their standard errors using bootstrap weights.}
 \usage{
-calc.stError(dat, weights = "hgew", b.weights = paste0("w", 1:1000),
-  year = "jahr", var = "povmd60", fun = "weightedRatio",
-  cross_var = list(NULL), year.diff = NULL, add.arg = vector("list",
-  length(var)))
+calc.stError(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",
+                    fun="weightedRatio",cross_var=NULL,year.diff=NULL,
+                    year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,stE.limit=10)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the sample survey for various years.}
+\item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{bootstrap.rep}} and \code{\link{recalib}}.}
 
-\item{weights}{character specifying the name of the column in \code{dat} containing the sample weights. Used to calculate yearly and 3-year estimates (defined by \code{var} and \code{fun}).}
+\item{weights}{character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.}
 
-\item{b.weights}{character specifying the names of the columns in \code{dat} containing bootstrap weights. Used to calculate standard error of yearly and 3-year estimates (defined by \code{var} and \code{fun}).}
+\item{b.weights}{character vector specifying the names of the columns in \code{dat} containing bootstrap weights. Used to calculate standard errors.}
 
 \item{year}{character specifying the name of the column in \code{dat} containing the sample years.}
 
-\item{var}{character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each \code{year}. Must have the same length as \code{fun}.}
+\item{var}{character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each sample year.}
 
-\item{fun}{character vector containig function-names which are to be applied on \code{var} for each \code{year}. Must have the same length as \code{var}.
-Possible arguments are \code{weightedRatio,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and has \code{weight} as its second argument.}
+\item{fun}{character specifying the function which will be applied on \code{var} for each sample year.
+Possible arguments are \code{weightedRatio,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and uses weights as its second argument.}
 
-\item{cross_var}{list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}
-and \code{var} and \code{fun} are calculated for each of those groups.}
+\item{cross_var}{character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
+The pointestimates are then estimated for each subgroup seperately. If \code{cross_var=NULL} the data will split into sample years by default.}
 
-\item{year.diff}{character vectors, defining the years for which the differenzes as well as the standard deviation of the differenzes should be computed. Each entry must have the form of \code{"year1 - year2"}. Can be NULL}
+\item{year.diff}{character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL}
 
-\item{add.arg}{list containing strings for additional function arguments. Must be the same length as \code{var} oder \code{fun}. Can be a list of \code{NULL}s.}
+\item{year.mean}{odd integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.}
+
+\item{bias}{boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.}
+
+\item{add.arg}{list containing strings for additional function arguments. Must be the same length as \code{var} or \code{fun}. Can be a list of \code{NULL}s.}
+
+\item{size.limit}{integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
+Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.}
+
+\item{stE.limit}{non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{stE.limit}, for a point estimate, they are flagged and available in the function output.}
 }
 \value{
-data.table containing yearly and 3-year estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which were calculated using the bootstrap weights.
+Returns a list containing:
+\itemize{
+  \item \code{Estimates}: data.table containing yearly, differences and/or k year averages for estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
+  \item \code{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
+  \item \code{stEHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{stE.limit}.
+  \item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is gained when averaging over k years. Only returned if \code{year.mean} is not \code{NULL}.
+}
 }
 \description{
-Calcualte estimates of variables per year as well as their 3 year rolling mean.
-In addition the standard deviation per year and for each three consecutive years are calculated using the bootstrap weights.
+Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{bootstrap.rep}} and \code{\link{recalib}}).
+In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive years, which results in a reduction of the standard error.
+}
+\details{
+\code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample year in \code{dat}.
+\code{dat} must be household data where each row represents one household. In addition \code{dat} should containt at least the following columns:
+\itemize{
+  \item Column indicating the sample year;
+  \item Column indicating the household ID;
+  \item Column containing the household sample weights;
+  \item Columns which contain the bootstrap weights (see output of \code{\link{recalib}});
+  \item Columns listed in \code{var} as well as in \code{cross_var}
+}
+For each variable in \code{var} as well as sample year the function \code{fun} is applied using the original as well as the bootstrap sample weights.\cr
+The point estimate is then selected as the result of \code{fun} when using the original sample weights and it's standard error is estimated with the result of \code{fun} using the bootstrap sample weights. \cr
+\cr
+\code{fun} can be any function which returns a double or integer and uses sample weights as it's second argument. The predifined options are \code{weightedRatio,weightedSum,sampSize} and \code{popSize}, for wich \code{sampSize} and \code{popSize} indicate the sample and population size respectively.\cr
+\cr
+For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is calculated for \code{var} equal to 1, e.g \code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
+\cr
+If \code{cross_var} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{cross_var}.\cr
+For instance if \code{cross_var = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
+For variables in \code{cross_var} which have \code{NA}s in \code{dat} the subset containing the missings will be discarded. \cr
+When \code{cross_var} is a list of character vectors subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
+\cr
+When defining \code{year.diff} the difference of point estimates between years as well their standard errors are calculated.\cr
+The entries in \code{year.diff} must have the form of \emph{year1} - \emph{year2} which means that the results of the point estimates for \emph{year2} will be substracted from the results of the point estimates for \emph{year1}.\cr
+\cr
+Specifying \code{year.mean} leads to an improvement in standard error by averaging the results for the point estimates, using the bootstrap weights, over \code{year.mean} years.
+Setting, for instance, \code{year.mean = 3} the results in averaging these results over each consecutive set of 3 years.\cr
+Estimating the standard error over these averages gives in an improved estimate of the standard error for the central year, which was used for averaging.\cr
+\cr
+Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
+\cr
+If \code{fun} needs more arguments they can be set in add.arg.\cr
+\cr
+The parameter \code{size.limit} indicates a lower bound of the sample size for subsets in \code{dat} created by \code{cross_var}. If the sample size of a subset falls below \code{size.limit} a warning will be displayed.\cr
+In addition all subsets for which this is the case can be selected from the output of \code{calc.stError} with \code{$smallGroups}.\cr
+With the parameter \code{stE.limit} one can set an upper bound on the share of the estimated standard error to it's point estimate. Estimates which exceed this bound are flagged with \code{TRUE} and available int the function output with \code{$stEHigh}.
+\code{stE.limit} must be a positive integer and is treated internally as \%, e.g. for \code{stE.limit=1} the estimate will be flagged if the estimated standard error exceeds 1\% of it's estimated point estimate.\cr
+For \code{fun='weightedRatio'} the returned values are already in \% and the values for point estimate and standard error are not set in relation but taken as is for \code{stE.limit}.
+\cr
+When specifying \code{year.mean}, the decrease in standard error for choosing this method is internally calcualted and a rough estimate for an implied increase in sample size is available in the output with \code{$stEDecrease}.
+The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error of most point estimates converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
+}
+\examples{
+# read in and prepare data
+library(data.table)
+dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
+                            bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+
+dat <- bootstrap.rep(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
+                     year="jahr",totals=NULL,boot.names=NULL)
+dat <- recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:20),
+               year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
+               conH.var=c("bundesld","hsize","recht"))
+
+# estimate weightedRatio for povmd60 per year
+err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
+                       fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=NULL)
+
+# estimate weightedRatio for povmd60 per year and sex
+cross_var <- "sex"
+err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),
+                        year="jahr",var="povmd60",fun="weightedRatio",
+                        cross_var=cross_var,year.diff=NULL,year.mean=NULL)
+
+# use average over 3 years for standard error estimation
+err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
+                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=3)
+
+# get estimate for difference of year 2016 and 2013
+year.diff <- c("2016-2013")
+err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
+                       fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+
+# apply function to multiple variables and define different subsets
+var <- c("povmd60","arose")
+cross_var <- list("sex","bundesld",c("sex","bundesld"))
+err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var=var,
+                       fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+
+# use a function from an other package that has sampling weights as its second argument
+# for example ging() from laeken
+library(laeken)
+
+# set up help function that returns only the gini index
+help_gini <- function(x,w){
+ return(gini(x,w)$value)
+}
+
+err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="epinc_real",
+                       fun="help_gini",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+
+}
+\seealso{
+\code{\link{bootstrap.rep}} \cr
+\code{\link{recalib}}
 }
 \author{
-Johannes Gussenbauer, Statistik Austria
+Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 }
