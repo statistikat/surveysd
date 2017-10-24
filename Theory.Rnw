@@ -1,0 +1,57 @@
+\documentclass{article}
+
+\usepackage{cite}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+
+%\usepackage{algorithmic,algorithm}
+\usepackage{amsmath,amssymb}
+\usepackage{amsfonts}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\section{Methodology}
+
+\subsection{Bootstrapping}
+Bootstrapping has long been around and used widely to estimate confidence intrevals and standard errors of point estimates.\cite{efron1979}
+Given a random sample $(X_1,\ldots,X_n)$ drawn from an unknown distribution $F$ the distribution of a point estimate $\theta(X_1,\ldots,X_n;F)$ can in many cases not be determined analytically. However when using bootstrapping one can simulate the distribution of $\theta$.
+
+Let $s_{(.)}$ be a bootstrap sample, e.g. drawing $n$ observations with replacement from the sample $(X_1,\ldots,X_n)$, then one can estimate the standard deviation of $\theta$  using $B$ bootstrap samples through
+\begin{align*}
+  sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(s_i)-\overline{\theta})} \quad,
+\end{align*}
+with $\overline{\theta}:=\frac{1}{B}\sum\limits_{i=1}^B\theta(s_i)$ as the sample mean over all bootstrap samples.
+
+In context of sample surveys with sampling weights one can use bootstrapping to calculate so called bootstrap weights. These are computed via the bootstrap samples $s_{i}$,$i=1,\ldots,B$, where for each $s_{i}$ every unit of the original sample can appear $0$- to $m$-times. With $f_j^{i}$ as the frequency of occurance of observation $j$ in bootstrap sample $s_i$ the uncalibrated bootstrap weights $b_{j}^{0,i}$ are defined as:
+
+\begin{align*}
+  b_{j}^{0,i} = f_j^{i} w_j \quad,
+\end{align*}
+
+with $w_j$ as the calibrated sampling weight of the original sample.
+Using interative proportionale fitting procedures one can recalibrate the bootstrap weights $b_{j}^{0,(.)}$,$j=1,...,B$ to get the adapted bootstrap weights $b_j^i$,$j=1,...,B$. Using bootsrapping in sample surveys we recommend using $B$ as large as a minimum of 500 to achieve high quality estimations.
+
+Since the EU-SILC is a stratified sample withouth replacement drawn from a finite population the naive bootstrap precedure, as described above, does not yield satisfactory results, since the bootstrap samples do not take into account the inhomogeneus inclusion probabilities of each sample unit. Therefore we will use the so called rescaled bootstrap procedure introduced and investigated by \cite{raowu1988}, where instead of rescaled survey data values, rescaled weights are used. In addition the bootstrap samples are selected without replacement and do incorporate the stratification in the sampling design (see \cite{chipprest2007},\cite{prest2009}).
+
+Considering a stratified sample $(Y_1,\ldots,Y_n)$ drawn from finite population $U$ which is divided into $H$ nonoverlapping strata $\bigcup\limits_{h=1,\ldots,H} U_h = U$, of which each strata $h$ has the subpopulation of size $N_h$, where for each strata $h$, $n_h$ observations where drawn.
+For the rescaled bootstrap procedure each bootstrap sample for each strata $h$ is, instead of drawing with replacement of size $n_h$, is drawn without replacement of size $n_h^B=\lfloor\frac{n_h}{2}\rfloor$. \cite{chipprest2007} have shown that the choice of either $\lfloor\frac{n_h}{2}\rfloor$ or $\lceil\frac{n_h}{2}\rceil$ is optimal for bootstrap samples without replacement, although $\lfloor\frac{n_h}{2}\rfloor$ has the desireable property that the resulting bootstrap weights will never be negative.
+For each observation $j$,$j,\ldots,n$, belonging to strata $h$ the uncalibrated bootstrap weights $b_{j}^{0,i}$,$i=1,\ldots,B$ are then defined by
+
+\begin{align*}
+  b_{j}^{0,i} =& w_j(1-\lambda_h+\lambda_h\frac{n_h}{n_h^B}\delta_{h_j}) = w_jf_j^i \quad \forall j \in n_h\\
+  \intertext{with}
+  \lambda =& \sqrt{\frac{n_h^i(1-\frac{n_h}{N_h})}{n_h-n_h^B}} \quad ,
+\end{align*}
+
+where $w_j$ are the calibrated weights of the original sample and $\delta_{h_j}=1$ if observation $j$ is selected in the subsample $n_h^B$ and 0 otherwise. Applying iterative proportional fitting to the uncalibrated weights $b_{j}^{0,i}$ yields the final calibrated weight $b_{j}^{i}$.
+
+\subsection{Iterative proportional fitting (IPF)}
+
+\subsection{Variance estimation}
+
+
+\bibliography{lib}
+\bibliographystyle{plain}
+
+\end{document}
