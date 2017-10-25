@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{scrartcl}
 
 \usepackage{cite}
 \usepackage[english]{babel}
@@ -30,23 +30,43 @@ In context of sample surveys with sampling weights one can use bootstrapping to 
 \end{align*}
 
 with $w_j$ as the calibrated sampling weight of the original sample.
-Using interative proportionale fitting procedures one can recalibrate the bootstrap weights $b_{j}^{0,(.)}$,$j=1,...,B$ to get the adapted bootstrap weights $b_j^i$,$j=1,...,B$. Using bootsrapping in sample surveys we recommend using $B$ as large as a minimum of 500 to achieve high quality estimations.
+Using iterative proportional fitting procedures one can recalibrate the bootstrap weights $b_{j}^{0,(.)}$,$j=1,...,B$ to get the adapted bootstrap weights $b_j^i$,$j=1,...,B$. Using bootsrapping in sample surveys we recommend using $B$ as large as a minimum of 500 to achieve high quality estimations.
 
 Since the EU-SILC is a stratified sample withouth replacement drawn from a finite population the naive bootstrap precedure, as described above, does not yield satisfactory results, since the bootstrap samples do not take into account the inhomogeneus inclusion probabilities of each sample unit. Therefore we will use the so called rescaled bootstrap procedure introduced and investigated by \cite{raowu1988}, where instead of rescaled survey data values, rescaled weights are used. In addition the bootstrap samples are selected without replacement and do incorporate the stratification in the sampling design (see \cite{chipprest2007},\cite{prest2009}).
 
-Considering a stratified sample $(Y_1,\ldots,Y_n)$ drawn from finite population $U$ which is divided into $H$ nonoverlapping strata $\bigcup\limits_{h=1,\ldots,H} U_h = U$, of which each strata $h$ has the subpopulation of size $N_h$, where for each strata $h$, $n_h$ observations where drawn.
+Considering a stratified sample $(Y_1,\ldots,Y_n)$ drawn from a finite population $U$ which is divided into $H$ nonoverlapping strata $\bigcup\limits_{h=1,\ldots,H} U_h = U$, of which each strata $h$ has the subpopulation of size $N_h$, where for each strata $h$, $n_h$ observations where drawn.
 For the rescaled bootstrap procedure each bootstrap sample for each strata $h$ is, instead of drawing with replacement of size $n_h$, is drawn without replacement of size $n_h^B=\lfloor\frac{n_h}{2}\rfloor$. \cite{chipprest2007} have shown that the choice of either $\lfloor\frac{n_h}{2}\rfloor$ or $\lceil\frac{n_h}{2}\rceil$ is optimal for bootstrap samples without replacement, although $\lfloor\frac{n_h}{2}\rfloor$ has the desireable property that the resulting bootstrap weights will never be negative.
 For each observation $j$,$j,\ldots,n$, belonging to strata $h$ the uncalibrated bootstrap weights $b_{j}^{0,i}$,$i=1,\ldots,B$ are then defined by
 
 \begin{align*}
-  b_{j}^{0,i} =& w_j(1-\lambda_h+\lambda_h\frac{n_h}{n_h^B}\delta_{h_j}) = w_jf_j^i \quad \forall j \in n_h\\
+  b_{j}^{0,i} =& w_j(1-\lambda_h+\lambda_h\frac{n_h}{n_h^B}\delta_{h_j}) = w_jf_j^i \quad\quad \forall j \in n_h\\
   \intertext{with}
   \lambda =& \sqrt{\frac{n_h^i(1-\frac{n_h}{N_h})}{n_h-n_h^B}} \quad ,
 \end{align*}
 
 where $w_j$ are the calibrated weights of the original sample and $\delta_{h_j}=1$ if observation $j$ is selected in the subsample $n_h^B$ and 0 otherwise. Applying iterative proportional fitting to the uncalibrated weights $b_{j}^{0,i}$ yields the final calibrated weight $b_{j}^{i}$.
 
+Since the EU-SILC is a yearly survey with rotating penal design, we calulate bootstrap sample weights for each year and takte for each household it's sample weight forward until the household drops out of the survey. This ensures the creation of bootstrap weights which are comparable in structure to the original sample weights $w^0$.
+
 \subsection{Iterative proportional fitting (IPF)}
+The uncalibrated bootstrap weights $b_j^{0}$ computed thorugh the rescaled bootstrap procedure yields population statistics that differ from the known population margins of specified sociodemographic variables for which the base weights $w_j^0$ have benn calibrated. To adjust for this the bootstrap weights $b_{j}^{0}$ can be recalibrated using interative proportional fitting as described in \cite{mekogu2016}.
+
+Let the original weight $w_(j)^0$ be calibrated for $v_1,\ldots,v_u$ sociodemographic variables which can take on $V_1,...,V_u$ values each and $N_({v_i})$ be the population margins of the $i$-th sociodemographic variables. The iterative proportional fitting procedure for the weights $b^{0}$ is made up of 5 Steps. Starting with $k=0$ the 5 Steps are repeated and $k$ is raised by 1 if the constrains are satisfied after step 5.
+
+\subsubsection{Steps 1-3}
+The weight uncalibrated bootstrap weights $b_j^{0}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_({v_i})$, $i=1,\ldots,u$.
+For each $i in \left\{1,\ldots,u\right\}$ the calibrated weights against $N_({v_i,y})$ are computed as
+\begin{align*}
+  b_j^{5k+i} = b_j^{5k+i-1}\frac{N_({v_i})}{\sum\limits_l b_l^{5k}},
+\end{align*}
+where the summation in the denominator expands over all observations which have the same value as observation $j$ for the socidemogrphic variable $v_i$.
+If any weights $b_j^{5k+i}$ fall outside the range $[\frac{w^0_j}{4};4w^0_j]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form a weight trimming where very large/small weights are trimmed in order to reduce variance but with a possible increase in bias \cite{potter90,potter93}.
+
+\subsection{Step4}
+
+
+\subsection{Step5}
+
 
 \subsection{Variance estimation}
 
