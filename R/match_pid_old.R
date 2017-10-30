@@ -1,7 +1,44 @@
 ############################################################
-# MATCH ID FOR SPAIN AND AUSTRIA
+# TESTE MATCHING VON PID FÜR VERGANGENE JAHRE
 #
-#
+
+library(data.table)
+library(VIM)
+
+load("/mnt/meth/Kowarik/Projekte/SILC/StpZ/silcFrameMerged.RData")
+#silc <- unique(silc,by="hid")
+# mittels VIM funktion
+setnames(silcM,"HHID_ENCODE","hid")
+
+setkey(silcM,hid,ID)
+silcM[,pid:=1:.N,by=list(hid,jahr)]
+silcM[,hhsize:=.N,by=list(hid,jahr)]
+
+dat_pid <- silcM[jahr==2016]
+dat_pid_miss <- silcM[jahr%in%c(2013:2015)]
+
+# gehe jahr für jahr durch, verwende Haushalt specifische Merkmale
+dat_pid_miss[,hid_alt:=.GRP,by=list(hid,jahr)]
+setnames(dat_pid_miss,"hid","hid_true")
+
+setkeyv(dat_pid,c("BDL","GESCHL","FAMST","EDU_HAB_NAT","EC_URTYP"))
+
+dat_pid_miss_1 <- dat_pid_miss[jahr==2015&HH_SIZE==1,.(hid_alt,hid_true,pid,BDL,GESCHL,FAMST,EDU_HAB_NAT,EC_URTYP)]
+
+dat_pid_comp <- dat_pid[HH_SIZE==1,.(hid,pid,BDL,GESCHL,FAMST,EDU_HAB_NAT,EC_URTYP)]
+
+dat_merge <- merge(dat_pid_comp,dat_pid_miss_1,by=c("BDL","GESCHL","FAMST","EDU_HAB_NAT","EC_URTYP"),
+                   all=TRUE,allow.cartesian = TRUE)
+
+dat <- silcM[jahr==2016]
+dat_miss <- silcM[jahr%in%c(2013:2015)]
+dat_miss <- silcM[jahr==2015]
+
+dat_matched <- match_PID(dat=dat,dat_miss=dat_miss,hvars = c("BDL","EC_URTYP"), pvars = c("GESCHL","FAMST","EDU_HAB_NAT"), max.size=5)
+
+
+
+####################################################
 # lese daten ein
 #
 library(foreign)
@@ -11,63 +48,49 @@ library(haeven)
 silc <- read.spss("/mnt/obdatenaustausch/NETSILC3/udbworkfile07_16.sav",to.data.frame=TRUE)
 silc <- data.table(silc)
 
-country <- "ES"
+colnames(silc)
 
-# definiere Spalten für "jahr","land","region","gebjahr","gebquartal","geschl","bas","econ","isced","pid"
-y2008 <- c("RB010","RB020","DB040","RB070","RB050","RB080","RB210","PL031","PE040","RB030")
+#silc <- silc[,.(RB010,RB020,RB030,RB050,DB040)]
+#silc[,unique(DB040)]
+
+# PB140 -> Geburtsjahr
+# RB010  -> jahr
+# RB020 -> Land
+# db030 -> HID
+# rb050 -> gewicht
+# RB090
+
+# bestimme neue HID die Haushalte über Jahre verknüpft
+
+# definiere variablen
+# year <- rb010
+# country <- RB020
+# region
+# year of birth yob
+# quarter of birth qob
+# sex
+# basic activity status bas
+# currenc economic status <- econ
+# highest ISCED level <- isced
+# ID
+
 y2016 <-  c("RB010","RB020","DB040","RB080","RB070","RB090","RB210","PL031","PE040","RB030")
+y2015 <-  y2016
+y2014 <-  y2016
 
-silc_part1 <- silc[RB010>2007&RB010<2010&RB020==country,mget(y2008)]
-silc_part2 <- silc[RB010>2009&RB020==country,mget(y2016)]
-silc_part <- rbind(silc_part1,silc_part2,use.names=FALSE)
+silc_part <- silc[RB010>2013&RB020=="ES",mget(y2016)]
 setnames(silc_part,colnames(silc_part),c("jahr","land","region","gebjahr","gebquartal","geschl","bas","econ","isced","pid"))
-# definiere hid über PID
 silc_part[,hid:=as.numeric(substr(pid,1,nchar(pid)-2))]
+setkeyv(silc_part,c("jahr","gebjahr","gebquartal","geschl"))
 silc_part[,pid:=NULL]
+silc_part[,pid:=1:.N,by=list(hid,jahr)]
 silc_part[,hhsize:=.N,by=list(hid,jahr)]
-key_ID <- silc_part[,as.numeric(.GRP),by=list(hid,jahr)]
-key_ID[jahr>2013,V1:=hid]
-silc_part[jahr<2014,hid:=as.numeric(.GRP),by=list(hid,jahr)]
+
+dat <- silc_part[jahr==2015]
+dat_miss <- silc_part[jahr==2014]
 
 
-go_back <- 2014:2009
-leafe_hid <- c()
-for(y in 1:length(go_back)){
-
-  if(length(leafe_hid)>0){
-    dat <- silc_part[!hid%in%leafe_hid&jahr==go_back[y]]
-  }else{
-    dat <- silc_part[jahr==go_back[y]]
-  }
-
-  dat_miss <- silc_part[jahr==go_back[y]-1]
-  dat_miss[gebjahr==min(gebjahr),gebjahr:=dat[,min(gebjahr)]]
-  setkeyv(dat_miss,c("jahr","gebjahr","gebquartal","geschl"))
-  setkeyv(dat,c("jahr","gebjahr","gebquartal","geschl"))
-  dat_miss[,pid:=1:.N,by=list(hid,jahr)]
-  dat[,pid:=1:.N,by=list(hid,jahr)]
-
-  dat_matched <- match_PID(dat=dat,dat_miss=dat_miss,hvars = "land", pvars = c("gebjahr","gebquartal","geschl"), max.size=5,hsize="hhsize")
-
-  dat_matched[,jahr:=go_back[y]-1]
-  setnames(dat_matched,c("hid"),c("hid_new"))
-  silc_part <- merge(silc_part,dat_matched[,.(jahr,hid_orig,hid_new)],by.x=c("jahr","hid"),by.y=c("jahr","hid_orig"),all.x=TRUE)
-  silc_part[!is.na(hid_new),hid:=hid_new]
-  silc_part[,hid_new:=NULL]
-
-  silc_rotn <- unique(silc_part[,.(jahr,hid)],by=c("jahr","hid"))
-  setkeyv(silc_rotn,c("jahr","hid"))
-  silc_rotn[jahr>=go_back[y]-1,rotn:=1:.N,by=hid]
-  leafe_hid <- c(leafe_hid,silc_rotn[rotn==4,hid])
-
-}
-
-
-# speichere Ergebnis ab
-erg <- na.omit(merge(unique(key_ID[,.(hid,V1)]),unique(silc_part[,.(jahr,hid)],by=c("jahr","hid")),by.x="V1",by.y="hid",all.x=TRUE))
-setnames(erg,"V1","hid_new")
-write.csv2(erg,file="/mnt/obdatenaustausch/NETSILC3/AT_matchedID.csv")
-
+dat_matched <- match_PID(dat=dat,dat_miss=dat_miss,hvars = "land", pvars = c("gebquartal","geschl","bas","econ"), max.size=5,hsize="hhsize")
 
 # function to match IDs given household and personal variables
 match_PID <- function(dat,dat_miss, hvars = c("BDL","EC_URTYP"), pvars = c("GESCHL","FAMST","EDU_HAB_NAT"), max.size=5,hsize="hhsize"){
@@ -100,11 +123,10 @@ match_PID <- function(dat,dat_miss, hvars = c("BDL","EC_URTYP"), pvars = c("GESC
 
     dat_merge <- merge(dat_pid_comp,dat_pid_miss_k,by=merge.by,
                        all=TRUE,allow.cartesian = TRUE)
-    dat_merge <- dat_merge[!is.na(hid_orig)&!is.na(hid)]
-    n_matched <- dat_merge[,unique(hid_orig)]
+    n_matched <- dat_merge[!is.na(hid_orig)&!is.na(hid),unique(hid_orig)]
     n_total <- nrow(dat_pid_miss_k)
-    if(n_total*.79<length(n_matched)){
-      sf <- sample(seq(.72,.75,by=.01),1)
+    if(n_total*.69<length(n_matched)){
+      sf <- sample(seq(.69,.71,by=.01),1)
       n_matched <- sample(n_matched,length(n_matched)*sf)
       dat_merge <- dat_merge[hid_orig%in%n_matched]
     }
@@ -157,7 +179,6 @@ dat_miss <- silc_part[jahr==2015]
 
 nrow(unique(dat_miss[!hid%in%dat$hid],by="hid"))/nrow(unique(dat_miss,by="hid"))
 
-geb_m <- merge(dat[,.(hid,pid,gebjahr)],dat_miss[,.(hid,pid,gebjahr)],by=c("hid","pid"))
 
 dat_hh <- unique(dat[,.(hid,hhsize)])
 dat_miss_hh <- unique(dat_miss[,.(hid,hhsize)])
