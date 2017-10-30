@@ -122,3 +122,11 @@ dat_miss <- silcM[jahr%in%c(2013:2015)]
 dat_miss <- silcM[jahr==2015]
 
 dat_matched <- match_PID(dat=dat,dat_miss=dat_miss,hvars = c("BDL","EC_URTYP"), pvars = c("GESCHL","FAMST","EDU_HAB_NAT"), max.size=5)
+
+
+####################################################
+# lese daten ein
+#
+
+
+#
