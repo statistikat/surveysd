@@ -64,10 +64,11 @@ match_PID <- function(dat,dat_miss, hvars = c("BDL","EC_URTYP"), pvars = c("GESC
 
     dat_merge <- merge(dat_pid_comp,dat_pid_miss_k,by=merge.by,
                        all=TRUE,allow.cartesian = TRUE)
-    n_matched <- dat_merge[!is.na(hid_orig)&!is.na(hid),unique(hid_orig)]
+    dat_merge <- dat_merge[!is.na(hid_orig)&!is.na(hid)]
+    n_matched <- dat_merge[,unique(hid_orig)]
     n_total <- nrow(dat_pid_miss_k)
-    if(n_total*.69<length(n_matched)){
-      sf <- sample(seq(.69,.71,by=.01),1)
+    if(n_total*.79<length(n_matched)){
+      sf <- sample(seq(.72,.75,by=.01),1)
       n_matched <- sample(n_matched,length(n_matched)*sf)
       dat_merge <- dat_merge[hid_orig%in%n_matched]
     }
