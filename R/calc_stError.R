@@ -21,13 +21,13 @@
 #' @param year.diff character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL
 #' @param year.mean odd integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.
 #' @param bias boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.
-#' @param add.arg list containing strings for additional function arguments. Must be the same length as \code{var} or \code{fun}. Can be a list of \code{NULL}s.
+#' @param add.arg character specifying additional arguments for \code{fun}. Can be \code{NULL}.
 #' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
 #' Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.
 #' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.
 #'
 #' @details \code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample year in \code{dat}.
-#' \code{dat} must be household data where each row represents one household. In addition \code{dat} should containt at least the following columns:
+#' \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 #' \itemize{
 #'   \item Column indicating the sample year;
 #'   \item Column indicating the household ID;
@@ -301,7 +301,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
 		  if(nrow(roll.est)>nrow(unique(var.est,by=c(year,z)))){
 		    var.est <- merge(roll.est,var.est,by=c(year,z,"ID","est"),all.x=TRUE)
-		    setkey(var.est,jahr)
+		    setkeyv(var.est,year)
 		    var.est[is.na(V1),N:=0]
 		  }
 		}

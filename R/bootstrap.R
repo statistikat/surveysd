@@ -3,21 +3,21 @@
 #' @description Draw bootstrap replicates from survey data with rotating panel design.
 #' Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 #'
-#' @usage bootstrap.rep(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
+#' @usage draw.bootstrap(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
 #'                      year="jahr",totals=NULL,boot.names=NULL)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
-#' @param hid string specifying the name of the column in \code{dat} containing the household ID.
-#' @param weights string specifying the name of the column in \code{dat} containing the sample weights.
-#' @param strata string vector specifying the name of the column in \code{dat} by which the population was stratified.
-#' @param year string specifying the name of the column in \code{dat} containing the sample years.
-#' @param totals (optional) string specifying the name of the column in \code{dat} containing the the totals per strata. If totals is \code{NULL}, the sum of weights per strata will be calcualted and named 'fpc'.
+#' @param hid character specifying the name of the column in \code{dat} containing the household ID.
+#' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
+#' @param strata character vector specifying the name of the column in \code{dat} by which the population was stratified.
+#' @param year character specifying the name of the column in \code{dat} containing the sample years.
+#' @param totals (optional) character specifying the name of the column in \code{dat} containing the the totals per strata. If totals is \code{NULL}, the sum of weights per strata will be calcualted and named 'fpc'.
 #' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
 #' @return the survey data with the number of REP bootstrap replicates added as columns.
 #'
-#' @details \code{bootstrap.rep} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
-#' \code{dat} contains household survey data, where each row corresponds to one household. In addition the following columns should be included in \code{dat}:
+#' @details \code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
+#' \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 #' \itemize{
 #'   \item Column indicating the sample year;
 #'   \item Column indicating the household ID;
@@ -45,15 +45,15 @@
 #'                             bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
 #'
 #' # create 20 bootstrap replicates using the column "bundesld" as strata
-#' dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
+#' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
 #'                           strata="bundesld",year="jahr")
 #'
 #' # do the same with more strata
-#' dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
+#' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
 #'                           strata=c("bundesld","sex","hsize"),year="jahr")
 #'
 #' # change column names for bootstrap replicates
-#' dat_boot <- bootstrap.rep(dat=copy(dat),REP=20,hid="hid",weights="hgew",
+#' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
 #'                           strata=c("bundesld"),year="jahr",boot.names="replicate")
 #'
 #' # save bootstrap replicates as .RData
@@ -61,11 +61,11 @@
 #' # or .csv-file
 #' write.csv2(dat_boot,file="dat_replicates.csv",row.names=FALSE)
 #'
-#' @export bootstrap.rep
+#' @export draw.bootstrap
 #' @import survey data.table
 
 
-bootstrap.rep <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",totals=NULL,boot.names=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",totals=NULL,boot.names=NULL){
 
   if(class(dat)[1]=="data.frame"){dat <- as.data.table(dat)}
 
