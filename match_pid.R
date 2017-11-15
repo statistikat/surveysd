@@ -1,18 +1,17 @@
 ############################################################
-# MATCH ID FOR SPAIN AND AUSTRIA
+# MATCH ID FOR SPAIN, AUSTRIA and CZECK REPUBLIC
 #
 #
 # lese daten ein
 #
-library(foreign)
+library(haven)
 library(data.table)
-source("R/match_pid_help.R")
 
-silc <- read.spss("/mnt/obdatenaustausch/NETSILC3/udbworkfile07_16.sav",to.data.frame=TRUE)
-silc <- data.table(silc)
+silc <- data.table(read_spss("/mnt/meth/Gussenbauer/surveysd/udbworkfile07_16.sav"))
+#silc <- silc[RB020=="CZ"]
+#save(silc,file="/mnt/meth/Gussenbauer/surveysd/CZ_silc.RData")
 
 country <- "ES"
-
 # definiere Spalten für "jahr","land","region","gebjahr","gebquartal","geschl","bas","econ","isced","pid","hid
 if(country=="ES"){
   start.year <- 2015 # jahr ab dem IDs noch übereinstimmem
@@ -39,6 +38,7 @@ silc_part[,hhsize:=.N,by=list(hid,jahr)]
 key_ID <- silc_part[,as.numeric(.GRP),by=list(hid,jahr)]
 key_ID[jahr>start.year-1,V1:=hid]
 silc_part[jahr<start.year,hid:=as.numeric(.GRP),by=list(hid,jahr)]
+silc_part[,hid_old:=hid]
 
 silc_part[,summary(hid),by=jahr]
 
@@ -76,8 +76,10 @@ for(y in 1:length(go_back)){
 }
 
 # speichere Ergebnis ab
-erg <- na.omit(merge(unique(key_ID[,.(hid,V1)]),unique(silc_part[,.(jahr,hid)],by=c("jahr","hid")),by.x="V1",by.y="hid",all.x=TRUE))
-setnames(erg,"V1","hid_new")
+#erg <- na.omit(merge(unique(key_ID[,.(hid,V1)]),unique(silc_part[,.(jahr,hid,hid_old)],by=c("jahr","hid")),by.x="V1",by.y="hid",all.x=TRUE))
+erg <- unique(silc_part[,.(jahr,hid,hid_old)])
+setnames(erg,"hid","hid_new")
+erg <- merge(erg,key_ID,by.x=c("hid_old","jahr"),by.y=c("V1","jahr"))
+erg[,hid_old:=NULL]
 write.csv2(erg,file=paste0("/mnt/obdatenaustausch/NETSILC3/",country,"_matchedID.csv"))
-
-
+write.csv2(erg,file=paste0("O:/B/Datenaustausch/NETSILC3/",country,"_matchedID.csv"))
