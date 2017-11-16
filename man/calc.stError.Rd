@@ -31,7 +31,7 @@ The pointestimates are then estimated for each subgroup seperately. If \code{cro
 
 \item{bias}{boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.}
 
-\item{add.arg}{list containing strings for additional function arguments. Must be the same length as \code{var} or \code{fun}. Can be a list of \code{NULL}s.}
+\item{add.arg}{character specifying additional arguments for \code{fun}. Can be \code{NULL}.}
 
 \item{size.limit}{integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
 Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.}
@@ -53,7 +53,7 @@ In addition the standard error of an estimate can be calcualted using the survey
 }
 \details{
 \code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample year in \code{dat}.
-\code{dat} must be household data where each row represents one household. In addition \code{dat} should containt at least the following columns:
+\code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 \itemize{
   \item Column indicating the sample year;
   \item Column indicating the household ID;

@@ -12,6 +12,8 @@
 #' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
 #' @param strata character vector specifying the name of the column in \code{dat} by which the population was stratified.
 #' @param year character specifying the name of the column in \code{dat} containing the sample years.
+#' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
+#' In this case the bootstep procedure will be applied on each country seperately.
 #' @param totals (optional) character specifying the name of the column in \code{dat} containing the the totals per strata. If totals is \code{NULL}, the sum of weights per strata will be calcualted and named 'fpc'.
 #' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
 #' @return the survey data with the number of REP bootstrap replicates added as columns.
@@ -65,13 +67,13 @@
 #' @import survey data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",totals=NULL,boot.names=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",country=NULL,totals=NULL,boot.names=NULL){
 
   if(class(dat)[1]=="data.frame"){dat <- as.data.table(dat)}
 
  	if(is.null(totals)){
 		totals <- "fpc"
-   	dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(strata,collapse=","),")]")
+	  dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(c(strata,country),collapse=","),")]")
 	}
 
 	# make arguments usable for survey package
@@ -87,11 +89,14 @@ draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesl
 	}
 
 	# calculate bootstrap replicates
-	dat[,c(w.names):=gen.boot(.SD,REP=REP,hid=hid,weights=weights,strata=strata,totals=totals),by=c(year)]
+	dat[,c(w.names):=gen.boot(.SD,REP=REP,hid=hid,weights=weights,strata=strata,totals=totals),by=c(year,country)]
 
 	# keep bootstrap replicates of first year for each household
-	dat[,c(w.names):=.SD[year==min(year),mget(w.names)],by=c(gsub("~","",hid)[2])]
+	dat[db030_neu=="AT_1",c(w.names):=.SD[year==min(year),mget(w.names)],by=c(gsub("~","",hid)[2],country)]
 
+	w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
+	hid <- gsub('~','',hid)[2]
+	dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",c(hid,country),")]")
 	return(dat)
 }
 

@@ -19,7 +19,7 @@
 #' @param cross_var character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
 #' The pointestimates are then estimated for each subgroup seperately. If \code{cross_var=NULL} the data will split into sample years by default.
 #' @param year.diff character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL
-#' @param year.mean odd integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.
+#' @param year.mean positive integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.
 #' @param bias boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.
 #' @param add.arg character specifying additional arguments for \code{fun}. Can be \code{NULL}.
 #' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
