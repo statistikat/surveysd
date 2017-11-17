@@ -74,6 +74,9 @@ draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesl
  	if(is.null(totals)){
 		totals <- "fpc"
 	  dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(c(strata,country),collapse=","),")]")
+	  add.totals <- TRUE
+ 	}else{
+	  add.totals <- FALSE
 	}
 
 	# make arguments usable for survey package
@@ -97,6 +100,11 @@ draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesl
 	w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
 	hid <- gsub('~','',hid)[2]
 	dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",c(hid,country),")]")
+
+	# remove columns
+	if(add.totals){
+	  dt.eval("dat[,",gsub('~','',totals)[2],":=NULL]")
+	}
 	return(dat)
 }
 

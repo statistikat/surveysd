@@ -1,7 +1,7 @@
 #' @title Calcualte point estimates and their standard errors using bootstrap weights.
 #'
 #' @description
-#' Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{bootstrap.rep}} and \code{\link{recalib}}).
+#' Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{draw.bootstrap}} and \code{\link{recalib}}).
 #' In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive years, which results in a reduction of the standard error.
 #'
 #' @usage calc.stError(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",
@@ -9,7 +9,7 @@
 #'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10)
 #'
 #'
-#' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{bootstrap.rep}} and \code{\link{recalib}}.
+#' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.
 #' @param weights character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.
 #' @param b.weights character vector specifying the names of the columns in \code{dat} containing bootstrap weights. Used to calculate standard errors.
 #' @param year character specifying the name of the column in \code{dat} containing the sample years.
@@ -19,7 +19,7 @@
 #' @param cross_var character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
 #' The pointestimates are then estimated for each subgroup seperately. If \code{cross_var=NULL} the data will split into sample years by default.
 #' @param year.diff character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL
-#' @param year.mean positive integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.
+#' @param year.mean odd integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.
 #' @param bias boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.
 #' @param add.arg character specifying additional arguments for \code{fun}. Can be \code{NULL}.
 #' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
@@ -44,15 +44,17 @@
 #' \cr
 #' If \code{cross_var} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{cross_var}.\cr
 #' For instance if \code{cross_var = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
-#' For variables in \code{cross_var} which have \code{NA}s in \code{dat} the subset containing the missings will be discarded. \cr
-#' When \code{cross_var} is a list of character vectors subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
+#' For variables in \code{cross_var} which have \code{NA}s in \code{dat} the rows containing the missings will be discarded. \cr
+#' When \code{cross_var} is a list of character vectors, subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
 #' \cr
 #' When defining \code{year.diff} the difference of point estimates between years as well their standard errors are calculated.\cr
-#' The entries in \code{year.diff} must have the form of \emph{year1} - \emph{year2} which means that the results of the point estimates for \emph{year2} will be substracted from the results of the point estimates for \emph{year1}.\cr
+#' The entries in \code{year.diff} must have the form of \code{"year1 - year2"} which means that the results of the point estimates for \code{year2} will be substracted from the results of the point estimates for \code{year1}.\cr
 #' \cr
 #' Specifying \code{year.mean} leads to an improvement in standard error by averaging the results for the point estimates, using the bootstrap weights, over \code{year.mean} years.
 #' Setting, for instance, \code{year.mean = 3} the results in averaging these results over each consecutive set of 3 years.\cr
-#' Estimating the standard error over these averages gives in an improved estimate of the standard error for the central year, which was used for averaging.\cr
+#' Estimating the standard error over these averages gives an improved estimate of the standard error for the central year, which was used for averaging.\cr
+#' The averaging of the results is also applied in differences of point estimates. For instance defining \code{year.diff = "2015-2009"} and \code{year.mean = 3}
+#' the differences in point estimates of 2014 and 2008, 2015 and 2009 as well as 2016 and 2010 are calcualated and finally the average over these 3 differences is calculated.
 #' \cr
 #' Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
 #' \cr
@@ -74,7 +76,7 @@
 #'   \item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is gained when averaging over k years. Only returned if \code{year.mean} is not \code{NULL}.
 #' }
 #'
-#' @seealso \code{\link{bootstrap.rep}} \cr
+#' @seealso \code{\link{draw.bootstrap}} \cr
 #' \code{\link{recalib}}
 #'
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
@@ -85,7 +87,7 @@
 #' dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
 #'                             bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
 #'
-#' dat <- bootstrap.rep(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
+#' dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
 #'                      year="jahr",totals=NULL,boot.names=NULL)
 #' dat <- recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:20),
 #'                year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
@@ -147,6 +149,9 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   }
   if(class(cross_var)!="list"){
     cross_var <- as.list(cross_var)
+  }
+  if(!any(lapply(cross_var,is.null))){
+    cross_var <- c(list(NULL),cross_var)
   }
 	# define columns in which NAs are present (will be discarded for the evaluation)
 
@@ -250,18 +255,46 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 	  eval.fun <- paste0(".(.N,",paste(eval.fun,collapse=","),")")
 	}
 
+  # define additional parameters for mean over consecutive years
 	years <- dt.eval("dat[,unique(",year,")]")
-	# formulate 3 consecutive years
-	yearsList <- unlist(lapply(years[1:c(length(years)-2)],function(z){
-		paste(z:c(z+2),collapse="_")
-	}))
+	# formulate k consecutive years
+	if(length(years)>=year.mean){
+	  yearsList <- unlist(lapply(years[1:c(length(years)-year.mean+1)],function(z){
+	    paste(z:c(z+year.mean-1),collapse="_")
+	  }))
+	}else{
+	  yearsList <- NULL
+	  cat(paste0("Not enough years present in data to calculate mean over ",year.mean," years.\n"))
+	}
 
-	year.diff.b <- !is.null(year.diff)
+	# get years for k year mean over yearly differences
+  # get for each difference a list of vectors that correspond to the differences needed to use for the mean over differences
+	year.shift <- (-(year.mean-1)/2):((year.mean-1)/2)
+  if(!is.null(year.diff)){
+    year.diff.b <- TRUE
+    year.diff.mean <- lapply(year.diff,function(z){
+      z <- as.numeric(z)
+      if(z[1]+max(year.shift)<=max(years)&z[2]-max(year.shift)>=min(years)){
+        lapply(year.shift,function(s){
+          z+s
+        })
+      }else{
+        cat(paste0("Can not calcualte differences between years ",z[1]," and ",z[2]," over ",year.mean," years.\n"))
+        NULL
+      }
+    })
+  }else{
+    year.diff.b <- FALSE
+    year.diff.mean <- NULL
+  }
 
 	# apply function to all elemnts of cross_var
 	# apply also mean and standard deviation for estimates
 	out <- lapply(cross_var,function(z){
 
+	  # use only unique values for grouping (duplicates are discarded)
+	  # if year in z also discard -> always group by year
+	  z <- unique(z[!z==year])
 		na.check <- z[!z%in%no.na]
 		if(length(na.check)>0){
 			na.eval <- paste(paste0("(!is.na(",na.check,"))"),collapse="&")
@@ -314,6 +347,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		}
 
 		if(year.diff.b){
+		  # calcualte differences between years
 		  by.diff <- paste(c("ID","est",z),collapse=",")
 		  diff.est <- lapply(year.diff,function(y){
 		    y_cond <- paste(year,paste0("c(",paste(y,collapse=","),")"),sep="%in%")
@@ -323,13 +357,37 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  })
 		  diff.est <- rbindlist(diff.est)
 		  diff.est[,est_type:="diff"]
+
+		  # calcualte differences between years and mean over consecutive differences
+		  if(!is.null(year.diff.mean)){
+		    i.diff.mean <- (year.mean+1)/2
+		    diff.mean.est <- lapply(year.diff.mean,function(d){
+		      # calculate differences for all pairwise years in d
+		      d.m.est <- lapply(d,function(y){
+		        y_cond <- paste(year,paste0("c(",paste(y,collapse=","),")"),sep="%in%")
+		        diff.y <- dt.eval("var.est[",y_cond,",V1[",year,"==",y[1],"]-V1[",year,"==",y[2],"],by=list(",by.diff,")]")
+		        diff.y[,c(year):=paste(y,collapse="-")]
+		        return(diff.y)
+		      })
+		      # calcualte mean over consecutive differences
+		      d.m.est <- rbindlist(d.m.est)
+		      d.m.est <- dt.eval("d.m.est[,mean(V1),by=list(",by.diff,")]")
+		      d.m.est[,c(year):=paste0(paste(d[[i.diff.mean]],collapse="-"),"-mean")]
+		    })
+		    diff.mean.est <- rbindlist(diff.mean.est)
+		  }
 		}
 
+		# add results to one data.table
 		if(!is.null(year.mean)){
 		  var.est <- rbind(var.est,roll.est,fill=TRUE)
 		}
 		if(year.diff.b){
 		  var.est <- rbind(var.est,diff.est,fill=TRUE)
+
+		  if(!is.null(year.diff.mean)){
+		    var.est <- rbind(var.est,diff.mean.est,fill=TRUE)
+		  }
 		}
 
 		sd.est <- var.est[ID!=1,.(stE=sd(V1)),by=c(year,z,"est")]
@@ -341,7 +399,9 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  out.z <- merge(out.z,bias.est,by=c(year,z))
 		}
 
-		out.z[!is.na(N),size:=N<size.limit]
+		# define size groups - groups with zero size do not fall under size-output
+		# for groups with zero size the resutling estimatese will be NAs
+		out.z[(!is.na(N))&N>0,size:=N<size.limit]
 
 		return(out.z)
 
@@ -388,13 +448,19 @@ kish_fact <- function(w){
 # print function for surveysd objects
 print.surveysd <- function(sd.result){
 
-  # print number of estimates ~ variables in number of groups using function fun from package pack
-  n.estimates <- nrow(sd.result[["Estimates"]])*sum(grepl("^val_*.",colnames(sd.result[["Estimates"]])))
-  # print number of subgroup which fall below size
+  # get parameter
+  col.val <- grepl("^val_*.",colnames(sd.result[["Estimates"]]))
+  col.val <- colnames(sd.result[["Estimates"]])[col.val]
+  # get number of estimates ~ variables in number of groups using function fun from package pack
+  n.estimates <- nrow(sd.result[["Estimates"]])*length(col.val)
+  # get number of subgroup which fall below size
   n.years <- unique(sd.result[["Estimates"]][[sd.result[["param"]][["year"]]]])
   n.years <- length(n.years[!grepl("-|_",n.years)])
   n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["cross_var"]])))]))
+  # get number of missing values in the output due to subgroups with no observations or subgroups with all observations equal NA
+  n.NAs <- sum(is.na(sd.result[["Estimates"]][,mget(col.val)]))
 
+  # print number of estimates calculated as well as functino and variables used
   if(!is.na(sd.result[["param"]][["package"]][1])){
     cat("Calculated point estimates for variable(s)\n\n",paste(sd.result[["param"]][["var"]],sep=","),"\n\nusing function",sd.result[["param"]][["fun"]],"from",sd.result[["param"]][["package"]][1],"\n\n")
   }else{
@@ -410,6 +476,11 @@ print.surveysd <- function(sd.result){
     print(sd.result[["smallGroups"]])
   }
   cat("\n")
+  # print number of missing values for point estimates
+  cat("Point estimates are NAs in",n.NAs,"cases due to either\n no observations or only NAs for the variable(s) in the corresponding subgroups.\n")
+
+  cat("\n")
+  # get number of point estimates where sd exceeds cv.limit
   stEtoohigh <- colnames(sd.result[["cvHigh"]])
   stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(sd.result[["param"]][["year"]],unique(unlist(sd.result[["param"]][["cross_var"]])))]
   stEtoohigh <- as.matrix(subset(sd.result[["cvHigh"]],select=stEtoohigh))
