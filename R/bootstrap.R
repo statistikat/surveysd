@@ -95,11 +95,10 @@ draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesl
 	dat[,c(w.names):=gen.boot(.SD,REP=REP,hid=hid,weights=weights,strata=strata,totals=totals),by=c(year,country)]
 
 	# keep bootstrap replicates of first year for each household
-	dat[db030_neu=="AT_1",c(w.names):=.SD[year==min(year),mget(w.names)],by=c(gsub("~","",hid)[2],country)]
-
-	w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
 	hid <- gsub('~','',hid)[2]
-	dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",c(hid,country),")]")
+	w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
+	by.c <- paste(c(hid,country),collapse=",")
+	dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",by.c,")]")
 
 	# remove columns
 	if(add.totals){

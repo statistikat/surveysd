@@ -72,7 +72,7 @@
 #' @export recalib
 #' @import simPop data.table
 
-recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
+recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",country=NULL,conP.var=c("ksex","kausl","al","erw","pension"),
 										conH.var=c("bundesld","hsize","recht"),...){
 
 	# define default values for
@@ -85,6 +85,9 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
   ellipsis[["meanHH"]] <- getEllipsis("meanHH",TRUE,ellipsis)
 
   eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
+
+  # combine year and county
+  year_c <- paste(c(year,country),collapse=",")
 
   # recode factors to numeric or character
   # is needed for ipu2 call
@@ -111,19 +114,19 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	# calculate contingency tables
 	if(!is.null(conP.var)){
 		conP <- lapply(conP.var,function(z){
-		  form.z <- paste0("V1~",paste(year,z,sep="+"))
-		  dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",year,",",z,")])")
+		  form.z <- paste0("V1~",paste(gsub(",","+",year_c),z,sep="+"))
+		  dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",year_c,",",z,")])")
 		})
 	}else{
 		conP <- NULL
 	}
 	if(!is.null(conH.var)){
 
-		dat[,onePerson:=c(1L,rep(0,.N-1)),by=c(hid,year)]
+		dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",year_c,")]")
 
 		conH <- lapply(conH.var,function(z){
-		  form.z <- paste0("V1~",paste(year,z,sep="+"))
-	    dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",year,",",z,")])")
+		  form.z <- paste0("V1~",paste(gsub(",","+",year_c),z,sep="+"))
+	    dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",year_c,",",z,")])")
 		})
 	}else{
 		conH <- NULL
@@ -131,17 +134,35 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 
 
 	# define new Index
-	new_id <- paste(hid,year,sep=",")
+	new_id <- paste(hid,year_c,sep=",")
 	dt.eval("dat[,hidf:=paste0(",new_id,")]")
 
 	# calibrate weights to conP and conH
-	select.var <- c("hidf",weights,year,conP.var,conH.var)
-	for(g in b.rep){
-		set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
-		set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
-										 conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-										 w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf")[,calibWeight])
+	select.var <- c("hidf",weights,year,country,conP.var,conH.var)
+  if(!is.null(country)){
+	  dat_country <- list()
+	  country.n <- dt.eval("dat[,unique(",country,")]")
+	  for(co in country.n){
+	    dat_c <- dt.eval("dat[",country,"=='",co,"']")
+	    for(g in b.rep){
+	      set(dat_c,j=g,value=dt.eval("dat_c[,",g,"*",weights,"]"))
+	      set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP,
+	                             conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
+	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf")[,calibWeight])
+	    }
+	    dat_country <- c(dat_country,list(dat_c))
+	  }
+	  dat <- rbindlist(dat_country)
+	  rm(dat_country)
+	}else{
+	  for(g in b.rep){
+	    set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
+	    set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
+	                           conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
+	                           w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf")[,calibWeight])
+	  }
 	}
+
 	dat[,hidf:=NULL]
 
 	# replace the recoded variables by the original ones
