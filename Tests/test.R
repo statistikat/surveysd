@@ -22,8 +22,8 @@ dat_boot <- dat_boot[!is.na(hx080)]
 dat_boot[,hx080:=factor(hx080)]
 dat_boot[,rb090:=factor(rb090)]
 
-dat_boot_calib <- recalib(dat=copy(dat_boot[rb020=="ES"]),hid="db030_neu",weights="rb050",
-                          year="rb010",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040"))
+dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
+                          year="rb010",country="rb020",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040","hx080"))
 
 dat_boot_calib
 

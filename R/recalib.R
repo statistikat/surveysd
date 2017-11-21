@@ -24,6 +24,8 @@
 #' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
 #' @param b.rep character specifying the names of the columns in \code{dat} containing bootstrap weights which should be recalibratet
 #' @param year character specifying the name of the column in \code{dat} containing the sample years.
+#' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
+#' In this case the calibration procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
 #' @param conP.var character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{year} and
 #' @param conH.var character vector containig household-specific variables to which weights should be calibrated.
 #' @param ... additional arguments passed on to function \code{\link[simpPop]{ipu2}} from the \code{simPop} package.
