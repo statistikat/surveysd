@@ -1,10 +1,10 @@
 Package: surveysd
 Type: Package
-Title: Estimates standard errors in complex surveys
+Title: Survey Standard Error Estimation for Cumulated Estimates and their Differences in Complex Panel Designs
 Version: 0.1.0
 Author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
 Maintainer: Johannes Gussenbauer <Johannes.Gussenbauer@statistik.gv.at>
-Description: Estimate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstraping is layed out for surveys with rotating panel design.
+Description: Estimate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstraping considers survey design with rotating panel.
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)

@@ -66,11 +66,11 @@ Since the EU-SILC is a yearly survey with rotating penal design, we calculate bo
 \subsection{Iterative proportional fitting (IPF)}
 The uncalibrated bootstrap weights $b_j^{0}$ computed through the rescaled bootstrap procedure yields population statistics that differ from the known population margins of specified sociodemographic variables for which the base weights $w_j$ have been calibrated. To adjust for this the bootstrap weights $b_{j}^{0}$ can be recalibrated using iterative proportional fitting as described in \citep{mekogu2016}.\\
 
-Let the original weight $w_(j)$ be calibrated for $v_1,\ldots,v_u$ sociodemographic variables which can take on $V_1,\ldots,V_u$ values each and $N_{v_i}$ be the population margins of the $i$-th sociodemographic variables. The iterative proportional fitting procedure for the weights $b^{0}$ is made up of 5 Steps. Starting with $k=0$ the 5 Steps are repeated and $k$ is raised by 1 if the constrains are satisfied after step 5.
+Let the original weight $w_{j}$ be calibrated for $v_1,\ldots,v_u$ sociodemographic variables which can take on $V_1,\ldots,V_u$ values each and $N_{v_i}$ be the population margins of the $i$-th sociodemographic variables. The iterative proportional fitting procedure for the weights $b^{0}$ is made up of 5 Steps. Starting with $k=0$ the 5 Steps are repeated and $k$ is raised by 1 if the constrains are satisfied after step 5.
 
 \subsubsection{Steps 1-3}
 The weight uncalibrated bootstrap weights $b_j^{0}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_{v_i}$, $i=1,\ldots,u$.
-For each $i in \left\{1,\ldots,u\right\}$ the calibrated weights against $N_({v_i,y})$ are computed as
+For each $i \in \left\{1,\ldots,u\right\}$ the calibrated weights against $N_{(v_i,y)}$ are computed as
 \begin{align*}
   b_j^{(u+2)k+i} = b_j^{(u+2)k+i-1}\frac{N_{v_i}}{\sum\limits_l b_l^{(u+2)k}},
 \end{align*}
@@ -109,7 +109,7 @@ holds true for all $i$,$i=1,\ldots,u$, where the sum in the denominator expands 
 If this inequality holds true the algorithm reaches convergence, otherwise $k$ is raised by 1 and Steps 1-5 are repeated.
 
 \subsection{Variance estimation}
-Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y$,$y=1,...z$, yields calibrated bootstrap sample weights $b_{j}^{(i,y)}$ for each year $y$. using the bootstrap sample weights it is straight forward for to compute the standard error of a point estimate $\theta(\textbf{Y}^{(y)},\textbf{w}^{(y)})$ for year $y$ with $\textbf{Y}^{(y)}=(Y_1^{(y)},\ldots,Y_n^{(y)})$ as the vector observations for the variable of interest in the survey and $\textbf{w}^{(y)}=(w_1^{(y)},\ldots,w_n^{(y)}$ as the corresponding weight vector, with
+Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y$,$y=1,...z$, yields calibrated bootstrap sample weights $b_{j}^{(i,y)}$ for each year $y$. using the bootstrap sample weights it is straight forward for to compute the standard error of a point estimate $\theta(\textbf{Y}^{(y)},\textbf{w}^{(y)})$ for year $y$ with $\textbf{Y}^{(y)}=(Y_1^{(y)},\ldots,Y_n^{(y)})$ as the vector observations for the variable of interest in the survey and $\textbf{w}^{(y)}=(w_1^{(y)},\ldots,w_n^{(y)})$ as the corresponding weight vector, with
 
 \begin{align*}
   sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(\textbf{Y}^{(y)},\textbf{b}^{(i,y)})-\overline{\theta})^2} \quad,
