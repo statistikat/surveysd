@@ -130,6 +130,11 @@
 #'  return(gini(x,w)$value)
 #' }
 #'
+#' # exporting data
+#' # get point estimates
+#' results <- err.est$Estimates
+#' write2.csv(results,file="My_Results.csv",row.names=FALSE)
+#'
 #' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="epinc_real",
 #'                        fun="help_gini",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 #'
@@ -150,7 +155,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   if(class(cross_var)!="list"){
     cross_var <- as.list(cross_var)
   }
-  if(!any(lapply(cross_var,is.null))){
+  if(!any(unlist(lapply(cross_var,is.null)))){
     cross_var <- c(list(NULL),cross_var)
   }
 	# define columns in which NAs are present (will be discarded for the evaluation)
@@ -260,7 +265,9 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 	# formulate k consecutive years
 	if(length(years)>=year.mean){
 	  yearsList <- unlist(lapply(years[1:c(length(years)-year.mean+1)],function(z){
-	    paste(z:c(z+year.mean-1),collapse="_")
+	    if(!((z+year.mean-1)>max(years))){
+	      paste(z:c(z+year.mean-1),collapse="_")
+	    }
 	  }))
 	}else{
 	  yearsList <- NULL
@@ -269,13 +276,12 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
 	# get years for k year mean over yearly differences
   # get for each difference a list of vectors that correspond to the differences needed to use for the mean over differences
-	year.shift <- (-(year.mean-1)/2):((year.mean-1)/2)
-  if(!is.null(year.diff)){
+	if(!is.null(year.diff)){
     year.diff.b <- TRUE
     year.diff.mean <- lapply(year.diff,function(z){
       z <- as.numeric(z)
-      if(z[1]+max(year.shift)<=max(years)&z[2]-max(year.shift)>=min(years)){
-        lapply(year.shift,function(s){
+      if(z[1]+year.mean<=max(years)&z[2]-year.mean>=min(years)){
+        lapply(1:year.mean,function(s){
           z+s
         })
       }else{
@@ -359,7 +365,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  diff.est[,est_type:="diff"]
 
 		  # calcualte differences between years and mean over consecutive differences
-		  if(!is.null(year.diff.mean)){
+		  if(!is.null(unlist(year.diff.mean))){
 		    i.diff.mean <- (year.mean+1)/2
 		    diff.mean.est <- lapply(year.diff.mean,function(d){
 		      # calculate differences for all pairwise years in d
@@ -385,7 +391,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		if(year.diff.b){
 		  var.est <- rbind(var.est,diff.est,fill=TRUE)
 
-		  if(!is.null(year.diff.mean)){
+		  if(!is.null(unlist(year.diff.mean))){
 		    var.est <- rbind(var.est,diff.mean.est,fill=TRUE)
 		  }
 		}

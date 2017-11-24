@@ -27,7 +27,7 @@ dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
 
 dat_boot_calib
 
-erg <- calc.stError(dat=copy(dat_boot_calib[rb020=="ES"]),weights="rb050",year="rb010",b.weights=paste0("w",1:10),var="hx080",cross_var=list(c("db040","db100")),year.diff=c("2015-2009"))
+erg <- calc.stError(dat=copy(dat_boot_calib),weights="rb050",year="rb010",b.weights=paste0("w",1:10),var="hx080",cross_var=list(c("db040","db100")),year.diff=c("2016-2008"))
 
 erg
 
