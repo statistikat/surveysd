@@ -6,7 +6,7 @@ library(haven)
 library(surveysd)
 library(simPop)
 
-dat <- fread("/mnt/meth/Gussenbauer/surveysd/udb_short.csv")
+dat <- fread("M:/Gussenbauer/surveysd/udb_short.csv")
 dat <- dat[RB020!="CZ"]
 colnames(dat) <- tolower(colnames(dat))
 dat[,rb050:=as.numeric(gsub(",",".",rb050))]
