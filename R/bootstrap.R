@@ -67,52 +67,149 @@
 #' @import survey data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",year="jahr",country=NULL,totals=NULL,boot.names=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NULL,design=NULL,totals=NULL,boot.names=NULL){
 
-  if(class(dat)[1]=="data.frame"){dat <- as.data.table(dat)}
+  ##########################################################
+  # INPUT CHECKING
+  if(class(dat)[1]=="data.frame"){
+    dat <- as.data.table(dat)
+  }else if(class(dat)[1]!="data.table"){
+    stop("dat must be a data.frame or data.table")
+  }
 
- 	if(is.null(totals)){
-		totals <- "fpc"
-	  dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(c(strata,country),collapse=","),")]")
-	  add.totals <- TRUE
- 	}else{
-	  add.totals <- FALSE
-	}
 
-	# make arguments usable for survey package
-	hid <- as.formula(paste0("~",hid))
-	strata <- as.formula(paste0("~",paste(strata,collapse=":")))
-	weights <- as.formula(paste0("~",weights))
-	totals <- as.formula(paste0("~",totals))
+  c.names <- colnames(dat)
 
-	if(is.null(boot.names)){
-		w.names <- paste0("w",1:REP)
-	}else{
-		w.names <- paste0(boot.names,1:REP)
-	}
+  # check REP
+  if(length(REP)!=1){
+    stop("REP must have length 1")
+  }
+  if(!is.numeric(REP)){
+    stop("REP must contain one numeric value")
+  }
+  if(REP%%1!=0){
+    stop("REP cannot have a decimal part")
+  }
 
-	# calculate bootstrap replicates
-	dat[,c(w.names):=gen.boot(.SD,REP=REP,hid=hid,weights=weights,strata=strata,totals=totals),by=c(year,country)]
+  # check hid
+  if(length(hid)!=1){
+    stop("hid must have length 1")
+  }
+  if(!hid%in%c.names){
+    stop(paste0(hid," is not a column in dat"))
+  }
 
-	# keep bootstrap replicates of first year for each household
-	hid <- gsub('~','',hid)[2]
-	w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
-	by.c <- paste(c(hid,country),collapse=",")
-	dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",by.c,")]")
+  # check weights
+  if(length(weights)!=1){
+    stop("weights must have length 1")
+  }
+  if(!weights%in%c.names){
+    stop(paste0(weights," is not a column in dat"))
+  }
+  if(!is.numeric(dt.eval("dat[,",weights,"]"))){
+    stop(paste0(weights," must be a numeric column"))
+  }
 
-	# remove columns
-	if(add.totals){
-	  dt.eval("dat[,",gsub('~','',totals)[2],":=NULL]")
-	}
-	return(dat)
+  # check year
+  if(length(year)!=1){
+    stop("year must have length 1")
+  }
+  if(!year%in%c.names){
+    stop(paste0(year," is not a column in dat"))
+  }
+
+  # check strata
+  if(!is.null(strata)){
+    if(!all(strata%in%c.names)){
+      stop("Not all elements in strata are column names in dat")
+    }
+  }
+
+  # check design
+  if(!is.null(design)){
+    check.design <- unlist(strsplit(design,split="\\+"))
+    if(!design%in%c.names){
+      stop("Not all names in design are column names in dat")
+    }
+  }
+
+  # check country
+  if(!is.null(country)){
+    if(length(country)!=1){
+      stop("country must have length 1")
+    }
+    if(!country%in%c.names){
+      stop(paste0(country," is not a column in dat"))
+    }
+  }
+
+  # check boot.names
+  if(!is.null(boot.names)){
+    if(!grepl("^[[:alpha:]]",boot.names)){
+      stop("boot.names must start with an alphabetic character")
+    }
+  }
+
+
+  # check totals
+  if(is.null(totals)){
+    totals <- "fpc"
+    dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(c(strata,country),collapse=","),")]")
+    add.totals <- TRUE
+  }else{
+    if(length(totals)!=1){
+      stop("totals must have length 1")
+    }
+    if(!totals%in%c.names){
+      stop(paste0(totals," is not a column in dat"))
+    }
+    if(!is.numeric(dt.eval("dat[,",totals,"]"))){
+      stop(paste0(totals," must be a numeric column"))
+    }
+
+    add.totals <- FALSE
+  }
+  ##########################################################
+
+  # make arguments usable for survey package
+  strata <- as.formula(paste0("~",paste(strata,collapse=":")))
+  weights <- as.formula(paste0("~",weights))
+  totals <- as.formula(paste0("~",totals))
+  # define sample design
+  if(is.null(design)){
+    design <- as.formula(paste0("~",hid))
+  }else{
+    design <- as.formula(paste0("~",paste(design,hid,sep="+")))
+  }
+
+  if(is.null(boot.names)){
+    w.names <- paste0("w",1:REP)
+  }else{
+    w.names <- paste0(boot.names,1:REP)
+  }
+
+
+  # calculate bootstrap replicates
+  dat[,c(w.names):=gen.boot(.SD,REP=REP,design=design,weights=weights,strata=strata,totals=totals),by=c(year,country)]
+
+  # keep bootstrap replicates of first year for each household
+  w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
+  by.c <- paste(c(hid,country),collapse=",")
+  dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",by.c,")]")
+
+  # remove columns
+  if(add.totals){
+    dt.eval("dat[,",gsub('~','',totals)[2],":=NULL]")
+  }
+  return(dat)
 }
 
 
-gen.boot <- function(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",totals="fpc"){
+gen.boot <- function(dat,REP=1000,design="~hid",weights="hgew",strata="bundesld",totals="fpc"){
 
-	dat.svy <- svydesign(ids=hid,weights=weights,fpc=totals,strata=strata,data=dat)
-	dat.svyboot <- as.svrepdesign(dat.svy,type="mrbbootstrap",replicates=REP,compress=FALSE)$repweights
+  dat.svy <- svydesign(ids=design,weights=weights,fpc=totals,strata=strata,data=dat)
+  dat.svyboot <- as.svrepdesign(dat.svy,type="mrbbootstrap",replicates=REP,compress=FALSE)$repweights
 
-	return(data.table(dat.svyboot))
+  return(data.table(dat.svyboot))
 }
 

@@ -6,7 +6,7 @@ library(haven)
 library(surveysd)
 library(simPop)
 
-dat <- fread("M:/Gussenbauer/surveysd/udb_short.csv")
+dat <- fread("/mnt/meth/Gussenbauer/surveysd/udb_short.csv")
 dat <- dat[RB020!="CZ"]
 colnames(dat) <- tolower(colnames(dat))
 dat[,rb050:=as.numeric(gsub(",",".",rb050))]
@@ -15,23 +15,28 @@ dat[,db030_neu:=paste(rb020,db030,sep="_")]
 #dat_boot <- draw.bootstrap(dat,REP=10,hid="db030_neu",weights="rb050",strata="db040",
 #                          year="rb010",totals=NULL,boot.names=NULL)
 
-dat_boot <- draw.bootstrap(dat,REP=10,hid="db030",weights="rb050",strata="db040",
+dat_boot <- draw.bootstrap(dat,REP=10,hid="db030",weights="rb050",strata=c("db040"),
                            year="rb010",country="rb020",totals=NULL,boot.names=NULL)
 
 dat_boot <- dat_boot[!is.na(hx080)]
-dat_boot[,hx080:=factor(hx080)]
-dat_boot[,rb090:=factor(rb090)]
+# dat_boot[,hx080:=factor(hx080)]
+# dat_boot[,rb090:=factor(rb090)]
 
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
                           year="rb010",country="rb020",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040","hx080"))
 
 dat_boot_calib
 
-erg <- calc.stError(dat=copy(dat_boot_calib),weights="rb050",year="rb010",b.weights=paste0("w",1:10),var="hx080",cross_var=list(c("db040","db100")),year.diff=c("2016-2008"))
+erg <- calc.stError(dat=copy(dat_boot_calib),weights="rb050",year="rb010",b.weights=paste0("w",1:110),
+                    var="hx080",cross_var=list(c("db040","db100")),year.diff=c("2016-2008"),
+                    p=c(.01,.05,.1,.9,.95,.99))
 
 erg
 
 erg$smallGroups
+
+
+year.diff=c("84984-51515","36235-2525","134525-2525")
 
 
 a <- data.table(1:10,LETTERS[1:10])
@@ -63,6 +68,12 @@ b <- data.table(20:19,LETTERS[1:10])
 b[,V1:=factor(V1)]
 setkey(a, V1); setkey(b, V1)
 b[a]
+
+#####################################################
+# TEST INPUT CHECKING
+a <- list(1:1000)
+recalib(dat=copy(dat_boot),hid="db030",weights=c("rb050"),
+        year="rb010",country="rb020",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040","hx080"))
 
 
 

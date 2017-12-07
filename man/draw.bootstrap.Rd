@@ -20,6 +20,9 @@ draw.bootstrap(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
 
 \item{year}{character specifying the name of the column in \code{dat} containing the sample years.}
 
+\item{country}{character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
+In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.}
+
 \item{totals}{(optional) character specifying the name of the column in \code{dat} containing the the totals per strata. If totals is \code{NULL}, the sum of weights per strata will be calcualted and named 'fpc'.}
 
 \item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}

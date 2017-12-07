@@ -147,8 +147,66 @@
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
-calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10){
+calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
 
+  ##########################################################
+  # INPUT CHECKING
+  if(class(dat)[1]=="data.frame"){
+    dat <- as.data.table(dat)
+  }else if(class(dat)[1]!="data.table"){
+    stop("dat must be a data.frame or data.table")
+  }
+
+  c.names <- colnames(dat)
+
+  # check weights
+  if(length(weights)!=1){
+    stop("weights must have length 1")
+  }
+  if(!weights%in%c.names){
+    stop(paste0(weights," is not a column in dat"))
+  }
+  if(!is.numeric(dt.eval("dat[,",weights,"]"))){
+    stop(paste0(weights," must be a numeric column"))
+  }
+
+  # check b.weights
+  if(!all(b.weights%in%c.names)){
+    stop("Not all elements in b.rep are column names in dat")
+  }
+  if(any(!grepl("^[[:alpha:]]",b.weights))){
+    stop("Column names of bootstrap replicates must start with alphabetic character")
+  }
+  if(any(!unlist(lapply(dat[,mget(b.weights)],is.numeric)))){
+    stop("Columns containing bootstrap replicates must be numeric")
+  }
+
+  # check year
+  if(length(year)!=1){
+    stop("year must have length 1")
+  }
+  if(!year%in%c.names){
+    stop(paste0(year," is not a column in dat"))
+  }
+
+  # check var
+  if(any(!var%in%c.names)){
+    stop("Not all elements in var are column names in dat")
+  }
+  if(any(!unlist(lapply(dat[,mget(b.weights)],is.numeric)))){
+    stop(paste0("Columns containing ",paste(var,collapse=",")," must all be numeric"))
+  }
+
+  # check fun
+  if(length(fun)!=1){
+    stop("fun must have length 1")
+  }
+  if(!fun%in%c("weightedRatio","weightedSum","sampSize","popSize"))
+  if(length(find(fun))==0){
+    stop(paste0("Function ",fun," is undefined"))
+  }
+
+  # check cross_var
   if(is.null(cross_var)){
     cross_var <- list(NULL)
   }
@@ -158,20 +216,97 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   if(!any(unlist(lapply(cross_var,is.null)))){
     cross_var <- c(list(NULL),cross_var)
   }
+  if(any(!unlist(cross_var)%in%c.names)){
+    stop("Not all elements on cross_var are column names in dat")
+  }
+
+  # check year.mean
+  if(length(year.mean)!=1){
+    stop("year.mean must have length 1")
+  }
+  if(!is.numeric(year.mean)){
+    stop("year.mean must contain one numeric value")
+  }
+  if(year.mean%%1!=0){
+    stop("year.mean cannot have a decimal part")
+  }
+
+  # check bias
+  if(length(bias)!=1){
+    stop("year.mean must have length 1")
+  }
+  if(!is.logical(bias)){
+    stop("bias can only be TRUE of FALSE")
+  }
+
+  # check size.limit
+  if(length(size.limit)!=1){
+    stop("size.limit must have length 1")
+  }
+  if(!is.numeric(size.limit)){
+    stop("size.limit must contain one numeric value")
+  }
+
+  # check cv.limit
+  if(length(cv.limit)!=1){
+    stop("cv.limit must have length 1")
+  }
+  if(!is.numeric(cv.limit)){
+    stop("cv.limit must contain one numeric value")
+  }
+
+  # check p
+  if(!is.null(p)){
+    if(!is.numeric(p)){
+      stop("p must be a numeric vector")
+    }
+    if(any(!p%between%c(0,1))){
+      stop("Values in p must be between 0 and 1")
+    }
+  }
+
+  # check year.diff
+  if(!is.null(year.diff)){
+    years.dat <- dt.eval("dat[,unique(",year,")]")
+    year.diff <- strsplit(year.diff,"-")
+
+    rm.index <- rep(0,length(year.diff))
+    for(i in 1:length(year.diff)){
+      if(any(!year.diff[[i]]%in%years.dat)){
+        cat("Removing",paste(year.diff[[i]],collapse="-"),"from year.diff - year(s) not present in column",year,"\n")
+        rm.index[i] <- 1
+      }
+    }
+    if(all(rm.index==1)){
+      cat("No differences will be calculated\n")
+      year.diff <- NULL
+    }else{
+      year.diff <- year.diff[rm.index==0]
+    }
+  }
+
+
+  ##########################################################
+
+  ##########################################################
+  # setup parameters
 	# define columns in which NAs are present (will be discarded for the evaluation)
 
 	col_cross <- unique(unlist(cross_var))
 	no.na <- unlist(dat[,lapply(.SD,function(z){all(!is.na(z))}),.SDcols=col_cross])
 	no.na <- colnames(dat)[colnames(dat)%in%col_cross][!no.na]
 
-	if(!is.null(year.diff)){
-	  year.diff <- strsplit(year.diff,"-")
+	if(!is.null(p)){
+    p.names <- paste0("p",p)
+	}else{
+	  p.names <- NULL
 	}
 
-  outx <- help.stError(dat=dat,year=year,var=var,weights=weights,b.weights=b.weights,fun=fun,cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,bias=bias,no.na=no.na,add.arg=add.arg,size.limit=size.limit)
+	# calculate point estimates
+  outx <- help.stError(dat=dat,year=year,var=var,weights=weights,b.weights=b.weights,fun=fun,cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,bias=bias,no.na=no.na,add.arg=add.arg,size.limit=size.limit,p=p)
 
   outx.names <- colnames(outx)
-  outx.names <- outx.names[!outx.names%in%c("val","N","est_type","stE","mean","size")]
+  outx.names <- outx.names[!outx.names%in%c("val","N","est_type","stE","mean","size",p.names)]
   # get meta data like stE_high - size - increase in effektive sample size
   # flag stE if values are especially high
   outx[,stE_high:=((stE/val)*100)>cv.limit]
@@ -204,7 +339,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   # create Matrix for groups which have small sizes
   size_group <- unique(subset(outx[size==TRUE],select=c(outx.names[outx.names!="est"],"N")))
 
-  val.var <- c("val","stE")
+  val.var <- c("val","stE",p.names)
   if(bias){
     val.var <- c(val.var,"mean")
   }
@@ -212,7 +347,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
   outx <- dcast(outx,form,value.var=val.var,fill=NA)
   # reorder output
   outx.names <- colnames(outx)
-  outx.names.sub <- gsub("val_|stE_|mean_","",outx.names)
+  outx.names.sub <- gsub(paste0(paste0(val.var,"_"),collapse="|"),"",outx.names)
   ord.names <- c()
   for(i in var){
     ord.names <- c(ord.names,which(outx.names.sub==i))
@@ -236,7 +371,7 @@ calc.stError <- function(dat,weights="hgew",b.weights=paste0("w",1:1000),year="j
 
 # function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
-help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff=NULL,year.mean=NULL,bias=FALSE,no.na,add.arg=NULL,size.limit=20){
+help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff=NULL,year.mean=NULL,bias=FALSE,no.na,add.arg=NULL,size.limit=20,p=NULL){
 
 
 	# define names for estimates for each weight (normal weights and boostrap weights)
@@ -274,13 +409,19 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 	  cat(paste0("Not enough years present in data to calculate mean over ",year.mean," years.\n"))
 	}
 
+	# define parameter for quantile calculation
+	if(!is.null(p)){
+	  p.names <- paste0("p",p)
+	  np <- length(p.names)
+	}
+
 	# get years for k year mean over yearly differences
   # get for each difference a list of vectors that correspond to the differences needed to use for the mean over differences
 	if(!is.null(year.diff)){
     year.diff.b <- TRUE
     year.diff.mean <- lapply(year.diff,function(z){
       z <- as.numeric(z)
-      if(z[1]+year.mean<=max(years)&z[2]-year.mean>=min(years)){
+      if(z[1]+(year.mean-1)<=max(years)){
         lapply(1:year.mean,function(s){
           z+s
         })
@@ -396,7 +537,12 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  }
 		}
 
-		sd.est <- var.est[ID!=1,.(stE=sd(V1)),by=c(year,z,"est")]
+		if(!is.null(p)){
+		  sd.est <- var.est[ID!=1,as.list(c(stE=sd(V1),quantileNA(V1,probs=p,p.names=p.names,np=np))),by=c(year,z,'est')]
+		}else{
+		  sd.est <- var.est[ID!=1,.(stE=sd(V1)),by=c(year,z,'est')]
+		}
+
 
 		out.z <- merge(subset(var.est,ID==1,select=c(year,z,"V1","N","est","est_type")),sd.est,by=c(year,z,"est"))
 
@@ -448,6 +594,18 @@ povmd <- function(epinc,weightvar){
 kish_fact <- function(w){
 	n <- length(w)
 	sqrt(n*sum(w^2)/sum(w)^2)
+}
+
+# helpfunction for quantile calcultion with missings
+quantileNA <- function(x,probs,p.names,np=length(probs)){
+
+  if(any(is.na(x))){
+    out <- rep(NA_real_,np)
+  }else{
+    out <- quantile(x,probs=probs)
+  }
+  names(out) <- p.names
+  return(out)
 }
 
 

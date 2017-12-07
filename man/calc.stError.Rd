@@ -9,7 +9,7 @@ calc.stError(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="po
                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{bootstrap.rep}} and \code{\link{recalib}}.}
+\item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.}
 
 \item{weights}{character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.}
 
@@ -27,7 +27,7 @@ The pointestimates are then estimated for each subgroup seperately. If \code{cro
 
 \item{year.diff}{character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL}
 
-\item{year.mean}{odd integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.}
+\item{year.mean}{integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.}
 
 \item{bias}{boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.}
 
@@ -48,7 +48,7 @@ Returns a list containing:
 }
 }
 \description{
-Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{bootstrap.rep}} and \code{\link{recalib}}).
+Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{draw.bootstrap}} and \code{\link{recalib}}).
 In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive years, which results in a reduction of the standard error.
 }
 \details{
@@ -70,15 +70,17 @@ For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is ca
 \cr
 If \code{cross_var} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{cross_var}.\cr
 For instance if \code{cross_var = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
-For variables in \code{cross_var} which have \code{NA}s in \code{dat} the subset containing the missings will be discarded. \cr
-When \code{cross_var} is a list of character vectors subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
+For variables in \code{cross_var} which have \code{NA}s in \code{dat} the rows containing the missings will be discarded. \cr
+When \code{cross_var} is a list of character vectors, subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
 \cr
 When defining \code{year.diff} the difference of point estimates between years as well their standard errors are calculated.\cr
-The entries in \code{year.diff} must have the form of \emph{year1} - \emph{year2} which means that the results of the point estimates for \emph{year2} will be substracted from the results of the point estimates for \emph{year1}.\cr
+The entries in \code{year.diff} must have the form of \code{"year1 - year2"} which means that the results of the point estimates for \code{year2} will be substracted from the results of the point estimates for \code{year1}.\cr
 \cr
 Specifying \code{year.mean} leads to an improvement in standard error by averaging the results for the point estimates, using the bootstrap weights, over \code{year.mean} years.
 Setting, for instance, \code{year.mean = 3} the results in averaging these results over each consecutive set of 3 years.\cr
-Estimating the standard error over these averages gives in an improved estimate of the standard error for the central year, which was used for averaging.\cr
+Estimating the standard error over these averages gives an improved estimate of the standard error for the central year, which was used for averaging.\cr
+The averaging of the results is also applied in differences of point estimates. For instance defining \code{year.diff = "2015-2009"} and \code{year.mean = 3}
+the differences in point estimates of 2014 and 2008, 2015 and 2009 as well as 2016 and 2010 are calcualated and finally the average over these 3 differences is calculated.
 \cr
 Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
 \cr
@@ -98,7 +100,7 @@ library(data.table)
 dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
                             bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
 
-dat <- bootstrap.rep(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
+dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
                      year="jahr",totals=NULL,boot.names=NULL)
 dat <- recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:20),
                year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
@@ -141,14 +143,21 @@ help_gini <- function(x,w){
  return(gini(x,w)$value)
 }
 
+# exporting data
+# get point estimates
+results <- err.est$Estimates
+write2.csv(results,file="My_Results.csv",row.names=FALSE)
+
 err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="epinc_real",
                        fun="help_gini",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 
 }
 \seealso{
-\code{\link{bootstrap.rep}} \cr
+\code{\link{draw.bootstrap}} \cr
 \code{\link{recalib}}
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 }
+\keyword{manip}
+\keyword{survey}

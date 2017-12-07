@@ -76,8 +76,78 @@
 
 recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",country=NULL,conP.var=c("ksex","kausl","al","erw","pension"),
 										conH.var=c("bundesld","hsize","recht"),...){
+  ##########################################################
+  # INPUT CHECKING
+  if(class(dat)[1]=="data.frame"){
+    dat <- as.data.table(dat)
+  }else if(class(dat)[1]!="data.table"){
+    stop("dat must be a data.frame or data.table")
+  }
 
-	# define default values for
+  c.names <- colnames(dat)
+
+  # check hid
+  if(length(hid)!=1){
+    stop("hid must have length 1")
+  }
+  if(!hid%in%c.names){
+    stop(paste0(hid," is not a column in dat"))
+  }
+
+  # check weights
+  if(length(weights)!=1){
+    stop("weights must have length 1")
+  }
+  if(!weights%in%c.names){
+    stop(paste0(weights," is not a column in dat"))
+  }
+  if(!is.numeric(dt.eval("dat[,",weights,"]"))){
+    stop(paste0(weights," must be a numeric column"))
+  }
+
+  # check b.rep
+  if(!all(b.rep%in%c.names)){
+    stop("Not all elements in b.rep are column names in dat")
+  }
+  if(any(!grepl("^[[:alpha:]]",b.rep))){
+    stop("Column names of bootstrap replicates must start with alphabetic character")
+  }
+  if(any(!unlist(lapply(dat[,mget(b.rep)],is.numeric)))){
+    stop("Column containing bootstrap replicates must be numeric")
+  }
+
+  # check conP.var
+  if(!all(conP.var%in%c.names)){
+    stop("Not all elements in conP.var are column names in dat")
+  }
+
+  # check conH.var
+  if(!all(conH.var%in%c.names)){
+    stop("Not all elements in conH.var are column names in dat")
+  }
+
+  # check year
+  if(length(year)!=1){
+    stop(paste0(year," must have length 1"))
+  }
+  if(!year%in%c.names){
+    stop(paste0(year," is not a column in dat"))
+  }
+
+  # check country
+  if(!is.null(country)){
+    if(length(country)!=1){
+      stop(paste0(country," must have length 1"))
+    }
+    if(!country%in%c.names){
+      stop(paste0(country," is not a column in dat"))
+    }
+  }
+
+
+  ##########################################################
+
+	# define default values for ipu2
   ellipsis <- list(...)
   ellipsis[["verbose"]] <- getEllipsis("verbose",TRUE,ellipsis)
   ellipsis[["epsP"]] <- getEllipsis("epsP",1e-2,ellipsis)
