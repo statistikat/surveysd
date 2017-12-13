@@ -31,10 +31,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// weightedRatioC
+double weightedRatioC(NumericVector x, NumericVector w);
+RcppExport SEXP _surveysd_weightedRatioC(SEXP xSEXP, SEXP wSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
+    rcpp_result_gen = Rcpp::wrap(weightedRatioC(x, w));
+    return rcpp_result_gen;
+END_RCPP
+}
+// weightedSumC
+double weightedSumC(NumericVector x, NumericVector w);
+RcppExport SEXP _surveysd_weightedSumC(SEXP xSEXP, SEXP wSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
+    rcpp_result_gen = Rcpp::wrap(weightedSumC(x, w));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_surveysd_rollMeanC", (DL_FUNC) &_surveysd_rollMeanC, 3},
     {"_surveysd_rollSumC", (DL_FUNC) &_surveysd_rollSumC, 3},
+    {"_surveysd_weightedRatioC", (DL_FUNC) &_surveysd_weightedRatioC, 2},
+    {"_surveysd_weightedSumC", (DL_FUNC) &_surveysd_weightedSumC, 2},
     {NULL, NULL, 0}
 };
 

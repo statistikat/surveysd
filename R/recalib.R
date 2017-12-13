@@ -159,67 +159,93 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
   eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
 
   # combine year and county
-  year_c <- paste(c(year,country),collapse=",")
+  if(!is.null(country)){
+    country_lev <- dt.eval("dat[,unique(",country,")]")
+  }else{
+    country_lev <- NULL
+  }
+
 
   # recode factors to numeric or character
   # is needed for ipu2 call
-  options(warn=-1) # turn off warnings
-  con.var <- c(conP.var,conH.var)
-  con.var.recode <- rep(FALSE,length(con.var))
-  for(i in 1:length(con.var)){
-    if(dt.eval("dat[,class(",con.var[i],")]")=="factor"){
-      isf.i <- paste0(con.var[i],"isfactor")
-      dt.eval("dat[,",isf.i,":=",con.var[i],"]")
-      dt.eval("dat[,",con.var[i],":=as.numeric(levels(",con.var[i],"))[",con.var[i],"]]")
-
-      if(any(dt.eval("dat[,is.na(",con.var[i],")]"))){
-        dt.eval("dat[,",con.var[i],":=as.numeric(levels(",isf.i,"))[",isf.i,"]]")
-      }
-
-      con.var.recode[i] <- TRUE
-    }
-  }
-  con.var <- con.var[con.var.recode]
-  # turn warnings on again
-  options(warn=0)
+  # options(warn=-1) # turn off warnings
+  # con.var <- c(conP.var,conH.var)
+  # con.var.recode <- rep(FALSE,length(con.var))
+  # for(i in 1:length(con.var)){
+  #   if(dt.eval("dat[,class(",con.var[i],")]")=="factor"){
+  #     isf.i <- paste0(con.var[i],"isfactor")
+  #     dt.eval("dat[,",isf.i,":=",con.var[i],"]")
+  #     dt.eval("dat[,",con.var[i],":=as.numeric(levels(",con.var[i],"))[",con.var[i],"]]")
+  #
+  #     if(any(dt.eval("dat[,is.na(",con.var[i],")]"))){
+  #       dt.eval("dat[,",con.var[i],":=levels(",isf.i,")[",isf.i,"]]")
+  #     }
+  #
+  #     con.var.recode[i] <- TRUE
+  #   }
+  # }
+  # con.var <- con.var[con.var.recode]
+  # # turn warnings on again
+  # options(warn=0)
 
 	# calculate contingency tables
 	if(!is.null(conP.var)){
-		conP <- lapply(conP.var,function(z){
-		  form.z <- paste0("V1~",paste(gsub(",","+",year_c),z,sep="+"))
-		  dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",year_c,",",z,")])")
-		})
+	  if(!is.null(country)){
+	    conP <- lapply(country_lev,function(co){
+	      dat_co <- dt.eval("dat[",country,"=='",co,"']")
+	      lapply(conP.var,function(z){
+	        form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
+	        dt.eval("xtabs(",form.z,",data=dat_co[,sum(",weights,"),by=list(",year,",",z,")])")
+	      })
+	    })
+	    names(conP) <- country_lev
+	  }else{
+	    conP <- lapply(conP.var,function(z){
+	      form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
+	      dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",year,",",z,")])")
+	    })
+	  }
 	}else{
 		conP <- NULL
 	}
 	if(!is.null(conH.var)){
+    if(!is.null(country)){
+      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",year,",",country,")]")
+      conH <- lapply(country_lev,function(co){
+        dat_co <- dt.eval("dat[",country,"=='",co,"']")
+        conH <- lapply(conH.var,function(z){
+          form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
+          dt.eval("xtabs(",form.z,",data=dat_co[,sum(onePerson*",weights,"),by=list(",year,",",z,")])")
+        })
+      })
+      names(conH) <- country_lev
+    }else{
+      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",year,")]")
+      conH <- lapply(conH.var,function(z){
+        form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
+        dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",year,",",z,")])")
+      })
+    }
 
-		dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",year_c,")]")
-
-		conH <- lapply(conH.var,function(z){
-		  form.z <- paste0("V1~",paste(gsub(",","+",year_c),z,sep="+"))
-	    dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",year_c,",",z,")])")
-		})
 	}else{
 		conH <- NULL
 	}
 
 
 	# define new Index
-	new_id <- paste(hid,year_c,sep=",")
+	new_id <- paste(c(hid,year,country),collapse=",")
 	dt.eval("dat[,hidf:=paste0(",new_id,")]")
 
 	# calibrate weights to conP and conH
 	select.var <- c("hidf",weights,year,country,conP.var,conH.var)
   if(!is.null(country)){
 	  dat_country <- list()
-	  country.n <- dt.eval("dat[,unique(",country,")]")
-	  for(co in country.n){
+	  for(co in country_lev){
 	    dat_c <- dt.eval("dat[",country,"=='",co,"']")
 	    for(g in b.rep){
 	      set(dat_c,j=g,value=dt.eval("dat_c[,",g,"*",weights,"]"))
-	      set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP,
-	                             conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
+	      set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP[[co]],
+	                             conH=conH[[co]],verbose=verbose,epsP=epsP,epsH=epsH,
 	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf")[,calibWeight])
 	    }
 	    dat_country <- c(dat_country,list(dat_c))
@@ -238,13 +264,13 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	dat[,hidf:=NULL]
 
 	# replace the recoded variables by the original ones
-  if(length(con.var)>0){
-    for(i in 1:length(con.var)){
-      isf.i <- paste0(con.var[i],"isfactor")
-      dt.eval("dat[,",con.var[i],":=",isf.i ,"]")
-      dt.eval("dat[,",isf.i ,":=NULL]")
-    }
-  }
+  # if(length(con.var)>0){
+  #   for(i in 1:length(con.var)){
+  #     isf.i <- paste0(con.var[i],"isfactor")
+  #     dt.eval("dat[,",con.var[i],":=",isf.i ,"]")
+  #     dt.eval("dat[,",isf.i ,":=NULL]")
+  #   }
+  # }
 
 
 	return(dat)

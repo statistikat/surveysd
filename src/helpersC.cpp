@@ -68,3 +68,42 @@ NumericVector rollSumC(NumericVector x, int k, char type) {
 
   return x_out;
 }
+
+
+// function for weighted ratio
+// [[Rcpp::export]]
+double weightedRatioC(NumericVector x, NumericVector w) {
+
+  int n = x.size();
+  double upper=0;
+  double lower=0;
+
+  for(int i=0;i<n;i++){
+    if(x[i]==1){
+      upper = upper+w[i];
+    }
+    if(!NumericVector::is_na(x[i])){
+      lower = lower+w[i];
+    }
+  }
+  double out=upper/lower*100;
+
+  return out;
+}
+
+// function for weighted sum
+// [[Rcpp::export]]
+double weightedSumC(NumericVector x, NumericVector w) {
+
+  int n = x.size();
+  double out=0;
+
+  for(int i=0;i<n;i++){
+    if(!NumericVector::is_na(x[i])){
+      out = out+x[i]*w[i];
+    }
+  }
+
+  return out;
+}
+

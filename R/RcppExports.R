@@ -9,3 +9,11 @@ rollSumC <- function(x, k, type) {
     .Call('_surveysd_rollSumC', PACKAGE = 'surveysd', x, k, type)
 }
 
+weightedRatioC <- function(x, w) {
+    .Call('_surveysd_weightedRatioC', PACKAGE = 'surveysd', x, w)
+}
+
+weightedSumC <- function(x, w) {
+    .Call('_surveysd_weightedSumC', PACKAGE = 'surveysd', x, w)
+}
+
