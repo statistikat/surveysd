@@ -75,7 +75,7 @@
 #' @import simPop data.table
 
 recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",country=NULL,conP.var=c("ksex","kausl","al","erw","pension"),
-										conH.var=c("bundesld","hsize","recht"),...){
+										conH.var=c("bundesld","hsize","recht"),...,hidf_factor=TRUE){
   ##########################################################
   # INPUT CHECKING
   if(class(dat)[1]=="data.frame"){
@@ -236,7 +236,11 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 
 	# define new Index
 	new_id <- paste(c(hid,year,country),collapse=",")
-	dt.eval("dat[,hidf:=factor(paste0(",new_id,"))]")
+	if(hidf_factor){
+	  dt.eval("dat[,hidf:=factor(paste0(",new_id,"))]")
+	}else{
+	  dt.eval("dat[,hidf:=paste0(",new_id,")]")
+	}
 
 	# calibrate weights to conP and conH
 	select.var <- c("hidf",weights,year,country,conP.var,conH.var)
@@ -249,7 +253,7 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	      set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP[[co]],
 	                             conH=conH[[co]],verbose=verbose,epsP=epsP,epsH=epsH,
 	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf",
-	                             check_hh_vars = check_hh_vars)[,calibWeight])
+	                             check_hh_vars = check_hh_vars,conversion_messages = conversion_messages)[,calibWeight])
 	    }
 	    dat_country <- c(dat_country,list(dat_c))
 	  }

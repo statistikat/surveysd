@@ -27,6 +27,12 @@ dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
                           year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"))
 Sys.time()-t
 
+microbenchmark(HID_FACTOR=recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
+                       year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080")),
+               HID_NOFACTOR=recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
+                       year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),hidf_factor = FALSE))
+
+
 dat_boot_test[,hx080:=factor(hx080)]
 dat_boot_test[,rb090:=factor(rb090)]
 dat_boot_test[,db040:=factor(db040)]
@@ -35,6 +41,13 @@ t <- Sys.time()
 dat_boot_calib <- recalib(dat=copy(dat_boot_test),hid="db030",weights="rb050",
                           year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"))
 Sys.time()-t
+
+microbenchmark(HID_FACTOR=recalib(dat=copy(dat_boot_test),hid="db030",weights="rb050",
+                                  year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080")),
+               HID_NOFACTOR=recalib(dat=copy(dat_boot_test),hid="db030",weights="rb050",
+                                    year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),hidf_factor = FALSE))
+
+
 
 dat_boot_calib
 
