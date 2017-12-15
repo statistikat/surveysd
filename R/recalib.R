@@ -236,7 +236,7 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 
 	# define new Index
 	new_id <- paste(c(hid,year,country),collapse=",")
-	dt.eval("dat[,hidf:=paste0(",new_id,")]")
+	dt.eval("dat[,hidf:=factor(paste0(",new_id,"))]")
 
 	# calibrate weights to conP and conH
 	select.var <- c("hidf",weights,year,country,conP.var,conH.var)
