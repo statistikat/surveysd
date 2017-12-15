@@ -15,7 +15,7 @@ dat[,db030_neu:=paste(rb020,db030,sep="_")]
 #dat_boot <- draw.bootstrap(dat,REP=10,hid="db030_neu",weights="rb050",strata="db040",
 #                          year="rb010",totals=NULL,boot.names=NULL)
 
-dat_boot <- draw.bootstrap(dat,REP=10,hid="db030",weights="rb050",strata=c("db040"),
+dat_boot <- draw.bootstrap(dat,REP=2,hid="db030",weights="rb050",strata=c("db040"),
                            year="rb010",country="rb020",totals=NULL,boot.names=NULL)
 
 

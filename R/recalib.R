@@ -155,6 +155,8 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
   ellipsis[["bound"]] <- getEllipsis("bound",4,ellipsis)
   ellipsis[["maxIter"]] <- getEllipsis("maxIter",50,ellipsis)
   ellipsis[["meanHH"]] <- getEllipsis("meanHH",TRUE,ellipsis)
+  ellipsis[["check_hh_vars"]] <- getEllipsis("check_hh_vars",FALSE,ellipsis)
+  ellipsis[["conversion_messages"]] <- getEllipsis("conversion_messages",FALSE,ellipsis)
 
   eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
 
@@ -246,7 +248,8 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	      set(dat_c,j=g,value=dt.eval("dat_c[,",g,"*",weights,"]"))
 	      set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP[[co]],
 	                             conH=conH[[co]],verbose=verbose,epsP=epsP,epsH=epsH,
-	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf")[,calibWeight])
+	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf",
+	                             check_hh_vars = check_hh_vars)[,calibWeight])
 	    }
 	    dat_country <- c(dat_country,list(dat_c))
 	  }
@@ -257,7 +260,8 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	    set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
 	    set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
 	                           conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-	                           w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf")[,calibWeight])
+	                           w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf",
+	                           check_hh_vars = check_hh_vars,conversion_messages = conversion_messages)[,calibWeight])
 	  }
 	}
 
