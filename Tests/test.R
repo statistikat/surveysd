@@ -15,11 +15,12 @@ dat[,db030_neu:=paste(rb020,db030,sep="_")]
 #dat_boot <- draw.bootstrap(dat,REP=10,hid="db030_neu",weights="rb050",strata="db040",
 #                          year="rb010",totals=NULL,boot.names=NULL)
 
-dat_boot <- draw.bootstrap(dat,REP=2,hid="db030",weights="rb050",strata=c("db040"),
+dat_boot <- draw.bootstrap(dat,REP=3,hid="db030",weights="rb050",strata=c("db040"),
                            year="rb010",country="rb020",totals=NULL,boot.names=NULL)
 
 
 dat_boot <- dat_boot[!is.na(hx080)]
+dat_boot[,hx080:=factor(hx080)]
 dat_boot_test <- copy(dat_boot)
 
 t <- Sys.time()
@@ -27,19 +28,21 @@ dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
                           year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"))
 Sys.time()-t
 
+str(dat_boot_calib)
+
 microbenchmark(HID_FACTOR=recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
-                       year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080")),
+                       year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),conversion_messages=TRUE),
                HID_NOFACTOR=recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
-                       year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),hidf_factor = FALSE))
+                       year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),conversion_messages=TRUE,hidf_factor = FALSE),times=20)
 
 
-dat_boot_test[,hx080:=factor(hx080)]
+
 dat_boot_test[,rb090:=factor(rb090)]
 dat_boot_test[,db040:=factor(db040)]
 dat_boot_test[,rb010:=factor(rb010)]
 t <- Sys.time()
 dat_boot_calib <- recalib(dat=copy(dat_boot_test),hid="db030",weights="rb050",
-                          year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"))
+                          year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),hidf_factor = FALSE,conversion_messages=TRUE)
 Sys.time()-t
 
 microbenchmark(HID_FACTOR=recalib(dat=copy(dat_boot_test),hid="db030",weights="rb050",

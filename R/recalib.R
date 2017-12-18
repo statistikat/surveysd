@@ -190,6 +190,18 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
   # # turn warnings on again
   # options(warn=0)
 
+  # recode household and person variables to factor
+  # improves runtime for ipu2
+  #
+  vars <- c(year,country,conP.var,conH.var)
+  vars.class <- unlist(lapply(dat[,mget(vars)],class))
+  # convert to factor
+  for(i in 1:length(vars)){
+    if(vars.class[[vars[i]]]!="factor"){
+      dt.eval("dat[,",vars[i],":=as.factor(",vars[i],")]")
+    }
+  }
+
 	# calculate contingency tables
 	if(!is.null(conP.var)){
 	  if(!is.null(country)){
@@ -279,6 +291,14 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
   #     dt.eval("dat[,",isf.i ,":=NULL]")
   #   }
   # }
+	# recode vars back to either integer of character
+	for(i in 1:length(vars.class)){
+	  if(vars.class[i]%in%c("integer","numeric")){
+	    dt.eval("dat[,",vars[i],":=as.numeric(as.character(",vars[i],"))]")
+	  }else if(vars.class[i]=="character"){
+	    dt.eval("dat[,",vars[i],":=as.character(",vars[i],")]")
+	  }
+	}
 
 
 	return(dat)
