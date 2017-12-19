@@ -84,8 +84,7 @@
 #' @examples
 #' # read in and prepare data
 #' library(data.table)
-#' dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
-#'                             bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+#' dat <- data.table(read_sas("PATH"))
 #'
 #' dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
 #'                      year="jahr",totals=NULL,boot.names=NULL)

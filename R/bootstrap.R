@@ -43,8 +43,7 @@
 #'
 #' @examples
 #' # read in data (must be changed..)
-#' dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
-#'                             bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+#' dat <- data.table(read_sas("PATH"))
 #'
 #' # create 20 bootstrap replicates using the column "bundesld" as strata
 #' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
