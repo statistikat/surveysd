@@ -75,7 +75,7 @@
 #' @import simPop data.table
 
 recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",country=NULL,conP.var=c("ksex","kausl","al","erw","pension"),
-										conH.var=c("bundesld","hsize","recht"),...,hidf_factor=TRUE){
+										conH.var=c("bundesld","hsize","recht"),...,hidf_factor=TRUE,ipu2new=FALSE){
   ##########################################################
   # INPUT CHECKING
   if(class(dat)[1]=="data.frame"){
@@ -170,37 +170,43 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 
   # recode factors to numeric or character
   # is needed for ipu2 call
-  # options(warn=-1) # turn off warnings
-  # con.var <- c(conP.var,conH.var)
-  # con.var.recode <- rep(FALSE,length(con.var))
-  # for(i in 1:length(con.var)){
-  #   if(dt.eval("dat[,class(",con.var[i],")]")=="factor"){
-  #     isf.i <- paste0(con.var[i],"isfactor")
-  #     dt.eval("dat[,",isf.i,":=",con.var[i],"]")
-  #     dt.eval("dat[,",con.var[i],":=as.numeric(levels(",con.var[i],"))[",con.var[i],"]]")
-  #
-  #     if(any(dt.eval("dat[,is.na(",con.var[i],")]"))){
-  #       dt.eval("dat[,",con.var[i],":=levels(",isf.i,")[",isf.i,"]]")
-  #     }
-  #
-  #     con.var.recode[i] <- TRUE
-  #   }
-  # }
-  # con.var <- con.var[con.var.recode]
-  # # turn warnings on again
-  # options(warn=0)
+  if(!ipu2new){
+    options(warn=-1) # turn off warnings
+    con.var <- c(conP.var,conH.var)
+    con.var.recode <- rep(FALSE,length(con.var))
+    for(i in 1:length(con.var)){
+      if(dt.eval("dat[,class(",con.var[i],")]")=="factor"){
+        isf.i <- paste0(con.var[i],"isfactor")
+        dt.eval("dat[,",isf.i,":=",con.var[i],"]")
+        dt.eval("dat[,",con.var[i],":=as.numeric(levels(",con.var[i],"))[",con.var[i],"]]")
+
+        if(any(dt.eval("dat[,is.na(",con.var[i],")]"))){
+          dt.eval("dat[,",con.var[i],":=levels(",isf.i,")[",isf.i,"]]")
+        }
+
+        con.var.recode[i] <- TRUE
+      }
+    }
+    con.var <- con.var[con.var.recode]
+    # turn warnings on again
+    options(warn=0)
+    hidf_factor <- FALSE
+  }
 
   # recode household and person variables to factor
   # improves runtime for ipu2
   #
-  vars <- c(year,country,conP.var,conH.var)
-  vars.class <- unlist(lapply(dat[,mget(vars)],class))
-  # convert to factor
-  for(i in 1:length(vars)){
-    if(vars.class[[vars[i]]]!="factor"){
-      dt.eval("dat[,",vars[i],":=as.factor(",vars[i],")]")
+  if(ipu2new){
+    vars <- c(year,country,conP.var,conH.var)
+    vars.class <- unlist(lapply(dat[,mget(vars)],class))
+    # convert to factor
+    for(i in 1:length(vars)){
+      if(vars.class[[vars[i]]]!="factor"){
+        dt.eval("dat[,",vars[i],":=as.factor(",vars[i],")]")
+      }
     }
   }
+
 
 	# calculate contingency tables
 	if(!is.null(conP.var)){
@@ -264,8 +270,9 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	      set(dat_c,j=g,value=dt.eval("dat_c[,",g,"*",weights,"]"))
 	      set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP[[co]],
 	                             conH=conH[[co]],verbose=verbose,epsP=epsP,epsH=epsH,
-	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf",
-	                             check_hh_vars = check_hh_vars,conversion_messages = conversion_messages)[,calibWeight])
+	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf"
+	                             # check_hh_vars = check_hh_vars,conversion_messages = conversion_messages # nur für neue ipu2 version
+	                             )[,calibWeight])
 	    }
 	    dat_country <- c(dat_country,list(dat_c))
 	  }
@@ -276,30 +283,33 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	    set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
 	    set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
 	                           conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-	                           w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf",
-	                           check_hh_vars = check_hh_vars,conversion_messages = conversion_messages)[,calibWeight])
+	                           w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf"
+	                           # check_hh_vars = check_hh_vars,conversion_messages = conversion_messages # nur für neue ipu2 version
+	                           )[,calibWeight])
 	  }
 	}
 
 	dat[,hidf:=NULL]
 
-	# replace the recoded variables by the original ones
-  # if(length(con.var)>0){
-  #   for(i in 1:length(con.var)){
-  #     isf.i <- paste0(con.var[i],"isfactor")
-  #     dt.eval("dat[,",con.var[i],":=",isf.i ,"]")
-  #     dt.eval("dat[,",isf.i ,":=NULL]")
-  #   }
-  # }
-	# recode vars back to either integer of character
-	for(i in 1:length(vars.class)){
-	  if(vars.class[i]%in%c("integer","numeric")){
-	    dt.eval("dat[,",vars[i],":=as.numeric(as.character(",vars[i],"))]")
-	  }else if(vars.class[i]=="character"){
-	    dt.eval("dat[,",vars[i],":=as.character(",vars[i],")]")
+	if(!ipu2new){
+	  # replace the recoded variables by the original ones
+	  if(length(con.var)>0){
+	    for(i in 1:length(con.var)){
+	      isf.i <- paste0(con.var[i],"isfactor")
+	      dt.eval("dat[,",con.var[i],":=",isf.i ,"]")
+	      dt.eval("dat[,",isf.i ,":=NULL]")
+	    }
+	  }
+	}else{
+	  # recode vars back to either integer of character
+	  for(i in 1:length(vars.class)){
+	    if(vars.class[i]%in%c("integer","numeric")){
+	      dt.eval("dat[,",vars[i],":=as.numeric(as.character(",vars[i],"))]")
+	    }else if(vars.class[i]=="character"){
+	      dt.eval("dat[,",vars[i],":=as.character(",vars[i],")]")
+	    }
 	  }
 	}
-
 
 	return(dat)
 }

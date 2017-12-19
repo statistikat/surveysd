@@ -25,7 +25,7 @@ dat_boot_test <- copy(dat_boot)
 
 t <- Sys.time()
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
-                          year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"))
+                          year="rb010",country="rb020",b.rep=paste0("w",1),conP.var=c("rb090"),conH.var = c("db040","hx080"),conversion_messages=TRUE)
 Sys.time()-t
 
 str(dat_boot_calib)
