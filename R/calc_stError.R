@@ -376,6 +376,11 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
   if(fun=="weightedRatio"){
     fun <- "weightedRatioC"
   }
+  # weightedRatio function calculates ratio between national and subnational result
+  if(fun=="weightedRatioNat"){
+    add.arg <- c("Nat[1]")
+    dt.eval("dat[,Nat:=weightedRatioC(",var,",",weights,"),by=list(",year,")]")
+  }
 
 	# define names for estimates for each weight (normal weights and boostrap weights)
 	# makes it easier to (sort of) verctorize expressions
@@ -399,7 +404,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 	}
 
   # define additional parameters for mean over consecutive years
-	years <- dt.eval("dat[,unique(",year,")]")
+	years <- sort(dt.eval("dat[,unique(",year,")]"))
 	# formulate k consecutive years
 	if(length(years)>=year.mean){
 	  yearsList <- unlist(lapply(years[1:c(length(years)-year.mean+1)],function(z){
@@ -572,7 +577,9 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 weightedRatio <- function(x,weightvar){
   sum(weightvar[x==1],na.rm=TRUE)/sum(weightvar[!is.na(x)],na.rm=TRUE)*100
 }
-
+weightedRatioNat <- function(x,weightvar,N){
+  sum(weightvar[x==1],na.rm=TRUE)/sum(weightvar[!is.na(x)],na.rm=TRUE)*100/N
+}
 
 # weightedRatio <- function(x,weightvar,x2=NULL){
 # 	if(is.null(x2)){

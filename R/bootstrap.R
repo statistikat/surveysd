@@ -14,7 +14,12 @@
 #' @param year character specifying the name of the column in \code{dat} containing the sample years.
 #' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
 #' In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
-#' @param totals (optional) character specifying the name of the column in \code{dat} containing the the totals per strata. If totals is \code{NULL}, the sum of weights per strata will be calcualted and named 'fpc'.
+#' @param cluster character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.
+#' @param totals (optional) character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. If totals and cluster is \code{NULL}, the households per strata will be calcualted using the \code{weights} argument and named 'fpc'.
+#' If clusters are specified then totals need to be supplied by the user, otherwise they will be set to \code{NULL}. When multiple cluster and or strata are specified totals needs to contain multiple argument each corresponding to a column name in \code{dat}.
+#' Each column needs to contains the total number if units in the population regarding the subsequent level. The vector is interpreted from left to right meaning that the most left value of \code{totals}
+#' specifies the column names with the number of units in the population at the highest level and the most right value specifies the column names with the number of units in the population at the lowest level.
+#' This argument will be passed onto the function \code{svydesign()} from package \code{survey} through the argument \code{fpc}.
 #' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
 #' @return the survey data with the number of REP bootstrap replicates added as columns.
 #'
@@ -66,7 +71,7 @@
 #' @import survey data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NULL,design=NULL,totals=NULL,boot.names=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NULL,cluster=NULL,totals=NULL,boot.names=NULL){
 
   ##########################################################
   # INPUT CHECKING
@@ -125,10 +130,9 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
   }
 
   # check design
-  if(!is.null(design)){
-    check.design <- unlist(strsplit(design,split="\\+"))
-    if(!design%in%c.names){
-      stop("Not all names in design are column names in dat")
+  if(!is.null(cluster)){
+    if(any(!cluster%in%c.names)){
+      stop("Not all names in cluster are column names in dat")
     }
   }
 
@@ -151,19 +155,33 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
 
 
   # check totals
+  # if clusters are specified the finite population correction factors must be user specified (at least for now)
+  # check input for totals
+  # if no totals are specified then leave them NULL
   if(is.null(totals)){
-    totals <- "fpc"
-    dt.eval("dat[,fpc:=sum(",weights,"),by=list(",paste(c(strata,country),collapse=","),")]")
-    add.totals <- TRUE
+    if(is.null(cluster)){
+      # if no clusters are specified the use calculate number of households in each strata
+      totals <- "fpc"
+      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,country),collapse=","),")]")
+      add.totals <- TRUE
+      optwarn <- FALSE
+    }else{
+      # else leave totals NULL
+      add.totals <- FALSE
+      cat("Number of Clusters at each level are not specified\nDesign is sampled with replacement\n")
+      options(warn=-1)
+      optwarn <- TRUE
+    }
   }else{
-    if(length(totals)!=1){
-      stop("totals must have length 1")
+
+    if(length(totals)!=length(c(strata,cluster))-1){
+      stop("totals must specified for each stage")
     }
-    if(!totals%in%c.names){
-      stop(paste0(totals," is not a column in dat"))
+    if(any(!totals%in%c.names)){
+      stop("Not all elements in totals are column names in dat")
     }
-    if(!is.numeric(dt.eval("dat[,",totals,"]"))){
-      stop(paste0(totals," must be a numeric column"))
+    if(!any(unlist(dat[,lapply(.SD,is.numeric),.SDcols=c(totals)]))){
+      stop("Not all elements in totals are numeric columns in dat")
     }
 
     add.totals <- FALSE
@@ -173,12 +191,14 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
   # make arguments usable for survey package
   strata <- as.formula(paste0("~",paste(strata,collapse=":")))
   weights <- as.formula(paste0("~",weights))
-  totals <- as.formula(paste0("~",totals))
+  if(!is.null(totals)){
+    totals <- as.formula(paste0("~",paste(totals,collapse="+")))
+  }
   # define sample design
-  if(is.null(design)){
-    design <- as.formula(paste0("~",hid))
+  if(is.null(cluster)){
+    cluster <- as.formula(paste0("~",hid))
   }else{
-    design <- as.formula(paste0("~",paste(design,hid,sep="+")))
+    cluster <- as.formula(paste0("~",paste(cluster,collapse = "+")))
   }
 
   if(is.null(boot.names)){
@@ -189,7 +209,10 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=gen.boot(.SD,REP=REP,design=design,weights=weights,strata=strata,totals=totals),by=c(year,country)]
+  dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
+  if(optwarn){
+    options(warn=0)
+  }
 
   # keep bootstrap replicates of first year for each household
   w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
@@ -204,9 +227,9 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
 }
 
 
-gen.boot <- function(dat,REP=1000,design="~hid",weights="hgew",strata="bundesld",totals="fpc"){
+gen.boot <- function(dat,REP=1000,cluster="~hid",weights="hgew",strata="bundesld",totals="fpc"){
 
-  dat.svy <- svydesign(ids=design,weights=weights,fpc=totals,strata=strata,data=dat)
+  dat.svy <- svydesign(ids=cluster,weights=weights,fpc=totals,strata=strata,data=dat)
   dat.svyboot <- as.svrepdesign(dat.svy,type="mrbbootstrap",replicates=REP,compress=FALSE)$repweights
 
   return(data.table(dat.svyboot))

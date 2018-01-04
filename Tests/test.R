@@ -132,6 +132,43 @@ for(i in 1:10000){
 
 
 
+#########################################
+# teste clustering
+#
+
+library(data.table)
+library(haven)
+library(surveysd)
+library(simPop)
+
+dat <- fread("/mnt/obdatenaustausch/NETSILC3/udb_short_new.csv")
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
+# DB060 CLUSTER
+# DB050 STRATA
+# CLUSTER WERDEN IN STRATA GEZOGEN
+
+# check was mit lonely PSU passiert
+
+dat[,.N,by=RB020]
+
+dat_es <- dat[RB020=="ES"]
+dat_es[is.na(db050)]
+dat_es[is.na(DB060)]
+
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=250,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
+                           year="RB010",totals=NULL,boot.names=NULL)
+
+dat_boot <- dat_boot[!is.na(HX080)]
+dat_boot[,hx080:=factor(HX080)]
+
+dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="RB050",
+                          year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+
+erg <- calc.stError(dat=copy(dat_boot_calib),fun="weightedRatioNat",weights="RB050",year="RB010",b.weights=paste0("w",1:250),
+                    var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2016-2008"),
+                    p=c(.01,.05,.1,.9,.95,.99))
+
 
 
 
