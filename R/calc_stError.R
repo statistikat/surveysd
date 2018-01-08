@@ -200,9 +200,10 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   if(length(fun)!=1){
     stop("fun must have length 1")
   }
-  if(!fun%in%c("weightedRatio","weightedSum","sampSize","popSize"))
-  if(length(find(fun))==0){
-    stop(paste0("Function ",fun," is undefined"))
+  if(!fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){
+    if(length(find(fun))==0){
+      stop(paste0("Function ",fun," is undefined"))
+    }
   }
 
   # check cross_var
@@ -578,7 +579,7 @@ weightedRatio <- function(x,weightvar){
   sum(weightvar[x==1],na.rm=TRUE)/sum(weightvar[!is.na(x)],na.rm=TRUE)*100
 }
 weightedRatioNat <- function(x,weightvar,N){
-  sum(weightvar[x==1],na.rm=TRUE)/sum(weightvar[!is.na(x)],na.rm=TRUE)*100/N
+  sum(weightvar[x==1],na.rm=TRUE)/sum(weightvar[!is.na(x)],na.rm=TRUE)*100/N*100
 }
 
 # weightedRatio <- function(x,weightvar,x2=NULL){

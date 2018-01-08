@@ -261,6 +261,8 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 
 	# calibrate weights to conP and conH
 	select.var <- c("hidf",weights,year,country,conP.var,conH.var)
+	calib.fail <- c()
+
   if(!is.null(country)){
 	  dat_country <- list()
 	  for(co in country_lev){
@@ -285,8 +287,24 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	                           w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidf"
 	                           # check_hh_vars = check_hh_vars,conversion_messages = conversion_messages # nur für neue ipu2 version
 	                           )[,calibWeight])
+	    if(dat[,any(is.na(get(g)))]){
+        calib.fail <- c(calib.fail,g)
+	    }
 	  }
 	}
+
+	# paste warnings if calibration failed in some instances
+	if(length(calib.fail)>0){
+	  cat("Calibration failed for bootstrap replicates",calib.fail,"\n")
+	  cat("Corresponding bootstrap replicates will be discarded\n")
+	  dat[,c(calib.fail):=NULL]
+	  b.rep <- b.rep[!calib.fail%in%b.rep]
+	  lead.char <- sub("[[:digit:]].*","",b.rep[1])
+	  b.rep_new <- paste0(lead.char,1:length(b.rep))
+	  setnames(dat,b.rep,b.rep_new)
+	  cat("Returning",length(b.rep),"calibrated bootstrap weights\n")
+	}
+
 
 	dat[,hidf:=NULL]
 

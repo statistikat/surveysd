@@ -167,14 +167,18 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
       optwarn <- FALSE
     }else{
       # else leave totals NULL
-      add.totals <- FALSE
-      cat("Number of Clusters at each level are not specified\nDesign is sampled with replacement\n")
-      options(warn=-1)
-      optwarn <- TRUE
+      # add.totals <- FALSE
+      # cat("Number of Clusters at each level are not specified\nDesign is sampled with replacement\n")
+      # options(warn=-1)
+      # optwarn <- TRUE
+      totals <- "fpc"
+      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,cluster,country),collapse=","),")]")
+      add.totals <- TRUE
+      optwarn <- FALSE
     }
   }else{
 
-    if(length(totals)!=length(c(strata,cluster))-1){
+    if(length(totals)!=length(c(strata,cluster))){
       stop("totals must specified for each stage")
     }
     if(any(!totals%in%c.names)){
@@ -198,7 +202,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
   if(is.null(cluster)){
     cluster <- as.formula(paste0("~",hid))
   }else{
-    cluster <- as.formula(paste0("~",paste(cluster,collapse = "+")))
+    cluster <- as.formula(paste0("~",paste(c(cluster,hid),collapse = "+")))
   }
 
   if(is.null(boot.names)){

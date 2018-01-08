@@ -156,20 +156,23 @@ dat_es <- dat[RB020=="ES"]
 dat_es[is.na(db050)]
 dat_es[is.na(DB060)]
 
-dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=250,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
-                           year="RB010",totals=NULL,boot.names=NULL)
+dat_es[,fpc1:=length(unique(DB060))/.5,by=list(db050,RB010)]
+dat_es[,fpc2:=sum(RB050[!duplicated(db030)]),by=list(DB060,db050,RB010)]
+
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=1000,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
+                           year="RB010",totals=c("fpc1","fpc2"),boot.names=NULL)
 
 dat_boot <- dat_boot[!is.na(HX080)]
 dat_boot[,hx080:=factor(HX080)]
 
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="RB050",
-                          year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+                          year="RB010",b.rep=paste0("w",1:1000),conP.var=c("RB090"),conH.var = c("DB040"))
 
 erg <- calc.stError(dat=copy(dat_boot_calib),fun="weightedRatioNat",weights="RB050",year="RB010",b.weights=paste0("w",1:250),
                     var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2016-2008"),
                     p=c(.01,.05,.1,.9,.95,.99))
 
 
-
+# clumpeneffekt
 
 
