@@ -140,6 +140,7 @@ library(data.table)
 library(haven)
 library(surveysd)
 library(simPop)
+library(survey)
 
 dat <- fread("/mnt/obdatenaustausch/NETSILC3/udb_short_new.csv")
 dat[,RB050:=gsub(",","\\.",RB050)]
@@ -156,11 +157,16 @@ dat_es <- dat[RB020=="ES"]
 dat_es[is.na(db050)]
 dat_es[is.na(DB060)]
 
-dat_es[,fpc1:=length(unique(DB060))/.5,by=list(db050,RB010)]
+dat_es[,fpc1:=length(unique(DB060))/.05,by=list(db050,RB010)]
 dat_es[,fpc2:=sum(RB050[!duplicated(db030)]),by=list(DB060,db050,RB010)]
 
-dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=1000,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
+set.seed(1234)
+dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=100,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
                            year="RB010",totals=c("fpc1","fpc2"),boot.names=NULL)
+set.seed(1234)
+dat_boot_2 <- draw.bootstrap(dat=copy(dat_es),REP=100,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
+                           year="RB010",boot.names=NULL)
+
 
 dat_boot <- dat_boot[!is.na(HX080)]
 dat_boot[,hx080:=factor(HX080)]
@@ -173,6 +179,15 @@ erg <- calc.stError(dat=copy(dat_boot_calib),fun="weightedRatioNat",weights="RB0
                     p=c(.01,.05,.1,.9,.95,.99))
 
 
-# clumpeneffekt
+set.seed(1234)
+dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=100,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
+                             year="RB010",totals=c("fpc1","fpc2"),boot.names=NULL)
+set.seed(1234)
+dat_boot_2 <- draw.bootstrap(dat=copy(dat_es),REP=100,hid="db030",weights="RB050",strata="db050",cluster=c("DB060"),
+                             year="RB010",boot.names=NULL)
+
+
+
+
 
 
