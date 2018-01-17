@@ -74,7 +74,7 @@
 #' @import simPop data.table
 
 recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="jahr",country=NULL,conP.var=c("ksex","kausl","al","erw","pension"),
-										conH.var=c("bundesld","hsize","recht"),...,hidf_factor=TRUE,ipu2new=FALSE){
+										conH.var=c("bundesld","hsize","recht"),...,hidf_factor=TRUE,ipu2new=TRUE){
   ##########################################################
   # INPUT CHECKING
   if(class(dat)[1]=="data.frame"){
@@ -298,7 +298,7 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	  cat("Calibration failed for bootstrap replicates",calib.fail,"\n")
 	  cat("Corresponding bootstrap replicates will be discarded\n")
 	  dat[,c(calib.fail):=NULL]
-	  b.rep <- b.rep[!calib.fail%in%b.rep]
+	  b.rep <- b.rep[!b.rep%in%calib.fail]
 	  lead.char <- sub("[[:digit:]].*","",b.rep[1])
 	  b.rep_new <- paste0(lead.char,1:length(b.rep))
 	  setnames(dat,b.rep,b.rep_new)

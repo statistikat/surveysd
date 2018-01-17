@@ -109,7 +109,7 @@ holds true for all $i$,$i=1,\ldots,u$, where the sum in the denominator expands 
 If this inequality holds true the algorithm reaches convergence, otherwise $k$ is raised by 1 and Steps 1-5 are repeated.
 
 \subsection{Variance estimation}
-Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y$,$y=1,...z$, yields calibrated bootstrap sample weights $b_{j}^{(i,y)}$ for each year $y$. using the bootstrap sample weights it is straight forward for to compute the standard error of a point estimate $\theta(\textbf{Y}^{(y)},\textbf{w}^{(y)})$ for year $y$ with $\textbf{Y}^{(y)}=(Y_1^{(y)},\ldots,Y_n^{(y)})$ as the vector observations for the variable of interest in the survey and $\textbf{w}^{(y)}=(w_1^{(y)},\ldots,w_n^{(y)}$ as the corresponding weight vector, with
+Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y$,$y=1,...z$, yields calibrated bootstrap sample weights $b_{j}^{(i,y)}$ for each year $y$. using the bootstrap sample weights it is straight forward for to compute the standard error of a point estimate $\theta(\textbf{Y}^{(y)},\textbf{w}^{(y)})$ for year $y$ with $\textbf{Y}^{(y)}=(Y_1^{(y)},\ldots,Y_n^{(y)})$ as the vector of observations for the variable of interest in the survey and $\textbf{w}^{(y)}=(w_1^{(y)},\ldots,w_n^{(y)}$ as the corresponding weight vector, with
 
 \begin{align*}
   sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(\textbf{Y}^{(y)},\textbf{b}^{(i,y)})-\overline{\theta})^2} \quad,

@@ -189,5 +189,20 @@ dat_boot_2 <- draw.bootstrap(dat=copy(dat_es),REP=100,hid="db030",weights="RB050
 
 
 
+# TESTE ipu2
+library(data.table)
+library(surveysd)
+dat <- fread("/mnt/obdatenaustausch/NETSILC3/udb_short_new.csv")
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
 
+dat_es <- dat[RB020=="ES"]
+dat_es[,.(RB010,RB030,DB040,arose,hsize,HX040,db050)]
 
+# define stratified 1-Stage cluster sample
+set.seed(1234)
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",cluster="DB060",
+                           year="RB010")
+
+dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="RB050",
+                          year="RB010",b.rep=paste0("w",1:20),conP.var=c("agex"),conH.var = c("DB040","HX080"))
