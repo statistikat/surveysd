@@ -30,6 +30,7 @@ In this case the calibration procedure will be applied on each country seperatel
 }
 \value{
 Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates, which are labeled like the bootstrap replicates.
+If calibration of a bootstrap replicate does not converge the bootsrap weight is not returned and numeration of the returned bootstrap weights is reduced by one.
 }
 \description{
 Calibrate weights for bootstrap replicates by using iterative proportional updating to match population totals on various household and personal levels.
@@ -52,8 +53,7 @@ In this process the columns of the bootstrap replicates are overwritten by the c
 \examples{
 # read in data (need to be changed)
 library(data.table)
-dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
-                            bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+dat <- data.table(read_sas("PATH"))
 # draw bootstrap replicates
 dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",
                      strata="bundesld",year="jahr",totals=NULL,boot.names=NULL)

@@ -17,7 +17,7 @@
 #' @param cluster character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.
 #' @param totals (optional) character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. If totals and cluster is \code{NULL}, the households per strata will be calcualted using the \code{weights} argument and named 'fpc'.
 #' If clusters are specified then totals need to be supplied by the user, otherwise they will be set to \code{NULL}. When multiple cluster and or strata are specified totals needs to contain multiple argument each corresponding to a column name in \code{dat}.
-#' Each column needs to contains the total number if units in the population regarding the subsequent level. The vector is interpreted from left to right meaning that the most left value of \code{totals}
+#' Each column needs to contains the total number of units in the population regarding the subsequent level. The vector is interpreted from left to right meaning that the most left value of \code{totals}
 #' specifies the column names with the number of units in the population at the highest level and the most right value specifies the column names with the number of units in the population at the lowest level.
 #' This argument will be passed onto the function \code{svydesign()} from package \code{survey} through the argument \code{fpc}.
 #' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
@@ -169,7 +169,6 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
       # else leave totals NULL
       add.totals <- FALSE
       cat("Number of Clusters at each level are not specified\nDesign is sampled with replacement\n")
-      options(warn=-1)
       optwarn <- TRUE
       # totals <- "fpc"
       # dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,cluster,country),collapse=","),")]")
@@ -214,9 +213,10 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
   if(optwarn){
-    options(warn=0)
+    suppressWarnings(dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)])
+  }else{
+    dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
   }
 
   # keep bootstrap replicates of first year for each household

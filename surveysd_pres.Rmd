@@ -1,0 +1,310 @@
+---
+title: "R-Package `surveysd`"
+date: "`r Sys.Date()`"
+author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
+output: 
+  beamer_presentation: 
+    colortheme: beaver
+    highlight: tango
+    incremental: no
+    theme: JuanLesPins
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+## Motivation
+
+- EU-SILC and at risk of social exclusion (`arose`)
+\newline
+- Qualitatively high well-being indicators at national or NUTS1
+\newline
+- Lower NUTS-Levels usually yield poor estimates
+
+## Methods
+
+- Small area estimation
+\newline
+- administrative data to impute variable of interest
+\newline
+- pooled data and bootstrap techniques
+
+
+## `surveysd`
+
+- R-package for variance estimation on regional levels
+\newline
+- Uses multiple (consecutive) waves of EU-SILC
+\newline
+- Variance estimation via bootstrap techniques
+
+## Methodology
+
+- Let $\bf{X}_{(h,j)}$ be pooled data over $j=1,...,y$ years containing a sample size of $n_1,...,n_y$
+\newline
+- Each year $l$ contains a sample size $n_l$
+\newline
+- Household ID $h$ is unique throughout the pooled data (for didactic reasons)
+
+
+## Methodology
+
+- Generate bootstrap $B$ replicates without replacement and considering stratification/clustering [preston et al]
+
+    - $f^{i}_{(h,j)}$ for household $h$ in year $j$, $i=1,...,B$
+
+
+- Bootstrap replicates are assigned for each household
+
+    - stay constant until the household drops out of the sample
+
+    - $f^{i}_{(h,j)} = f^{i}_{(h,k)}$ $\forall j,k \in 1,...,y$, $i=1,...,B$
+
+
+## Methodology
+
+- Calculate replicate weights $b^{i}_{(h,j)}$ by multiplying with original weight $w^{0}_{(h,j)}$
+
+    - $b^{i}_{(h,j)} = f^{i}_{(h,j)} w^{0}_{(h,j)}$
+
+- Calibrate with iterative proportional updating
+
+    - define margins of sampling design per year
+
+- Calibrated weights are euqal in each household
+
+
+## Methodology
+
+- Estimate Variance of point estimate $\theta(\textbf{X}_k,\textbf{w}_k)$ with $\textbf{X}_k$ as observations- and $\textbf{w}_k$ as weight-vector.
+
+    - $sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(\textbf{X}^{(j)},\textbf{b}^{(i,j)})-\overline{\theta})^2}$
+
+- Using $\overline{\theta}:=\frac{1}{B}\sum\limits_{i=1}^B\theta(\textbf{X}^{(j)},\textbf{b}^{(i,j)})$ as the sample mean and $\textbf{b}^i_{j}$ as the $i$-th vector of bootstrap weights for the year $j$.
+
+
+## Methodology
+
+- Use pooled data for regional estimates
+\newline
+- Apply filter to consecutive years using equal filter weights
+
+    - poverty stays quite stable through out consecutive years
+
+- Gain in precision for variance estimation via pooled data
+
+## Methodology
+
+\begin{align*}
+  sd(\theta) =& \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta^{(3)}(\textbf{X}^{(y)},\textbf{b}^{(i,y)}))-\overline{\theta^{(3)}})}\\
+  \intertext{with}
+  \theta^{(3)}(\textbf{X}^{(y)},\textbf{b}^{(i,y)}) =& \frac{1}{3}(\theta(\textbf{X}^{(y-1)},\textbf{b}^{(i,y-1)})+\theta(\textbf{X}^{(y)},\textbf{b}^{(i,y)})+\\
+  &\theta(\textbf{X}^{(y+1)},\textbf{b}^{(i,y+1)}))
+  \intertext{and}
+  \overline{\theta^{(3)}}=&\frac{1}{B}\sum\limits_{i=1}^B\theta{(3)}(\textbf{X}^{(y)},\textbf{b}^{(i,y)}) \quad.
+\end{align*}
+
+
+## Using package `surveysd`
+
+- Not yet on CRAN but on git https://github.com/statistikat/surveysd
+\newline
+- Contains of 3 major functions
+
+    - `draw.bootstrap`
+    - `recalib`
+    - `calc.stError`
+
+
+## Using package `surveysd`
+
+- Data must contain the following variables
+\newline
+
+    - Household Identifier
+    - Sampling weights
+    - Column specifing year of sample drawn
+    - variables of interest
+    - Columns by which sample was stratified
+
+- Each row represents 1 Individual
+
+## Using package `surveysd`
+
+```{r read_in}
+library(data.table)
+library(surveysd)
+dat <- fread("/mnt/obdatenaustausch/NETSILC3/udb_short_new.csv")
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
+
+dat_es <- dat[RB020=="ES"]
+dat_es[,.(RB010,RB030,DB040,arose,hsize,HX040,db050)]
+dat_es[agex==100,agex:=80]
+```
+
+
+## Drawing bootstrap replicates
+```{r boot1}
+# draw 20 boostrap replicates with strata
+dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",
+                           year="RB010")
+```
+
+```{r boot_col}
+colnames(dat_boot_1)
+```
+
+## Drawing bootstrap replicates
+
+```{r boot2}
+# define stratified 1-Stage cluster sample
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",cluster="DB060",
+                           year="RB010")
+```
+```{r boot3}
+# define Number of clusters in in each strata
+# as well as number of households in each cluster
+dat_es[,fpc1:=length(unique(DB060))/.05,by=list(db050,RB010)] # 5% of Clusters are drawn in each strata
+dat_es[,fpc2:=sum(RB050[!duplicated(db030)]),by=list(DB060,db050,RB010)]
+
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",cluster="DB060",
+                           year="RB010",totals=c("fpc1","fpc2"),boot.names=NULL)
+
+```
+
+
+## Calibrating bootstrap replicates
+
+```{r recalib1}
+dat_boot_calib_1 <- recalib(dat=copy(dat_boot_1),hid="db030",weights="RB050",
+                          year="RB010",b.rep=paste0("w",1:20),conP.var=c("RB090"),conH.var = c("DB040"))
+```
+
+
+```{r recalib2}
+dat_boot_calib <- recalib(dat=copy(dat_boot_1),hid="db030",weights="RB050",
+                          year="RB010",b.rep=paste0("w",1:20),conP.var=c("RB090","agex"),conH.var = c("DB040","DB100"))
+```
+
+
+## Calculate Estimates using bootstrap replicates
+- Calculate variance or distribution of point estimate $\theta(\textbf{X},\textbf{w})$ using bootstrap and original weights
+
+- Predefined point estimates
+
+    - `weightedRatio` - `weightedRatioNat`
+    - `weightedSum`
+    - `popSize` - `sampSize`
+
+## Calculate Estimates using bootstrap replicates
+- Point estimates are applied on specified variables using the original and bootstrap weights
+
+- Estimates are calcualted per `year`, but additional subgroups can be defined $\rightarrow$ regional estimates
+
+## Calculate Estimates using bootstrap replicates
+- Differences of point estimates between years and rolling means over consecutive years can also be applied
+
+- Differences for rolling means is also supported
+
+    - $\theta^{(2014-2016)}(\textbf{X},\textbf{b}) - \theta^{(2008-2010)}(\textbf{X},\textbf{b})$
+
+
+## Calculate Estimates using bootstrap replicates
+
+```{r recalib3}
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=NULL,year.diff=NULL,year.mean=NULL)
+erg
+erg$Estimates
+```
+
+## Calculate Estimates using bootstrap replicates
+
+```{r sd1}
+# Estimate mean over 3 consecutive years (-> default)
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=NULL,year.diff=NULL,year.mean=3)
+
+erg
+erg$Estimates
+```
+
+## Calculate Estimates using bootstrap replicates
+
+```{r sd2}
+# define subgroups
+# Estimates per DB040 AND DB100 are also calculated
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list("DB100",c("agex","DB100")),year.diff=NULL)
+
+erg
+erg$smallGroups
+```
+
+
+## Calculate Estimates using bootstrap replicates
+
+```{r sd3}
+# Add estimation of differences between the years 2016 and 2008
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list("DB100",c("agex","DB100")),year.diff=c("2016-2008"))
+
+erg
+```
+
+## Calculate Estimates using bootstrap replicates
+
+```{r sd4}
+# Calculate not only standard Error
+# but also .025 and .975 percentile
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list("DB100",c("agex","DB100")),year.diff=c("2016-2008"),
+                    p=c(.025,.975))
+
+erg$Estimates
+```
+
+## Calculate Estimates using bootstrap replicates
+
+```{r sd5}
+# user-defined function
+# take the gini - index
+library(laeken)
+# simulate income
+dat_income <- unique(dat_boot_calib_1,by="db030")
+dat_income[,income:=exp(rnorm(.N,mean=10,sd=0.8))-1]
+
+# gini() returns list - calc.stError needs function that returns double or integer
+help_gini <- function(x,w){
+  return(gini(x,w)$value)
+}
+
+erg <- calc.stError(dat=copy(dat_income),fun="help_gini",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2014-2008"),
+                    p=c(.025,.975))
+
+erg$cvHigh[HX080==TRUE]
+```
+
+## Suggested Number of bootstrap replicates
+
+- Current Population Survey (https://cps.ipums.org/cps/) suggest 150 replicates
+    - use Jackknife resampling technique
+\newline
+- Depending on size of subgroup different number of bootstrap replicates might be usefull
+
+- In general we suggest 250 bootstrap replicates
+
+## Suggested Number of bootstrap replicates
+```{r}
+
+```
+
+
+## Suggested Number of bootstrap replicates
+
+
+

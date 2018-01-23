@@ -15,7 +15,7 @@
 #' @param year character specifying the name of the column in \code{dat} containing the sample years.
 #' @param var character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each sample year.
 #' @param fun character specifying the function which will be applied on \code{var} for each sample year.
-#' Possible arguments are \code{weightedRatio,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and uses weights as its second argument.
+#' Possible arguments are \code{weightedRatio,weightedRatioNat,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and uses weights as its second argument.
 #' @param cross_var character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
 #' The pointestimates are then estimated for each subgroup seperately. If \code{cross_var=NULL} the data will split into sample years by default.
 #' @param year.diff character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL
@@ -41,6 +41,7 @@
 #' \code{fun} can be any function which returns a double or integer and uses sample weights as it's second argument. The predifined options are \code{weightedRatio,weightedSum,sampSize} and \code{popSize}, for wich \code{sampSize} and \code{popSize} indicate the sample and population size respectively.\cr
 #' \cr
 #' For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is calculated for \code{var} equal to 1, e.g \code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
+#' Using the option \code{weightedRatioNat} the weighted ratio (in \%) is divided by the weighted ratio at the national level for each \code{year}.
 #' \cr
 #' If \code{cross_var} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{cross_var}.\cr
 #' For instance if \code{cross_var = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
@@ -54,7 +55,8 @@
 #' Setting, for instance, \code{year.mean = 3} the results in averaging these results over each consecutive set of 3 years.\cr
 #' Estimating the standard error over these averages gives an improved estimate of the standard error for the central year, which was used for averaging.\cr
 #' The averaging of the results is also applied in differences of point estimates. For instance defining \code{year.diff = "2015-2009"} and \code{year.mean = 3}
-#' the differences in point estimates of 2014 and 2008, 2015 and 2009 as well as 2016 and 2010 are calcualated and finally the average over these 3 differences is calculated.
+#' the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as 2017 and 2011 are calcualated and finally the average over these 3 differences is calculated.
+#' The years set in \code{year.diff} are always used as starting years from which \code{year.mean-1} consecutive years are used to build the average.
 #' \cr
 #' Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
 #' \cr
@@ -221,15 +223,21 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   }
 
   # check year.mean
-  if(length(year.mean)!=1){
-    stop("year.mean must have length 1")
+  if(!is.null(year.mean)){
+    if(length(year.mean)!=1){
+      stop("year.mean must have length 1")
+    }
+    if(!is.numeric(year.mean)){
+      stop("year.mean must contain one numeric value")
+    }
+    if(year.mean%%1!=0){
+      stop("year.mean cannot have a decimal part")
+    }
+    if(year.mean==1){
+      year.mean <- NULL
+    }
   }
-  if(!is.numeric(year.mean)){
-    stop("year.mean must contain one numeric value")
-  }
-  if(year.mean%%1!=0){
-    stop("year.mean cannot have a decimal part")
-  }
+
 
   # check bias
   if(length(bias)!=1){
@@ -292,9 +300,14 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   # setup parameters
 	# define columns in which NAs are present (will be discarded for the evaluation)
 
-	col_cross <- unique(unlist(cross_var))
-	no.na <- unlist(dat[,lapply(.SD,function(z){all(!is.na(z))}),.SDcols=col_cross])
-	no.na <- colnames(dat)[colnames(dat)%in%col_cross][!no.na]
+
+  col_cross <- unique(unlist(cross_var))
+  if(!is.null(col_cross)){
+    no.na <- unlist(dat[,lapply(.SD,function(z){all(!is.na(z))}),.SDcols=col_cross])
+    no.na <- colnames(dat)[colnames(dat)%in%col_cross][!no.na]
+  }else{
+    no.na <- NULL
+  }
 
 	if(!is.null(p)){
     p.names <- paste0("p",p)
@@ -404,44 +417,51 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 	  eval.fun <- paste0(".(.N,",paste(eval.fun,collapse=","),")")
 	}
 
+  # define parameter for quantile calculation
+  if(!is.null(p)){
+    p.names <- paste0("p",p)
+    np <- length(p.names)
+  }
+
   # define additional parameters for mean over consecutive years
-	years <- sort(dt.eval("dat[,unique(",year,")]"))
-	# formulate k consecutive years
-	if(length(years)>=year.mean){
-	  yearsList <- unlist(lapply(years[1:c(length(years)-year.mean+1)],function(z){
-	    if(!((z+year.mean-1)>max(years))){
-	      paste(z:c(z+year.mean-1),collapse="_")
-	    }
-	  }))
-	}else{
-	  yearsList <- NULL
-	  cat(paste0("Not enough years present in data to calculate mean over ",year.mean," years.\n"))
-	}
+  years <- sort(dt.eval("dat[,unique(",year,")]"))
 
-	# define parameter for quantile calculation
-	if(!is.null(p)){
-	  p.names <- paste0("p",p)
-	  np <- length(p.names)
-	}
+  if(!is.null(year.mean)){
+    # formulate k consecutive years
+    if(length(years)>=year.mean){
+      yearsList <- unlist(lapply(years[1:c(length(years)-year.mean+1)],function(z){
+        if(!((z+year.mean-1)>max(years))){
+          paste(z:c(z+year.mean-1),collapse="_")
+        }
+      }))
+    }else{
+      yearsList <- NULL
+      cat(paste0("Not enough years present in data to calculate mean over ",year.mean," years.\n"))
+    }
 
-	# get years for k year mean over yearly differences
-  # get for each difference a list of vectors that correspond to the differences needed to use for the mean over differences
-	if(!is.null(year.diff)){
-    year.diff.b <- TRUE
-    year.diff.mean <- lapply(year.diff,function(z){
-      z <- as.numeric(z)
-      if(z[1]+(year.mean-1)<=max(years)){
-        lapply(1:year.mean,function(s){
-          z+s
-        })
-      }else{
-        cat(paste0("Can not calcualte differences between years ",z[1]," and ",z[2]," over ",year.mean," years.\n"))
-        NULL
-      }
-    })
+    # get years for k year mean over yearly differences
+    # get for each difference a list of vectors that correspond to the differences needed to use for the mean over differences
+    if(!is.null(year.diff)){
+      year.diff.b <- TRUE
+      year.diff.mean <- lapply(year.diff,function(z){
+        z <- as.numeric(z)
+        if(z[1]+(year.mean-1)<=max(years)){
+          lapply(1:year.mean,function(s){
+            z+s-1
+          })
+        }else{
+          cat(paste0("Can not calcualte differences between years ",z[1]," and ",z[2]," over ",year.mean," years.\n"))
+          NULL
+        }
+      })
+    }else{
+      year.diff.b <- FALSE
+      year.diff.mean <- NULL
+    }
   }else{
     year.diff.b <- FALSE
     year.diff.mean <- NULL
+    yearsList <- NULL
   }
 
 	# apply function to all elemnts of cross_var
@@ -496,7 +516,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		}
 
 		# calculate mean of estimate over 'year.mean'- years
-		if(!is.null(year.mean)){
+		if(!is.null(yearsList)){
 		  roll.est <- var.est[,list(V1=rollMeanC(x=V1,k=year.mean,type="c"),V2=yearsList),by=c("ID",z,"est")]
 		  setnames(roll.est,"V2",year)
 		  roll.est[,est_type:="roll"]
@@ -631,7 +651,13 @@ print.surveysd <- function(sd.result){
   # get number of subgroup which fall below size
   n.years <- unique(sd.result[["Estimates"]][[sd.result[["param"]][["year"]]]])
   n.years <- length(n.years[!grepl("-|_",n.years)])
-  n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["cross_var"]])))]))
+
+  if(!is.null(unlist(sd.result[["param"]][["cross_var"]]))){
+    n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["cross_var"]])))]))
+  }else{
+    n.groups <- NULL
+  }
+
   # get number of missing values in the output due to subgroups with no observations or subgroups with all observations equal NA
   n.NAs <- sum(is.na(sd.result[["Estimates"]][,mget(col.val)]))
 
@@ -642,24 +668,36 @@ print.surveysd <- function(sd.result){
     cat("Calculated point estimates for variable(s)\n\n",paste(sd.result[["param"]][["var"]],sep=","),"\n\nusing function",sd.result[["param"]][["fun"]],"\n\n")
   }
 
-  cat("Results hold",n.estimates,"point estimates for",n.years,"years in",n.groups,"subgroups\n")
-  cat("\n")
-  if(nrow(sd.result[["smallGroups"]])>10|nrow(sd.result[["smallGroups"]])==0){
-    cat(nrow(sd.result[["smallGroups"]]),"subgroups contained less than",sd.result[["param"]][["size.limit"]],"observations\n")
+  if(!is.null(n.groups)){
+    cat("Results hold",n.estimates,"point estimates for",n.years,"years in",n.groups,"subgroups\n")
   }else{
-    cat("Subgroups with less than",sd.result[["param"]][["size.limit"]],"observations\n")
-    print(sd.result[["smallGroups"]])
+    cat("Results hold",n.estimates,"point estimates for",n.years,"years\n")
   }
   cat("\n")
-  # print number of missing values for point estimates
-  cat("Point estimates are NAs in",n.NAs,"cases due to either\n no observations or only NAs for the variable(s) in the corresponding subgroups.\n")
+  if(nrow(sd.result[["smallGroups"]])!=0){
+    if(nrow(sd.result[["smallGroups"]])>10){
+      cat(nrow(sd.result[["smallGroups"]]),"subgroups contained less than",sd.result[["param"]][["size.limit"]],"observations\n")
+    }else{
+      cat("Subgroups with less than",sd.result[["param"]][["size.limit"]],"observations\n")
+      print(sd.result[["smallGroups"]])
+    }
+    cat("\n")
+  }
 
-  cat("\n")
+
+  # print number of missing values for point estimates
+  if(n.NAs>0){
+    cat("Point estimates are NAs in",n.NAs,"cases due to either\n no observations or only NAs for the variable(s) in the corresponding subgroups.\n")
+    cat("\n")
+  }
+
+
   # get number of point estimates where sd exceeds cv.limit
   stEtoohigh <- colnames(sd.result[["cvHigh"]])
   stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(sd.result[["param"]][["year"]],unique(unlist(sd.result[["param"]][["cross_var"]])))]
   stEtoohigh <- as.matrix(subset(sd.result[["cvHigh"]],select=stEtoohigh))
-  cat("Estimted standard error exceeds",sd.result[["param"]][["cv.limit"]],"% of the the point estimate in",sum(stEtoohigh,na.rm=TRUE),"cases\n")
-  cat("\n")
-
+  if(sum(stEtoohigh,na.rm=TRUE)>0){
+    cat("Estimted standard error exceeds",sd.result[["param"]][["cv.limit"]],"% of the the point estimate in",sum(stEtoohigh,na.rm=TRUE),"cases\n")
+    cat("\n")
+  }
 }

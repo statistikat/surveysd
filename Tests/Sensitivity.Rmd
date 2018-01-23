@@ -27,7 +27,7 @@ res_all  <- res_all[rb010%in%dat_boot_calib[,unique(rb010)]]
 res_all[,rb010:=as.numeric(rb010)]
 
 num_obs <- rbindlist(list(dat_boot_calib[,.N,by=rb010],dat_boot_calib[,.N,by=list(rb010,db040,db100)]),use.names=TRUE,fill=TRUE)
-num_obs[,GROUP:=cut(N,c(-Inf,10,25,50,100,200,500,1000,Inf))]
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,200,500,1000,Inf))]
 
 res_all  <- merge(res_all ,num_obs,by=c("rb010","db040","db100"))
 res_all[,GROUP_VAR:=.GRP,by=c("rb010","db040","db100")]

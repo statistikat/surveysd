@@ -23,7 +23,13 @@ draw.bootstrap(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
 \item{country}{character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
 In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.}
 
-\item{totals}{(optional) character specifying the name of the column in \code{dat} containing the the totals per strata. If totals is \code{NULL}, the sum of weights per strata will be calcualted and named 'fpc'.}
+\item{cluster}{character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.}
+
+\item{totals}{(optional) character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. If totals and cluster is \code{NULL}, the households per strata will be calcualted using the \code{weights} argument and named 'fpc'.
+If clusters are specified then totals need to be supplied by the user, otherwise they will be set to \code{NULL}. When multiple cluster and or strata are specified totals needs to contain multiple argument each corresponding to a column name in \code{dat}.
+Each column needs to contains the total number of units in the population regarding the subsequent level. The vector is interpreted from left to right meaning that the most left value of \code{totals}
+specifies the column names with the number of units in the population at the highest level and the most right value specifies the column names with the number of units in the population at the lowest level.
+This argument will be passed onto the function \code{svydesign()} from package \code{survey} through the argument \code{fpc}.}
 
 \item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}
 }
@@ -54,8 +60,7 @@ This ensures that the bootstrap replicates follow the same logic as the sampled 
 }
 \examples{
 # read in data (must be changed..)
-dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
-                            bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+dat <- data.table(read_sas("PATH"))
 
 # create 20 bootstrap replicates using the column "bundesld" as strata
 dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",

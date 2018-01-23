@@ -20,7 +20,7 @@ calc.stError(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="po
 \item{var}{character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each sample year.}
 
 \item{fun}{character specifying the function which will be applied on \code{var} for each sample year.
-Possible arguments are \code{weightedRatio,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and uses weights as its second argument.}
+Possible arguments are \code{weightedRatio,weightedRatioNat,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and uses weights as its second argument.}
 
 \item{cross_var}{character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
 The pointestimates are then estimated for each subgroup seperately. If \code{cross_var=NULL} the data will split into sample years by default.}
@@ -67,6 +67,7 @@ The point estimate is then selected as the result of \code{fun} when using the o
 \code{fun} can be any function which returns a double or integer and uses sample weights as it's second argument. The predifined options are \code{weightedRatio,weightedSum,sampSize} and \code{popSize}, for wich \code{sampSize} and \code{popSize} indicate the sample and population size respectively.\cr
 \cr
 For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is calculated for \code{var} equal to 1, e.g \code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
+Using the option \code{weightedRatioNat} the weighted ratio (in \%) is divided by the weighted ratio at the national level for each \code{year}.
 \cr
 If \code{cross_var} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{cross_var}.\cr
 For instance if \code{cross_var = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
@@ -80,7 +81,8 @@ Specifying \code{year.mean} leads to an improvement in standard error by averagi
 Setting, for instance, \code{year.mean = 3} the results in averaging these results over each consecutive set of 3 years.\cr
 Estimating the standard error over these averages gives an improved estimate of the standard error for the central year, which was used for averaging.\cr
 The averaging of the results is also applied in differences of point estimates. For instance defining \code{year.diff = "2015-2009"} and \code{year.mean = 3}
-the differences in point estimates of 2014 and 2008, 2015 and 2009 as well as 2016 and 2010 are calcualated and finally the average over these 3 differences is calculated.
+the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as 2017 and 2011 are calcualated and finally the average over these 3 differences is calculated.
+The years set in \code{year.diff} are always used as starting years from which \code{year.mean-1} consecutive years are used to build the average.
 \cr
 Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
 \cr
@@ -97,8 +99,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 \examples{
 # read in and prepare data
 library(data.table)
-dat <- data.table(read_sas("O:/B/3-AP/Analyse/sonstiges/
-                            bundesländerschätzungen 2008-2018/daten/bldaten0816.sas7bdat"))
+dat <- data.table(read_sas("PATH"))
 
 dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
                      year="jahr",totals=NULL,boot.names=NULL)
