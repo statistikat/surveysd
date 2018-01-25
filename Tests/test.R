@@ -199,6 +199,12 @@ dat[,RB050:=as.numeric(RB050)]
 dat_es <- dat[RB020=="ES"]
 dat_es[,.(RB010,RB030,DB040,arose,hsize,HX040,db050)]
 
+dat_es[,totals1:=sum(RB050[!duplicated(db030)]),by=list(RB010,db050)]
+dat_es[,totals2:=sum(RB050[!duplicated(db030)]),by=list(RB010,db050,DB060)]
+dat_es[,totals2:=mean(totals2[!duplicated(DB060)]),by=list(RB010,db050)]
+dat_es[,totals3:=totals1/totals2]
+dat_es[,sum(totals2[!duplicated(paste(db050,DB060))]),by=list(RB010)]
+
 # define stratified 1-Stage cluster sample
 set.seed(1234)
 dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",cluster="DB060",
@@ -206,3 +212,8 @@ dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",s
 
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="RB050",
                           year="RB010",b.rep=paste0("w",1:20),conP.var=c("agex"),conH.var = c("DB040","HX080"))
+
+
+
+# cluster(DB060) in strata(db050) bestehen aus ca 400 Einheiten
+# Anzahl cluster in strate = HH_STRATA / 400

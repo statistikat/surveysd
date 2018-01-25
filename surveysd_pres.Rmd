@@ -3,19 +3,19 @@ title: "R-Package `surveysd`"
 date: "`r Sys.Date()`"
 author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
 output: 
-  beamer_presentation: 
+  beamer_presentation:
+    includes:
+     in_header: header.txt 
     colortheme: beaver
     highlight: tango
     incremental: no
     theme: JuanLesPins
-    toc: yes
 ---
 
+## Motivation
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = TRUE)
 ```
-
-## Motivation
 
 - EU-SILC and at risk of social exclusion (`arose`)
 \newline
@@ -46,12 +46,12 @@ knitr::opts_chunk$set(cache = TRUE)
 \newline
 - Each year $l$ contains a sample size $n_l$
 \newline
-- Household ID $h$ is unique throughout the pooled data (for didactic reasons)
+- Household ID $h$ is unique throughout the pooled data
 
 
 ## Methodology
 
-- Generate bootstrap $B$ replicates without replacement and considering stratification/clustering [preston et al]
+- Generate $B$ bootstrap replicates without replacement and considering stratification/clustering [preston et al]
 
     - $f^{i}_{(h,j)}$ for household $h$ in year $j$, $i=1,...,B$
 
@@ -60,7 +60,9 @@ knitr::opts_chunk$set(cache = TRUE)
 
     - stay constant until the household drops out of the sample
 
-    - $f^{i}_{(h,j)} = f^{i}_{(h,k)}$ $\forall j,k \in 1,...,y$, $i=1,...,B$
+    - $f^{i}_{(h,k(h))} = f^{i}_{(h,j)}$ $\forall j \in 1,...,y$, $i=1,...,B$
+    
+    - with $k(h)$ as the year that household $h$ first comes into SILC
 
 
 ## Methodology
@@ -78,7 +80,7 @@ knitr::opts_chunk$set(cache = TRUE)
 
 ## Methodology
 
-- Estimate Variance of point estimate $\theta(\textbf{X}_k,\textbf{w}_k)$ with $\textbf{X}_k$ as observations- and $\textbf{w}_k$ as weight-vector.
+- Estimate Variance of point estimate $\theta(\textbf{X}_j,\textbf{w}^0_j)$ with $\textbf{X}_j$ as observations- and $\textbf{w}^0_j$ as weight-vector.
 
     - $sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(\textbf{X}^{(j)},\textbf{b}^{(i,j)})-\overline{\theta})^2}$
 
@@ -87,7 +89,7 @@ knitr::opts_chunk$set(cache = TRUE)
 
 ## Methodology
 
-- Use pooled data for regional estimates
+- Use data from consecutive years of SILC for regional estimates
 \newline
 - Apply filter to consecutive years using equal filter weights
 
@@ -103,7 +105,7 @@ knitr::opts_chunk$set(cache = TRUE)
   \theta^{(3)}(\textbf{X}^{(y)},\textbf{b}^{(i,y)}) =& \frac{1}{3}(\theta(\textbf{X}^{(y-1)},\textbf{b}^{(i,y-1)})+\theta(\textbf{X}^{(y)},\textbf{b}^{(i,y)})+\\
   &\theta(\textbf{X}^{(y+1)},\textbf{b}^{(i,y+1)}))
   \intertext{and}
-  \overline{\theta^{(3)}}=&\frac{1}{B}\sum\limits_{i=1}^B\theta{(3)}(\textbf{X}^{(y)},\textbf{b}^{(i,y)}) \quad.
+  \overline{\theta^{(3)}}=&\frac{1}{B}\sum\limits_{i=1}^B\theta^{(3)}(\textbf{X}^{(y)},\textbf{b}^{(i,y)}) \quad.
 \end{align*}
 
 
@@ -131,11 +133,13 @@ knitr::opts_chunk$set(cache = TRUE)
 
 - Each row represents 1 Individual
 
+
 ## Using package `surveysd`
 
-```{r read_in}
+```{r read_in,size="tiny"}
 library(data.table)
 library(surveysd)
+library(ggplot2)
 dat <- fread("/mnt/obdatenaustausch/NETSILC3/udb_short_new.csv")
 dat[,RB050:=gsub(",","\\.",RB050)]
 dat[,RB050:=as.numeric(RB050)]
@@ -145,12 +149,12 @@ dat_es[,.(RB010,RB030,DB040,arose,hsize,HX040,db050)]
 dat_es[agex==100,agex:=80]
 ```
 
-
 ## Drawing bootstrap replicates
-```{r boot1}
+```{r boot1,size="tiny"}
 # draw 20 boostrap replicates with strata
-dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",
-                           year="RB010")
+dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",
+                             weights="RB050",strata="db050",
+                             year="RB010")
 ```
 
 ```{r boot_col}
@@ -161,7 +165,8 @@ colnames(dat_boot_1)
 
 ```{r boot2}
 # define stratified 1-Stage cluster sample
-dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",cluster="DB060",
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",
+                           weights="RB050",strata="db050",cluster="DB060",
                            year="RB010")
 ```
 ```{r boot3}
@@ -170,7 +175,8 @@ dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",s
 dat_es[,fpc1:=length(unique(DB060))/.05,by=list(db050,RB010)] # 5% of Clusters are drawn in each strata
 dat_es[,fpc2:=sum(RB050[!duplicated(db030)]),by=list(DB060,db050,RB010)]
 
-dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",strata="db050",cluster="DB060",
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",
+                           weights="RB050",strata="db050",cluster="DB060",
                            year="RB010",totals=c("fpc1","fpc2"),boot.names=NULL)
 
 ```
@@ -179,20 +185,22 @@ dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",weights="RB050",s
 ## Calibrating bootstrap replicates
 
 ```{r recalib1}
-dat_boot_calib_1 <- recalib(dat=copy(dat_boot_1),hid="db030",weights="RB050",
-                          year="RB010",b.rep=paste0("w",1:20),conP.var=c("RB090"),conH.var = c("DB040"))
+dat_boot_calib_1 <- recalib(dat=copy(dat_boot_1),hid="db030",
+                            weights="RB050",year="RB010",b.rep=paste0("w",1:20),
+                            conP.var=c("RB090"),conH.var = c("DB040"))
 ```
 
-
+## Calibrating bootstrap replicates
 ```{r recalib2}
-dat_boot_calib <- recalib(dat=copy(dat_boot_1),hid="db030",weights="RB050",
-                          year="RB010",b.rep=paste0("w",1:20),conP.var=c("RB090","agex"),conH.var = c("DB040","DB100"))
+dat_boot_calib <- recalib(dat=copy(dat_boot_1),hid="db030",
+                          weights="RB050",year="RB010",b.rep=paste0("w",1:20),
+                          conP.var=c("RB090","agex"),conH.var = c("DB040","DB100"))
 ```
 
 
 ## Calculate Estimates using bootstrap replicates
 - Calculate variance or distribution of point estimate $\theta(\textbf{X},\textbf{w})$ using bootstrap and original weights
-
+\newline
 - Predefined point estimates
 
     - `weightedRatio` - `weightedRatioNat`
@@ -201,12 +209,12 @@ dat_boot_calib <- recalib(dat=copy(dat_boot_1),hid="db030",weights="RB050",
 
 ## Calculate Estimates using bootstrap replicates
 - Point estimates are applied on specified variables using the original and bootstrap weights
-
+\newline
 - Estimates are calcualted per `year`, but additional subgroups can be defined $\rightarrow$ regional estimates
 
 ## Calculate Estimates using bootstrap replicates
 - Differences of point estimates between years and rolling means over consecutive years can also be applied
-
+\newline
 - Differences for rolling means is also supported
 
     - $\theta^{(2014-2016)}(\textbf{X},\textbf{b}) - \theta^{(2008-2010)}(\textbf{X},\textbf{b})$
@@ -215,7 +223,8 @@ dat_boot_calib <- recalib(dat=copy(dat_boot_1),hid="db030",weights="RB050",
 ## Calculate Estimates using bootstrap replicates
 
 ```{r recalib3}
-erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:20),
                     var="HX080",cross_var=NULL,year.diff=NULL,year.mean=NULL)
 erg
 erg$Estimates
@@ -225,10 +234,15 @@ erg$Estimates
 
 ```{r sd1}
 # Estimate mean over 3 consecutive years (-> default)
-erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:20),
                     var="HX080",cross_var=NULL,year.diff=NULL,year.mean=3)
 
 erg
+
+```
+## Calculate Estimates using bootstrap replicates
+```{r sd1_1}
 erg$Estimates
 ```
 
@@ -237,20 +251,26 @@ erg$Estimates
 ```{r sd2}
 # define subgroups
 # Estimates per DB040 AND DB100 are also calculated
-erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:20),
                     var="HX080",cross_var=list("DB100",c("agex","DB100")),year.diff=NULL)
 
 erg
-erg$smallGroups
-```
 
+```
+## Calculate Estimates using bootstrap replicates
+```{r sd2_1}
+erg$cvHigh
+```
 
 ## Calculate Estimates using bootstrap replicates
 
 ```{r sd3}
 # Add estimation of differences between the years 2016 and 2008
-erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
-                    var="HX080",cross_var=list("DB100",c("agex","DB100")),year.diff=c("2016-2008"))
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list("DB100",c("agex","DB100")),
+                    year.diff=c("2016-2008"))
 
 erg
 ```
@@ -260,9 +280,10 @@ erg
 ```{r sd4}
 # Calculate not only standard Error
 # but also .025 and .975 percentile
-erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
-                    var="HX080",cross_var=list("DB100",c("agex","DB100")),year.diff=c("2016-2008"),
-                    p=c(.025,.975))
+erg <- calc.stError(dat=copy(dat_boot_calib_1),fun="weightedRatio",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list("DB100",c("agex","DB100")),
+                    year.diff=c("2016-2008"),p=c(.025,.975))
 
 erg$Estimates
 ```
@@ -282,10 +303,25 @@ help_gini <- function(x,w){
   return(gini(x,w)$value)
 }
 
-erg <- calc.stError(dat=copy(dat_income),fun="help_gini",weights="RB050",year="RB010",b.weights=paste0("w",1:20),
-                    var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2014-2008"),
-                    p=c(.025,.975))
+erg <- calc.stError(dat=copy(dat_income),fun="help_gini",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:20),
+                    var="HX080",cross_var=list(c("DB040","DB100")),
+                    year.diff=c("2014-2008"),p=c(.025,.975))
 
+
+```
+## Calculate Estimates using bootstrap replicates
+```{r sd5_11}
+erg
+```
+
+```{r sd5_12}
+head(erg$smallGroups)
+```
+
+## Calculate Estimates using bootstrap replicates
+
+```{r sd5_2}
 erg$cvHigh[HX080==TRUE]
 ```
 
@@ -295,16 +331,180 @@ erg$cvHigh[HX080==TRUE]
     - use Jackknife resampling technique
 \newline
 - Depending on size of subgroup different number of bootstrap replicates might be usefull
-
+\newline
 - In general we suggest 250 bootstrap replicates
 
 ## Suggested Number of bootstrap replicates
-```{r}
+```{r plotrange, include=FALSE}
+load("/mnt/meth/Gussenbauer/surveysd/udb_short_calib.RData")
+nB <- seq(50,800,by=50)
+
+res_all <- list()
+for(b in nB){
+  load(paste0("/mnt/meth/Gussenbauer/surveysd/Results_boot",b,".RData"))
+  res_boot <- rbindlist(res_boot)
+  res_boot[,B:=b]
+  res_all <- c(res_all,list(res_boot))
+}
+res_all <- rbindlist(res_all)
+
+
+res_all  <- res_all[rb010%in%dat_boot_calib[,unique(rb010)]]
+res_all[,rb010:=as.numeric(rb010)]
+
+num_obs <- rbindlist(list(dat_boot_calib[,.N,by=rb010],dat_boot_calib[,.N,by=list(rb010,db040,db100)]),use.names=TRUE,fill=TRUE)
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,200,500,1000,Inf))]
+
+res_all  <- merge(res_all ,num_obs,by=c("rb010","db040","db100"))
+res_all[,GROUP_VAR:=.GRP,by=c("rb010","db040","db100")]
+
+estim <- c("stE_hx080","p0.025_hx080","p0.975_hx080")
+```
+
+```{r plotrange1,echo=FALSE}
+  i <- 1
+  plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
+  plot_boot <- plot_boot[,diff(range(get(estim[i]))),by=list(GROUP_VAR,GROUP,B)]
+  plot_boot <- plot_boot[,.(Q=c("p.01","p.5","p.99"),quantile(V1,c(.01,.5,.99))),by=list(GROUP,B)]
+  plot_boot <- dcast(plot_boot,GROUP+B~Q,value.var="V2")
+  plot_boot[,p.01:=p.5-p.01]
+  plot_boot[,p.99:=p.99-p.5]
+  setnames(plot_boot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(plot_boot,aes(factor(B),p.5,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("1% - Median - 99%")+
+    geom_ribbon(aes(ymin = p.5-p.01, ymax = p.5+p.99,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    facet_grid(NumberObs~.)+ggtitle(estim[i])
+
+  plot(p1)
 
 ```
 
 
 ## Suggested Number of bootstrap replicates
+```{r plotrange2,echo=FALSE}
+ i <- 2
+  plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
+  plot_boot <- plot_boot[,diff(range(get(estim[i]))),by=list(GROUP_VAR,GROUP,B)]
+  plot_boot <- plot_boot[,.(Q=c("p.01","p.5","p.99"),quantile(V1,c(.01,.5,.99))),by=list(GROUP,B)]
+  plot_boot <- dcast(plot_boot,GROUP+B~Q,value.var="V2")
+  plot_boot[,p.01:=p.5-p.01]
+  plot_boot[,p.99:=p.99-p.5]
+  setnames(plot_boot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(plot_boot,aes(factor(B),p.5,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("1% - Median - 99%")+
+    geom_ribbon(aes(ymin = p.5-p.01, ymax = p.5+p.99,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    facet_grid(NumberObs~.)+ggtitle(estim[i])
+
+  plot(p1)
+
+```
 
 
+## Suggested Number of bootstrap replicates
+```{r plotrange3,echo=FALSE}
+ i <- 3
+  plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
+  plot_boot <- plot_boot[,diff(range(get(estim[i]))),by=list(GROUP_VAR,GROUP,B)]
+  plot_boot <- plot_boot[,.(Q=c("p.01","p.5","p.99"),quantile(V1,c(.01,.5,.99))),by=list(GROUP,B)]
+  plot_boot <- dcast(plot_boot,GROUP+B~Q,value.var="V2")
+  plot_boot[,p.01:=p.5-p.01]
+  plot_boot[,p.99:=p.99-p.5]
+  setnames(plot_boot,c("GROUP"),c("NumberObs"))
 
+  p1 <- ggplot(plot_boot,aes(factor(B),p.5,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("1% - Median - 99%")+
+    geom_ribbon(aes(ymin = p.5-p.01, ymax = p.5+p.99,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    facet_grid(NumberObs~.)+ggtitle(estim[i])
+
+  plot(p1)
+
+```
+
+## Suggested Number of bootstrap replicates
+```{r plotchange,include=FALSE}
+load("/mnt/meth/Gussenbauer/surveysd/udb_short_calib.RData")
+load("/mnt/meth/Gussenbauer/surveysd/Results_i1000.RData")
+
+res <- rbindlist(res)
+res <- res[rb010%in%dat_boot_calib[,unique(rb010)]]
+res[,rb010:=as.numeric(rb010)]
+
+num_obs <- rbindlist(list(dat_boot_calib[,.N,by=rb010],dat_boot_calib[,.N,by=list(rb010,db040,db100)]),use.names=TRUE,fill=TRUE)
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,200,500,1000,Inf))]
+
+res <- merge(res,num_obs,by=c("rb010","db040","db100"))
+res[,GROUP_VAR:=.GRP,by=c("rb010","db040","db100")]
+
+estim <- c("stE_hx080","p0.025_hx080","p0.975_hx080")
+sel_var <- c("rb010","db040","db100","NumberWeights","GROUP_VAR","GROUP")
+```
+
+```{r plotchange1,echo=FALSE}
+ i <- 1
+  dat_plot <- subset(res,select=c(sel_var,estim[i]))
+  # berechne Veränderungsrate vom estimate über NumberWeights
+  setkeyv(dat_plot,c("GROUP_VAR","NumberWeights"))
+  dat_plot <- na.omit(dat_plot[,.(EST_CHANGE=diff(get(estim[i])),NumberWeights=NumberWeights[-1]),by=list(GROUP_VAR,GROUP)])
+  dat_plot <- dat_plot[,.(Q=c("min","med","max"),quantile(EST_CHANGE,c(0,.5,1))),by=list(GROUP,NumberWeights)]
+  dat_plot <- dcast(dat_plot,GROUP+NumberWeights~Q,value.var="V2")
+  dat_plot[,min:=med-min]
+  dat_plot[,max:=max-med]
+  setnames(dat_plot,c("GROUP"),c("NumberObs"))
+
+p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("Min - Median - Max")+
+    geom_ribbon(aes(ymin = med-min, ymax = med+max,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    coord_cartesian(ylim=c(1,-1))+
+    facet_grid(NumberObs~.)+ggtitle(estim[i])
+
+  plot(p1)
+
+```
+
+## Suggested Number of bootstrap replicates
+```{r plotchange2,echo=FALSE}
+ i <- 2 
+  dat_plot <- subset(res,select=c(sel_var,estim[i]))
+  # berechne Veränderungsrate vom estimate über NumberWeights
+  setkeyv(dat_plot,c("GROUP_VAR","NumberWeights"))
+  dat_plot <- na.omit(dat_plot[,.(EST_CHANGE=diff(get(estim[i])),NumberWeights=NumberWeights[-1]),by=list(GROUP_VAR,GROUP)])
+  dat_plot <- dat_plot[,.(Q=c("min","med","max"),quantile(EST_CHANGE,c(0,.5,1))),by=list(GROUP,NumberWeights)]
+  dat_plot <- dcast(dat_plot,GROUP+NumberWeights~Q,value.var="V2")
+  dat_plot[,min:=med-min]
+  dat_plot[,max:=max-med]
+  setnames(dat_plot,c("GROUP"),c("NumberObs"))
+
+p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("Min - Median - Max")+
+    geom_ribbon(aes(ymin = med-min, ymax = med+max,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    coord_cartesian(ylim=c(1,-1))+
+    facet_grid(NumberObs~.)+ggtitle(estim[i])
+
+  plot(p1)
+
+```
+
+## Suggested Number of bootstrap replicates
+```{r plotchange3,echo=FALSE}
+ i <- 3
+  dat_plot <- subset(res,select=c(sel_var,estim[i]))
+  # berechne Veränderungsrate vom estimate über NumberWeights
+  setkeyv(dat_plot,c("GROUP_VAR","NumberWeights"))
+  dat_plot <- na.omit(dat_plot[,.(EST_CHANGE=diff(get(estim[i])),NumberWeights=NumberWeights[-1]),by=list(GROUP_VAR,GROUP)])
+  dat_plot <- dat_plot[,.(Q=c("min","med","max"),quantile(EST_CHANGE,c(0,.5,1))),by=list(GROUP,NumberWeights)]
+  dat_plot <- dcast(dat_plot,GROUP+NumberWeights~Q,value.var="V2")
+  dat_plot[,min:=med-min]
+  dat_plot[,max:=max-med]
+  setnames(dat_plot,c("GROUP"),c("NumberObs"))
+
+p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("Min - Median - Max")+
+    geom_ribbon(aes(ymin = med-min, ymax = med+max,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    coord_cartesian(ylim=c(1,-1))+
+    facet_grid(NumberObs~.)+ggtitle(estim[i])
+
+  plot(p1)
+
+```

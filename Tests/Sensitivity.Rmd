@@ -10,12 +10,12 @@ library(data.table)
 library(surveysd)
 library(ggplot2)
 
-load("~/surveysd/udb_short_calib.RData")
+load("/mnt/meth/Gussenbauer/surveysd/udb_short_calib.RData")
 nB <- seq(50,800,by=50)
 
 res_all <- list()
 for(b in nB){
-  load(paste0("~/surveysd/Results_boot",b,".RData"))
+  load(paste0("/mnt/meth/Gussenbauer/surveysd/Results_boot",b,".RData"))
   res_boot <- rbindlist(res_boot)
   res_boot[,B:=b]
   res_all <- c(res_all,list(res_boot))
@@ -72,7 +72,7 @@ for( i in 1:length(estim)){
 #### Die Y-Achse gibt die abolute Veränderung des Schätzers an
 
 ```{r,include=FALSE}
-load("~/surveysd/Results_i1000.RData")
+load("/mnt/meth/Gussenbauer/surveysd/Results_i1000.RData")
 
 res <- rbindlist(res)
 res <- res[rb010%in%dat_boot_calib[,unique(rb010)]]

@@ -163,18 +163,18 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
       # if no clusters are specified the use calculate number of households in each strata
       totals <- "fpc"
       dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,country),collapse=","),")]")
-      add.totals <- TRUE
-      optwarn <- FALSE
     }else{
       # else leave totals NULL
-      add.totals <- FALSE
-      cat("Number of Clusters at each level are not specified\nDesign is sampled with replacement\n")
-      optwarn <- TRUE
-      # totals <- "fpc"
-      # dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,cluster,country),collapse=","),")]")
-      # add.totals <- TRUE
-      # optwarn <- FALSE
+      # if(length(cluster)>1){
+      #   stop("If sample ist clusterd at multiple stages the number of Clusters at each stage must be specified!\n")
+      # }
+      #
+      # warning("Number of Clusters is not specified and will therefor be roughly estimated.
+      #         \n Resulting bootstrap replicates might be biased. To avoid this define number of clusters in each strata through parameter 'totals'")
+      stop("Number of Clusters at each level is not specified!
+           \n Resulting bootstrap replicates could be biased. To avoid this define number of clusters in each strata through parameter 'totals'")
     }
+    add.totals <- TRUE
   }else{
 
     if(length(totals)!=length(c(strata,cluster))){
@@ -188,7 +188,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
     }
 
     add.totals <- FALSE
-    optwarn <- FALSE
+
   }
   ##########################################################
 
@@ -213,11 +213,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
 
 
   # calculate bootstrap replicates
-  if(optwarn){
-    suppressWarnings(dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)])
-  }else{
-    dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
-  }
+  dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
 
   # keep bootstrap replicates of first year for each household
   w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
