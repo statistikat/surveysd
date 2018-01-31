@@ -10,6 +10,7 @@ output:
     highlight: tango
     incremental: no
     theme: JuanLesPins
+bibliography: lib.bib
 ---
 
 ## Motivation
@@ -51,7 +52,7 @@ knitr::opts_chunk$set(cache = TRUE)
 
 ## Methodology
 
-- Generate $B$ bootstrap replicates without replacement and considering stratification/clustering [preston et al]
+- Generate $B$ bootstrap replicates without replacement and considering stratification/clustering @prest2009
 
     - $f^{i}_{(h,j)}$ for household $h$ in year $j$, $i=1,...,B$
 
@@ -164,17 +165,16 @@ colnames(dat_boot_1)
 ## Drawing bootstrap replicates
 
 ```{r boot2}
-# define stratified 1-Stage cluster sample
-dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",
-                           weights="RB050",strata="db050",cluster="DB060",
-                           year="RB010")
-```
-```{r boot3}
 # define Number of clusters in in each strata
 # as well as number of households in each cluster
-dat_es[,fpc1:=length(unique(DB060))/.05,by=list(db050,RB010)] # 5% of Clusters are drawn in each strata
-dat_es[,fpc2:=sum(RB050[!duplicated(db030)]),by=list(DB060,db050,RB010)]
 
+# clusters are made up by approx. 400 Households
+dat_es[,fpc1:=round(sum(RB050[!duplicated(db030)])/400),by=list(db050,RB010)]
+
+dat_es[,fpc2:=400,by=list(DB060,db050,RB010)]
+
+# supply number of cluster in each Strata 
+# and houhsholds per cluster with parameter 'totals'
 dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",
                            weights="RB050",strata="db050",cluster="DB060",
                            year="RB010",totals=c("fpc1","fpc2"),boot.names=NULL)
@@ -508,3 +508,5 @@ p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
   plot(p1)
 
 ```
+
+## References 
