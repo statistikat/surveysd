@@ -203,7 +203,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
     stop("fun must have length 1")
   }
   if(!fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){
-    if(length(find(fun))==0){
+    if(exists(fun,mode="function")){
       stop(paste0("Function ",fun," is undefined"))
     }
   }
@@ -308,6 +308,9 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   }else{
     no.na <- NULL
   }
+  if(!is.null(no.na)){
+    cat("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
+  }
 
 	if(!is.null(p)){
     p.names <- paste0("p",p)
@@ -370,6 +373,12 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   outx <- outx[,mget(outx.names)]
 
   # specify parameters for output
+  if(fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){
+    fun.package <- "surveysd"
+  }else{
+    fun.package <- find(fun)
+  }
+
   param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,package=find(fun),cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,
                 bias=bias,add.arg=add.arg,size.limit=size.limit,cv.limit=cv.limit)
 
