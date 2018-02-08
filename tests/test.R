@@ -217,93 +217,11 @@ erg <- calc.stError(dat=copy(dat_boot_calib),weights="RB050",year="RB010",b.weig
 
 # cluster(DB060) in strata(db050) bestehen aus ca 400 Einheiten
 # Anzahl cluster in strate = HH_STRATA / 400
+# test plot device
+class(erg)
+
+plot(erg)
+
+plot(erg,type="grouping",groups=c("RB090","hsize"))
 
 
-library(ggplot2)
-library(data.table)
-library(gridExtra)
-library(grid)
-# prototype summary function
-erg$Estimates
-
-plot.dat <- erg$Estimates[grepl("^[[:digit:]]+$",RB010)]
-plot.dat <- merge(plot.dat,erg$smallGroups,all.x=TRUE)
-setkeyv(erg$cvHigh,c("RB010","DB040","RB090","hsize"))
-plot.dat <- erg$cvHigh[plot.dat]
-
-plot.dat[!is.na(N)&HX080==FALSE,res_type:="SmallGroup"]
-plot.dat[!is.na(N)&HX080==TRUE,res_type:="SmallGroup+cvHigh"]
-plot.dat[is.na(val_HX080),res_type:="Missing"]
-plot.dat[HX080==TRUE&is.na(res_type),res_type:="cvHigh"]
-plot.dat[is.na(res_type),res_type:="OK"]
-plot.dat[,res_type:=factor(res_type,levels)]
-
-plot.dat2 <- erg$Estimates[grepl("_",RB010)]
-plot.dat2 <- merge(plot.dat2,erg$smallGroups,all.x=TRUE)
-setkeyv(erg$cvHigh,c("RB010","DB040","RB090","hsize"))
-plot.dat2 <- erg$cvHigh[plot.dat2]
-
-plot.dat2[!is.na(N)&HX080==FALSE,res_type:="SmallGroup"]
-plot.dat2[!is.na(N)&HX080==TRUE,res_type:="SmallGroup+cvHigh"]
-plot.dat2[is.na(val_HX080),res_type:="Missing"]
-plot.dat2[HX080==TRUE&is.na(res_type),res_type:="cvHigh"]
-plot.dat2[is.na(res_type),res_type:="OK"]
-
-fill.values1 <- plot.dat[,unique(res_type)]
-fill.values2 <- plot.dat2[,unique(res_type)]
-
-poss.values <- c("Missing","cvHigh","SmallGroup+cvHigh","SmallGroup","OK")
-poss.color <- c("grey","orangered3","maroon","dodgerblue1","green4",)
-
-
-
-fill.color1 <- poss.color[poss.values%in%fill.values1]
-fill.values1 <- poss.values[poss.values%in%fill.values1]
-
-p1 <- ggplot(plot.dat,aes(RB010,fill=res_type))+
-  geom_bar()+
-  theme(legend.title = element_blank())+xlab("")+ylab("Count")+
-  scale_fill_manual(breaks = fill.values1,
-                    values=fill.color1)
-
-fill.color2 <- poss.color[poss.values%in%fill.values2]
-fill.values2 <- poss.values[poss.values%in%fill.values2]
-
-p2 <-  ggplot(plot.dat2,aes(RB010,fill=res_type))+
-  geom_bar()+
-  theme(legend.title = element_blank())+xlab("")+ylab("Count")+
-  scale_fill_manual(breaks = fill.values2,
-                    values=fill.color2)
-
-plots <- list(p1,p2)
-if(length(fill.values1)<length(fill.values2)){
-  g <- ggplotGrob(plots[[2]] + theme(legend.position="bottom"))$grobs
-}else{
-  g <- ggplotGrob(plots[[1]] + theme(legend.position="bottom"))$grobs
-}
-
-legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
-lheight <- sum(legend$height)
-grid.arrange(
-  do.call(arrangeGrob, lapply(plots, function(x)
-    x + theme(legend.position="none"))),
-  legend,
-  ncol = 1,
-  heights = unit.c(unit(1, "npc") - lheight, lheight))
-
-
-
-
-
-str(plot.dat)
-str(erg$cvHigh)
-
-
-a <- data.table(LETTERS[1:5],c(1,2,3,NA,NA),letters[1:5])
-b <- data.table(LETTERS[1:5],c(1,2,3,NA,NA))
-merge(a,b)
-
-
-data.table::merge(plot.dat[RB010==2008&is.na(db050)],erg$cvHigh[RB010==2008&is.na(db050)])
-setkeyv(plot.dat,c("RB010","db050","RB090"))
-plot.dat[erg$cvHigh]
