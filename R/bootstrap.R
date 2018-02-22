@@ -71,7 +71,7 @@
 #' @import survey data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NULL,cluster=NULL,totals=NULL,boot.names=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NULL,cluster=NULL,totals=NULL,boot.names=NULL,split=FALSE,pid=NULL){
 
   ##########################################################
   # INPUT CHECKING
@@ -216,9 +216,18 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
   dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
 
   # keep bootstrap replicates of first year for each household
+  if(split){
+    dat <- generate.HHID(dat,year=year,pid=pid,hid=hid)
+  }
+
   w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
   by.c <- paste(c(hid,country),collapse=",")
   dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",by.c,")]")
+
+  if(split){
+    dt.eval("dat[,",hid,":=",paste0(hid,"_orig"),"]")
+    dat[,c(paste0(hid,"_orig")):=NULL]
+  }
 
   # remove columns
   if(add.totals){
