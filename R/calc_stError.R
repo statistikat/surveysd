@@ -147,7 +147,7 @@
 
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
-# and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
+# and calculating standard devation (using the bootstrap replicates) per year and for k-year rolling means
 calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
 
   ##########################################################
@@ -392,7 +392,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
 
 
 # function to apply fun to var using weights (~weights, b.weights)
-# and calculating standard devation (using the bootstrap replicates) per year and für 3-year rolling means
+# and calculating standard devation (using the bootstrap replicates) per year and for k-year rolling means
 help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff=NULL,year.mean=NULL,bias=FALSE,no.na,add.arg=NULL,size.limit=20,p=NULL){
 
   # use c++ implementation for weightedRatio
