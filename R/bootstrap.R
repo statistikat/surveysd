@@ -203,6 +203,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
     cluster <- as.formula(paste0("~",hid))
   }else{
     cluster <- as.formula(paste0("~",paste(c(cluster,hid),collapse = "+")))
+    # cluster <- as.formula(paste0("~",cluster))
   }
 
   if(is.null(boot.names)){

@@ -305,11 +305,13 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   if(!is.null(col_cross)){
     no.na <- unlist(dat[,lapply(.SD,function(z){all(!is.na(z))}),.SDcols=col_cross])
     no.na <- colnames(dat)[colnames(dat)%in%col_cross][!no.na]
+
+    if(length(no.na)>0){
+      cat("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
+    }
+
   }else{
     no.na <- NULL
-  }
-  if(!is.null(no.na)){
-    cat("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
   }
 
 	if(!is.null(p)){
