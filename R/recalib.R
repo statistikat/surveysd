@@ -154,7 +154,7 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
   ellipsis[["epsP"]] <- getEllipsis("epsP",1e-2,ellipsis)
   ellipsis[["epsH"]] <- getEllipsis("epsH",5e-2,ellipsis)
   ellipsis[["bound"]] <- getEllipsis("bound",4,ellipsis)
-  ellipsis[["maxIter"]] <- getEllipsis("maxIter",50,ellipsis)
+  ellipsis[["maxIter"]] <- getEllipsis("maxIter",100,ellipsis)
   ellipsis[["meanHH"]] <- getEllipsis("meanHH",TRUE,ellipsis)
   ellipsis[["check_hh_vars"]] <- getEllipsis("check_hh_vars",FALSE,ellipsis)
   ellipsis[["conversion_messages"]] <- getEllipsis("conversion_messages",FALSE,ellipsis)
@@ -315,8 +315,8 @@ recalib <- function(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:1000),year="
 	    }else{
 	      set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
 	                             conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidfactor"
-	                             # check_hh_vars = check_hh_vars,conversion_messages = conversion_messages # nur für neue ipu2 version
+	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidfactor",
+	                             check_hh_vars = check_hh_vars
 	      )[,calibWeight])
 	      if(dat[,any(is.na(get(g)))]){
 	        calib.fail <- c(calib.fail,g)
