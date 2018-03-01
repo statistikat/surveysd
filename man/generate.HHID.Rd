@@ -2,16 +2,28 @@
 % Please edit documentation in R/generateHHID.R
 \name{generate.HHID}
 \alias{generate.HHID}
-\title{Title}
+\title{Generate new houshold ID for survey data with rotating panel design taking into account split households}
 \usage{
-generate.HHID(dat, year = "RB010", pid = "RB030", hid = "db030",
-  ID_name = "HHID_new")
+generate.HHID(dat, time.step = "RB010", pid = "RB030", hid = "db030")
 }
 \arguments{
-\item{ID_name}{}
+\item{dat}{data table of data frame containing the survey data}
+
+\item{time.step}{column name of \code{dat} containing an indicator for the rotations, e.g years, quarters, months, ect...}
+
+\item{pid}{column name of \code{dat} containing the personal identifier. This needs to be fixed for an indiviual throught the whole survey}
+
+\item{hid}{column name of \code{dat} containing the household id. This needs to for a household throught the whole survey}
+}
+\value{
+the survey data \code{dat} as data.table object containing a new and an old houhsehold ID. The new houshold ID which considers the split households is now named \code{hid} and the original household ID
+has a trailing "_orig".
 }
 \description{
-Title
+Generating a new houshold ID for survey data using a houshold ID and a personal ID.
+For surveys with rotating panel design containing housholds, houshold members can move from an existing household to a new one, that was not originally in the sample.
+This leads to the creation of so called split households. Using a peronal ID (that stays fixed over the whole survey) an indicator for different time steps and a houshold ID
+a new houshold ID is assigned to the original and the split houshold.
 }
 \examples{
 

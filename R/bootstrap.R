@@ -10,17 +10,19 @@
 #' @param REP integer indicating the number of bootstrap replicates.
 #' @param hid character specifying the name of the column in \code{dat} containing the household ID.
 #' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
-#' @param strata character vector specifying the name of the column in \code{dat} by which the population was stratified.
 #' @param year character specifying the name of the column in \code{dat} containing the sample years.
+#' @param strata character vector specifying the name of the column in \code{dat} by which the population was stratified.
+#' If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
+#' Setting in addition \code{cluter} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.
+#' @param cluster character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.
+#' @param totals character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. Is ONLY optional if \code{cluster} is \code{NULL} or equal \code{hid} and \code{strata} contains one columnname!
+#' Then the households per strata will be calcualted using the \code{weights} argument. If clusters and strata for multiple stages are specified \code{totals} needs to be a vector of \code{length(strata)} specifying the column on \code{dat}
+#' that contain the total number of PSUs at each stage. \code{totals} is interpreted from left the right, meaning that the first argument corresponds to the number of PSUs at the first and the last argument to the number of PSUs at the last stage.
+#' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
 #' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
 #' In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
-#' @param cluster character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.
-#' @param totals (optional) character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. If totals and cluster is \code{NULL}, the households per strata will be calcualted using the \code{weights} argument and named 'fpc'.
-#' If clusters are specified then totals need to be supplied by the user, otherwise they will be set to \code{NULL}. When multiple cluster and or strata are specified totals needs to contain multiple argument each corresponding to a column name in \code{dat}.
-#' Each column needs to contains the total number of units in the population regarding the subsequent level. The vector is interpreted from left to right meaning that the most left value of \code{totals}
-#' specifies the column names with the number of units in the population at the highest level and the most right value specifies the column names with the number of units in the population at the lowest level.
-#' This argument will be passed onto the function \code{svydesign()} from package \code{survey} through the argument \code{fpc}.
-#' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
+#' @param split logical, if TRUE split households are considered using \code{pid}, for more information see Details.
+#' @param pid column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.
 #' @return the survey data with the number of REP bootstrap replicates added as columns.
 #'
 #' @details \code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
@@ -31,10 +33,23 @@
 #'   \item Column containing the household sample weights;
 #'   \item Columns by which population was stratified during the sampling process.
 #' }
-#' A column for the totals in each strat can be included, but is only optional. If it is not included, e.g \code{totals=NULL}, this column will be calculated and added to \code{dat} using \code{strata} and \code{weights}.\cr
+#' For single stage sampling design a column the argument \code{totals} is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
+#' For this case the number of PSUs is calculated and added to \code{dat} using \code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling design is always assumed and
+#' if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.\cr
+#' In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.\cr
+#'
+#' If \code{cluster} is \code{NULL} or does not contain the \code{hid} at the last stage \code{hid} it will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
+#' \code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.\cr
+#' For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
+#' and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
+#'
 #' The bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link[survey]{as.svrepdesign}} from the package \code{survey}.
 #' Afterwards the bootstrap replicates for each household are carried forward from the first year the household enters the survey to all the censecutive years it stays in the survey.\cr
-#' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.
+#' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
+#' If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
+#' This takes into account the issue of a houshold splitting up.
+#' Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
+#' People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous years.
 #'
 #' @return Returns a data.table containing the original data as well as the number of \code{REP} columns containing the bootstrap replicates for each repetition.\cr
 #' The columns of the bootstrap replicates are by default labeled "w\emph{Number}" where \emph{Number} goes from 1 to \code{REP}.
@@ -71,7 +86,7 @@
 #' @import survey data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NULL,cluster=NULL,totals=NULL,boot.names=NULL,split=FALSE,pid=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL){
 
   ##########################################################
   # INPUT CHECKING
@@ -122,19 +137,46 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
     stop(paste0(year," is not a column in dat"))
   }
 
-  # check strata
-  if(!is.null(strata)){
-    if(!all(strata%in%c.names)){
-      stop("Not all elements in strata are column names in dat")
+  # check design
+  if(is.null(strata)){
+    strata <- "I"
+  }
+  if(is.null(cluster)){
+    cluster <- hid
+  }else{
+    if(!hid%in%cluster){
+      cluster <- c(cluster,hid)
+    }
+  }
+  if(!all(strata[!strata%in%c("1","I")]%in%c.names)){
+    stop("Not all elements in strata are column names in dat")
+  }
+  if(any(!cluster[!cluster%in%c("1","I")]%in%c.names)){
+    stop("Not all names in cluster are column names in dat")
+  }
+
+  if(length(cluster)>1){
+    if(length(cluster)!=length(strata)){
+      stop("strata and cluster need to have the same number of stages!\n Please use either '1' or 'I' if there was no clustering or stratification in one of the stages.")
+    }
+  }else{
+    if(length(strata)>1){
+      dt.eval("dat[,STRATA_VAR_HELP:=paste(",paste0(strata,collapse=","),",sep='-')]")
+      strata <- "STRATA_VAR_HELP"
     }
   }
 
-  # check design
-  if(!is.null(cluster)){
-    if(any(!cluster%in%c.names)){
-      stop("Not all names in cluster are column names in dat")
+
+  # check single.PSUs
+  single.PSU <- single.PSU[1]
+  if(is.null(single.PSU)){
+    warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
+  }else{
+    if(!single.PSU%in%c("merge","mean")){
+      warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
     }
   }
+
 
   # check country
   if(!is.null(country)){
@@ -153,13 +195,33 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
     }
   }
 
+  # check split and pid
+  if(is.null(split)){
+    stop("split needs to be logical")
+  }
+  if(!is.logical(split)){
+    stop("split needs to be logical")
+  }
+  if(split){
+    if(is.null(pid)){
+      stop("when split is TRUE pid needs to be specified")
+    }else{
+      if(length(pid)>1){
+        stop("pid can only have length 1")
+      }else{
+        if(!pid%in%c.names){
+          stop(pid,"is not a column of dat")
+        }
+      }
+    }
+  }
 
   # check totals
   # if clusters are specified the finite population correction factors must be user specified (at least for now)
   # check input for totals
   # if no totals are specified then leave them NULL
   if(is.null(totals)){
-    if(is.null(cluster)){
+    if(length(cluster)==1){
       # if no clusters are specified the use calculate number of households in each strata
       totals <- "fpc"
       dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,country),collapse=","),")]")
@@ -171,8 +233,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
       #
       # warning("Number of Clusters is not specified and will therefor be roughly estimated.
       #         \n Resulting bootstrap replicates might be biased. To avoid this define number of clusters in each strata through parameter 'totals'")
-      stop("Number of Clusters at each level is not specified!
-           \n Resulting bootstrap replicates could be biased. To avoid this define number of clusters in each strata through parameter 'totals'")
+      stop("For multistage sampling the number of PSUs at each level needs to be specified!")
     }
     add.totals <- TRUE
   }else{
@@ -192,19 +253,10 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
   }
   ##########################################################
 
-  # make arguments usable for survey package
-  strata <- as.formula(paste0("~",paste(strata,collapse=":")))
-  weights <- as.formula(paste0("~",weights))
-  if(!is.null(totals)){
-    totals <- as.formula(paste0("~",paste(totals,collapse="+")))
-  }
   # define sample design
-  if(is.null(cluster)){
-    cluster <- as.formula(paste0("~",hid))
-  }else{
-    cluster <- as.formula(paste0("~",paste(c(cluster,hid),collapse = "+")))
-    # cluster <- as.formula(paste0("~",cluster))
-  }
+  strata <- paste(strata,collapse=">")
+  cluster <- paste(cluster,collapse=">")
+  totals <- paste(totals,collapse=">")
 
   if(is.null(boot.names)){
     w.names <- paste0("w",1:REP)
@@ -214,35 +266,30 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,strata=NULL,year,country=NUL
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=gen.boot(.SD,REP=REP,cluster=cluster,weights=weights,strata=strata,totals=totals),by=c(year,country)]
+  dat[,c(w.names):=bootstrap(.SD,REP=REP,strata=strata,cluster=cluster,fpc=totals,return.value="replicates",check.input=FALSE),by=c(year,country)]
 
   # keep bootstrap replicates of first year for each household
   if(split){
-    dat <- generate.HHID(dat,year=year,pid=pid,hid=hid)
+    dat <- generate.HHID(dat,time.step=year,pid=pid,hid=hid)
   }
 
   w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
   by.c <- paste(c(hid,country),collapse=",")
   dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",by.c,")]")
 
+  # remove columns
   if(split){
     dt.eval("dat[,",hid,":=",paste0(hid,"_orig"),"]")
     dat[,c(paste0(hid,"_orig")):=NULL]
   }
-
-  # remove columns
   if(add.totals){
-    dt.eval("dat[,",gsub('~','',totals)[2],":=NULL]")
+    dt.eval("dat[,",totals,":=NULL]")
   }
+  if("STRATA_VAR_HELP"%in%colnames(dat)){
+    dat[,STRATA_VAR_HELP:=NULL]
+  }
+
   return(dat)
 }
 
-
-gen.boot <- function(dat,REP=1000,cluster="~hid",weights="hgew",strata="bundesld",totals="fpc"){
-
-  dat.svy <- svydesign(ids=cluster,weights=weights,fpc=totals,strata=strata,data=dat)
-  dat.svyboot <- as.svrepdesign(dat.svy,type="mrbbootstrap",replicates=REP,compress=FALSE)$repweights
-
-  return(data.table(dat.svyboot))
-}
 
