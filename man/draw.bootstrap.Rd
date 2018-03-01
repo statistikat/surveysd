@@ -16,22 +16,26 @@ draw.bootstrap(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
 
 \item{weights}{character specifying the name of the column in \code{dat} containing the sample weights.}
 
-\item{strata}{character vector specifying the name of the column in \code{dat} by which the population was stratified.}
-
 \item{year}{character specifying the name of the column in \code{dat} containing the sample years.}
+
+\item{strata}{character vector specifying the name of the column in \code{dat} by which the population was stratified.
+If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
+Setting in addition \code{cluter} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.}
+
+\item{cluster}{character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.}
+
+\item{totals}{character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. Is ONLY optional if \code{cluster} is \code{NULL} or equal \code{hid} and \code{strata} contains one columnname!
+Then the households per strata will be calcualted using the \code{weights} argument. If clusters and strata for multiple stages are specified \code{totals} needs to be a vector of \code{length(strata)} specifying the column on \code{dat}
+that contain the total number of PSUs at each stage. \code{totals} is interpreted from left the right, meaning that the first argument corresponds to the number of PSUs at the first and the last argument to the number of PSUs at the last stage.}
+
+\item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}
 
 \item{country}{character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
 In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.}
 
-\item{cluster}{character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.}
+\item{split}{logical, if TRUE split households are considered using \code{pid}, for more information see Details.}
 
-\item{totals}{(optional) character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. If totals and cluster is \code{NULL}, the households per strata will be calcualted using the \code{weights} argument and named 'fpc'.
-If clusters are specified then totals need to be supplied by the user, otherwise they will be set to \code{NULL}. When multiple cluster and or strata are specified totals needs to contain multiple argument each corresponding to a column name in \code{dat}.
-Each column needs to contains the total number of units in the population regarding the subsequent level. The vector is interpreted from left to right meaning that the most left value of \code{totals}
-specifies the column names with the number of units in the population at the highest level and the most right value specifies the column names with the number of units in the population at the lowest level.
-This argument will be passed onto the function \code{svydesign()} from package \code{survey} through the argument \code{fpc}.}
-
-\item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}
+\item{pid}{column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.}
 }
 \value{
 the survey data with the number of REP bootstrap replicates added as columns.
@@ -53,10 +57,23 @@ Survey information, like ID, sample weights, strata and population totals per st
   \item Column containing the household sample weights;
   \item Columns by which population was stratified during the sampling process.
 }
-A column for the totals in each strat can be included, but is only optional. If it is not included, e.g \code{totals=NULL}, this column will be calculated and added to \code{dat} using \code{strata} and \code{weights}.\cr
+For single stage sampling design a column the argument \code{totals} is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
+For this case the number of PSUs is calculated and added to \code{dat} using \code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling design is always assumed and
+if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.\cr
+In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.\cr
+
+If \code{cluster} is \code{NULL} or does not contain the \code{hid} at the last stage \code{hid} it will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
+\code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.\cr
+For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
+and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
+
 The bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link[survey]{as.svrepdesign}} from the package \code{survey}.
 Afterwards the bootstrap replicates for each household are carried forward from the first year the household enters the survey to all the censecutive years it stays in the survey.\cr
-This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.
+This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
+If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
+This takes into account the issue of a houshold splitting up.
+Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
+People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous years.
 }
 \examples{
 # read in data (must be changed..)

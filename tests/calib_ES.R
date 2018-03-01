@@ -12,6 +12,18 @@ dat_es <- dat[rb020=="ES"][!duplicated(paste(RB030,RB010,sep="_"))]
 dat_es[,DB050_old:=DB050]
 dat_es <- dat_es[!is.na(DB030)]
 
+# #####
+# # pro person erstes Jahr in SILC verwenden und hier nachsehen welche db040 und db050
+# #
+# dat_first <- dat_es[,.(RB010=min(RB010)),by="RB030"]
+# setkey(dat_es,RB030,RB010)
+#
+# dat_first <- dat_es[dat_first]
+#
+# dat_first[,length(unique(DB040)),by=list(RB010,DB050)][RB010>2012&V1>1]
+# dat_first[RB010==2014&DB050==106]
+# unique(dat_first[DB040%in%c("ES13","ES30","ES51")&RB010==2014,.(DB040,DB050)])[order(DB040,DB050)]
+# dat_first[RB010==2014&DB050==106,unique(DB040)]
 # definiere strate für Spanien
 for(i in 2013:2009){
   strat_lookup <- unique(na.omit(dat_es[RB010>=i,.(DB060,DB050_neu=DB050)]))
@@ -56,13 +68,13 @@ strata[,N.cluster:=random_round(STRATA_ratio*35917),by=RB010]
 strata[,N.households:=STRATA_sum/N.cluster]
 
 dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
-
+dat_es[,N.households:=sum(RB050[!duplicated(DB030)]),by=list(DB050,RB010)]
 # define stratified 1-Stage cluster sample
 set.seed(12345)
-dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=1000,hid="DB030",weights="RB050",strata="DB050",cluster="DB060",
-                           year="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=1000,hid="DB030",weights="RB050",strata="DB050",cluster=NULL,
+                           year="RB010",totals=c("N.households"),split=TRUE,pid="RB030")
 
-write.csv2(dat_boot,file="/mnt/obdatenaustausch/NETSILC3/udb_ES_bootweight_1000.csv")
+write.csv2(dat_boot,file="/mnt/obdatenaustausch/NETSILC3/udb_ES_bootweight_NOCLUSTER.csv")
 
 # dat_boot <- fread("/mnt/obdatenaustausch/NETSILC3/udb_ES_bootweight.csv")
 # dat_boot[,c(paste0("w",1:1000)):=lapply(.SD,function(z){as.numeric(gsub(",","\\.",z))}),.SDcols=c(paste0("w",1:1000))]
@@ -80,4 +92,4 @@ dat_boot[,ind3:=paste(agex,RB090,sep="-")]
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
                           year="RB010",b.rep=paste0("w",1:1000),conP.var=c("ind3"),conH.var = c("hsize","DB040"),maxIter=200)
 
-write.csv2(dat_boot_calib,file="/mnt/obdatenaustausch/NETSILC3/udb_ES_calib_1000.csv")
+write.csv2(dat_boot_calib,file="/mnt/obdatenaustausch/NETSILC3/udb_ES_calib_NOCLUSTER.csv")
