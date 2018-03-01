@@ -302,4 +302,10 @@ write.csv2(dat_boot_calib,file="/mnt/obdatenaustausch/NETSILC3/udb_ES_calib.csv"
 
 
 
+# compare survey and own calibration bootstrap sample
+#
+
+
+
+
 

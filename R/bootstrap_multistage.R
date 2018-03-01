@@ -199,9 +199,9 @@ bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc="
   }
 
   setkey(dat,InitialOrder)
-  if(return.vale=="data"){
+  if(return.value=="data"){
     return(dat)
-  }else if(return.value=="bootstrap"){
+  }else if(return.value=="replicates"){
     return(dat[,mget(bootRep)])
   }
 }

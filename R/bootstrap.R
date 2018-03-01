@@ -84,7 +84,8 @@
 #' @import data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL){
+draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NULL,totals=NULL,
+                           single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL){
 
   ##########################################################
   # INPUT CHECKING
@@ -201,8 +202,8 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
     stop("split needs to be logical")
   }
   if(split){
-    if(is.null(pid)){
-      stop("when split is TRUE pid needs to be specified")
+    if(!is.character(pid)){
+      stop("when split is TRUE pid needs to be a string")
     }else{
       if(length(pid)>1){
         stop("pid can only have length 1")
@@ -236,7 +237,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
     add.totals <- TRUE
   }else{
 
-    if(length(totals)!=length(c(strata,cluster))){
+    if(length(totals)!=length(strata)){
       stop("totals must specified for each stage")
     }
     if(any(!totals%in%c.names)){
@@ -264,16 +265,18 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=bootstrap(.SD,REP=REP,strata=strata,cluster=cluster,fpc=totals,return.value="replicates",check.input=FALSE),by=c(year,country)]
+  dat[,c(w.names):=bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,return.value="replicates",check.input=FALSE),by=c(year,country)]
 
   # keep bootstrap replicates of first year for each household
   if(split){
     dat <- generate.HHID(dat,time.step=year,pid=pid,hid=hid)
   }
-
-  w.names.c <- paste0("'",paste(w.names,collapse="','"),"'")
   by.c <- paste(c(hid,country),collapse=",")
-  dt.eval("dat[,c(",w.names.c,"):=.SD[",year,"==min(",year,"),.(",paste(w.names,collapse=","),")][1],by=list(",by.c,")]")
+  dt.eval("dat[,occurence_first_year :=min(",year,"),by=list(",by.c,")]")
+  dat.first.occurence <- unique(subset(dt.eval("dat[",year,"==occurence_first_year]"),select=c(hid,w.names)),by=hid)
+  dat[,c(w.names):=NULL]
+  dat <- merge(dat,dat.first.occurence,by=hid,all.x=TRUE)
+  dat[,occurence_first_year:=NULL]
 
   # remove columns
   if(split){
