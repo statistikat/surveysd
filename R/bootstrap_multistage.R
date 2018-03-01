@@ -26,14 +26,14 @@
 #' Spaces in each of the strings will be removed, so if column names contain spaces they should be renamed before calling this procedure!
 #'
 #' @return returns the complete data set including the bootstrap replicates or just the bootstrap replicates, depending on \code{return.value="data"} or \code{return.value="replicates"} respectively.
-#' @export bootsrap
+#' @export bootstrap
 #'
 #' @references Preston, J. (2009). Rescaled bootstrap for stratified multistage sampling. Survey Methodology. 35. 227-234.
 #'
 #' @author Johannes Gussenbauer, Statistics Austria
 #'
 #' @examples
-#'
+#' @import matrixStats
 
 
 bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",

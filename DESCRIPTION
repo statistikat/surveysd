@@ -8,6 +8,6 @@ Description: Estimate point estimates and their standard errors in complex house
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.12),data.table,survey,simPop
+Imports: Rcpp (>= 0.12.12),data.table,simPop,matrixStats
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1

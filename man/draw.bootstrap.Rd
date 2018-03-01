@@ -67,7 +67,7 @@ If \code{cluster} is \code{NULL} or does not contain the \code{hid} at the last 
 For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 
-The bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link[survey]{as.svrepdesign}} from the package \code{survey}.
+The bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link{bootstrap}}.
 Afterwards the bootstrap replicates for each household are carried forward from the first year the household enters the survey to all the censecutive years it stays in the survey.\cr
 This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
 If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
@@ -98,9 +98,7 @@ write.csv2(dat_boot,file="dat_replicates.csv",row.names=FALSE)
 
 }
 \seealso{
-\code{\link[data.table]{data.table}} for more information on data.table objects.\cr
-\code{\link[survey]{svydesign}} for more information on how to create survey-objects.\cr
-\code{\link[survey]{as.svrepdesign}} for more information on how bootstrap replicates are drawn from survey-objects.
+\code{\link[data.table]{data.table}} for more information on data.table objects.
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
