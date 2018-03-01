@@ -11,6 +11,7 @@ dat_at <- dat[rb020=="AT"][!duplicated(paste(RB030,RB010,sep="_"))]
 
 # define stratified 1-Stage cluster sample
 set.seed(1234)
+
 dat_boot <- draw.bootstrap(dat=copy(dat_at),REP=1000,hid="DB030",weights="RB050",strata="DB040",
                            year="RB010",split=TRUE,pid="RB030")
 

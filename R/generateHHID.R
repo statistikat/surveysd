@@ -17,10 +17,10 @@
 #' @examples
 #'
 
-generate.HHID <- function(dat,time.step="RB010",pid="RB030",hid="db030"){
+generate.HHID <- function(dat,time.step="RB010",pid="RB030",hid="DB030"){
 
   # check input
-  if(!any(class(dat))%in%c("data.frame","data.table")){
+  if(!any(class(dat)%in%c("data.frame","data.table"))){
     stop("dat needs to be a data frame or data table")
   }
   if(class(dat)[1]!="data.table"){
@@ -30,24 +30,24 @@ generate.HHID <- function(dat,time.step="RB010",pid="RB030",hid="db030"){
 
   #
   if(!is.character(time.step)){
-    stop("time.stop must be to be a string")
+    stop("time.stop must be a string")
   }else{
-    if(length(time.step)>0){
+    if(length(time.step)>1){
       stop("time.step must have length 1")
     }
   }
 
-  if(is.character(pid)){
-    stop("pid must be to be a string")
+  if(!is.character(pid)){
+    stop("pid must be a string")
   }else{
-    if(length(pid)>0){
+    if(length(pid)>1){
       stop("pid must have length 1")
     }
   }
-  if(is.character(hid)){
-    stop("hid must be to be a string")
+  if(!is.character(hid)){
+    stop("hid must be a string")
   }else{
-    if(length(hid)>0){
+    if(length(hid)>1){
       stop("hid must have length 1")
     }
   }
@@ -63,7 +63,6 @@ generate.HHID <- function(dat,time.step="RB010",pid="RB030",hid="db030"){
   }
 
 
-  ID_name="NEW_HOUSEHOLD_ID"
   # create lookup table starting from first time.step
   ID_lookup <- dt.eval("dat[",time.step,"==min(",time.step,"),.(",pid,",ID_orig=",hid,")]")
   ID_lookup[,ID_new:=.GRP,by=ID_orig]
@@ -81,6 +80,18 @@ generate.HHID <- function(dat,time.step="RB010",pid="RB030",hid="db030"){
     ID_lookup[,c("ID_orig","ALL_NEW"):=NULL]
   }
   dat <- merge(dat,ID_lookup,by=pid)
+  # if ID not unique by hid and year
+  # leave original grouping for this year
+  # this happens if household splits up and people move to already existing households
+  group_broke <- dat[,length(unique(ID_new)),by=c(time.step,hid)][V1>1,mget(c(time.step,hid))]
+  if(nrow(group_broke)>0){
+    setkeyv(dat,c(time.step,hid))
+    dt.eval("dat[group_broke,ID_new_help:=paste0(head(",hid,",1),'_1'),by=list(ID_new)]")
+    dat[is.na(ID_new_help),ID_new_help:=as.character(ID_new)]
+    dat[,ID_new:=.GRP,by=ID_new_help]
+    dat[,ID_new_help:=NULL]
+  }
+
   setnames(dat,hid,paste0(hid,"_orig"))
   setnames(dat,"ID_new",hid)
   return(dat)
