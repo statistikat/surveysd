@@ -42,9 +42,6 @@ The number of PSUs at each stage is not calculated internally and must be specif
 For single stage sampling using stratification this can usually be done by adding over all sample weights of each PSU by each strata-code.\cr
 Spaces in each of the strings will be removed, so if column names contain spaces they should be renamed before calling this procedure!
 }
-\examples{
-
-}
 \references{
 Preston, J. (2009). Rescaled bootstrap for stratified multistage sampling. Survey Methodology. 35. 227-234.
 }
