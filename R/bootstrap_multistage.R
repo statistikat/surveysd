@@ -150,8 +150,15 @@ bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc="
 
         next.PSU <- next.PSU[N==1]
         dat <- merge(dat,next.PSU[,mget(c(by.val,new.var))],by=c(by.val),all.x=TRUE)
-        dt.eval("dat[,c(tail(by.val,1)):=",new.var,"]")
-        dt.eval[,c(new.var):=NULL]
+        # sum over margins
+        dt.eval("dat[,",paste0(fpc[i],"_ADD"),":=",fpc[i],"]")
+        # assign to new group
+        dt.eval("dat[!is.na(",new.var,"),c(tail(by.val,1)):=",new.var,"]")
+        dt.eval("dat[,",fpc[i],":=",fpc[i],"[is.na(",new.var,")][1],by=c(by.val)]")
+        dt.eval("dat[!is.na(",new.var,"),",fpc[i],":=",fpc[i],"+",paste0(fpc[i],"_ADD"),"]")
+        dt.eval("dat[,",fpc[i],":=max(",fpc[i],"),by=c(by.val)]")
+
+        dat[,c(new.var,paste0(fpc[i],"_ADD")):=NULL]
       }else if(single.PSU=="mean"){
         # if single.PSU="mean" flag the observation as well as the all the observations in the higher group
         singles[,SINGLE_BOOT_FLAG:=paste(higher.stages,.GRP,sep="-"),by=c(higher.stages)]
@@ -241,7 +248,7 @@ calc.replicate <- function(n,N,delta){
 
 next_minimum <- function(N,by){
   N_notOne <- N!=1
-  by <- by[n_notOne][which.min(N[N_notOne])]
+  by <- by[N_notOne][which.min(N[N_notOne])]
   if(length(by)>1){
     by <- sample(by,1)
   }
