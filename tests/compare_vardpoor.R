@@ -113,12 +113,12 @@ erg_sd_neu <- calc.stError(dat=copy(dat_boot_calib),weights="RB050",year="RB010"
                            p=c(.025,.975))
 
 dat_boot_calib <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"))
-dat_boot_calib <- dat_boot_calib[,mget(select.column)]
+# dat_boot_calib <- dat_boot_calib[,mget(select.column)]
 # dat_boot_calib[,c(paste0("w",1:500)):=lapply(.SD,function(z){as.numeric(gsub(",","\\.",z))}),.SDcols=c(paste0("w",1:500))]
 # dat_boot_calib[,RB050:=as.numeric(gsub(",","\\.",RB050))]
 
 dat_boot_calib[,HX080_neu:=ifelse(HX080==1,0,1)]
-erg_sd_cluster <- calc.stError(dat=copy(dat_boot_calib),weights="RB050",year="RB010",b.weights=paste0("w",1:250),
+erg_sd_cluster <- calc.stError(dat=copy(dat_boot_calib),weights="RB050",year="RB010",b.weights=paste0("w",1:1000),
                            var="HX080_neu",cross_var=list(c("DB040")),
                            p=c(.025,.975))
 
