@@ -14,15 +14,16 @@
 library(data.table)
 library(surveysd)
 library(ggplot2)
+library(mountSTAT)
 
-load("udb_short_calib.RData")
+dat_boot_calib <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"))
 
 B <- 1000
 res <- list()
-for(i in 456:B){
+for(i in 1:B){
 
-  res_i <- calc.stError(dat=dat_boot_calib,weights="rb050",year="rb010",b.weights=paste0("w",1:i),
-               var="hx080",cross_var=list(c("db040","db100")),year.diff=c("2014-2008"),
+  res_i <- calc.stError(dat=dat_boot_calib,weights="RB050",year="RB010",b.weights=paste0("w",1:i),
+               var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2014-2008"),
                p=c(.01,0.025,.05,.1,.9,.95,0.975,.99))
   res_i <- res_i$Estimates
   res_i[,NumberWeights:=i]
@@ -31,7 +32,8 @@ for(i in 456:B){
 }
 
 save(res,file="Results_i1000.RData")
-save(res,file="Results_i455.RData")
+
+# save(res,file="Results_i455.RData")
 
 load("Results_i455.RData")
 
