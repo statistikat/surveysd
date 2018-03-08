@@ -15,6 +15,7 @@ library(data.table)
 library(surveysd)
 library(ggplot2)
 library(mountSTAT)
+pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
 
 dat_boot_calib <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"))
 
@@ -31,7 +32,7 @@ for(i in 1:B){
   res <- c(res,list(res_i))
 }
 
-save(res,file="Results_i1000.RData")
+save(res,file=paste0(pfad_meth,"/Gussenbauer/surveysd/Results_i1000.RData"))
 
 # save(res,file="Results_i455.RData")
 
@@ -84,8 +85,8 @@ for(b in nB){
 
     random_w <- sample(1:1000,b)
 
-    res_i <- calc.stError(dat=dat_boot_calib,weights="rb050",year="rb010",b.weights=paste0("w",random_w),
-                          var="hx080",cross_var=list(c("db040","db100")),year.diff=c("2014-2008"),
+    res_i <- calc.stError(dat=dat_boot_calib,weights="RB050",year="RB010",b.weights=paste0("w",random_w),
+                          var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2014-2008"),
                           p=c(.01,0.025,.05,.1,.9,.95,0.975,.99))
     res_i <- res_i$Estimates
     res_i[,RUN:=i]
@@ -93,7 +94,7 @@ for(b in nB){
     res_boot <- c(res_boot,list(res_i))
 
   }
-  save(res_boot,file=paste0("Results_boot",b,".RData"))
+  save(res_boot,file=paste0(pfad_meth,"/Gussenbauer/surveysd/Results_boot",b,".RData"))
 }
 
 

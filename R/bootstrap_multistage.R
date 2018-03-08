@@ -81,7 +81,7 @@ bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc="
       stop("strata, cluster, and fpc need to have the same number of arguments separated with '>'")
     }
     check.values <- unlist(input)
-    check.values <- check.values[!by.val%in%c("1","I")]
+    check.values <- check.values[!check.values%in%c("1","I")]
     check.values <- check.values[!check.values%in%colnames(dat)]
     if(length(check.values)>0){
       stop("dat does not contain the column(s)",check.values)
@@ -141,6 +141,11 @@ bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc="
       }
       singles <- unique(subset(singles,select=higher.stages))
       if(single.PSU=="merge"){
+        # save original PSU coding and fpc values to replace changed values bevore returning the data.table
+        if(return.value=="data"){
+          dt.eval("dat[,",paste0(tail(by.val,1),"_ORIGINALSINGLES"),":=",tail(by.val,1),"]")
+          dt.eval("dat[,",paste0(fpc[i],"_ORIGINALSINGLES"),":=",fpc[i],"]")
+        }
 
         setkeyv(dat,higher.stages)
         next.PSU <- dt.eval("dat[singles,.(N=sum(!duplicated(",clust.val,"))),by=c(by.val)]")
@@ -207,6 +212,16 @@ bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc="
 
   setkey(dat,InitialOrder)
   if(return.value=="data"){
+    # get original values for PSUs and fpc - if singles PSUs have been detected and merged
+    if(single.PSU=="merge"){
+      c.names <- colnames(dat)
+      c.names <- c.names[grepl("_ORIGINALSINGLES",c.names)]
+      if(length(c.names)>0){
+        drop.names <- gsub("_ORIGINALSINGLES","",c.names)
+        dat[,c(drop.names):=NULL]
+        setnames(dat,c(c.names),drop.names)
+      }
+    }
     return(dat)
   }else if(return.value=="replicates"){
     return(dat[,mget(bootRep)])

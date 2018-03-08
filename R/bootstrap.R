@@ -159,7 +159,12 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
       stop("strata and cluster need to have the same number of stages!\n Please use either '1' or 'I' if there was no clustering or stratification in one of the stages.")
     }
   }else{
+
     if(length(strata)>1){
+      if(any(c("1","I")%in%strata)){
+        stop("When defining multiple strata variables for single stage sampling design\n none of them can be '1' or 'I'.")
+      }
+
       dt.eval("dat[,STRATA_VAR_HELP:=paste(",paste0(strata,collapse=","),",sep='-')]")
       strata <- "STRATA_VAR_HELP"
     }
