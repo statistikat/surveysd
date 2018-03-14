@@ -14,83 +14,171 @@ Many of these methods are based on models for small area estimation or pool the 
 In this work we present a method for estimating statistically significant estimates on lower NUTS levels using multiple years of EU-SILC in combination with bootstrapping techniques. In contrast to jack knife replicates, the bootstrap replicates yield consistent estimates for variance even for non-smooth estimators like the median. Due to the nature of our method it can easily be applied to EU-SILC data of any county given the constraint that EU-SILC data for at least 3 consecutive years is available. Furthermore the data in EU-SILC must be linked over the years through a household ID to ensure the applicability of our method.
 
 ## Methodology
-In the following we present the used methodology that is applied on multiple consecutive years of EU-SILC data for one country. Since we use multiple years each of the presented steps is applied on each available year of EU-SILC.
+In the following we present the used methodology that is applied on multiple consecutive years of EU-SILC data for one country. The methodology contains the following steps, in this order
 
-## Bootstrapping
+1. Draw $B$ bootstrap replicates from EU-SILC data for each year $y_t$, $t=1,\ldots,n_y$ seperately. Since EU-SILC has a rotating panel design the bootstrap replicate of a household is carried forward throught the years. That is, the bootstrap replicate of a household in the follow-up years is set equal to the bootstrap replicate of the same household when it first enters EU-SILC.
+2. Multiply each set of bootstrap replicates by the sampling weights to obtain uncalibrated bootstrap weights and calibrate each of the uncalibrated bootstrap weights using iterative proportional fitting.
+3. Estimate the point estimate of interest $\theta$, for each year and each calibrated bootstrap weight to obtain $\tilde{\theta}^{(i,y_t)}$, $t=1,\ldots,n_y$, $i=1,\ldots,B$. For fixed $y_t$ apply a filter with equal weights for each $i$ on $\tilde{\theta}^{(i,y^*)}$, $y^*\in \{y_{t-1},y_{t},y_{t+1}\}$ , to obtain $\tilde{\theta}^{(i,y_t)}$. Estimate the variance of $\theta$ using the distribution of $\tilde{\theta}^{(i,y_t)}$.
+
+
+## Bootstrapping}
 Bootstrapping has long been around and used widely to estimate confidence intervals and standard errors of point estimates.[@efron1979]
 Given a random sample $(X_1,\ldots,X_n)$ drawn from an unknown distribution $F$ the distribution of a point estimate $\theta(X_1,\ldots,X_n;F)$ can in many cases not be determined analytically. However when using bootstrapping one can simulate the distribution of $\theta$.
 
 Let $s_{(.)}$ be a bootstrap sample, e.g. drawing $n$ observations with replacement from the sample $(X_1,\ldots,X_n)$, then one can estimate the standard deviation of $\theta$  using $B$ bootstrap samples through
-$$
-  sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(s_i)-\overline{\theta})^2} \quad,
-$$
+
+$$sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(s_i)-\overline{\theta})^2} \quad,$$
+
 with $\overline{\theta}:=\frac{1}{B}\sum\limits_{i=1}^B\theta(s_i)$ as the sample mean over all bootstrap samples.
 
-In context of sample surveys with sampling weights one can use bootstrapping to calculate so called bootstrap weights. These are computed via the bootstrap samples $s_{i}$,$i=1,\ldots,B$, where for each $s_{i}$ every unit of the original sample can appear $0$- to $m$-times. With $f_j^{i}$ as the frequency of occurrence of observation $j$ in bootstrap sample $s_i$ the uncalibrated bootstrap weights $b_{j}^{0,i}$ are defined as:
+In context of sample surveys with sampling weights one can use bootstrapping to calculate so called bootstrap weights. These are computed via the bootstrap samples $s_{i}$, $i=1,\ldots,B$, where for each $s_{i}$ every unit of the original sample can appear $0$- to $m$-times. With $f_j^{i}$ as the frequency of occurrence of observation $j$ in bootstrap sample $s_i$ the uncalibrated bootstrap weights $\tilde{b}_{j}^{i}$ are defined as:
 
-$$
-  b_{j}^{0,i} = f_j^{i} w_j \quad,
-$$
+$$  \tilde{b}_{j}^{i} = f_j^{i} w_j \quad,$$
 
 with $w_j$ as the calibrated sampling weight of the original sample.
-Using iterative proportional fitting procedures one can recalibrate the bootstrap weights $b_{j}^{0,(.)}$,$j=1,\ldots,B$ to get the adapted bootstrap weights $b_j^i$,$j=1,\ldots,B$. Using bootstrapping in sample surveys we recommend using $B$ as large as a minimum of 500 to achieve high quality estimations.
+Using iterative proportional fitting procedures one can recalibrate the bootstrap weights $\tilde{b}_{j}^{.}$, $j=1,\ldots,B$ to get the adapted or calibrated bootstrap weights $b_j^i$, $j=1,\ldots,B$.
 
 ### Rescaled Bootstrap
-Since the EU-SILC is a stratified sample without replacement drawn from a finite population the naive bootstrap procedure, as described above, does not yield satisfactory results, since the bootstrap samples do not take into account the heterogeneous inclusion probabilities of each sample unit. Therefore we will use the so called rescaled bootstrap procedure introduced and investigated by [@raowu1988]. The bootstrap samples are selected without replacement and do incorporate the stratification in the sampling design (see [@chipprest2007],[@prest2009]).
+Since EU-SILC is a stratified sample without replacement drawn from a finite population the naive bootstrap procedure, as described above, does not take into account the heterogeneous inclusion probabilities of each sample unit. Thus it will not yield satisfactory results. Therefore we will use the so called rescaled bootstrap procedure introduced and investigated by [@raowu1988]. The bootstrap samples are selected without replacement and do incorporate the stratification as well as clustering on mutliple stages (see [@chipprest2007],[@prest2009]).
 
-Considering a stratified sample $(Y_1,\ldots,Y_n)$ drawn from a finite population $U$ which is divided into $H$ non-overlapping strata $\bigcup\limits_{h=1,\ldots,H} U_h = U$, of which each strata $h$ has the sub-population of size $N_h$, where for each strata $h$, $n_h$ observations where drawn.
-For the rescaled bootstrap procedure each bootstrap sample for each strata $h$ is, instead of drawing with replacement of size $n_h$, is drawn without replacement of size $n_h^B=\lfloor\frac{n_h}{2}\rfloor$. [@chipprest2007] have shown that the choice of either $\lfloor\frac{n_h}{2}\rfloor$ or $\lceil\frac{n_h}{2}\rceil$ is optimal for bootstrap samples without replacement, although $\lfloor\frac{n_h}{2}\rfloor$ has the desirable property that the resulting bootstrap weights will never be negative.
-For each observation $j$,$j=1,\ldots,n$, belonging to strata $h$ the uncalibrated bootstrap weights $b_{j}^{0,i}$,$i=1,\ldots,B$ are then defined by
 
-$$
-  b_{j}^{0,i} = w_j(1-\lambda_h+\lambda_h\frac{n_h}{n_h^B}\delta_{h_j}) = w_jf_j^i \quad\quad \forall j \in n_h
-$$
+For simplistic reasons we will only describe the rescaled bootstrap procedure for a two stage stratified sampling design. For more details on a general formulation please see [@prest2009].
+
+
+#### Sampling design
+
+Consider the finite population $U$ which is divided into $H$ non-overlapping strata $\bigcup\limits_{h=1,\ldots,H} U_h = U$, of which each strata $h$ contains of $N_h$ clusters. For each strata $h$, $C_{hc}$, $c=1,\ldots,n_h$ clusters are drawn, containing $N_{hc}$ households. Furhtermore in each cluster $C_{hc}$ of each strata $h$ simple random sampling is performed to select a set of households $Y_{hcj}$, $j=1,\ldots,n_{hc}$.
+
+#### Bootstrap procedure
+ 
+In contrast to the naive bootstrap procedure where for a stage, containing $n$ sampling units, the bootstrap replicate is obtained by drawing $n$ sampling units with replacement, for the rescaled bootstrap procedure $n^*=\lfloor\frac{n}{2}\rfloor$ sampling units are drawn without replacement. [@chipprest2007] have shown that the choice of either $\lfloor\frac{n}{2}\rfloor$ or $\lceil\frac{n}{2}\rceil$ is optimal for bootstrap samples without replacement, although $\lfloor\frac{n}{2}\rfloor$ has the desirable property that the resulting uncalibrated bootstrap weights will never be negative.\\
+ 
+At the first stage the $i$-th bootstrap replicate, $f^{i,1}_{hc}$, for each cluster $C_{hc}$,$c=1,\ldots,n_h$, belonging to strata $h$, is defined by
+
+$$ f^{i,1}_{hc} = 1-\lambda_h+\lambda_h\frac{n_h}{n_h^*}\delta_{hc} \quad\quad \forall c \in \{1,\ldots,n_h\} $$
+
 with
-$$
-  \lambda = \sqrt{\frac{n_h^i(1-\frac{n_h}{N_h})}{n_h-n_h^B}} \quad ,
-$$
 
-where $w_j$ are the calibrated weights of the original sample and $\delta_{h_j}=1$ if observation $j$ is selected in the subsample $n_h^B$ and 0 otherwise. Applying iterative proportional fitting to the uncalibrated weights $b_{j}^{0,i}$ yields the final calibrated weight $b_{j}^{i}$.
+$$  n_h^* = \left\lfloor\frac{n_h}{2}\right\rfloor $$
+$$ \lambda_h = \sqrt{\frac{n_h^*(1-\frac{n_h}{N_h})}{n_h-n_h^*}} \quad , $$
 
-Since the EU-SILC is a yearly survey with rotating penal design, we calculate bootstrap sample weights for each year and take for each household it's sample weight forward until the household drops out of the survey. This ensures the creation of bootstrap weights which are comparable in structure to the original sample weights $w^0$.
+where $\delta_{hc}=1$ if cluster $c$ is selected in the subsample of size $n_h^*$ and 0 otherwise.
+ 
+The $i$-th bootstrap replicate at the second stage, $f^{i,2}_{hcj}$, for each household $Y_{hcj}$, $j=1,\ldots,n_{hc}$, belonging to cluster $c$ in strata $h$ is defined by
 
-### Iterative proportional fitting (IPF)
-The uncalibrated bootstrap weights $b_j^{0}$ computed through the rescaled bootstrap procedure yields population statistics that differ from the known population margins of specified sociodemographic variables for which the base weights $w_j$ have been calibrated. To adjust for this the bootstrap weights $b_{j}^{0}$ can be recalibrated using iterative proportional fitting as described in [@mekogu2016].
 
-Let the original weight $w_{j}$ be calibrated for $v_1,\ldots,v_u$ sociodemographic variables which can take on $V_1,\ldots,V_u$ values each and $N_{v_i}$ be the population margins of the $i$-th sociodemographic variables. The iterative proportional fitting procedure for the weights $b^{0}$ is made up of 5 Steps. Starting with $k=0$ the 5 Steps are repeated and $k$ is raised by 1 if the constrains are satisfied after step 5.
+$$  f^{i,2}_{hcj} = f^{i,1}_{hc} - \lambda_{hc}\sqrt{\frac{n_h}{n_h^*}}\delta_{hc}\left[\frac{n_{hc}}{n_{hc}^*}\delta_{hcj}-1\right] \quad\quad \forall c \in \{1,\ldots,n_h\} $$
+$$  n_{hc}^* = \lfloor\frac{n_{hc}}{2}\rfloor $$
+$$  \lambda_{hc} = \sqrt{\frac{n_{hc}^*N_h(1-\frac{n_{hc}}{N_{hc}})}{n_{hc}-n_{hc}^*}} \quad , $$
+\end{align*}
+
+where $\delta_{hcj}=1$ if household $j$ is selected in the subsample of size $n_{hc}^*$ and 0 otherwise.
+
+#### Single PSUs
+ 
+ 
+When dealing with multistage sampling designs the issue of single PSUs, e.g. a single response unit is present at a stage or in a strata, can occur. When applying bootstrapping procedures these single PSUs can lead to a variety of issues. For the methodology proposed in this work we combined single PSUs at each stage with the next smallest strata or cluster, before applying the bootstrap procedure.
+
+#### Taking bootstrap replicates forward
+ 
+The bootstrap procedure above is applied on the EU-SILC data for each year $y_t$, $t=1,\ldots,n_y$ seperately. Since EU-SILC is a yearly survey with rotating penal design the $i$-th bootstrap replicate at the second stage, $f^{i,2}_{hcj}$, for a household $Y_{hcj}$ is taken forward until the household $Y_{hcj}$ drops out of the sample. That is, for the household $Y_{hcj}$, which enters EU-SILC at year $y_1$ and drops out at year $y_{\tilde{t}}$, the bootstrap replicates for the years $y_2,\ldots,y_{\tilde{t}}$ are set to the bootstrap replicate of the year $y_1$.
+
+#### Split households
+ 
+Due to the rotating penal desing so called split households can occur. For a household participating in the EU-SILC survey it is possible that one or more residents move to a new so called split household, which is followed up on in the next wave. To take this dynamik into account we extended the procedure of taking forward the bootstrap replicate of a household for consecutive waves of EU-SILC by taking forward the bootstrap replicate to the split household. That means, that also any new individuals in the split household will inherit this bootstrap replicate.\\
+ 
+The following Tables illustrate the mechanism for taking bootstrap replicates foward es well as dealing with split households.
+Consider a 4 member household that enteres EU-SILC in the year 2013, as show in Table 1. For this household the bootstrap replicate was set to 2.
+
+```{r echo=FALSE,include=FALSE}
+library(data.table)
+library(surveysd)
+library(mountSTAT)
+library(knitr)
+
+dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
+
+dat_es <- dat[rb020=="ES"][!duplicated(paste(RB030,RB010,sep="_"))]
+
+dat_es[,DB050_old:=DB050]
+dat_es <- dat_es[!is.na(DB030)]
+
+dat_es <- generate.HHID(dat_es)
+dat_es[,uniqueN(DB030_orig),by=list(DB030,RB010)][V1>1&RB010==2014]
+dat_split <- dat_es[DB030_orig%in%c(47500,47501)&RB010%in%c(2013,2014),.(YEAR=RB010,PID=RB030,HID=DB030_orig)]
+dat_before <- dat_split[YEAR==2013]
+dat_before[,BOOTSTRAP.REP:=2]
+dat_after <- dat_split[YEAR==2014]
+dat_after[,BOOTSTRAP.REP:=0]
+```
+
+```{r echo=FALSE}
+kable(dat_before,caption = "Household with 4 members in year 2013.")
+```
+```{r echo=FALSE}
+kable(dat_after,caption = "Original household with 3 members and 1 split household.")
+```
+
+Table 2 shows the household members from Table 1 including a split household forthe year 2014. We see that the household member with PID=4750003 has moved to a new household, thus creating the split household, HID=47501.
+Furhtermore the bootstrap procedure, since it is applied on each year seperately, did not select households HID=47500 or HID=47501 for the year 2014, e.g BOOTSTRAP.REP=0.
+Following our rule for taking bootstrap replicates forward and dealing with split households the bootstrap replicates for the year 2014 will be set equal to the bootstrap replicates for 2013. This is also true for the split household since it was created through the household member PID=4750003, which moved out of household HID=47500 between 2013 and 2014. Every Household member in of HID=47501 will therefore inherit the bootstrap replicate which household member PID=4750003 had in the year 2013. Table 3 shows the bootstrap replicates after for 2014 after they have been taken forward from 2013.
+
+```{r echo=FALSE}
+dat_after[,BOOTSTRAP.REP:=2]
+kable(dat_after,caption = "Bootstrap replicates taken forward to the next year as well as to the split household.")
+```
+
+Taking bootstrap replicates forward as well as considering split households ensures that bootstrap replicates are more comparable in structure with the actual design of EU-SILC.
+
+#### Uncalibrated bootstrap weights
+Using the $i$-th bootstrap replicates at the second stage one can calculate the $i$-th uncalibrated bootstrap weights $b_{hcj}^{i}$ for each household $Y_{hcj}$ in cluster $c$ contained in strata $h$ by
+
+$$  \tilde{b}_{hcj}^{i} = f^{i,2}_{hcj} w_{hcj} \quad,$$ 
+
+where $w_{hcj}$ corresponds to the original household weight contained in the sample.
+
+For ease of readability we will drop the subindices regarding strata $h$ and cluster $c$ for the following sections, meaning that the $j$-th household in cluster $c$ containend in strata $h$, $Y_{hcj}$, will now be denoted as the $j$-th household, $Y_{j}$, where $j$ is the position of the household in the data. In accordance to this the $i$-th uncalibrated bootstrap replicates for household $j$ are thus denoted as $\tilde{b}_j^{i}$ and the original household weight as $w_j$.
+
+
+## Iterative proportional fitting (IPF)
+The uncalibrated bootstrap weights $\tilde{b}_j^{i}$ computed through the rescaled bootstrap procedure yields population statistics that differ from the known population margins of specified sociodemographic variables for which the base weights $w_j$ have been calibrated. To adjust for this the bootstrap weights $\tilde{b}_{j}^{i}$ can be recalibrated using iterative proportional fitting as described in [@mekogu2016].
+
+Let the original weight $w_{j}$ be calibrated for $v_1,\ldots,v_u$ sociodemographic variables which can take on $V_1,\ldots,V_u$ values each and $N_{v_i}$ be the population margins of the $i$-th sociodemographic variables. The iterative proportional fitting procedure for the weights $\tilde{b}_j^{i}$ is made up of 5 Steps. Starting with $k=0$ the 5 Steps are repeated and $k$ is raised by 1 if the constrains are not satisfied after step 5.
 
 ### Steps 1-3
-The weight uncalibrated bootstrap weights $b_j^{0}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_{v_i}$, $i=1,\ldots,u$.
+The uncalibrated bootstrap weights $\tilde{b}_j^{i}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_{v_i}$, $i=1,\ldots,u$.
 For each $i \in \left\{1,\ldots,u\right\}$ the calibrated weights against $N_{(v_i,y)}$ are computed as
-$$
-  b_j^{(u+2)k+i} = b_j^{(u+2)k+i-1}\frac{N_{v_i}}{\sum\limits_l b_l^{(u+2)k}},
-$$
+
+$$  \tilde{b}_j^{(u+2)k+i} = {\tilde{b}_j}^{(u+2)k+i-1}\frac{N_{v_i}}{{\sum\limits_l} {\tilde{b}}_l^{(u+2)k}},$$
+
 where the summation in the denominator expands over all observations which have the same value as observation $j$ for the sociodemographic variable $v_i$.
-If any weights $b_j^{(u+2)k+i}$ fall outside the range $[\frac{w_j}{4};4w_j]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form a weight trimming where very large/small weights are trimmed in order to reduce variance but with a possible increase in bias [@potter90,@potter93].
+If any weights $\tilde{b}_j^{(u+2)k+i}$ fall outside the range $\left[\frac{w_j}{4};4w_j\right]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form of weight trimming where very large or small weights are trimmed in order to reduce variance in exchange for a possible increase in bias [@potter90,potter93].
 
 ### Step 4
-Since the sociodemographic variables $v_1,\ldots,v_u$ can include personal as well as household specific variables, the weights $b_j^{5k+u}$   resulting from the iterative multiplication can be unequal for members of the same household. This can lead to inconsistencies between results projected with household and person weights. To avoid such inconsistencies each household member is assigned the mean of the household weights. That is for each person $j$ in household $p$ with $H_p$ household members, the weights are defined by
-$$
-  b_j^{(u+2)k+u+1} = \frac{\sum\limits_{l=1}^{H_p}b_{p(l)}^{(u+2)k+u}}{H_p}
-$$
+Since the sociodemographic variables $v_1,\ldots,v_u$ can include personal as well as household specific variables, the weights $\tilde{b}_j^{5k+u}$   resulting from the iterative multiplication can be unequal for members of the same household. This can lead to inconsistencies between results projected with household and person weights. To avoid such inconsistencies each household member is assigned the mean of the household weights. That is for each person $j$ in household $p$ with $H_p$ household members, the weights are defined by
+
+$$  \tilde{b}_j^{(u+2)k+u+1} = \frac{{\sum\limits_{l=1}^{H_p}} {\tilde{b}}_{p(l)}^{(u+2)k+u}}{H_p} $$
+
 This can result in loosing the population structure performed in steps 1-3.
 
 ### Step 5
-To get weights that do conform with the population margins defined by $v_1,\ldots,v_u$ the weights $b_j^{5k+u+1}$ are again updated according to the uncertainty parameter $p_h$. The parameters $p_h$ represent the allowed deviation from the population margins using the weights $b_j^{(u+2)k+u+1}$ compared to $N_{v_i}$, $i=1,\ldots,u$ where $v_i$ corresponds to a household variable.\\
+To get weights that do conform with the population margins defined by $v_1,\ldots,v_u$ the weights $b_j^{5k+u+1}$ are again updated according to the uncertainty parameter $p_h$. The parameters $p_h$ represent the allowed deviation from the population margins using the weights $\tilde{b}_j^{(u+2)k+u+1}$ compared to $N_{v_i}$, $i=1,\ldots,u$ where $v_i$ corresponds to a household variable.\\
 The updated weights are computed as
-$$
-  b_j^{(u+2)k+u+2} =
-  \begin{cases}
-    b_j^{(u+2)k+u+1}\frac{N_{v_i}}{\sum\limits_{l}b_l^{(u+2)k+u+1}} \quad \text{if } \sum\limits_{l}b_l^{(u+2)k+u+1} \notin ((1-p_h)N_{v_i},(1+p_h)N_{v_i}) \\
-    b_j^{(u+2)k+u+1} \quad \text{otherwise}
-  \end{cases}
-$$
-with the summation in the denominator ranging over all households $l$ which take on the same values for $v_i$ as observation $j$. As described in the previous subsection the new weight are recoded if they exceed the interval $[\frac{w_j}{4};4w_j]$ and set to the upper or lower bound, depending of $b_j^{(u+2)k+u+2}$ falls below or above the interval respectively.
 
-### Convergence
+$$  \tilde{b}_j^{(u+2)k+u+2} =
+  \begin{cases}
+    \tilde{b}_j^{(u+2)k+u+1}\frac{N_{v_i}}{\sum\limits_{l} \tilde{b}_l^{(u+2)k+u+1}} \quad \text{if } \sum\limits_{l} \tilde{b}_l^{(u+2)k+u+1} \notin ((1-p_h)N_{v_i},(1+p_h)N_{v_i}) \\
+    \tilde{b}_j^{(u+2)k+u+1} \quad \text{otherwise}
+  \end{cases} $$
+
+with the summation in the denominator ranging over all households $l$ which take on the same values for $v_i$ as observation $j$. As described in the previous subsection the new weight are recoded if they exceed the interval $[\frac{w_j}{4};4w_j]$ and set to the upper or lower bound, depending of $\tilde{b}_j^{(u+2)k+u+2}$ falls below or above the interval respectively.
+
+### Convergence}
 After these 5 steps we check if the population margins defined by $v_1,\ldots,v_u$ and calculated with $b_j^{(u+2)k+u+2}$ do not deviate too much from $N_{v_i}$, $i=1,\ldots,u$. That is
 $$
-  \frac{\sum\limits_{l}b_l^{(u+2)k+u+1} - N_{v_i}}{N_{v_i}} <
+  \frac{\sum\limits_{l} \tilde{b}_l^{(u+2)k+u+1} - N_{v_i}}{N_{v_i}} <
   \begin{cases}
   0.05 \quad\text{if }v_i\text{ is a household variable}\\
   0.01 \quad\text{if }v_i\text{ is a personal variable}
@@ -99,30 +187,43 @@ $$
 holds true for all $i$,$i=1,\ldots,u$, where the sum in the denominator expands over all observations which have the same value for the variable $v_i$.
 If this inequality holds true the algorithm reaches convergence, otherwise $k$ is raised by 1 and Steps 1-5 are repeated.
 
+The above described calibration procedure is applied on each year $y_t$ of EU-SILC seperately, $t=1,\ldots n_y$, thus resulting in so called calibrated bootstrap sample weights $b_{j}^{(i,{y_t})}$, $i=1,\ldots,B$ for each year $y$ and each household $j$.
+
 ## Variance estimation
-Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y$,$y=1,...z$, yields calibrated bootstrap sample weights $b_{j}^{(i,y)}$ for each year $y$. using the bootstrap sample weights it is straight forward for to compute the standard error of a point estimate $\theta(\textbf{Y}^{(y)},\textbf{w}^{(y)})$ for year $y$ with $\textbf{Y}^{(y)}=(Y_1^{(y)},\ldots,Y_n^{(y)})$ as the vector observations for the variable of interest in the survey and $\textbf{w}^{(y)}=(w_1^{(y)},\ldots,w_n^{(y)}$ as the corresponding weight vector, with
+Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y_t$, $t=1,\ldots n_y$, yields calibrated bootstrap sample weights $b_{j}^{(i,{y_t})}$ for each year $y_t$. Using the calibrated bootstrap sample weights it is straight forward to compute the standard error of a point estimate $\theta(\textbf{X}^{y_t},\textbf{w}^{y_t})$ for year $y_t$ with $\textbf{X}^{y_t}=(X_1^{y_t},\ldots,X_n^{y_t})$ as the vector of observations for the variable of interest in the survey and $\textbf{w}^{y_t}=(w_1^{y_t},\ldots,w_n^{y_t}$ as the corresponding weight vector, with
 
 $$
-  sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta(\textbf{Y}^{(y)},\textbf{b}^{(i,y)})-\overline{\theta})^2} \quad,
-$$
-with $\overline{\theta}:=\frac{1}{B}\sum\limits_{i=1}^B\theta(\textbf{Y}^{(y)},\textbf{b}^{(i,y)})$ as the sample mean and $\textbf{b}^{(i,y)}$ as the $i$-th vector of bootstrap weights for the year $y$.
-
-As previously mentioned the standard error estimation for indicators in EU-SILC yields high quality results for NUTS1 or country level. When estimation indicators on regional or other sub-aggregate levels one is confronted with point estimates yielding high variance.\\
-To overcome this issue we propose to pool the EU-SILC data for 3 consecutive years and calculate the standard error for the central year using the bootstrap sample weights on the pooled data. To be more precise we the estimated standard error of year $y$ can be calculated with
-
-$$
-  sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta^{(3)}(\textbf{Y}^{(y)},\textbf{b}^{(i,y)}))-\overline{\theta^{(3)}})}
+  sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta^{(i,y_t)}-\overline{\theta^{(.,y_t)}})^2}
 $$
 with
 $$
-  \theta^{(3)}(\textbf{Y}^{(y)},\textbf{b}^{(i,y)}) = \frac{1}{3}(\theta(\textbf{Y}^{(y-1)},\textbf{b}^{(i,y-1)})+\theta(\textbf{Y}^{(y)},\textbf{b}^{(i,y)})+\theta(\textbf{Y}^{(y+1)},\textbf{b}^{(i,y+1)}))
+  \overline{\theta^{(.,y_t)}} = \frac{1}{B}\sum\limits_{i=1}^B\theta^{(i,y_t)} \quad,
 $$
-and
+where $\theta^{(i,y_t)}:=\theta(\textbf{X}^{y_t},\textbf{b}^{(i,{y_t})})$ is the estimate of $\theta$ in the year $y_t$ using the $i$-th vector of calibrated bootstrap weights.
+
+As already mentioned the standard error estimation for indicators in EU-SILC yields high quality results for NUTS1 or country level. When estimation indicators on regional or other sub-aggregate levels one is confronted with point estimates yielding high variance.\\
+
+To overcome this issue we propose to estimate $\theta$ for 3, consecutive years using the calibrated bootstrap weights, thus calculating $\{\theta^{(i,y_{t-1})},\theta^{(i,y_t)},\theta^{(i,y_{t+1})}\}$, $i=1,\ldots,B$.
+For fixed $i$ one can apply a filter with equal filter weights on the time series $\{\theta^{(i,y_{t-1})},\theta^{(i,y_t)},\theta^{(i,y_{t+1})}\}$ to create $\tilde{\theta}^{(i,y_t)}$
+
 $$
-  \overline{\theta^{(3)}}=\frac{1}{B}\sum\limits_{i=1}^B\theta{(3)}(\textbf{Y}^{(y)},\textbf{b}^{(i,y)}) \quad.
+  \tilde{\theta}^{(i,y_t)} = \frac{1}{3}\left[\theta^{(i,y_{t-1})}+\theta^{(i,y_t)}+\theta^{(i,y_{t+1})}\right] \quad .
 $$
 
-Please note that pooling data from a survey with rotating panel design and estimating indicators from it is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error.
-[@silcstudy] showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25$\%$. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.
+Doing this for all $i$, $i=1,\ldots,B$, yields $\tilde{\theta}^{(i,y_t)}$, $i=1,\ldots,B$. The variance of $\theta$ can then be estimated with
+
+$$
+  sd(\theta) = \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\tilde{\theta}^{(i,y_t)}-\overline{\tilde{\theta}^{(.,y_t)}})^2}
+$$
+with
+$$
+  \overline{\tilde{\theta}^{(.,y_t)}}=\frac{1}{B}\sum\limits_{i=1}^B\tilde{\theta}^{(i,y_t)} \quad.
+$$
+
+Applying the filter over the time series of estimated $\theta^{(i,y_t)}$ leads to a reduction of variance for $\theta$ since the filter reduces the noise in $\{\theta^{(i,y_{t-1})},\theta^{(i,y_t)},\theta^{(i,y_{t+1})}\}$ and thus leading to a more narrow distribution for $\tilde{\theta}^{(i,y_t)}$.
+
+It should also be noted that estimating indicators from a survey with rotating panel design is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error.\\
+\citep{silcstudy} showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25$\%$. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.\\
+To conclude the above presented methodology represents a reasonable approach for lowering the variance of point estimates if the estimates stay relatively stable over time. However for point estimates which change trend over time or exhibit seasonal or cyclical behaviour this methodology can not be recommended. At least not with applying a filter with equal filter weights.
 
 ## References
