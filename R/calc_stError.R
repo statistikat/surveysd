@@ -465,6 +465,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
           NULL
         }
       })
+      year.diff.mean[unlist(lapply(year.diff.mean,is.null))] <- NULL
     }else{
       year.diff.b <- FALSE
       year.diff.mean <- NULL

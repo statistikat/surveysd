@@ -71,7 +71,7 @@ strata[,N.households:=STRATA_sum/N.cluster]
 dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
 # dat_es[,N.households:=sum(RB050[!duplicated(DB030)]),by=list(DB050,RB010)]
 # define stratified 1-Stage cluster sample
-set.seed(1234567)
+set.seed(1234)
 dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=1000,hid="DB030",weights="RB050",strata=c("DB050","I"),cluster="DB060",
                            year="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
 
@@ -93,9 +93,7 @@ dat_boot[,ind3:=paste(agex,RB090,sep="-")]
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
                           year="RB010",b.rep=paste0("w",1:1000),conP.var=c("ind3"),conH.var = c("hsize","DB040"),maxIter=200)
 
-# fwrite(dat_boot_calib,file=paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib_250_nocluster.csv"))
-fwrite(dat_boot_calib,file="udb_ES_calib_1000_nocluster.csv")
-
-
+fwrite(dat_boot_calib,file=paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"))
+# fwrite(dat_boot_calib,file="udb_ES_calib_1000_nocluster.csv")
 
 
