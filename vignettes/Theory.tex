@@ -1,54 +1,4 @@
-\documentclass{scrartcl}\usepackage[]{graphicx}\usepackage[]{color}
-%% maxwidth is the original width if it is less than linewidth
-%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
+\documentclass{scrartcl}
 
 \usepackage{cite}
 \usepackage[english]{babel}
@@ -61,7 +11,7 @@
 
 \usepackage[round]{natbib}
 \bibliographystyle{plainnat}
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
 \begin{document}
 
 \section{Introduction}
@@ -274,11 +224,11 @@ The above described calibration procedure is applied on each year $y_t$ of EU-SI
 Applying the previously described algorithms to EU-SILC data for multiple consecutive years $y_t$, $t=1,\ldots n_y$, yields calibrated bootstrap sample weights $b_{j}^{(i,{y_t})}$ for each year $y_t$. Using the calibrated bootstrap sample weights it is straight forward to compute the standard error of a point estimate $\theta(\textbf{X}^{y_t},\textbf{w}^{y_t})$ for year $y_t$ with $\textbf{X}^{y_t}=(X_1^{y_t},\ldots,X_n^{y_t})$ as the vector of observations for the variable of interest in the survey and $\textbf{w}^{y_t}=(w_1^{y_t},\ldots,w_n^{y_t}$ as the corresponding weight vector, with
 
 \begin{align*}
-  sd(\theta) =& \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta^{(i,y_t)}-\overline{\theta^{(.,y_t)}})^2}
+  sd(\theta) =& \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\theta^{(i,y_t)}-\overline{\theta^{(.,y_t)}})^2} \\
 \intertext{with}
   \overline{\theta^{(.,y_t)}} =& \frac{1}{B}\sum\limits_{i=1}^B\theta^{(i,y_t)} \quad,
 \end{align*}
-and $\theta^{(i,y_t)}:=\theta(\textbf{X}^{y_t},\textbf{b}^{(i,{y_t})})$ as the estimate of $\theta$ in the year $y_t$ using the $i$-th vector of calibrated bootstrap weights.
+where $\theta^{(i,y_t)}:=\theta(\textbf{X}^{y_t},\textbf{b}^{(i,{y_t})})$ is the estimate of $\theta$ in the year $y_t$ using the $i$-th vector of calibrated bootstrap weights.
 
 As already mentioned the standard error estimation for indicators in EU-SILC yields high quality results for NUTS1 or country level. When estimation indicators on regional or other sub-aggregate levels one is confronted with point estimates yielding high variance.\\
 
@@ -302,9 +252,48 @@ Applying the filter over the time series of estimated $\theta^{(i,y_t)}$ leads t
 
 It should also be noted that estimating indicators from a survey with rotating panel design is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error.\\
 \citep{silcstudy} showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25$\%$. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.\\
+
+\subsubsection{Improvement of 3 year mean}
+In the following we will show the improvement of precision of using the mean over several years on the UDB data of EU-SILC for Spain and Austria.
+We created 250 bootstrap replicates and calibrated for Spain each of the replicates for the variable DB040, household size and gender by age group. For Austria we calibrated by DB040 and RB090. After that the weighted ratio for AROPE was estimated, including it's standard error for each DB040 by DB100 for each year as well as using 3 consecutive years.\\
+Figure \@ref(fig:compareMean) shows for the results of this calculation for the year 2015 and the mean over years 2014, 2015 and 2016.
+The identity line corresponds to the estimates using a single year as basis for standard error estimation and the points show the results for using the years 2014 to 2016. The dotted line represents the 25$\%$ improvment that is to be expected for using the mean over 3 consecutive years, as shown by \citep{silcstudy}. It is clear to see that using the UDB the improvement of the the point estimate for standard error by about 25$\%$, when using 3 consecutive years, holds true as well.
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
+\includegraphics[width=\maxwidth]{figure/compareMean-1} \caption[Results for setup 1 regarding the sensitivity analysis on standard error estimations]{Results for setup 1 regarding the sensitivity analysis on standard error estimations.}\label{fig:compareMean}
+\end{figure}
+
+
+\end{knitrout}
+
 To conclude the above presented methodology represents a reasonable approach for lowering the variance of point estimates if the estimates stay relatively stable over time. However for point estimates which change trend over time or exhibit seasonal or cyclical behaviour this methodology can not be recommended. At least not with applying a filter with equal filter weights.
 
-\newpage
-\bibliography{lib}
+\subsection{R-Package vardpoor}
+For the workpackage on NetSilc 2 a different methodology was proposed for estimating standard errors for EU-SILC by \citep{soton416829} and even implemented this methodolgy in the R-Package vardpoor, see \citep{vardpoor}. This approach uses the so called ultimate cluster approximation, where the variance between the sampling units at the first sampling stage is used as approximation for the total sampling variance (see \citep{saerndal1992model}). Using this approximation the standard error estimates are analytically calculated and if needed approximated through linearization (\citep{devilleClaude}).\\
+To show that our proposed method is dissent from the methodology proposed in NetSilc 2 we applied both methods on UDB data of EU-SILC for Spain to estimate standard errors for the weighted ratio of AROPE on NUTS2-Level for the year 2016.\\
+Table 4 shows the estimated standard errors for the both methodologies for which our methodology was run with 250 and 1000 bootstrap sample weights, columns
+surveysd_250 and surveysd_1000, respectively. We see that for almost all standard errors the results for our methodoly are slightly higher. This is to be expected since we do incorporate the complete sampling design in our calculations.
 
-\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

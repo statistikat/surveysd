@@ -24,7 +24,7 @@ res <- list()
 for(i in 1:B){
 
   res_i <- calc.stError(dat=dat_boot_calib,weights="RB050",year="RB010",b.weights=paste0("w",1:i),
-               var="HX080",cross_var=list(c("DB040","DB100")),year.diff=c("2014-2008"),
+               var="arose",cross_var=list(c("DB040","DB100")),year.diff=c("2014-2008"),
                p=c(.01,0.025,.05,.1,.9,.95,0.975,.99))
   res_i <- res_i$Estimates
   res_i[,NumberWeights:=i]
@@ -32,24 +32,27 @@ for(i in 1:B){
   res <- c(res,list(res_i))
 }
 
-save(res,file=paste0(pfad_meth,"/Gussenbauer/surveysd/Results_i1000.RData"))
+save(res,file=paste0(pfad_meth,"/Gussenbauer/surveysd/Results_i1000_arose.RData"))
 
 # save(res,file="Results_i455.RData")
 
-load("Results_i455.RData")
+load(paste0(pfad_meth,"/Gussenbauer/surveysd/Results_i1000.RData"))
 
 res <- rbindlist(res)
-res <- res[rb010%in%dat_boot_calib[,unique(rb010)]]
-res[,rb010:=as.numeric(rb010)]
+res <- res[RB010%in%dat_boot_calib[,unique(RB010)]]
+res[,RB010:=as.numeric(RB010)]
 
-num_obs <- rbindlist(list(dat_boot_calib[,.N,by=rb010],dat_boot_calib[,.N,by=list(rb010,db040,db100)]),use.names=TRUE,fill=TRUE)
-num_obs[,GROUP:=cut(N,c(-Inf,10,25,50,100,200,500,1000,Inf))]
+num_obs <- rbindlist(list(dat_boot_calib[,.N,by=RB010],dat_boot_calib[,.N,by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,250,500,1000,Inf,right=FALSE))]
 
-res <- merge(res,num_obs,by=c("rb010","db040","db100"))
-res[,GROUP_VAR:=.GRP,by=c("rb010","db040","db100")]
+res <- merge(res,num_obs,by=c("RB010","DB040","DB100"))
+res[,GROUP_VAR:=.GRP,by=c("RB010","DB040","DB100")]
 
 estim <- c("stE_hx080","p0.01_hx080","p0.025_hx080","p0.05_hx080","p0.1_hx080","p0.9_hx080","p0.95_hx080","p0.975_hx080","p0.99_hx080")
-sel_var <- c("rb010","db040","db100","NumberWeights","GROUP_VAR","GROUP")
+
+estim <- c("stE_HX080","p0.025_HX080","p0.975_HX080")
+
+sel_var <- c("RB010","DB040","DB100","NumberWeights","GROUP_VAR","GROUP")
 
 for( i in 1:length(estim)){
   dat_plot <- subset(res,select=c(sel_var,estim[i]))
@@ -100,7 +103,7 @@ for(b in nB){
 
 res_all <- list()
 for(b in nB){
-  load(paste0("Results_boot",b,".RData"))
+  load(paste0(pfad_meth,"/Gussenbauer/surveysd/Results_boot",b,".RData"))
   res_boot <- rbindlist(res_boot)
   res_boot[,B:=b]
   res_all <- c(res_all,list(res_boot))
@@ -108,16 +111,19 @@ for(b in nB){
 res_all <- rbindlist(res_all)
 
 
-res_all  <- res_all[rb010%in%dat_boot_calib[,unique(rb010)]]
-res_all[,rb010:=as.numeric(rb010)]
+res_all  <- res_all[RB010%in%dat_boot_calib[,unique(RB010)]]
+res_all[,RB010:=as.numeric(RB010)]
 
-num_obs <- rbindlist(list(dat_boot_calib[,.N,by=rb010],dat_boot_calib[,.N,by=list(rb010,db040,db100)]),use.names=TRUE,fill=TRUE)
-num_obs[,GROUP:=cut(N,c(-Inf,10,25,50,100,200,500,1000,Inf))]
+num_obs <- rbindlist(list(dat_boot_calib[,.N,by=RB010],dat_boot_calib[,.N,by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,250,500,1000,Inf))]
 
-res_all  <- merge(res_all ,num_obs,by=c("rb010","db040","db100"))
-res_all[,GROUP_VAR:=.GRP,by=c("rb010","db040","db100")]
+res_all  <- merge(res_all ,num_obs,by=c("RB010","DB040","DB100"))
+res_all[,GROUP_VAR:=.GRP,by=c("RB010","DB040","DB100")]
 
 estim <- c("stE_hx080","p0.01_hx080","p0.025_hx080","p0.05_hx080","p0.1_hx080","p0.9_hx080","p0.95_hx080","p0.975_hx080","p0.99_hx080")
+
+estim <- c("stE_HX080","p0.025_HX080","p0.975_HX080")
+
 
 for( i in 1:length(estim)){
   plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
