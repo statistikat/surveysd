@@ -231,11 +231,372 @@ Applying the filter over the time series of estimated $\theta^{(i,y_t)}$ leads t
 
 It should also be noted that estimating indicators from a survey with rotating panel design is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error.\\
 \citep{silcstudy} showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25$\%$. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.\\
+
+\subsubsection{Improvement of 3 year mean}
+In the following we will show the improvement of precision of using the mean over several years on the UDB data of EU-SILC for Spain and Austria.
+We created 250 bootstrap replicates and calibrated for Spain each of the replicates for the variable DB040, household size and gender by age group. For Austria we calibrated by DB040 and RB090. After that the weighted ratio for AROPE was estimated, including it's standard error for each DB040 by DB100 for each year as well as using 3 consecutive years.\\
+Figure \@ref(fig:compareMean) shows for the results of this calculation for the year 2015 and the mean over years 2014, 2015 and 2016.
+The identity line corresponds to the estimates using a single year as basis for standard error estimation and the points show the results for using the years 2014 to 2016. The dotted line represents the 25$\%$ improvment that is to be expected for using the mean over 3 consecutive years, as shown by \citep{silcstudy}. It is clear to see that using the UDB the improvement of the the point estimate for standard error by about 25$\%$, when using 3 consecutive years, holds true as well.
+
+<<test, include=FALSE,cache=TRUE>>=
+library(data.table)
+library(mountSTAT)
+library(surveysd)
+pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
+dat_boot_calib <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"),select=1:1000)
+
+res_es <- calc.stError(dat=dat_boot_calib,weights="RB050",year="RB010",b.weights=paste0("w",1:250),
+               var="arose",cross_var=list(c("DB040","DB100")))
+
+dat_boot_calib_at <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_AT_calib.csv"),select=1:300)
+
+res_at <- calc.stError(dat=dat_boot_calib_at,weights="RB050",year="RB010",b.weights=paste0("w",1:250),
+               var="arose",cross_var=list(c("DB040","DB100")))
+select.year <- c("2015","2014_2015_2016")
+
+res_es <- res_es$Estimates[!is.na(DB040)&!is.na(DB100)&RB010%in%select.year]
+res_at <- res_at$Estimates[!is.na(DB040)&!is.na(DB100)&RB010%in%select.year]
+
+res_all <- rbind(res_es,res_at,use.names=TRUE)
+res_all <- dcast(res_all,DB040+DB100~RB010,value.var = "stE_arose")
+setnames(res_all,c("2015","2014_2015_2016"),c("Identity","Mean over 3 years"))
+res_all[,`25% below`:=Identity*.75]
+res_all[,State:=substr(DB040,1,2)]
+res_all[,xaxis:=Identity]
+
+res_all <- melt(res_all,id.vars=c("DB040","State","DB100","Mean over 3 years","xaxis"),measure.vars = c("Identity","25% below"))
+@
+
+<<compareMean, echo=FALSE,warning=FALSE,fig.cap="Results for setup 1 regarding the sensitivity analysis on standard error estimations.">>=
+library(ggplot2)
+ggplot(res_all,aes(xaxis,value))+
+  geom_line(aes(linetype=variable))+
+  geom_point(aes(y=`Mean over 3 years`,color=State))+xlab("Value of Standard Error")+ylab("")+
+  scale_linetype_discrete(name="")+
+  facet_grid(State~.,scales="free")
+@
+
 To conclude the above presented methodology represents a reasonable approach for lowering the variance of point estimates if the estimates stay relatively stable over time. However for point estimates which change trend over time or exhibit seasonal or cyclical behaviour this methodology can not be recommended. At least not with applying a filter with equal filter weights.
 
+\subsection{R-Package vardpoor}
+For the workpackage on NetSilc 2 a different methodology was proposed for estimating standard errors for EU-SILC by \citep{soton416829} and even implemented this methodolgy in the R-Package vardpoor, see \citep{vardpoor}. This approach uses the so called ultimate cluster approximation, where the variance between the sampling units at the first sampling stage is used as approximation for the total sampling variance (see \citep{saerndal1992model}). Using this approximation the standard error estimates are analytically calculated and if needed approximated through linearization (\citep{devilleClaude}).\\
+To show that our proposed method is dissent from the methodology proposed in NetSilc 2 we applied both methods on UDB data of EU-SILC for Spain to estimate standard errors for the weighted ratio of AROPE on NUTS2-Level for the year 2016.\\
+Table 4 shows the estimated standard errors for the both methodologies for which our methodology was run with 250 and 1000 bootstrap sample weights, columns
+surveysd_250 and surveysd_1000, respectively. We see that for almost all standard errors the results for our methodoly are slightly higher. This is to be expected since we do incorporate the complete sampling design in our calculations.
+
+<<include=FALSE,cache=TRUE>>=
+# DATA ES
+library(data.table)
+library(surveysd)
+library(vardpoor)
+library(mountSTAT)
+
+dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
+
+dat_es <- dat[rb020=="ES"][!duplicated(paste(RB030,RB010,sep="_"))]
+
+dat_es[,DB050_old:=DB050]
+dat_es <- dat_es[!is.na(DB030)]
+
+# definiere strate für Spanien
+for(i in 2013:2009){
+  strat_lookup <- unique(na.omit(dat_es[RB010>=i,.(DB060,DB050_neu=DB050)]))
+
+  dat_es_i <- dat_es[RB010==(i-1)]
+  dat_es_i <- merge(dat_es_i,strat_lookup,by=c("DB060"),all.x=TRUE)
+  dat_es_i[,DB050_neu:=na.omit(DB050_neu)[1],by=list(DB060)]
+
+  na.group <- unique(dat_es_i[is.na(DB050_neu),.(DB040,DB050)])
+  if(nrow(na.group)>0){
+    setkeyv(dat_es_i,c("DB040","DB050"))
+    choose.group <- dat_es_i[na.group,length(unique(na.omit(DB050_neu))),by=list(DB040,DB050)][V1==1,.(DB040,DB050)]
+    dat_es_i[choose.group,DB050_neu:=na.omit(DB050_neu)[1],by=list(DB040,DB050)]
+  }
+
+  dat_es <- merge(dat_es,dat_es_i[,.(RB030,RB010,DB050_neu)],by=c("RB030","RB010"),all.x=TRUE)
+  dat_es[RB010==(i-1),DB050:=DB050_neu]
+  dat_es[,DB050_neu:=NULL]
+}
+#dat_es[is.na(db050)]
+#dcast(dat_es[,sum(RB050),by=list(RB010,db050)],db050~RB010)
+
+# Cluster aufteilen
+# Anteil census section 35917
+
+random_round <- function(x){
+  set.seed(1234)
+  x_off <- sum(x-floor(x))
+  up_down <- rep(FALSE,length(x))
+  if(x_off>0){
+    up_down[1:x_off] <- TRUE
+    up_down <- sample(up_down)
+    x[up_down] <- ceiling(x[up_down])
+    x[!up_down] <- floor(x[!up_down])
+  }
+  return(x)
+}
+
+strata <- dat_es[,.(STRATA_sum=sum(RB050[!duplicated(DB030)])),by=list(DB050,RB010)]
+strata[,STRATA_ratio:=STRATA_sum/sum(STRATA_sum),by=RB010]
+strata[,N.cluster:=random_round(STRATA_ratio*35917),by=RB010]
+strata[,N.households:=STRATA_sum/N.cluster]
+
+dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
+dat_es[,IDd:=paste0("V",.I)]
+
+N_h <- dat_es[,sum(RB050[!duplicated(DB030)]),by=list(RB010,DB050)]
+erg_vardpoor <- varpoord(Y="HX080",H="DB050",PSU="DB030",Dom="DB040",ID_level1 = "DB030",N_h=N_h,
+                 ID_level2 = "IDd",w_final="RB050",period="RB010",dataset=dat_es,type="linarpr")
+
+# dat_boot_calib <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"))
+
+dat_boot_calib[,HX080_neu:=ifelse(HX080==1,0,1)]
+erg_survey_250 <- calc.stError(dat=copy(dat_boot_calib),weights="RB050",year="RB010",b.weights=paste0("w",1:250),
+                           var="HX080_neu",cross_var=list(c("DB040")))
+
+erg_survey_1000 <- calc.stError(dat=copy(dat_boot_calib),weights="RB050",year="RB010",b.weights=paste0("w",1:1000),
+                           var="HX080_neu",cross_var=list(c("DB040")))
+
+
+erg_comp <- merge(erg_vardpoor$all_result[RB010==2016,.(RB010,DB040,vardpoor=se)],
+                  erg_survey_250$Estimates[RB010==2016,.(RB010, DB040, val_HX080_neu,surveysd_250=stE_HX080_neu)],
+                  by=c("RB010","DB040"))
+
+erg_comp <- merge(erg_comp,erg_survey_1000$Estimates[RB010==2016,.(RB010, DB040, surveysd_1000=stE_HX080_neu)],
+                  by=c("RB010","DB040"))
+erg_comp <- erg_comp[,c(2,3,5,6),with=FALSE]
+@
+
+<<echo=FALSE>>=
+kable(erg_comp,format="latex",booktabs=TRUE)
+@
+
+
 \subsection{Number of bootstrap replicates}
+When using bootstrap replicates with survey data it is not always clear how many bootstrap replicates are needed to get stable results.
+Obviously it is more beneficial to use too many bootstrap replicates instead of too little. Nevertheless using a very large number of bootstrap replicates on large data sets can heavlily increas memory usage as well as run-time for the computation. To get a bit of insight on how many bootstrap replicates suffice for reasonable results we conducted a sensitivity analysis.
+
+\subsubsection{Setup}
+For the sensitivity analysis we used the UDB data of EU-SILC for Spain for the years 2008 till 2016. We created 1000 bootstrap replicates and calibrated each of the replicates for the variable DB040, household size and gender by age group. The estimate of interest was the weighted Ratio in $\%$ of HX080 for each year at a national level as well as the grouping DB040 by DB100. The sensitivity analysis was then conducted with two different approaches
+\begin{enumerate}
+  \item Starting with 50 bootstrap sample weight the standard error, 0.025 and 0.975 quantile were calculated. After that the next bootstrap sample weight was added and standard error, 0.025 and 0.975 quantile were calculated again. This was done until all 1000 bootstrap sample weights were used for the calculation.
+  \item We sampled $i$ bootstrap sample weight from the original set of 1000 bootstrap sample weight and calculated standard error, 0.025 and 0.975 quantile of the point estimate. $i$ was choosen to be in $I:=\{i: i\in 50,100,150,\ldots,700,750,800\}$ and for each $k$ this procedure was done 100 times over.
+\end{enumerate}
+
+Calculating the estimates for year, DB040 and DB100 can in some cases yield very little observations in the data. Since we expect the behaviour of estimates for standard error, 0.025 and 0.975 quantile the be depending on the number of observations used we divided the results into groups. The groups were $G:=\{g: g\in \{[0-50), [50,100), [100,250), [250,500), [500,1000), 1000+\}\}$, displaying the range for number of observations used from the data for each year and each year by DB040 and DB100.
+
+\subsubsection{Results Setup 1}
+Let $\hat{\sigma}^{(i)}_{(k,g)}$ be the $k$-th estimate for standrad error using $i$ bootstrap sample weights in group $g$ which contains $n_g$ estimates, $g\in G$. We first calculated for each $g$ the absolute change, $\tilde{\sigma}^{(i)}_{(k,g)}$, for the point estimate
+\begin{align*}
+  \tilde{\sigma}^{(i)}_{(k,g)} = \hat{\sigma}^{(i+1)}_{(k,g)} - \hat{\sigma}^{(i)}_{(k,g)} \quad i=1,\ldots,999.
+\end{align*}
+
+Afterwards for each group $g$ and number of bootstrap sample weights $i$ we estimated the minimum, maximum and median over $\tilde{\sigma}^{(i)}_{(k,g)}$. In Figure 1 this minimum, maximum and median is displayed for each group and number of bootstrap sample weights used. The y axis was, for better readability, cut of below and above -1 and 1, respectively. The same calcualations were done for the 0.025 and 0.975 quantile and the results are displayed in figure 2 and figure 3.
+
+<<include=FALSE,cache=TRUE>>=
+library(data.table)
+library(mountSTAT)
+pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
+
+load(paste0(pfad_meth,"/Gussenbauer/surveysd/Results_i1000.RData"))
+
+res <- rbindlist(res)
+res <- res[RB010%in%dat_es[,unique(RB010)]]
+res[,RB010:=as.numeric(RB010)]
+
+num_obs <- rbindlist(list(dat_es[,.N,by=RB010],dat_es[,.N,by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,250,500,1000,Inf,right=FALSE))]
+
+res <- merge(res,num_obs,by=c("RB010","DB040","DB100"))
+res[,GROUP_VAR:=.GRP,by=c("RB010","DB040","DB100")]
+
+estim <- c("stE_HX080","p0.025_HX080","p0.975_HX080")
+main.lab <- c("Standard Error","0.025 Quantile","0.975 Quantile")
+sel_var <- c("RB010","DB040","DB100","NumberWeights","GROUP_VAR","GROUP")
+@
 
 
+<<setup1SD, echo=FALSE,fig.cap="Results for setup 1 regarding the sensitivity analysis on standard error estimations.">>=
+# standard error plot
+library(data.table)
+library(ggplot2)
+  i <- 1
+  dat_plot <- subset(res,select=c(sel_var,estim[i]))
+  # berechne Veränderungsrate vom estimate über NumberWeights
+  setkeyv(dat_plot,c("GROUP_VAR","NumberWeights"))
+  dat_plot <- na.omit(dat_plot[,.(EST_CHANGE=diff(get(estim[i])),NumberWeights=NumberWeights[-1]),by=list(GROUP_VAR,GROUP)])
+  dat_plot <- dat_plot[,.(Q=c("min","med","max"),quantile(EST_CHANGE,c(0,.5,1))),by=list(GROUP,NumberWeights)]
+  dat_plot <- dcast(dat_plot,GROUP+NumberWeights~Q,value.var="V2")
+  setnames(dat_plot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("Min - Median - Max")+
+    geom_ribbon(aes(ymin = min, ymax = max,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    guides(color=guide_legend(title="Number of\nObservations"),
+           fill=guide_legend(title="Number of\nObservations"))+
+    coord_cartesian(ylim=c(1,-1))+
+    facet_grid(NumberObs~.)+ggtitle(main.lab[i])
+
+  plot(p1)
+@
+
+
+<<setup1p0025, echo=FALSE,fig.cap="Results for setup 1 regarding the sensitivity analysis on estimations for the 0.025 quantile.">>=
+# p0.025 plot
+library(data.table)
+library(ggplot2)
+  i <- 2
+  dat_plot <- subset(res,select=c(sel_var,estim[i]))
+  # berechne Veränderungsrate vom estimate über NumberWeights
+  setkeyv(dat_plot,c("GROUP_VAR","NumberWeights"))
+  dat_plot <- na.omit(dat_plot[,.(EST_CHANGE=diff(get(estim[i])),NumberWeights=NumberWeights[-1]),by=list(GROUP_VAR,GROUP)])
+  dat_plot <- dat_plot[,.(Q=c("min","med","max"),quantile(EST_CHANGE,c(0,.5,1))),by=list(GROUP,NumberWeights)]
+  dat_plot <- dcast(dat_plot,GROUP+NumberWeights~Q,value.var="V2")
+  setnames(dat_plot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("Min - Median - Max")+
+    geom_ribbon(aes(ymin = min, ymax = max,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    guides(color=guide_legend(title="Number of\nObservations"),
+           fill=guide_legend(title="Number of\nObservations"))+
+    coord_cartesian(ylim=c(1,-1))+
+    facet_grid(NumberObs~.)+ggtitle(main.lab[i])
+
+  plot(p1)
+@
+
+<<setup1p0975, echo=FALSE,fig.cap="Results for setup 1 regarding the sensitivity analysis on estimations for the 0.975 quantile.">>=
+# p0.975 plot
+library(data.table)
+library(ggplot2)
+  i <- 3
+  dat_plot <- subset(res,select=c(sel_var,estim[i]))
+  # berechne Veränderungsrate vom estimate über NumberWeights
+  setkeyv(dat_plot,c("GROUP_VAR","NumberWeights"))
+  dat_plot <- na.omit(dat_plot[,.(EST_CHANGE=diff(get(estim[i])),NumberWeights=NumberWeights[-1]),by=list(GROUP_VAR,GROUP)])
+  dat_plot <- dat_plot[,.(Q=c("min","med","max"),quantile(EST_CHANGE,c(0,.5,1))),by=list(GROUP,NumberWeights)]
+  dat_plot <- dcast(dat_plot,GROUP+NumberWeights~Q,value.var="V2")
+  setnames(dat_plot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(dat_plot,aes(NumberWeights,med,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("Min - Median - Max")+
+    geom_ribbon(aes(ymin = min, ymax = max,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    guides(color=guide_legend(title="Number of\nObservations"),
+           fill=guide_legend(title="Number of\nObservations"))+
+    coord_cartesian(ylim=c(1,-1))+
+    facet_grid(NumberObs~.)+ggtitle(main.lab[i])
+
+  plot(p1)
+@
+
+Comparing Figures \@ref(fig:setup1SD) to \@ref(fig:setup1p0975) we conclude that for estimating the standard error a value if 250 bootstrap sample weights does suffice for stable estimates throught all group $g$. When it comes to the estimates for the 0.025 and 0.975 quantile the results change drastically. Regardless of the number of observations used for the estimation we suggest to never use less then 500 bootstrap sample weights. But even this can be unsufficient when looking at the group $(100,250]$ in our analysis. Ideally one should at least take a 1000 bootstrap sample weights for those kind of estimates.
+
+
+\subsubsection{Results Setup 2}
+For the second setup consider $\hat{\sigma}^{(i,j)}_{(k,g)}$ as $j$-th result, $j=1,\ldots,100$, for the $k$-th estimate, using $i$ bootstrap sample weights, $i\in I$ in group $g$, $g\in G$. We then calculated for fixed $i$, $k$ and $g$ the range over all $\hat{\sigma}^{(i,j)}_{(k,g)}$, $R^{(i)}_{(k,g)}$
+
+\begin{align*}
+  R^{(i)}_{(k,g)} = \max(\hat{\sigma}^{(i,j)}_{(k,g)}) - \min(\hat{\sigma}^{(i,j)}_{(k,g)}) \quad,
+\end{align*}
+
+From the sets of $R^{(i)}_{(k,g)}$ we then calculated for each $g$ and each $i$ the median, 0.01 and 0.99 quantile.
+Figure 4 displays the results for median, 0.01 and 0.99 quantile for each $g$ over $i$. We followed the same procedure for the estimates regarding 0.025 and 0.975 quantile and the corresponding results are displayed in Figure 5 and 6.
+
+<<include=FALSE,cache=TRUE>>=
+library(data.table)
+library(mountSTAT)
+
+nB <- seq(50,800,by=50)
+res_all <- list()
+for(b in nB){
+  load(paste0(pfad_meth,"/Gussenbauer/surveysd/Results_boot",b,".RData"))
+  res_boot <- rbindlist(res_boot)
+  res_boot[,B:=b]
+  res_all <- c(res_all,list(res_boot))
+}
+res_all <- rbindlist(res_all)
+
+res_all  <- res_all[RB010%in%dat_es[,unique(RB010)]]
+res_all[,RB010:=as.numeric(RB010)]
+
+num_obs <- rbindlist(list(dat_es[,.N,by=RB010],dat_es[,.N,by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
+num_obs[,GROUP:=cut(N,c(-Inf,50,100,250,500,1000,Inf))]
+
+res_all  <- merge(res_all ,num_obs,by=c("RB010","DB040","DB100"))
+res_all[,GROUP_VAR:=.GRP,by=c("RB010","DB040","DB100")]
+
+estim <- c("stE_HX080","p0.025_HX080","p0.975_HX080")
+main.lab <- c("Standard Error","0.025 Quantile","0.975 Quantile")
+@
+
+<<setup2SD, echo=FALSE,fig.cap="Results for setup 2 regarding the sensitivity analysis on standard error estimations.">>=
+# standard error plot
+library(data.table)
+library(ggplot2)
+  i <- 1
+  plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
+  plot_boot <- plot_boot[,diff(range(get(estim[i]))),by=list(GROUP_VAR,GROUP,B)]
+  plot_boot <- plot_boot[,.(Q=c("p.01","p.5","p.99"),quantile(V1,c(.01,.5,.99))),by=list(GROUP,B)]
+  plot_boot <- dcast(plot_boot,GROUP+B~Q,value.var="V2")
+  setnames(plot_boot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(plot_boot,aes(factor(B),p.5,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("1% - Median - 99%")+
+    geom_ribbon(aes(ymin = p.01, ymax = p.99,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    guides(color=guide_legend(title="Number of\nObservations"),
+           fill=guide_legend(title="Number of\nObservations"))+
+    facet_grid(NumberObs~.)+ggtitle(main.lab[i])
+
+  plot(p1)
+@
+
+
+<<setup2p0025, echo=FALSE,fig.cap="Results for setup 2 regarding the sensitivity analysis on estimations for the 0.025 quantile.">>=
+# p0.025 plot
+library(data.table)
+library(ggplot2)
+  i <- 2
+  plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
+  plot_boot <- plot_boot[,diff(range(get(estim[i]))),by=list(GROUP_VAR,GROUP,B)]
+  plot_boot <- plot_boot[,.(Q=c("p.01","p.5","p.99"),quantile(V1,c(.01,.5,.99))),by=list(GROUP,B)]
+  plot_boot <- dcast(plot_boot,GROUP+B~Q,value.var="V2")
+  setnames(plot_boot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(plot_boot,aes(factor(B),p.5,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("1% - Median - 99%")+
+    geom_ribbon(aes(ymin = p.01, ymax = p.99,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    guides(color=guide_legend(title="Number of\nObservations"),
+           fill=guide_legend(title="Number of\nObservations"))+
+    facet_grid(NumberObs~.)+ggtitle(main.lab[i])
+
+  plot(p1)
+@
+
+<<setup2p0975, echo=FALSE,fig.cap="Results for setup 2 regarding the sensitivity analysis on estimations for the 0.975 quantile.">>=
+# p0.975 plot
+library(data.table)
+library(ggplot2)
+  i <- 3
+  plot_boot <- res_all[,mget(c(estim[i],"GROUP","GROUP_VAR","B"))]
+  plot_boot <- plot_boot[,diff(range(get(estim[i]))),by=list(GROUP_VAR,GROUP,B)]
+  plot_boot <- plot_boot[,.(Q=c("p.01","p.5","p.99"),quantile(V1,c(.01,.5,.99))),by=list(GROUP,B)]
+  plot_boot <- dcast(plot_boot,GROUP+B~Q,value.var="V2")
+  setnames(plot_boot,c("GROUP"),c("NumberObs"))
+
+  p1 <- ggplot(plot_boot,aes(factor(B),p.5,group=NumberObs))+
+    geom_line(aes(color=NumberObs),size=.25)+xlab("Number Bootstrap weights")+ylab("1% - Median - 99%")+
+    geom_ribbon(aes(ymin = p.01, ymax = p.99,fill=NumberObs,colour=NumberObs),linetype = 2, alpha= 0.1)+
+    guides(color=guide_legend(title="Number of\nObservations"),
+           fill=guide_legend(title="Number of\nObservations"))+
+    facet_grid(NumberObs~.)+ggtitle(main.lab[i])
+
+  plot(p1)
+@
+
+Looking at Figure 4 we conclude that for larger groups, e.g above 500 observations, a number of 250 bootstrap sampel weights does suffice for getting realitively stabel estimates, that is, the variance of the estimator itself is not too large. For groups regarding smaller number of observations it would be beneficial to not use less then 500 observations.\\
+Similar to the results from setup 1, the results for the 0.025 and 0.975 quantile, shown in Figure 5 and 6, show a very different picture. Even for larger groups one should at least use 500 bootstrap sample weights, although even that might not be enough. As stated for setup one for those kind of estimates it is necessary to use at least 1000 bootstrap sample weights.
 
 \newpage
 \bibliography{lib}
