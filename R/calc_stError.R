@@ -4,7 +4,7 @@
 #' Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{draw.bootstrap}} and \code{\link{recalib}}).
 #' In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive years, which results in a reduction of the standard error.
 #'
-#' @usage calc.stError(dat,weights="hgew",b.weights=paste0("w",1:1000),year="jahr",var="povmd60",
+#' @usage calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),year="RB010",var="HX080",
 #'                     fun="weightedRatio",cross_var=NULL,year.diff=NULL,
 #'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10)
 #'
@@ -84,42 +84,41 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#' # read in and prepare data
+#'
 #' library(data.table)
-#' dat <- data.table(read_sas("PATH"))
+#' # run on EU-SILC UDB data for Austria
+#' # dat_at <- fread("path//to//austrian//data.csv")
 #'
-#' dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",strata="bundesld",
-#'                      year="jahr",totals=NULL,boot.names=NULL)
-#' dat <- recalib(dat,hid="hid",weights="hgew",b.rep=paste0("w",1:20),
-#'                year="jahr",conP.var=c("ksex","kausl","al","erw","pension"),
-#'                conH.var=c("bundesld","hsize","recht"))
+#' dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
+#'                            year="RB010",split=TRUE,pid="RB030")
 #'
-#' # or load file with calibrated bootstrap weights
-#' # load("dat_calibweight.RData")
+#' # calibrate weight for bootstrap replicates
+#' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
+#'                           year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
 #'
-#' # estimate weightedRatio for povmd60 per year
-#' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
+#' # estimate weightedRatio for HX080 per year
+#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
 #'                        fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=NULL)
 #'
-#' # estimate weightedRatio for povmd60 per year and sex
-#' cross_var <- "sex"
-#' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),
-#'                         year="jahr",var="povmd60",fun="weightedRatio",
-#'                         cross_var=cross_var,year.diff=NULL,year.mean=NULL)
+#' # estimate weightedRatio for HX080 per year and RB090
+#' cross_var <- "RB090"
+#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+#'                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=NULL)
+#'
 #'
 #' # use average over 3 years for standard error estimation
-#' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
-#'                         fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=3)
+#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+#'                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=3)
 #'
 #' # get estimate for difference of year 2016 and 2013
-#' year.diff <- c("2016-2013")
-#' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="povmd60",
+#' year.diff <- c("2015-2009")
+#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
 #'                        fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 #'
 #' # apply function to multiple variables and define different subsets
-#' var <- c("povmd60","arose")
-#' cross_var <- list("sex","bundesld",c("sex","bundesld"))
-#' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var=var,
+#' var <- c("HX080","arose")
+#' cross_var <- list("RB090","DB040",c("RB090","DB040"))
+#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
 #'                        fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 #'
 #' # use a function from an other package that has sampling weights as its second argument
@@ -131,13 +130,14 @@
 #'  return(gini(x,w)$value)
 #' }
 #'
+#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX090",
+#'                        fun="help_gini",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+#'
 #' # exporting data
 #' # get point estimates
 #' results <- err.est$Estimates
 #' write2.csv(results,file="My_Results.csv",row.names=FALSE)
 #'
-#' err.est <- calc.stError(dat,weights="hgew",b.weights=paste0("w",1:20),year="jahr",var="epinc_real",
-#'                        fun="help_gini",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 #'
 #' @export calc.stError
 #' @export print.surveysd

@@ -1,5 +1,6 @@
-
-#' Title
+#' Plot surveysd-Objects
+#'
+#' Plot results of \code{calc.stError()}
 #'
 #' @param dat object of class 'surveysd' output of function \code{\link{calc.stError}}
 #' @param variable Name of the variable for which standard errors have been calcualated in \code{dat}
@@ -13,7 +14,6 @@
 #' For \code{sd.type='dot'} point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-years exceeded the value \code{cv.limit} (see \code{\link{calc.stError}}).
 #' For \code{sd.type='ribbon'} the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
 #' The calculated standard errors using the mean over k years are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.
-#'
 #'
 #' @return
 #' @export

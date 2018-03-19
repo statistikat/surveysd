@@ -3,8 +3,8 @@
 #' @description Draw bootstrap replicates from survey data with rotating panel design.
 #' Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 #'
-#' @usage draw.bootstrap(dat,REP=1000,hid="hid",weights="hgew",strata="bundesld",
-#'                      year="jahr",totals=NULL,boot.names=NULL)
+#' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",strata="DB040",
+#'                      year="RB010",totals=NULL,boot.names=NULL)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
@@ -60,20 +60,28 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#' # read in data (must be changed..)
-#' dat <- data.table(read_sas("PATH"))
+#' library(data.table)
 #'
-#' # create 20 bootstrap replicates using the column "bundesld" as strata
-#' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
-#'                           strata="bundesld",year="jahr")
+#' # run on UDB SILC-data
 #'
-#' # do the same with more strata
-#' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
-#'                           strata=c("bundesld","sex","hsize"),year="jahr")
+#' # example for SILC-data for Spain
+#' # dat_es <- fread("path//to//spanish//data.csv")
 #'
-#' # change column names for bootstrap replicates
-#' dat_boot <- draw.bootstrap(dat=copy(dat),REP=20,hid="hid",weights="hgew",
-#'                           strata=c("bundesld"),year="jahr",boot.names="replicate")
+#' # approximate Number of clusters if not known
+#' strata <- dat_es[,.(STRATA_sum=sum(RB050[!duplicated(DB030)])),by=list(DB050,RB010)]
+#' strata[,STRATA_ratio:=STRATA_sum/sum(STRATA_sum),by=RB010]
+#' strata[,N.cluster:=random_round(STRATA_ratio*35917),by=RB010]
+#' strata[,N.households:=STRATA_sum/N.cluster]#'
+#' dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
+#'
+#' dat_boot <- draw.bootstrap(dat=dat_es,REP=250,hid="DB030",weights="RB050",strata=c("DB050","I"),cluster="DB060",
+#'                            year="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
+#'
+#' # example for SILC-data for Austria
+#' # dat_at <- fread("path//to//austrian//data.csv")
+#' dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
+#'                            year="RB010",split=TRUE,pid="RB030")
+#'
 #'
 #' # save bootstrap replicates as .RData
 #' save(dat_boot,file="dat_replicates.RData")
@@ -270,7 +278,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE),by=c(year,country)]
+  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE),by=c(year,country)]
 
   # keep bootstrap replicates of first year for each household
   if(split){
