@@ -2,8 +2,9 @@
 #'
 #' Draw bootstrap replicates from survey data using the rescaled bootstrap for stratified multistage sampling, presented by Preston, J. (2009).
 #'
-#' @usage rescaled.boot(dat,REP=1000,strata="DB050>1",cluster="DB060>DB030",fpc="N.cluster>N.households",
-#'                       check.input=TRUE,single.PSU=c("merge"), return.value=c("data"))
+#' @usage rescaled.bootstrap(dat,REP=1000,strata="DB050>1",cluster="DB060>DB030",
+#'                           fpc="N.cluster>N.households",check.input=TRUE,single.PSU=c("merge"),
+#'                           return.value=c("data"))
 #'
 #' @param dat either data frame or data table containing the survey sample
 #' @param REP integer indicating the number of bootstraps to be drawn
@@ -33,10 +34,24 @@
 #' @author Johannes Gussenbauer, Statistics Austria
 #'
 #' @examples
+#' library(laeken)
+#' library(data.table)
+#'
+#' data("eusilc")
+#' eusilc <- data.table(eusilc)
+#'
+#' eusilc[!duplicated(db030),N.housholds:=sum(db090),by=db040]
+#' rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
+#'
+#' eusilc[,new_strata:=paste(db040,rb090,sep="_")]
+#' eusilc[!duplicated(db030),N.housholds:=sum(db090),by=new_strata]
+#' rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
+#'
+#'
 #' @import matrixStats
 
 
-bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",
+rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",
                       single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE){
 
   # prepare input
@@ -50,6 +65,7 @@ bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc="
 
   single.PSU <- single.PSU[1]
   return.value <- return.value[1]
+
 
   if(!is.logical(check.input)){
     stop("check.input can only be logical")

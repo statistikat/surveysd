@@ -4,9 +4,8 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat, hid = "hid", weights = "hgew", b.rep = paste0("w", 1:1000),
-  year = "jahr", country = NULL, conP.var = c("ksex", "kausl", "al",
-  "erw", "pension"), conH.var = c("bundesld", "hsize", "recht"), ...)
+recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),year="RB010",
+               country=NULL,conP.var=c("RB090"),conH.var=c("DB040","DB100"),...)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for various years.}
@@ -51,37 +50,29 @@ Afterwards the bootstrap replicates are multiplied with the original sample weig
 In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 }
 \examples{
-# read in data (need to be changed)
 library(data.table)
-dat <- data.table(read_sas("PATH"))
-# draw bootstrap replicates
-dat <- draw.bootstrap(dat,REP=20,hid="hid",weights="hgew",
-                     strata="bundesld",year="jahr",totals=NULL,boot.names=NULL)
+# run on UDB SILC-data
+# example for SILC-data for Austria
+# dat_at <- fread("path//to//austrian//data.csv")
 
-# or load data with replicates if they have already been saved
-# load("dat_replicates.RData")
+dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
+                           year="RB010",split=TRUE,pid="RB030")
+
 
 # calibrate weight for bootstrap replicates
-# use sex for person-specific and hsize for household-specific marginals
-dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
-                     year="jahr",conP.var=c("sex"),conH.var=c("hsize"))
+dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
+                          year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
 
 
-# do the same but expand person- and household specific variables
-dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
-                     year="jahr",conP.var=c("sex","ageX"),conH.var=c("bundesld","hsize"))
+# calibrate on other variable
+dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
+                          year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
 
-
-# for many variables (household- or person-specific)
-# use increase maxIter to get convergence
-dat_calib <- recalib(dat=copy(dat),hid="hid",weights="hgew",b.weights=paste0("w",1:20),
-                     year="jahr",conP.var=c("ksex","age","bildung","kausl","al","erw","pension"),
-                     conH.var=c("bundesld","hsize","recht"),maxIter=100)
 
 # save calibrated bootstrap weights as .RData
-save(dat_calib,file="dat_calibweight.RData")
+save(dat_boot_calib,file="dat_calibweight.RData")
 # or .csv-file
-write.csv2(dat_calib,file="dat_calibweight.csv",row.names=FALSE)
+write.csv2(dat_boot_calib,file="dat_calibweight.csv",row.names=FALSE)
 
 }
 \seealso{
