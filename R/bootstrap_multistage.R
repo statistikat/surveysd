@@ -27,7 +27,7 @@
 #' Spaces in each of the strings will be removed, so if column names contain spaces they should be renamed before calling this procedure!
 #'
 #' @return returns the complete data set including the bootstrap replicates or just the bootstrap replicates, depending on \code{return.value="data"} or \code{return.value="replicates"} respectively.
-#' @export bootstrap
+#' @export rescaled.bootstrap
 #'
 #' @references Preston, J. (2009). Rescaled bootstrap for stratified multistage sampling. Survey Methodology. 35. 227-234.
 #'
