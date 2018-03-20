@@ -92,7 +92,8 @@ The bootstrap procedure above is applied on the EU-SILC data for each year $y_t$
 Due to the rotating penal design so called split households can occur. For a household participating in the EU-SILC survey it is possible that one or more residents move to a new so called split household, which is followed up on in the next wave. To take this dynamic into account we extended the procedure of taking forward the bootstrap replicate of a household for consecutive waves of EU-SILC by taking forward the bootstrap replicate to the split household. That means, that also any new individuals in the split household will inherit this bootstrap replicate.
 
 The following Tables illustrate the mechanism for taking bootstrap replicates forward es well as dealing with split households.
-Consider a 4 member household that enters EU-SILC in the year 2013, as show in Table 1. For this household the bootstrap replicate was set to 2.
+Consider a household that enters EU-SILC in the year 2013 and leaves after 2014, as show in Table 1. For 2013 the household, HID=47500, contained 4 household members of which one household member, PID=4750003, moved to a new household in year 2014. Thus creating the split household, HID=47501, in year 2014.
+The bootstrap procedure, since it is applied on each year separately, did select the household in 2013, e.g BOOTSTRAP.REP=2, but did not select either HID=47500 or HID=47501 for the year 2014, e.g BOOTSTRAP.REP=0. 
 
 ```{r,echo=FALSE,include=FALSE,cache=TRUE}
 library(data.table)
@@ -112,27 +113,20 @@ dat_es <- dat_es[!is.na(DB030)]
 dat_es <- generate.HHID(dat_es)
 dat_es[,uniqueN(DB030_orig),by=list(DB030,RB010)][V1>1&RB010==2014]
 dat_split <- dat_es[DB030_orig%in%c(47500,47501)&RB010%in%c(2013,2014),.(YEAR=RB010,PID=as.character(RB030),HID=DB030_orig)]
-dat_before <- dat_split[YEAR==2013]
-dat_before[,BOOTSTRAP.REP:=2]
-dat_after <- dat_split[YEAR==2014]
-dat_after[,BOOTSTRAP.REP:=0]
+dat_split[YEAR==2013,BOOTSTRAP.REP:=2]
+dat_split[YEAR==2014,BOOTSTRAP.REP:=0]
 ```
 
 ```{r hh1,echo=FALSE, results='asis'}
-kable(dat_before,caption = "Household with 4 members in year 2013.")
+kable(dat_split,caption = "Household with 4 members in year 2013 and 3 members plus 1 split household in year 2014.")
 ```
+
+Following our rule for taking bootstrap replicates forward and dealing with split households the bootstrap replicates for the year 2014 will be set equal to the bootstrap replicates for 2013. This is also true for the split household since it was created through the household member PID=4750003, which moved out of household HID=47500 between 2013 and 2014. Every Household member in of HID=47501 will therefore inherit the bootstrap replicate which household member PID=4750003 had in the year 2013.
+Table 2 shows the bootstrap replicates after they have been taken forward from 2013.
 
 ```{r hh2,echo=FALSE, results='asis'}
-kable(dat_after,caption = "Original household with 3 members and 1 split household in year 2014.")
-```
-
-Table 2 shows the household members from Table 1 including a split household for the year 2014. We see that the household member with PID=4750003 has moved to a new household, thus creating the split household, HID=47501.
-Furthermore the bootstrap procedure, since it is applied on each year separately, did not select households HID=47500 or HID=47501 for the year 2014, e.g BOOTSTRAP.REP=0.
-Following our rule for taking bootstrap replicates forward and dealing with split households the bootstrap replicates for the year 2014 will be set equal to the bootstrap replicates for 2013. This is also true for the split household since it was created through the household member PID=4750003, which moved out of household HID=47500 between 2013 and 2014. Every Household member in of HID=47501 will therefore inherit the bootstrap replicate which household member PID=4750003 had in the year 2013. Table 3 shows the bootstrap replicates after for 2014 after they have been taken forward from 2013.
-
-```{r hh3,echo=FALSE, results='asis'}
-dat_after[,BOOTSTRAP.REP:=2]
-kable(dat_after,caption = "Bootstrap replicates taken forward to the next year as well as to the split household.")
+dat_split[,BOOTSTRAP.REP:=2]
+kable(dat_split,caption = "Bootstrap replicates taken forward to the next year as well as to the split household.")
 ```
 
 Taking bootstrap replicates forward as well as considering split households ensures that bootstrap replicates are more comparable in structure with the actual design of EU-SILC.
@@ -156,18 +150,18 @@ Let the original weight $w_{j}$ be calibrated for $v_1,\ldots,v_u$ sociodemograp
 #### Steps 1-3
 The uncalibrated bootstrap weights $\tilde{b}_j^{i}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_{v_i}$, $i=1,\ldots,u$.
 For each $i \in \left\{1,\ldots,u\right\}$ the calibrated weights against $N_{(v_i,y)}$ are computed as
-\begin{align*}
+$$
   \tilde{b}_j^{(u+2)k+i} = {\tilde{b}_j}^{(u+2)k+i-1}\frac{N_{v_i}}{{\sum\limits_l} {\tilde{b}}_l^{(u+2)k}},
-\end{align*}
+$$
 where the summation in the denominator expands over all observations which have the same value as observation $j$ for the sociodemographic variable $v_i$.
-If any weights $\tilde{b}_j^{(u+2)k+i}$ fall outside the range $\left[\frac{w_j}{4};4w_j\right]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form of weight trimming where very large or small weights are trimmed in order to reduce variance in exchange for a possible increase in bias [@potter90,potter93].
+If any weights $\tilde{b}_j^{(u+2)k+i}$ fall outside the range $\left[\frac{w_j}{4};4w_j\right]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form of weight trimming where very large or small weights are trimmed in order to reduce variance in exchange for a possible increase in bias ([@potter90],[@potter93]).
 
 #### Step 4
 Since the sociodemographic variables $v_1,\ldots,v_u$ can include personal as well as household specific variables, the weights $\tilde{b}_j^{5k+u}$   resulting from the iterative multiplication can be unequal for members of the same household. This can lead to inconsistencies between results projected with household and person weights. To avoid such inconsistencies each household member is assigned the mean of the household weights. That is for each person $j$ in household $p$ with $H_p$ household members, the weights are defined by
-\begin{align*}
+$$
   \tilde{b}_j^{(u+2)k+u+1} = \frac{{\sum\limits_{l=1}^{H_p}} {\tilde{b}}_{p(l)}^{(u+2)k+u}}{H_p}
-\end{align*}
-This can result in loosing the population structure performed in steps 1-3.
+$$
+This can result in losing the population structure performed in steps 1-3.
 
 #### Step 5
 To get weights that do conform with the population margins defined by $v_1,\ldots,v_u$ the weights $b_j^{5k+u+1}$ are again updated according to the uncertainty parameter $p_h$. The parameters $p_h$ represent the allowed deviation from the population margins using the weights $\tilde{b}_j^{(u+2)k+u+1}$ compared to $N_{v_i}$, $i=1,\ldots,u$ where $v_i$ corresponds to a household variable.
@@ -207,7 +201,7 @@ $$
 $$
 where $\theta^{(i,y_t)}:=\theta(\textbf{X}^{y_t},\textbf{b}^{(i,{y_t})})$ is the estimate of $\theta$ in the year $y_t$ using the $i$-th vector of calibrated bootstrap weights.
 
-As already mentioned the standard error estimation for indicators in EU-SILC yields high quality results for NUTS1 or country level. When estimation indicators on regional or other sub-aggregate levels one is confronted with point estimates yielding high variance.\\
+As already mentioned the standard error estimation for indicators in EU-SILC yields high quality results for NUTS1 or country level. When estimation indicators on regional or other sub-aggregate levels one is confronted with point estimates yielding high variance. 
 
 To overcome this issue we propose to estimate $\theta$ for 3, consecutive years using the calibrated bootstrap weights, thus calculating $\{\theta^{(i,y_{t-1})},\theta^{(i,y_t)},\theta^{(i,y_{t+1})}\}$, $i=1,\ldots,B$.
 For fixed $i$ one can apply a filter with equal filter weights on the time series $\{\theta^{(i,y_{t-1})},\theta^{(i,y_t)},\theta^{(i,y_{t+1})}\}$ to create $\tilde{\theta}^{(i,y_t)}$
@@ -232,7 +226,7 @@ Applying the filter over the time series of estimated $\theta^{(i,y_t)}$ leads t
 It should also be noted that estimating indicators from a survey with rotating panel design is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error.
 [@silcstudy] showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25$\%$. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.
 
-#### Improvement of 3 year mean}
+#### Improvement of 3 year mean
 In the following we will show the improvement of precision of using the mean over several years on the UDB data of EU-SILC for Spain and Austria.
 We created 250 bootstrap replicates and calibrated for Spain each of the replicates for the variable DB040, household size and gender by age group. For Austria we calibrated by DB040 and RB090. After that the weighted ratio for AROPE was estimated, including it's standard error for each DB040 by DB100 for each year as well as using 3 consecutive years.
 Figure 1 shows for the results of this calculation for the year 2015 and the mean over years 2014, 2015 and 2016.
@@ -281,8 +275,8 @@ ggplot(res_all,aes(xaxis,value))+
 To conclude the above presented methodology represents a reasonable approach for lowering the variance of point estimates if the estimates stay relatively stable over time. However for point estimates which change trend over time or exhibit seasonal or cyclical behavior this methodology can not be recommended. At least not with applying a filter with equal filter weights.
 
 ### R-Package vardpoor
-For the work-package on NetSilc 2 a different methodology was proposed for estimating standard errors for EU-SILC by [@soton416829] and even implemented this methodology in the R-Package vardpoor, see [@vardpoor]. This approach uses the so called ultimate cluster approximation, where the variance between the sampling units at the first sampling stage is used as approximation for the total sampling variance (see [@saerndal1992model]). Using this approximation the standard error estimates are analytically calculated and if needed approximated through linearization ([@devilleClaude]).\\
-To show that our proposed method is in accord to the methodology proposed in NetSilc 2 we applied both methods on UDB data of EU-SILC for Spain to estimate standard errors for the weighted ratio of AROPE on NUTS2-Level for the year 2016.\\
+For the work-package on NetSilc 2 a different methodology was proposed for estimating standard errors for EU-SILC by [@soton416829] and even implemented this methodology in the R-Package vardpoor, see [@vardpoor]. This approach uses the so called ultimate cluster approximation, where the variance between the sampling units at the first sampling stage is used as approximation for the total sampling variance (see [@saerndal1992model]). Using this approximation the standard error estimates are analytically calculated and if needed approximated through linearization ([@devilleClaude]).
+To show that our proposed method is in accord to the methodology proposed in NetSilc 2 we applied both methods on UDB data of EU-SILC for Spain to estimate standard errors for the weighted ratio of AROPE on NUTS2-Level for the year 2016.
 Table 4 shows the estimated standard errors for both methodologies. Our proposed methodology was run with 250 and 1000 bootstrap sample weights, columns
 surveysd\_250 and surveysd\_1000, respectively. We see that for almost all standard errors the results for our methodology are slightly higher. This is to be expected since we do incorporate the complete sampling design in our calculations.
 
@@ -599,7 +593,7 @@ library(ggplot2)
   plot(p1)
 ```
 
-Looking at Figure 5 we conclude that for larger groups, e.g above 500 observations, a number of 250 bootstrap sample weights does suffice for getting relatively stable estimates, that is, the variance of the estimator itself is not too large. For groups regarding smaller number of observations it would be beneficial to not use less then 500 observations.\\
+Looking at Figure 5 we conclude that for larger groups, e.g above 500 observations, a number of 250 bootstrap sample weights does suffice for getting relatively stable estimates, that is, the variance of the estimator itself is not too large. For groups regarding smaller number of observations it would be beneficial to not use less then 500 observations.
 Similar to the results from setup 1, the results for the 0.025 and 0.975 quantile, shown in Figure 6 and 7, show a very different picture. Even for larger groups one should at least use 500 bootstrap sample weights, although even that might not be enough. As stated for setup one for those kind of estimates it is necessary to use at least 1000 bootstrap sample weights.
 
 ## References

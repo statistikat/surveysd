@@ -96,7 +96,8 @@ The bootstrap procedure above is applied on the EU-SILC data for each year $y_t$
 Due to the rotating penal design so called split households can occur. For a household participating in the EU-SILC survey it is possible that one or more residents move to a new so called split household, which is followed up on in the next wave. To take this dynamic into account we extended the procedure of taking forward the bootstrap replicate of a household for consecutive waves of EU-SILC by taking forward the bootstrap replicate to the split household. That means, that also any new individuals in the split household will inherit this bootstrap replicate.\\
 \newline
 The following Tables illustrate the mechanism for taking bootstrap replicates forward es well as dealing with split households.
-Consider a 4 member household that enters EU-SILC in the year 2013, as show in Table \ref{tab:hh1}. For this household the bootstrap replicate was set to 2.
+Consider a household that enters EU-SILC in the year 2013 and leaves after 2014, as show in Table \ref{tab:hh1}. For 2013 the household, HID=47500, contained 4 household members of which one household member, PID=4750003, moved to a new household in year 2014. Thus creating the split household, HID=47501, in year 2014.
+The bootstrap procedure, since it is applied on each year separately, did select the household in 2013, e.g BOOTSTRAP.REP=2, but did not select either HID=47500 or HID=47501 for the year 2014, e.g BOOTSTRAP.REP=0.
 
 <<echo=FALSE,include=FALSE,cache=TRUE>>=
 library(data.table)
@@ -116,28 +117,21 @@ dat_es <- dat_es[!is.na(DB030)]
 dat_es <- generate.HHID(dat_es)
 dat_es[,uniqueN(DB030_orig),by=list(DB030,RB010)][V1>1&RB010==2014]
 dat_split <- dat_es[DB030_orig%in%c(47500,47501)&RB010%in%c(2013,2014),.(YEAR=RB010,PID=as.character(RB030),HID=DB030_orig)]
-dat_before <- dat_split[YEAR==2013]
-dat_before[,BOOTSTRAP.REP:=2]
-dat_after <- dat_split[YEAR==2014]
-dat_after[,BOOTSTRAP.REP:=0]
+dat_split[YEAR==2013,BOOTSTRAP.REP:=2]
+dat_split[YEAR==2014,BOOTSTRAP.REP:=0]
 @
 
 <<hh1,echo=FALSE, results='asis'>>=
-kable(dat_before,format="latex",booktabs=TRUE,align=c("l","l","l","r"),caption = "Household with 4 members in year 2013.")
+kable(dat_split,format="latex",booktabs=TRUE,align=c("l","l","l","r"),caption = "Household with 4 members in year 2013 and 3 members plus 1 split household in year 2014.")
 @
 
 <<hh2,echo=FALSE, results='asis'>>=
-kable(dat_after,format="latex",booktabs=TRUE,align=c("l","l","l","r"),caption = "Original household with 3 members and 1 split household in year 2014.")
+dat_split[,BOOTSTRAP.REP:=2]
+kable(dat_split,format="latex",booktabs=TRUE,align=c("l","l","l","r"),caption = "Bootstrap replicates taken forward to the next year as well as to the split household.")
 @
 
-Table \ref{tab:hh2} shows the household members from Table \ref{tab:hh1} including a split household for the year 2014. We see that the household member with PID=4750003 has moved to a new household, thus creating the split household, HID=47501.
-Furthermore the bootstrap procedure, since it is applied on each year separately, did not select households HID=47500 or HID=47501 for the year 2014, e.g BOOTSTRAP.REP=0.
-Following our rule for taking bootstrap replicates forward and dealing with split households the bootstrap replicates for the year 2014 will be set equal to the bootstrap replicates for 2013. This is also true for the split household since it was created through the household member PID=4750003, which moved out of household HID=47500 between 2013 and 2014. Every Household member in of HID=47501 will therefore inherit the bootstrap replicate which household member PID=4750003 had in the year 2013. Table \ref{tab:hh3} shows the bootstrap replicates after for 2014 after they have been taken forward from 2013.
-
-<<hh3,echo=FALSE, results='asis'>>=
-dat_after[,BOOTSTRAP.REP:=2]
-kable(dat_after,format="latex",booktabs=TRUE,align=c("l","l","l","r"),caption = "Bootstrap replicates taken forward to the next year as well as to the split household.")
-@
+Following our rule for taking bootstrap replicates forward and dealing with split households the bootstrap replicates for the year 2014 will be set equal to the bootstrap replicates for 2013. This is also true for the split household since it was created through the household member PID=4750003, which moved out of household HID=47500 between 2013 and 2014. Every Household member in of HID=47501 will therefore inherit the bootstrap replicate which household member PID=4750003 had in the year 2013.
+Table \ref{tab:hh2} shows the bootstrap replicates after they have been taken forward from 2013.
 
 Taking bootstrap replicates forward as well as considering split households ensures that bootstrap replicates are more comparable in structure with the actual design of EU-SILC.
 
@@ -171,7 +165,7 @@ Since the sociodemographic variables $v_1,\ldots,v_u$ can include personal as we
 \begin{align*}
   \tilde{b}_j^{(u+2)k+u+1} = \frac{{\sum\limits_{l=1}^{H_p}} {\tilde{b}}_{p(l)}^{(u+2)k+u}}{H_p}
 \end{align*}
-This can result in loosing the population structure performed in steps 1-3.
+This can result in losing the population structure performed in steps 1-3.
 
 \subsubsection{Step 5}
 To get weights that do conform with the population margins defined by $v_1,\ldots,v_u$ the weights $b_j^{5k+u+1}$ are again updated according to the uncertainty parameter $p_h$. The parameters $p_h$ represent the allowed deviation from the population margins using the weights $\tilde{b}_j^{(u+2)k+u+1}$ compared to $N_{v_i}$, $i=1,\ldots,u$ where $v_i$ corresponds to a household variable.\\

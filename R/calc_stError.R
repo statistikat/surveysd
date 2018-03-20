@@ -461,7 +461,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
             z+s-1
           })
         }else{
-          cat(paste0("Can not calcualte differences between years ",z[1]," and ",z[2]," over ",year.mean," years.\n"))
+          cat(paste0("Cannot calculate differences between years ",z[1]," and ",z[2]," over ",year.mean," years.\n"))
           NULL
         }
       })
