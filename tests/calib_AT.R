@@ -18,8 +18,9 @@ dat_boot <- draw.bootstrap(dat=copy(dat_at),REP=1000,hid="DB030",weights="RB050"
 
 # write.csv2(dat_boot,file="/mnt/obdatenaustausch/NETSILC3/udb_AT_bootweight_250.csv")
 
+dat_boot[,ind3:=paste(agex,RB090,sep="-")]
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-                          year="RB010",b.rep=paste0("w",1:1000),conP.var=c("RB090"),conH.var = c("DB040"))
+                          year="RB010",b.rep=paste0("w",1:1000),conP.var=c("ind3"),conH.var = c("hsize","DB040"),maxIter=200)
 
 fwrite(dat_boot_calib,file=paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_AT_calib.csv"))
 
