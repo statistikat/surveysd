@@ -149,47 +149,57 @@ For ease of readability we will drop the subindices regarding strata $h$ and clu
 \subsection{Iterative proportional fitting (IPF)}
 The uncalibrated bootstrap weights $\tilde{b}_j^{i}$ computed through the rescaled bootstrap procedure yields population statistics that differ from the known population margins of specified sociodemographic variables for which the base weights $w_j$ have been calibrated. To adjust for this the bootstrap weights $\tilde{b}_{j}^{i}$ can be recalibrated using iterative proportional fitting as described in \citep{mekogu2016}.\\
 
-Let the original weight $w_{j}$ be calibrated for $v_1,\ldots,v_u$ sociodemographic variables which can take on $V_1,\ldots,V_u$ values each and $N_{v_i}$ be the population margins of the $i$-th sociodemographic variables. The iterative proportional fitting procedure for the weights $\tilde{b}_j^{i}$ is made up of 5 Steps. Starting with $k=0$ the 5 Steps are repeated and $k$ is raised by 1 if the constrains are not satisfied after step 5.
+Let the original weight $w_{j}$ be calibrated for $n=n_P+n_H$ sociodemographic variables which are divided into the sets $\mathcal{P}:=\{p_{c}, c=1 \ldots,n_P\}$ and $\mathcal{H}:=\{h_{c}, c=1 \ldots,n_H\}$. $\mathcal{P}$ and $\mathcal{H}$ correspond to personal, for example gender or age, or household variables, like region or households size, respectively. Each variable in either $\mathcal{P}$ or $\mathcal{H}$ can take on $P_{c}$ or $H_{c}$ values with and $N^{p_c}_v$, $v=1,\ldots,P_c$, or $N^{h_c}_v$, $v=1,\ldots,H_c$, as the corresponding population margins. Starting with $k=0$ the iterative proportional fitting procedure is applied on each $\tilde{b}_j^{i}$, $i=1,\ldots, B$ seperately. The weights are first updated for personal and afterwards updated for household variables. If constraints regarding the populations margins are not met $k$ is raised by 1 and the procedure starts from the beginning. For the following denote as starting weight $\tilde{b}_j^{[0]}:=\tilde{b}_j^{i}$ for fixed $i$.
 
-\subsubsection{Steps 1-3}
-The uncalibrated bootstrap weights $\tilde{b}_j^{i}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_{v_i}$, $i=1,\ldots,u$.
-For each $i \in \left\{1,\ldots,u\right\}$ the calibrated weights against $N_{(v_i,y)}$ are computed as
+\subsubsection{Adjustment and trimming for $\mathcal{P}}
+The uncalibrated bootstrap weight $\tilde{b}_j^{[(n+1)k+c-1]}$ for the $j$-th observation is iteratively multiplied by a factor so that the projected distribution of the population matches the respective calibration specification $N_{p_c}$, $c=1, \ldots,n_P$.
+For each $c \in \left\{1, \ldots,n_P\right\}$ the calibrated weights against $N^{p_c}_v$ are computed as
+
 \begin{align*}
-  \tilde{b}_j^{(u+2)k+i} = {\tilde{b}_j}^{(u+2)k+i-1}\frac{N_{v_i}}{{\sum\limits_l} {\tilde{b}}_l^{(u+2)k}},
+  \tilde{b}_j^{[(n+1)k+c]} = {\tilde{b}_j}^{[(n+1)k+c-1]}\frac{N^{p_c}_v}{{\sum\limits_l} {\tilde{b}}_l^{[(n+1)k+c-1]}},
 \end{align*}
-where the summation in the denominator expands over all observations which have the same value as observation $j$ for the sociodemographic variable $v_i$.
-If any weights $\tilde{b}_j^{(u+2)k+i}$ fall outside the range $\left[\frac{w_j}{4};4w_j\right]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form of weight trimming where very large or small weights are trimmed in order to reduce variance in exchange for a possible increase in bias \citep{potter90,potter93}.
 
-\subsubsection{Step 4}
-Since the sociodemographic variables $v_1,\ldots,v_u$ can include personal as well as household specific variables, the weights $\tilde{b}_j^{5k+u}$   resulting from the iterative multiplication can be unequal for members of the same household. This can lead to inconsistencies between results projected with household and person weights. To avoid such inconsistencies each household member is assigned the mean of the household weights. That is for each person $j$ in household $p$ with $H_p$ household members, the weights are defined by
+where the summation in the denominator expands over all observations which have the same value as observation $j$ for the sociodemographic variable $p_c$.
+If any weights $\tilde{b}_j^{[nk+c]}$ fall outside the range $\left[\frac{w_j}{4};4w_j\right]$ they will be recoded to the nearest of the two boundaries. The choice of the boundaries results from expert-based opinions and restricts the variance of which has a positive effect on the sampling error. This procedure represents a common form of weight trimming where very large or small weights are trimmed in order to reduce variance in exchange for a possible increase in bias ([@potter90],[@potter93]).
+
+\subsubsection{Averaging weights within households}
+Since the sociodemographic variables $p_1,\ldots,p_{n_c}$ include person-specific variables, the weights $\tilde{b}_j^{[nk+n_p]}$ resulting from the iterative multiplication can be unequal for members of the same household. This can lead to inconsistencies between results projected with household and person weights. To avoid such inconsistencies each household member is assigned the mean of the household weights. That is for each person $j$ in household $a$ with $h_a$ household members, the weights are defined by
+
 \begin{align*}
-  \tilde{b}_j^{(u+2)k+u+1} = \frac{{\sum\limits_{l=1}^{H_p}} {\tilde{b}}_{p(l)}^{(u+2)k+u}}{H_p}
+  \tilde{b}_j^{[(n+1)k+n_p+1]} = \frac{{\sum\limits_{l\in a}} {\tilde{b}_l^{[(n+1)k+n_p]}}}{h_a}
 \end{align*}
-This can result in losing the population structure performed in steps 1-3.
 
-\subsubsection{Step 5}
-To get weights that do conform with the population margins defined by $v_1,\ldots,v_u$ the weights $b_j^{5k+u+1}$ are again updated according to the uncertainty parameter $p_h$. The parameters $p_h$ represent the allowed deviation from the population margins using the weights $\tilde{b}_j^{(u+2)k+u+1}$ compared to $N_{v_i}$, $i=1,\ldots,u$ where $v_i$ corresponds to a household variable.\\
+This can result in losing the population structure performed in the previouse subsection.
+
+\subsubsection{Adjustment and trimming for $\mathcal{H}$}
+After adjustment for individual variables the weights $b_j^{[nk+n_p+1]}$ are updated for the set of household variables $\mathcal{H}$ according to a household convergence constraint parameter $\epsilon_h$. The parameters $\epsilon_h$ represent the allowed deviation from the population margins using the weights $b_j^{[nk+n_p+1]}$ compared to $N^{h_c}_v$, $c=1,\ldots,n_H$, $v=1,\ldots,H_c$.
 The updated weights are computed as
+
 \begin{align*}
-  \tilde{b}_j^{(u+2)k+u+2} =
+  b_j^{[(n+1)k+n_p+c+1]} =
   \begin{cases}
-    \tilde{b}_j^{(u+2)k+u+1}\frac{N_{v_i}}{\sum\limits_{l} \tilde{b}_l^{(u+2)k+u+1}} \quad \text{if } \sum\limits_{l} \tilde{b}_l^{(u+2)k+u+1} \notin ((1-p_h)N_{v_i},(1+p_h)N_{v_i}) \\
-    \tilde{b}_j^{(u+2)k+u+1} \quad \text{otherwise}
+    b_j^{[(n+1)k+n_p+1]}\frac{N^{h_c}_v}{\sum\limits_{l} b_l^{[(n+1)k+n_p+1]}} \quad \text{if } \sum\limits_{l} b_j^{[(n+1)k+n_p+1]} \notin ((1-0.9\epsilon_h)N^{h_c}_v,(1+0.9\epsilon_h)N^{h_c}_v) \\
+    b_j^{[(n+1)k+n_p+1]} \quad \text{otherwise}
   \end{cases}
 \end{align*}
-with the summation in the denominator ranging over all households $l$ which take on the same values for $v_i$ as observation $j$. As described in the previous subsection the new weight are recoded if they exceed the interval $[\frac{w_j}{4};4w_j]$ and set to the upper or lower bound, depending of $\tilde{b}_j^{(u+2)k+u+2}$ falls below or above the interval respectively.
+
+with the summation in the denominator ranging over all households $l$ which take on the same values for $h_c$ as observation $j$. As described in the previous subsection the new weight are recoded if they exceed the interval $[\frac{w_j}{4};4w_j]$ and set to the upper or lower bound, depending of $b_j^{[(n+1)k+n_p+c+1]}$ falls below or above the interval respectively.
 
 \subsubsection{Convergence}
-After these 5 steps we check if the population margins defined by $v_1,\ldots,v_u$ and calculated with $b_j^{(u+2)k+u+2}$ do not deviate too much from $N_{v_i}$, $i=1,\ldots,u$. That is
+For each adjustment and trimming step the factor $\frac{N^{(.)}_v}{\sum\limits_{l} b_l^{[(n+1)k+j]}}$, $j\in \{1,\ldots,n+1\}\backslash \{n_p+1\}$, is checked against convergence constraints for households, $\epsilon_h$, or personal variables $\epsilon_p$, where $(.)$ corresponds to either a household or personal variable.
+To be more precise for variables in $\mathcal{P}$ the constraints
+
 \begin{align*}
-  \frac{\sum\limits_{l} \tilde{b}_l^{(u+2)k+u+1} - N_{v_i}}{N_{v_i}} <
-  \begin{cases}
-  0.05 \quad\text{if }v_i\text{ is a household variable}\\
-  0.01 \quad\text{if }v_i\text{ is a personal variable}
-  \end{cases}
+\frac{N^{p_c}_v}{{\sum\limits_l} {\tilde{b}}_l^{[(n+1)k+j]}} \in ((1-\epsilon_p)N^{p_c}_v,(1+\epsilon_p)N^{p_c}_v)
 \end{align*}
-holds true for all $i$,$i=1,\ldots,u$, where the sum in the denominator expands over all observations which have the same value for the variable $v_i$.
-If this inequality holds true the algorithm reaches convergence, otherwise $k$ is raised by 1 and Steps 1-5 are repeated.
+and for variables in $\mathcal{H}$ the constraints
+
+\begin{algin*}
+\frac{N^{h_c}_v}{{\sum\limits_l} {\tilde{b}}_l^{[(n+1)k+j]}} \in ((1-\epsilon_h)N^{h_c}_v,(1+\epsilon_h)N^{h_c}_v)
+end{align*}
+
+are verified, where the sum in the denominator expands over all observations which have the same value for variables $h_c$ or $p_c$.
+If these contraints hold true the algorithm reaches convergence, otherwise $k$ is raised by 1 and the procedure repeats itself.
 
 The above described calibration procedure is applied on each year $y_t$ of EU-SILC separately, $t=1,\ldots n_y$, thus resulting in so called calibrated bootstrap sample weights $b_{j}^{(i,{y_t})}$, $i=1,\ldots,B$ for each year $y$ and each household $j$.
 
@@ -213,7 +223,7 @@ For fixed $i$ one can apply a filter with equal filter weights on the time serie
 \end{align*}
 
 
-Doing this for all $i$, $i=1,\ldots,B$, yields $\tilde{\theta}^{(i,y_t)}$, $i=1,\ldots,B$. The variance of $\theta$ can then be estimated with
+Doing this for all $i$, $i=1,\ldots,B$, yields $\tilde{\theta}^{(i,y_t)}$, $i=1,\ldots,B$. The standard error of $\theta$ can then be estimated with
 
 \begin{align*}
   sd(\theta) =& \sqrt{\frac{1}{B-1}\sum\limits_{i=1}^B (\tilde{\theta}^{(i,y_t)}-\overline{\tilde{\theta}^{(.,y_t)}})^2}\\
@@ -340,9 +350,11 @@ strata[,N.households:=STRATA_sum/N.cluster]
 dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
 dat_es[,IDd:=paste0("V",.I)]
 
-N_h <- dat_es[,sum(RB050[!duplicated(DB030)]),by=list(RB010,DB050)]
-erg_vardpoor <- varpoord(Y="arose",H="DB050",PSU="DB030",Dom="DB040",ID_level1 = "DB030",N_h=N_h,
+# N_h <- dat_es[,sum(RB050[!duplicated(DB030)]),by=list(RB010,DB050)]
+N_h <- unique(dat_es[,.(RB010,DB050,N=N.cluster)])
+erg_vardpoor <- varpoord(Y="arose",H="DB050",PSU="DB060",Dom="DB040",ID_level1 = "DB060",N_h=N_h,
                  ID_level2 = "IDd",w_final="RB050",period="RB010",dataset=dat_es,type="linarpr")
+
 
 # dat_boot_calib <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_ES_calib.csv"))
 
@@ -400,7 +412,7 @@ res <- rbindlist(res)
 res <- res[RB010%in%dat_es[,unique(RB010)]&NumberWeights>=25]
 res[,RB010:=as.numeric(RB010)]
 
-num_obs <- rbindlist(list(dat_es[,.N,by=RB010],dat_es[,.N,by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
+num_obs <- rbindlist(list(dat_es[,.(N=sum(!duplicated(DB030))),by=RB010],dat_es[,.(N=sum(!duplicated(DB030))),by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
 num_obs[,GROUP:=cut(N,c(-Inf,50,100,250,500,1000,Inf,right=FALSE))]
 
 res <- merge(res,num_obs,by=c("RB010","DB040","DB100"))
@@ -516,7 +528,7 @@ res_all <- rbindlist(res_all)
 res_all  <- res_all[RB010%in%dat_es[,unique(RB010)]]
 res_all[,RB010:=as.numeric(RB010)]
 
-num_obs <- rbindlist(list(dat_es[,.N,by=RB010],dat_es[,.N,by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
+num_obs <- rbindlist(list(dat_es[,.(N=sum(!duplicated(DB030))),by=RB010],dat_es[,.(N=sum(!duplicated(DB030))),by=list(RB010,DB040,DB100)]),use.names=TRUE,fill=TRUE)
 num_obs[,GROUP:=cut(N,c(-Inf,50,100,250,500,1000,Inf))]
 
 res_all  <- merge(res_all ,num_obs,by=c("RB010","DB040","DB100"))
