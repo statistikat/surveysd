@@ -83,7 +83,7 @@ generate.HHID <- function(dat,time.step="RB010",pid="RB030",hid="DB030"){
   # if ID not unique by hid and year
   # leave original grouping for this year
   # this happens if household splits up and people move to already existing households
-  group_broke <- dat[,length(unique(ID_new)),by=c(time.step,hid)][V1>1,mget(c(time.step,hid))]
+  group_broke <- dt.eval("dat[,length(unique(ID_new)),by=list(",time.step,",",hid,")][V1>1,.(",time.step,",",hid,")]")
   if(nrow(group_broke)>0){
     setkeyv(dat,c(time.step,hid))
     dt.eval("dat[group_broke,ID_new_help:=paste0(head(",hid,",1),'_1'),by=list(ID_new)]")
