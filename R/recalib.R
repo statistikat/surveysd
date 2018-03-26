@@ -194,7 +194,13 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
   #
 
   vars <- c(year,country,conP.var,conH.var)
-  vars.class <- unlist(lapply(dat[,mget(vars)],class))
+  vars.class <- unlist(lapply(dat[,mget(vars)],function(z){
+    z.class <- class(z)
+    if(z.class[1]=="labelled"){
+      z.class <- "factor"
+    }
+    return(z.class)
+  }))
   # convert to factor
   for(i in 1:length(vars)){
     if(vars.class[[vars[i]]]!="factor"){
@@ -278,7 +284,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 	      }else{
 	        set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP[[co]],
 	                                 conH=conH[[co]],verbose=verbose,epsP=epsP,epsH=epsH,
-	                                 w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidfactor"
+	                                 w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor"
 	                                 # check_hh_vars = check_hh_vars,conversion_messages = conversion_messages # nur für neue ipu2 version
 	        )[,calibWeight])
 	        if(dat[,any(is.na(get(g)))]){
@@ -310,7 +316,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 	    }else{
 	      set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
 	                             conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-	                             w=g,bound=bound,maxIter=maxIter,meanHH=,meanHH,hid="hidfactor",
+	                             w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor",
 	                             check_hh_vars = check_hh_vars
 	      )[,calibWeight])
 	      if(dat[,any(is.na(get(g)))]){

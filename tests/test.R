@@ -313,11 +313,25 @@ library(data.table)
 library(surveysd)
 library(haven)
 
+require(Hmisc)
+
 pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
 
-W16 <- fread(paste0(pfad_meth,"/Kowarik/Projekte/SILC/Projekt2016/bldaten0816.csv"))
+W16 <- data.table(read_spss(file=paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_var.sav")))
+W16 <- data.table(spss.get("N:\\EU-Silc-2016\\Daten\\s16indi\\hilfsfiles\\indicators_var.sav", use.value.labels = FALSE))
+W16_boot <- draw.bootstrap(dat=W16,REP=250,hid="Hid",weights="hgew",strata="bundesld",
+                           year="JAHR",split=TRUE,pid="pid")
+#head(W16_boot)
 
-W16 <- data.table(read_spss(file=paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_vars.sav")))
+dim(W16_boot)
+
+W16_boot_calib <- recalib(dat=copy(W16_boot),hid="Hid",weights="hgew",
+                          year="JAHR",b.rep=paste0("w",1:250),conP.var=c("sex"),conH.var = c("bundesld"))
+#Error in vars.class[[vars[i]]] : subscript out of bounds  (?!)
+
+
+
+W16 <- fread(paste0(pfad_meth,"/Kowarik/Projekte/SILC/Projekt2016/bldaten0816.csv"))
 
 W16_boot <- draw.bootstrap(dat=W16,REP=250,hid="hid",weights="hgew",strata="bundesld",
                            year="jahr",split=TRUE,pid="pid")
@@ -328,6 +342,7 @@ dim(W16_boot)
 W16_boot_calib <- recalib(dat=copy(W16_boot),hid="Hid",weights="hgew",
                           year="JAHR",b.rep=paste0("w",1:250),conP.var=c("sex"),conH.var = c("bundesld"))
 #Error in vars.class[[vars[i]]] : subscript out of bounds  (?!)
+
 
 
 
