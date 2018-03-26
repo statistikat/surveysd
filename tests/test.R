@@ -318,7 +318,7 @@ require(Hmisc)
 pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
 
 W16 <- data.table(read_spss(file=paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_var.sav")))
-W16 <- data.table(spss.get("N:\\EU-Silc-2016\\Daten\\s16indi\\hilfsfiles\\indicators_var.sav", use.value.labels = FALSE))
+W16 <- data.table(spss.get(paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_var.sav"), use.value.labels = FALSE))
 W16_boot <- draw.bootstrap(dat=W16,REP=250,hid="Hid",weights="hgew",strata="bundesld",
                            year="JAHR",split=TRUE,pid="pid")
 #head(W16_boot)
