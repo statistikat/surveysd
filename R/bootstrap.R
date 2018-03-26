@@ -286,7 +286,8 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
   }
   by.c <- paste(c(hid,country),collapse=",")
   dt.eval("dat[,occurence_first_year :=min(",year,"),by=list(",by.c,")]")
-  dat.first.occurence <- unique(subset(dt.eval("dat[",year,"==occurence_first_year]"),select=c(hid,w.names)),by=hid)
+  select.first.occurence <- paste0(c(hid,w.names),collapse = ",")
+  dat.first.occurence <- unique(dt.eval("dat[",year,"==occurence_first_year,.(",select.first.occurence,")]"),by=hid)
   dat[,c(w.names):=NULL]
   dat <- merge(dat,dat.first.occurence,by=hid,all.x=TRUE)
   dat[,occurence_first_year:=NULL]

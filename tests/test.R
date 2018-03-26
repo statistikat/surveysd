@@ -306,6 +306,28 @@ write.csv2(dat_boot_calib,file="/mnt/obdatenaustausch/NETSILC3/udb_ES_calib.csv"
 #
 
 
+#####################################################
+#
+library(mountSTAT)
+library(data.table)
+library(surveysd)
+library(haven)
+
+pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
+
+W16 <- fread(paste0(pfad_meth,"/Kowarik/Projekte/SILC/Projekt2016/bldaten0816.csv"))
+
+W16 <- data.table(read_spss(file=paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_vars.sav")))
+
+W16_boot <- draw.bootstrap(dat=W16,REP=250,hid="hid",weights="hgew",strata="bundesld",
+                           year="jahr",split=TRUE,pid="pid")
+#head(W16_boot)
+
+dim(W16_boot)
+
+W16_boot_calib <- recalib(dat=copy(W16_boot),hid="Hid",weights="hgew",
+                          year="JAHR",b.rep=paste0("w",1:250),conP.var=c("sex"),conH.var = c("bundesld"))
+#Error in vars.class[[vars[i]]] : subscript out of bounds  (?!)
 
 
 
