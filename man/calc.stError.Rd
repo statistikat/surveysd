@@ -110,28 +110,28 @@ dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
                           year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
 
 # estimate weightedRatio for HX080 per year
-err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
                        fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=NULL)
 
 # estimate weightedRatio for HX080 per year and RB090
 cross_var <- "RB090"
-err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=NULL)
 
 
 # use average over 3 years for standard error estimation
-err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=3)
 
 # get estimate for difference of year 2016 and 2013
 year.diff <- c("2015-2009")
-err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
                        fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 
 # apply function to multiple variables and define different subsets
 var <- c("HX080","arose")
 cross_var <- list("RB090","DB040",c("RB090","DB040"))
-err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
+err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
                        fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
 
 # use a function from an other package that has sampling weights as its second argument

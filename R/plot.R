@@ -15,10 +15,8 @@
 #' For \code{sd.type='ribbon'} the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
 #' The calculated standard errors using the mean over k years are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.
 #'
-#' @return
 #' @export
 #'
-#' @examples
 plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","grouping"),
                           groups=NULL,sd.type=c("dot","ribbon")){
 
