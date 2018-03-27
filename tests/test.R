@@ -317,7 +317,7 @@ require(Hmisc)
 
 pfad_meth <- mountWinShare("DatenREG","REG_METHODIK","meth")[1]
 
-W16 <- data.table(read_spss(file=paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_var.sav")))
+# W16 <- data.table(read_spss(file=paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_var.sav")))
 W16 <- data.table(spss.get(paste0(pfad_meth,"/Gussenbauer/surveysd/indicators_var.sav"), use.value.labels = FALSE))
 W16_boot <- draw.bootstrap(dat=W16,REP=250,hid="Hid",weights="hgew",strata="bundesld",
                            year="JAHR",split=TRUE,pid="pid")
@@ -329,6 +329,27 @@ W16_boot_calib <- recalib(dat=copy(W16_boot),hid="Hid",weights="hgew",
                           year="JAHR",b.rep=paste0("w",1:250),conP.var=c("sex"),conH.var = c("bundesld"))
 #Error in vars.class[[vars[i]]] : subscript out of bounds  (?!)
 
+# set up help function that returns only the gini index
+help_gini <- function(x,w){
+  return(gini(x,w)$value)
+}
+
+help_wRatio <- function(x,w){
+  sum(x*w)/sum(w)*100
+}
+#help_wRatio(W16_boot_calib$povmd60,W16_boot_calib$hgew)
+
+W16_err.est <- calc.stError(dat=copy(W16_boot_calib), weights="hgew",b.weights=paste0("w",1:250),year="JAHR",var="epinc",
+                            fun="help_gini",cross_var=NULL,year.diff=NULL,year.mean=NULL)
+W16_err.est$Estimates
+
+W16_err.est <- calc.stError(dat=copy(W16_boot_calib), weights="hgew",b.weights=paste0("w",1:250),year="JAHR",var="povmd60",
+                            fun="help_wRatio",cross_var=NULL,year.diff=NULL,year.mean=NULL)
+W16_err.est$Estimates
+
+W16_err.est <- calc.stError(dat=copy(W16_boot_calib), weights="hgew",b.weights=paste0("w",1:250),year="JAHR",var="povmd60",
+                            fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=NULL)
+W16_err.est$Estimates
 
 
 W16 <- fread(paste0(pfad_meth,"/Kowarik/Projekte/SILC/Projekt2016/bldaten0816.csv"))
@@ -345,4 +366,13 @@ W16_boot_calib <- recalib(dat=copy(W16_boot),hid="Hid",weights="hgew",
 
 
 
+
+
+test <- function(fun){
+  if(exists(fun,mode="function",inherits=FALSE)){
+    stop(paste0("Function ",fun," is undefined"))
+  }else{
+    exists(fun,mode="function")
+  }
+}
 
