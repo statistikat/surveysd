@@ -2,12 +2,13 @@ Package: surveysd
 Type: Package
 Title: Survey Standard Error Estimation for Cumulated Estimates and their Differences in Complex Panel Designs
 Version: 0.1.0
+Date: 2018-03-29
 Author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
 Maintainer: Johannes Gussenbauer <Johannes.Gussenbauer@statistik.gv.at>
 Description: Estimate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstraping considers survey design with rotating panel.
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.12),data.table,simPop,matrixStats
+Imports: Rcpp (>= 0.12.12),data.table,simPop(>= 1.1.0),matrixStats
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
