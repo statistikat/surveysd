@@ -245,7 +245,8 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
 }
 
 draw.without.replacement <- function(n){
-  n_draw <- trunc(n/2)
+  # n_draw <- trunc(n/2)
+  n_draw <- trunc(n/(2-n/N))
   delta <- rep(c(1,0),c(n_draw,n-n_draw))
   delta <- sample(delta)
   return(delta)
@@ -253,7 +254,8 @@ draw.without.replacement <- function(n){
 
 calc.replicate <- function(n,N,delta){
   p <- ncol(n)
-  ndraw <- trunc(n/2)
+  # ndraw <- trunc(n/2)
+  ndraw <- trunc(n/(2-n/N))
   dimdelta <- dim(delta)
   for(i in 1:p){
     if(i==1){
