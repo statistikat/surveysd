@@ -10,10 +10,48 @@ library(data.table)
 REP <- 10
 p <- 2
 
+
+draw.without.replacement <- function(n,N){
+  n_draw <- trunc(n/2)
+  # n_draw <- trunc(n/(2-n/N))
+  delta <- rep(c(1,0),c(n_draw,n-n_draw))
+  delta <- sample(delta)
+  return(delta)
+}
+
+calc.replicate <- function(n,N,delta){
+  p <- ncol(n)
+  ndraw <- trunc(n/2)
+  # ndraw <- trunc(n/(2-n/N))
+  dimdelta <- dim(delta)
+  for(i in 1:p){
+    if(i==1){
+      lambda <- sqrt(ndraw[,1]*(1-n[,1]/N[,1])/(n[,1]-ndraw[,1]))
+      rep_out <- 1-lambda+lambda*n[,i]/ndraw[,i]*delta[,i,]
+    }else if(i==2){
+      lambda <- (1-n[,i]/N[,i])/(n[,i]-ndraw[,i])
+      lambda <- sqrt((n[,i-1]/N[,i-1])*ndraw[,i]*lambda)
+      rep_out <- rep_out + lambda*(sqrt(n[,i-1]/ndraw[,i-1])*delta[,i-1,]) * (n[,i]/ndraw[,i]*delta[,i,]-1)
+    }else{
+      lambda <- (1-n[,i]/N[,i])/(n[,i]-ndraw[,i])
+      lambda <- sqrt(rowProds(n[,1:(i-1)]/N[,1:(i-1)])*ndraw[,i]*lambda)
+      prod_val <- matrix(0,ncol=dimdelta[3],nrow=dimdelta[1])
+      for(r in 1:dimdelta[3]){
+        prod_val[,r] <- rowProds(sqrt(n[,1:(i-1)]/ndraw[,1:(i-1)])*delta[,1:(i-1),r])
+      }
+      # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/ndraw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/ndraw[,i]*delta[,i,]-1)
+      rep_out <- rep_out + lambda*prod_val * (n[,i]/ndraw[,i]*delta[,i,]-1)
+    }
+  }
+  return(rep_out)
+}
+
+
 # grundgesamtheit
-N1 <- sample(3:8,4)
-n1 <- N1 - sample(0:1,4,replace=TRUE)
-id <- rep(1:4,times=n1)
+s <- 10
+N1 <- sample(3:10,s,replace=TRUE)
+n1 <- N1 - sample(0:1,s,replace=TRUE)
+id <- rep(1:s,times=n1)
 N1 <- rep(N1,times=n1)
 n1 <- rep(n1,times=n1)
 
@@ -49,43 +87,22 @@ dat[,c(c.names):=NULL]
 
 b.rep <- calc.replicate(n,N,delta)
 colSums(b.rep)
+any(b.rep<0)
 
+hist(b.rep[,1])
+           
 
-draw.without.replacement <- function(n,N){
-  n_draw <- trunc(n/2)
-  delta <- rep(c(1,0),c(n_draw,n-n_draw))
-  delta <- sample(delta)
-  return(delta)
-}
+#####################################
+# teste an laeken
+#
 
-calc.replicate <- function(n,N,delta){
-  p <- ncol(n)
-  ndraw <- trunc(n/2)
-  dimdelta <- dim(delta)
-  for(i in 1:p){
-    if(i==1){
-      lambda <- sqrt(ndraw[,1]*(1-n[,1]/N[,1])/(n[,1]-ndraw[,1]))
-      rep_out <- 1-lambda+lambda*n[,i]/ndraw[,i]*delta[,i,]
-    }else if(i==2){
-      lambda <- (1-n[,i]/N[,i])/(n[,i]-ndraw[,i])
-      lambda <- sqrt((n[,i-1]/N[,i-1])*ndraw[,i]*lambda)
-      rep_out <- rep_out + lambda*(sqrt(n[,i-1]/ndraw[,i-1])*delta[,i-1,]) * (n[,i]/ndraw[,i]*delta[,i,]-1)
-    }else{
-      lambda <- (1-n[,i]/N[,i])/(n[,i]-ndraw[,i])
-      lambda <- sqrt(rowProds(n[,1:(i-1)]/N[,1:(i-1)])*ndraw[,i]*lambda)
-      prod_val <- matrix(0,ncol=dimdelta[3],nrow=dimdelta[1])
-      for(r in 1:dimdelta[3]){
-        prod_val[,r] <- rowProds(sqrt(n[,1:(i-1)]/ndraw[,1:(i-1)])*delta[,1:(i-1),r])
-      }
-      # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/ndraw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/ndraw[,i]*delta[,i,]-1)
-      rep_out <- rep_out + lambda*prod_val * (n[,i]/ndraw[,i]*delta[,i,]-1)
-    }
-  }
-  return(rep_out)
-}
+library(laeken)
+data("eusilc")
+eusilc <- data.table(eusilc)
 
+eusilc[!duplicated(db030),N.bdl := .N+sample(1:50,1),by=db040]
 
-
+eusilc[,N.db030 := .N+sample(0:4,1),by=db030]
 
 
 
