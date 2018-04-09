@@ -52,7 +52,7 @@
 
 
 rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",
-                               single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE){
+                               single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE,new.method=TRUE){
   
   # prepare input
   input <- c(strata,cluster,fpc)
@@ -215,7 +215,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     if(i==1){
       dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=1,n_prev=1,n_draw_prev=1),by=list(",paste(by.val,collapse=","),")]")
     }else{
-      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=f,n_prev=n_prev,n_draw_prev=n_draw_prev),by=list(",paste(by.val,collapse=","),")]")
+      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=f[1],n_prev=n_prev[1],n_draw_prev=n_draw_prev[1]),by=list(",paste(by.val,collapse=","),")]")
       dat[,f:=NULL]
       dat[,n_prev:=NULL]
       dat[,n_draw_prev:=NULL]
@@ -224,7 +224,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     deltai <- paste0("delta_",i,"_",1:REP)
     dati[,n:=.N,by=c(by.val)]
     # determin number of psu to be drawn
-    dati[,n_draw:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1]),by=c(by.val)]
+    dati[,n_draw:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],new.method=new.method),by=c(by.val)]
     if(nrow(dati[n_draw==0])>0){
       stop("Resampling 0 PSUs should not be possible! Please report bug in https://github.com/statistikat/surveysd")
     }
@@ -279,9 +279,14 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
   }
 }
 
-select.nstar <- function(n,N,f,n_prev,n_draw_prev){
-  n_draw <- (n*n_draw_prev)/(n_prev*f*(1-n/N)+n_draw_prev)
-  n_draw <- floor(n_draw)
+select.nstar <- function(n,N,f,n_prev,n_draw_prev,new.method){
+  if(new.method){
+    n_draw <- (n*n_draw_prev)/(n_prev*f*(1-n/N)+n_draw_prev)
+    n_draw <- floor(n_draw)
+  }else{
+    n_draw <- floor(n/2)
+  }
+
   return(n_draw)
 }
 

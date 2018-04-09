@@ -148,7 +148,8 @@
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and for k-year rolling means
-calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
+calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
+                         fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
 
   ##########################################################
   # INPUT CHECKING
@@ -335,7 +336,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,fun="
   sd_bool <- dcast(sd_bool,form,value.var="stE_high")
 
   # create matrix for increase of sample size
-  if(!is.null(year.mean)){
+  if(nrow(outx[est_type=="roll"])>0){
     # estimate (roughly) the effektive sample size per
     samp_eff <- outx[est_type=="roll"]
     setnames(samp_eff,year,paste0(year,"_roll"))
@@ -448,6 +449,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
     }else{
       yearsList <- NULL
       cat(paste0("Not enough years present in data to calculate mean over ",year.mean," years.\n"))
+      year.mean <- NULL
     }
 
     # get years for k year mean over yearly differences
