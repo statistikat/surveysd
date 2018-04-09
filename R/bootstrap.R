@@ -94,7 +94,7 @@
 
 
 draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NULL,totals=NULL,
-                           single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL){
+                           single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=TRUE){
 
   ##########################################################
   # INPUT CHECKING
@@ -279,7 +279,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE),by=c(year,country)]
+  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE,new.method=new.method),by=c(year,country)]
 
   # keep bootstrap replicates of first year for each household
   if(split){
