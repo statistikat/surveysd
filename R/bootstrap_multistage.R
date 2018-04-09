@@ -204,7 +204,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     deltai <- paste0("delta_",i,"_",1:REP)
     dati[,n:=.N,by=c(by.val)]
     # do bootstrap for i-th stage
-    dati[,c(deltai):=as.data.table(replicate(REP,draw.without.replacement(n[1]),simplify = FALSE)),by=c(by.val)]
+    dati[,c(deltai):=as.data.table(replicate(REP,draw.without.replacement(n[1],N[1]),simplify = FALSE)),by=c(by.val)]
 
     # merge with data
     dat <- merge(dat,dati,by=c(by.val,clust.val))
@@ -244,7 +244,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
   }
 }
 
-draw.without.replacement <- function(n){
+draw.without.replacement <- function(n,N){
   # n_draw <- trunc(n/2)
   n_draw <- trunc(n/(2-n/N))
   delta <- rep(c(1,0),c(n_draw,n-n_draw))
