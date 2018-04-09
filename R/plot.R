@@ -17,6 +17,7 @@
 #'
 #' @export
 #'
+
 plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","grouping"),
                           groups=NULL,sd.type=c("dot","ribbon")){
 

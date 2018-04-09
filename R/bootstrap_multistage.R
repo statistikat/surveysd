@@ -52,21 +52,21 @@
 
 
 rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",
-                      single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE){
-
+                               single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE){
+  
   # prepare input
   input <- c(strata,cluster,fpc)
   input <- gsub("\\s","",input)
   input <- strsplit(input,">")
-
+  
   strata <- input[[1]]
   cluster <- input[[2]]
   fpc <- input[[3]]
-
+  
   single.PSU <- single.PSU[1]
   return.value <- return.value[1]
-
-
+  
+  
   if(!is.logical(check.input)){
     stop("check.input can only be logical")
   }
@@ -78,7 +78,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     }else{
       dat <- data.table(dat)
     }
-
+    
     # check REP
     if(!is.numeric(REP)){
       stop("REP needs to be numeric")
@@ -91,7 +91,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
         stop("REP cannot have a decimal part")
       }
     }
-
+    
     # check design variables
     if(length(unique(lapply(input,length)))>1){
       stop("strata, cluster, and fpc need to have the same number of arguments separated with '>'")
@@ -102,12 +102,12 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     if(length(check.values)>0){
       stop("dat does not contain the column(s)",check.values)
     }
-
+    
     # check return.value
     if(!return.value%in%c("data","replicates")){
       stop("return.value can only take the values 'data' or 'replicates'")
     }
-
+    
     # check single.PSU
     if(is.null(single.PSU)){
       warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
@@ -116,21 +116,34 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
         warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
       }
     }
+    
+    # check if variable f, N, n are in data.table
+    overwrite.names <- c("f","N","n","n_prev","n_draw","n_draw_prev")
+    overwrite.names <- overwrite.names[overwrite.names%in%colnames(dat)]
+    if(length(overwrite.names)>0){
+      overwrite.names.new <- paste0("ORIGINAL_",overwrite.names)
+      setnames(dat,overwrite.names,overwrite.names.new)
+      
+      strata[strata%in%overwrite.names] <- overwrite.names.new[strata%in%overwrite.names]
+      cluster[cluster%in%overwrite.names] <- overwrite.names.new[cluster%in%overwrite.names]
+      fpc[fpc%in%overwrite.names] <- overwrite.names.new[fpc%in%overwrite.names]
+    }
   }
-
+  
   # set index for data to return dat in correct order
   dat[,InitialOrder:=.I]
-
+  
   # calculate bootstrap replicates
   stages <- length(strata)
   n <- nrow(dat)
   # define values for final calculation
   n.calc <- matrix(0,nrow=n,ncol=stages)
   N.calc <- matrix(0,nrow=n,ncol=stages)
+  n_draw.calc <- matrix(0,nrow=n,ncol=stages)
   delta.calc <- array(0,dim=c(n,stages,REP))
-
+  
   for(i in 1:stages){
-
+    
     # define by.val
     if(i>1){
       by.val <- c(strata[1:(i-1)],cluster[1:(i-1)],strata[i])
@@ -138,14 +151,14 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
       by.val <- strata[1:i]
     }
     by.val <- by.val[!by.val%in%c("1","I")]
-
+    
     # define cluster value
     clust.val <- cluster[i]
     if(clust.val%in%c("1","I")){
       clust.val <- paste0("ID_help_",i)
       dat[,c(clust.val):=.I,by=c(by.val)]
     }
-
+    
     singles <- dt.eval("dat[,sum(!duplicated(",clust.val,")),by=c(by.val)][V1==1]")
     if(nrow(singles)>0){
       # if singel.PSU=="merge" change the coding of the current stage of the single PSU
@@ -162,13 +175,13 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
           dt.eval("dat[,",paste0(tail(by.val,1),"_ORIGINALSINGLES"),":=",tail(by.val,1),"]")
           dt.eval("dat[,",paste0(fpc[i],"_ORIGINALSINGLES"),":=",fpc[i],"]")
         }
-
+        
         setkeyv(dat,higher.stages)
         next.PSU <- dt.eval("dat[singles,.(N=sum(!duplicated(",clust.val,"))),by=c(by.val)]")
-
+        
         new.var <- paste0(tail(by.val,1),"_NEWVAR")
         dt.eval("next.PSU[,c(new.var):=next_minimum(N,",tail(by.val,1),"),by=c(higher.stages)]")
-
+        
         next.PSU <- next.PSU[N==1]
         dat <- merge(dat,next.PSU[,mget(c(by.val,new.var))],by=c(by.val),all.x=TRUE)
         # sum over margins
@@ -178,12 +191,12 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
         dt.eval("dat[,",fpc[i],":=",fpc[i],"[is.na(",new.var,")][1],by=c(by.val)]")
         dt.eval("dat[!is.na(",new.var,"),",fpc[i],":=",fpc[i],"+",paste0(fpc[i],"_ADD"),"]")
         dt.eval("dat[,",fpc[i],":=max(",fpc[i],"),by=c(by.val)]")
-
+        
         dat[,c(new.var,paste0(fpc[i],"_ADD")):=NULL]
       }else if(single.PSU=="mean"){
         # if single.PSU="mean" flag the observation as well as the all the observations in the higher group
         singles[,SINGLE_BOOT_FLAG:=paste(higher.stages,.GRP,sep="-"),by=c(higher.stages)]
-
+        
         dat <- merge(dat,singles,by=c(higher.stages),all.x=TRUE)
         if(!"SINGLE_BOOT_FLAG_FINAL"%in%colnames(dat)){
           dat[,SINGLE_BOOT_FLAG_FINAL:=SINGLE_BOOT_FLAG]
@@ -191,43 +204,64 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
           dat[is.na(SINGLE_BOOT_FLAG_FINAL),SINGLE_BOOT_FLAG_FINAL:=SINGLE_BOOT_FLAG]
         }
         dat[,SINGLE_BOOT_FLAG:=NULL]
-
+        
       }else{
         warning("Single PSUs detected at the following stages:")
         print(dt.eval("dat[,sum(!duplicated(",clust.val,")),by=c(by.val)][V1==1]"))
       }
     }
-
+    
     # get Stage
-    dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,")),by=list(",paste(by.val,collapse=","),")]")
-
+    if(i==1){
+      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=1,n_prev=1,n_draw_prev=1),by=list(",paste(by.val,collapse=","),")]")
+    }else{
+      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=f,n_prev=n_prev,n_draw_prev=n_draw_prev),by=list(",paste(by.val,collapse=","),")]")
+      dat[,f:=NULL]
+      dat[,n_prev:=NULL]
+      dat[,n_draw_prev:=NULL]
+    }
+    
     deltai <- paste0("delta_",i,"_",1:REP)
     dati[,n:=.N,by=c(by.val)]
+    # determin number of psu to be drawn
+    dati[,n_draw:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1]),by=c(by.val)]
+    if(nrow(dati[n_draw==0])>0){
+      stop("Resampling 0 PSUs should not be possible! Please report bug in https://github.com/statistikat/surveysd")
+    }
     # do bootstrap for i-th stage
-    dati[,c(deltai):=as.data.table(replicate(REP,draw.without.replacement(n[1],N[1]),simplify = FALSE)),by=c(by.val)]
-
+    dati[,c(deltai):=as.data.table(replicate(REP,draw.without.replacement(n[1],n_draw[1]),simplify = FALSE)),by=c(by.val)]
+    
     # merge with data
     dat <- merge(dat,dati,by=c(by.val,clust.val))
-
+    
     # extract information from data.table and remove again from data table (less memory intensive)
     # only matrices and arrays needed for final calculation
     n.calc[,i] <- dat[,n]
     N.calc[,i] <- dat[,N]
+    n_draw.calc[,i] <- dat[,n_draw]
     delta.calc[,i,] <- as.matrix(dat[,mget(deltai)])
-
-    dat[,c("n","N",deltai):=NULL]
-
+    
+    dat[,f:=n/N*f]
+    dat[,n_prev:=n*n_prev]
+    dat[,n_draw_prev:=n_draw*n_draw_prev]
+    
+    dat[,c("n","N",deltai,"n_draw"):=NULL]
+    
   }
-
+  
   bootRep <- paste0("bootRep",1:REP)
-  dat[,c(bootRep):=as.data.table(calc.replicate(n=n.calc,N=N.calc,delta=delta.calc))]
-
+  dat[,c(bootRep):=as.data.table(calc.replicate(n=n.calc,N=N.calc,n_draw=n_draw.calc,delta=delta.calc))]
+  
   if(single.PSU=="mean"){
     dat[!is.na(SINGLE_BOOT_FLAG_FINAL),c(bootRep):=lapply(.SD,function(z){mean(z,na.rm=TRUE)}),by=SINGLE_BOOT_FLAG_FINAL,.SDcols=c(bootRep)]
   }
-
+  
   setkey(dat,InitialOrder)
   if(return.value=="data"){
+    # get original col values
+    if(length(overwrite.names)>0){
+      setnames(dat,overwrite.names.new,overwrite.names)
+    }
     # get original values for PSUs and fpc - if singles PSUs have been detected and merged
     if(single.PSU=="merge"){
       c.names <- colnames(dat)
@@ -238,42 +272,48 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
         setnames(dat,c(c.names),drop.names)
       }
     }
+    dat[,c("f","n_prev","n_draw_prev","InitialOrder"):=NULL]
     return(dat)
   }else if(return.value=="replicates"){
     return(dat[,mget(bootRep)])
   }
 }
 
-draw.without.replacement <- function(n,N){
-  # n_draw <- trunc(n/2)
-  n_draw <- trunc(n/(2-n/N))
+select.nstar <- function(n,N,f,n_prev,n_draw_prev){
+  n_draw <- (n*n_draw_prev)/(n_prev*f*(1-n/N)+n_draw_prev)
+  n_draw <- floor(n_draw)
+  return(n_draw)
+}
+
+draw.without.replacement <- function(n,n_draw){
   delta <- rep(c(1,0),c(n_draw,n-n_draw))
   delta <- sample(delta)
   return(delta)
 }
 
-calc.replicate <- function(n,N,delta){
+calc.replicate <- function(n,N,n_draw,delta){
   p <- ncol(n)
-  # ndraw <- trunc(n/2)
-  ndraw <- trunc(n/(2-n/N))
+  # n_draw <- trunc(n/2)
+  # n_draw <- floor(n/(2-rowCumprods(n/N))-1)
+  # n_draw[n_draw<1] <- 1
   dimdelta <- dim(delta)
   for(i in 1:p){
     if(i==1){
-      lambda <- sqrt(ndraw[,1]*(1-n[,1]/N[,1])/(n[,1]-ndraw[,1]))
-      rep_out <- 1-lambda+lambda*n[,i]/ndraw[,i]*delta[,i,]
+      lambda <- sqrt(n_draw[,1]*(1-n[,1]/N[,1])/(n[,1]-n_draw[,1]+1))
+      rep_out <- 1-lambda+lambda*n[,i]/n_draw[,i]*delta[,i,]
     }else if(i==2){
-      lambda <- (1-n[,i]/N[,i])/(n[,i]-ndraw[,i])
-      lambda <- sqrt((n[,i-1]/N[,i-1])*ndraw[,i]*lambda)
-      rep_out <- rep_out + lambda*(sqrt(n[,i-1]/ndraw[,i-1])*delta[,i-1,]) * (n[,i]/ndraw[,i]*delta[,i,]-1)
+      lambda <- (1-n[,i]/N[,i])/(n[,i]-n_draw[,i]+1)
+      lambda <- sqrt((n[,i-1]/N[,i-1])*n_draw[,i]*lambda)
+      rep_out <- rep_out + lambda*(sqrt(n[,i-1]/n_draw[,i-1])*delta[,i-1,]) * (n[,i]/n_draw[,i]*delta[,i,]-1)
     }else{
-      lambda <- (1-n[,i]/N[,i])/(n[,i]-ndraw[,i])
-      lambda <- sqrt(rowProds(n[,1:(i-1)]/N[,1:(i-1)])*ndraw[,i]*lambda)
+      lambda <- (1-n[,i]/N[,i])/(n[,i]-n_draw[,i]+1)
+      lambda <- sqrt(rowProds(n[,1:(i-1)]/N[,1:(i-1)])*n_draw[,i]*lambda)
       prod_val <- matrix(0,ncol=dimdelta[3],nrow=dimdelta[1])
       for(r in 1:dimdelta[3]){
-        prod_val[,r] <- rowProds(sqrt(n[,1:(i-1)]/ndraw[,1:(i-1)])*delta[,1:(i-1),r])
+        prod_val[,r] <- rowProds(sqrt(n[,1:(i-1)]/n_draw[,1:(i-1)])*delta[,1:(i-1),r])
       }
-      # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/ndraw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/ndraw[,i]*delta[,i,]-1)
-      rep_out <- rep_out + lambda*prod_val * (n[,i]/ndraw[,i]*delta[,i,]-1)
+      # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/n_draw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/n_draw[,i]*delta[,i,]-1)
+      rep_out <- rep_out + lambda*prod_val * (n[,i]/n_draw[,i]*delta[,i,]-1)
     }
   }
   return(rep_out)

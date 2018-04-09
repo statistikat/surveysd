@@ -4,7 +4,7 @@
 #' Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 #'
 #' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",strata="DB040",
-#'                      year="RB010",totals=NULL,boot.names=NULL)
+#'                      year="RB010",totals=NULL,boot.names=NULL,split=FALSE,pid=NULL)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
@@ -38,14 +38,15 @@
 #' if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.\cr
 #' In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.\cr
 #'
-#' If \code{cluster} is \code{NULL} or does not contain the \code{hid} at the last stage \code{hid} it will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
+#' If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stage, \code{hid} will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
 #' \code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.\cr
 #' For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 #' and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 #'
-#' The bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link{bootstrap}}.
+#' Bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link{bootstrap}}.
 #' Afterwards the bootstrap replicates for each household are carried forward from the first year the household enters the survey to all the censecutive years it stays in the survey.\cr
 #' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
+#' 
 #' If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
 #' This takes into account the issue of a houshold splitting up.
 #' Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
@@ -291,7 +292,8 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
   dat[,c(w.names):=NULL]
   dat <- merge(dat,dat.first.occurence,by=hid,all.x=TRUE)
   dat[,occurence_first_year:=NULL]
-
+  
+  
   # remove columns
   if(split){
     dt.eval("dat[,",hid,":=",paste0(hid,"_orig"),"]")
