@@ -106,7 +106,16 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NUL
 
 
   c.names <- colnames(dat)
-
+  
+  # check for missing values
+  spec.variables <- c(hid,weights,year,strata,cluster,totals,country,pid)
+  spec.variables <- spec.variables[!spec.variables%in%c("1","I")]
+  dat.na <- dat[,mget(spec.variables)]
+  dat.na <- sapply(dat.na,function(z){any(is.na(z))})
+  if(any(dat.na)){
+    stop("Missing values found in column(s): ", paste(names(dat.na[dat.na==TRUE]),collapse=", "))
+  }
+  
   # check REP
   if(length(REP)!=1){
     stop("REP must have length 1")

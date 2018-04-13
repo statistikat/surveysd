@@ -213,18 +213,21 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     
     # get Stage
     if(i==1){
-      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=1,n_prev=1,n_draw_prev=1),by=list(",paste(by.val,collapse=","),")]")
+      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=1,n_prev=1,n_draw_prev=1,sum_prev=1),by=list(",paste(by.val,collapse=","),")]")
     }else{
-      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=f[1],n_prev=n_prev[1],n_draw_prev=n_draw_prev[1]),by=list(",paste(by.val,collapse=","),")]")
+      dati <- dt.eval("dat[,.(N=",fpc[i],"[1],",clust.val,"=unique(",clust.val,"),f=f[1],n_prev=n_prev[1],n_draw_prev=n_draw_prev[1],sum_prev=sum_prev[1]),by=list(",paste(by.val,collapse=","),")]")
       dat[,f:=NULL]
       dat[,n_prev:=NULL]
       dat[,n_draw_prev:=NULL]
+      dat[,sum_prev:=NULL]
     }
     
     deltai <- paste0("delta_",i,"_",1:REP)
     dati[,n:=.N,by=c(by.val)]
     # determin number of psu to be drawn
-    dati[,n_draw:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],new.method=new.method),by=c(by.val)]
+    dati[,n_draw:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],sum_prev=NULL,new.method=new.method),by=c(by.val)]
+    # dati[,n_draw_old:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],sum_prev=NULL,new.method=FALSE),by=c(by.val)]
+    # dati[,n_draw_new:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],sum_prev=sum_prev[1],new.method=FALSE),by=c(by.val)]
     if(nrow(dati[n_draw==0])>0){
       stop("Resampling 0 PSUs should not be possible! Please report bug in https://github.com/statistikat/surveysd")
     }
@@ -241,6 +244,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     n_draw.calc[,i] <- dat[,n_draw]
     delta.calc[,i,] <- as.matrix(dat[,mget(deltai)])
     
+    dat[,sum_prev:=sum_prev + (sqrt(n_draw*f*(1-n/N)/(n-n_draw)) * sqrt(n_prev/n_draw_prev) * (n/n_draw-1))]
     dat[,f:=n/N*f]
     dat[,n_prev:=n*n_prev]
     dat[,n_draw_prev:=n_draw*n_draw_prev]
@@ -279,12 +283,18 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
   }
 }
 
-select.nstar <- function(n,N,f,n_prev,n_draw_prev,new.method){
-  if(new.method){
-    n_draw <- (n*n_draw_prev)/(n_prev*f*(1-n/N)+n_draw_prev)
+select.nstar <- function(n,N,f,n_prev,n_draw_prev,lambda_prev,sum_prev=NULL,new.method){
+  
+  if(!is.null(sum_prev)){
+    n_draw <- (sum_prev)^2/((1-(n/N))*n_prev*f+(sum_prev)^2)*n
     n_draw <- floor(n_draw)
   }else{
-    n_draw <- floor(n/2)
+    if(new.method){
+      n_draw <- (n*n_draw_prev)/(n_prev*f*(1-n/N)+n_draw_prev)
+      n_draw <- floor(n_draw)
+    }else{
+      n_draw <- floor(n/2)
+    }
   }
 
   return(n_draw)
