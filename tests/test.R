@@ -561,6 +561,10 @@ set.seed(1234)
 dat_boot_old <- draw.bootstrap(dat=copy(dat_es[RB010==2008]),REP=100,hid="DB030",weights="RB050",strata=c("DB050","I"),cluster="DB060",
                            year="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030",new.method=FALSE)
 
+set.seed(1234)
+dat_boot <- draw.bootstrap(dat=copy(dat_es),REP=100,hid="DB030",weights="RB050",strata=c("DB050"),
+                           year="RB010",totals=NULL,split=TRUE,pid="RB030",new.method=TRUE)
+
 any(dat_boot[,mget(paste0("w",1:100))]<0)
 
 any(dat_boot_old[,mget(paste0("w",1:100))]<0)
