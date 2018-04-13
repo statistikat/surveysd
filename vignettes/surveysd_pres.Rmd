@@ -141,7 +141,8 @@ knitr::opts_chunk$set(cache = TRUE)
 library(data.table)
 library(surveysd)
 library(ggplot2)
-dat <- fread("/mnt/obdatenaustausch/NETSILC3/udb_short_new.csv")
+library(mountSTAT)
+dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
 dat[,RB050:=gsub(",","\\.",RB050)]
 dat[,RB050:=as.numeric(RB050)]
 
