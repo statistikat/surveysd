@@ -1,0 +1,113 @@
+---
+title: "R-Package `surveysd`"
+date: "`r Sys.Date()`"
+author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
+output: 
+  beamer_presentation:
+    includes:
+     in_header: header.txt 
+    colortheme: beaver
+    highlight: tango
+    incremental: no
+    theme: JuanLesPins
+bibliography: lib.bib
+---
+
+## Overview
+
+- R Package from Statistics Austria
+- Error estimation for surveys with rotating panel design
+- Easy to use for R-Beginners
+
+# Motivation
+
+## Motivation
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+- EU-SILC and at risk of social exclusion (`arose`)
+\newline
+- Qualitatively high well-being indicators at national or NUTS1
+\newline
+- Lower NUTS-Levels usually yield poor estimates
+
+## Methods
+
+- Small area estimation
+\newline
+- administrative data to impute variable of interest
+\newline
+- pooled data and bootstrap techniques
+\newline
+- Need Assumptions
+\newline
+- Use multiplea years of survey and "take the average"
+
+
+## `surveysd`
+
+- R-package for variance estimation on regional levels
+\newline
+- Uses multiple (consecutive) waves of EU-SILC
+\newline
+- Variance estimation via bootstrap techniques
+\newline
+- Easy to use, even for R-Beginners
+
+## Package functions
+
+- Draw bootstrap replicates `draw.bootstrap()`
+\newline
+- Calibrate bootstrap replicates `recalib()`
+\newline
+- Estimate standard errors `calc.stError()`
+
+
+## Draw bootstrap replicates
+
+- Tabular data with household identifier
+- Arbitrary sampling design 
+    
+    - Preston recaled multistage bootstrap
+
+- Automatic Single PSU detection
+
+- Taking bootstrap replicate forward
+
+## Draw bootstrap replicates
+
+## Calibrate bootstrap replicates
+
+- Tabular data with ID and bootstrap replicates
+
+    - Or output from draw.bootsrap()
+
+- Wrapper of ipu2
+
+## Calibrate bootstrap replicates
+
+## Estimate standard errors
+
+- Estimate standard errors using bootstrap replicates
+- Estimate for arbitrary subgroups
+- Estimate average over multiple years as well as differences
+- Some point estimates pre defined
+- Can define arbitrary point estimate
+
+
+## Estimate standard errors
+
+- 
+
+## Estimate standard errors
+
+
+## Plot Method
+
+-
+
+## Plot Method
+
+
+
