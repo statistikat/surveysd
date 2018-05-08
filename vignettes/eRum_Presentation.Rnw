@@ -1,0 +1,365 @@
+\documentclass{beamer}
+\usepackage[sidebar=false,showpagetotal=false]{../../vimdocs/Vorlagen/beamerthemeSTAT}
+\usepackage[sidebar=false,showpagetotal=false]{../../vimdocs/Vorlagen/beamercolorthemeSTAT}
+\usepackage{../../vimdocs/Vorlagen/beamerinnerthemeSTAT}
+\usepackage{../../vimdocs/Vorlagen/beamerouterthemeSTAT}
+\usepackage{../../vimdocs/Vorlagen/beamerfontthemeSTAT}
+%\usepackage{../../vimdocs/Vorlagen/Sweave}
+\usepackage{listings}
+\usepackage{multicol}
+% bibliography
+%\usepackage[round]{natbib}
+%\bibliography{lib}
+
+\bibpunct{(}{)}{,}{a}{}{,}
+%\usepackage[ngerman]{babel} 
+
+
+\hypersetup{colorlinks=true, breaklinks=true, linkcolor=STATred, menucolor=STATred, urlcolor=STATred}
+\newcommand{\Rlogo}{\raisebox{-.1mm}{\includegraphics[width=1.2em]{../../vimdocs/Vorlagen/Rlogo.pdf}}}
+\newcommand{\mymat}[1]{\boldsymbol{#1}}
+\newcommand{\m}[1]{\boldsymbol{#1}}
+\newcommand{\R}{\textsf{R}}
+\newcommand{\code}[1]{\texttt{#1}}     
+\bibpunct{(}{)}{,}{a}{}{,}
+\lstloadlanguages{R} 
+ \lstdefinelanguage{Renhanced}[]{R}{% 
+   morekeywords={kNN,hotdeck,library, impCoda, impKNNa, aggr, plot, class,
+   methods, names, which, robCompositions, head, foo.bar, foo.default}, deletekeywords={c}, 
+   alsoletter={.\%},% 
+   alsoother={:_\$}} 
+ \lstset{language=Renhanced,extendedchars=true, 
+   basicstyle=\small\ttfamily, 
+   commentstyle=\color{STATgrey}, 
+   keywordstyle=\color{STATred}\bfseries,
+   showstringspaces=false, 
+   index=[1][keywords], 
+   indexstyle=\indexfonction
+} 
+\newcommand{\indexfonction}[1]{\index{#1@\texttt{#1}}}
+\newcommand{\boma}[1]{\mbox{\boldmath ${#1}$}}
+\newcommand{\MD}{\mbox{MD}}
+\newcommand{\Cov}{\mbox{Cov}}
+\newcommand{\argmax}{\mathop{\mbox{argmax}}}
+\newcommand{\argmin}{\mathop{\mbox{argmin}}}
+\newcommand{\ab}{\boldsymbol{a}}
+\newcommand{\betab}{\boldsymbol{\beta}}
+\newcommand{\med}{\mathop{\mbox{median}}}
+\newcommand{\mad}{\mathop{\mbox{MAD}}}
+\newcommand{\wb}{\boldsymbol{w}}
+
+\definecolor{Gray}{gray}{0.75}
+\definecolor{pddblue}{rgb}{.17,.31,.44}
+% Farben wie fuer TU
+\definecolor{pddblue}{rgb}{.17,.31,.44}
+\definecolor{pddblue2}{rgb}{.17,.36,.49}
+\definecolor{pddblue3}{rgb}{.2,.35,.60}
+\definecolor{tublau}{rgb}{0,0.4,0.66} % ca. #0066AA
+\definecolor{rotgold}{rgb}{0.8,0.3,0}
+\definecolor{pdlblue}{rgb}{.75,.85,.92}
+\definecolor{pdllblue}{rgb}{.9,.95,.98}
+\definecolor{pdlparchment}{rgb}{.96,.94,.89}
+\definecolor{pddparchment}{rgb}{.89,.85,.69}
+\definecolor{Gray}{gray}{0.75}
+\definecolor{Gray2}{gray}{0.5}
+\definecolor{digreen}{rgb}{.1,.31,.1}
+\definecolor{diblue}{rgb}{.0,.2,.35}
+\definecolor{diblue2}{rgb}{.0,.3,.2}
+
+
+
+
+% ---------------------
+% begin of presentation
+% ---------------------
+
+ 
+\begin{document}
+% define title and authors
+\title{R-Package \texttt{surveysd} - Error estimation for surveys with rotating panel design}
+
+\author[Johannes, Gussenbauer]{Johannes, Gussenbauer, Kowarik Alexander, Matthias Till}
+\institute[www.statistik.at]{Statistik Austria}
+\date[May 2017]{May, 2017}
+
+% slides
+\pgfdeclareimage[height=0.87cm,width=2cm]{logo}{../../vimdocs/Vorlagen/logo}
+\logo{\pgfuseimage{logo}}
+{
+\usebackgroundtemplate{\includegraphics[height=0.95\paperheight,width=\paperwidth]{../../vimdocs/Vorlagen/titlepage}}
+\begin{frame}
+\titlepage
+\end{frame}
+}
+\setcounter{tocdepth}{1}
+
+% MOTIVATION
+\begin{frame}[fragile]{Motivation}
+\begin{itemize}
+  \item EU-SILC and at risk of social exclusion (`arose`)
+  \vspace{.5cm}
+  \item Qualitatively high well-being indicators at national or NUTS1
+  \vspace{.5cm}
+  \item Lower NUTS-Levels usually yield poor estimates
+  \vspace{.5cm}
+  \item Methodology, which is easy to apply and yields better estimates on sub-national levels?
+\end{itemize}
+\end{frame}
+
+
+% METHODS
+\begin{frame}[fragile]{Methods}
+\begin{itemize}
+  \item Many techniques already exist for estimating indicators on sub-national levels.
+  \item Already existing techniques, for example
+  
+  \begin{itemize}
+    \item Small area estimation
+    \item Use administrative data to impute variable of interest (see povmap)
+  \end{itemize}
+  
+  \item Modells need assumptions and administrative data is not always available 
+  \item Need a more harmonious approach R-Package $\rightarrow$ \texttt{surveysd}
+\end{itemize}
+\end{frame}
+
+
+% surveysd
+\begin{frame}[fragile]{surveysd}
+\begin{itemize}
+  \item R-package for variance estimation on regional levels
+    \vspace{.5cm}
+  \item Variance estimation via bootstrap techniques
+    \vspace{.5cm}
+  \item Uses multiple (consecutive) waves of a survey
+  \begin{itemize}
+    \item Similar approach as proposed by VIJAY, but with bootstrap instead of jack-knife
+  \end{itemize}
+    \vspace{.5cm}
+  \item Easy to use, even for R-Beginners
+\end{itemize}
+\end{frame}
+
+
+% MAIN FUNCTIONALITY
+\begin{frame}[fragile]{Main functionality}
+\begin{itemize}
+  \item Draw bootstrap replicates `draw.bootstrap()`
+      \vspace{.5cm}
+  \item Calibrate bootstrap replicates `recalib()`
+      \vspace{.5cm}
+  \item Estimate standard errors `calc.stError()`
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DRAW BOOTSTRAP
+% 1
+\begin{frame}[fragile]{Draw bootstrap replicates}
+
+<<draw.boot, eval=FALSE,echo=TRUE,size="small">>=
+draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
+               year="RB010",strata="DB040",cluster=NULL,
+               totals=NULL,single.PSU=c("merge","mean"),
+               boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
+@
+
+\begin{itemize}
+  \item Rectangular data set with household identifier
+  \item Column with sampling weight, year
+  \item Define arbitrary sampling design with \texttt{strata} and \texttt{cluster}
+  \item Automatic detection and dealing with single PSUs
+  \item Bootstrap replicates are drawn for each year.
+    \begin{itemize}
+        \item Applies rescaled bootstrap for stratified multistage sampling
+    \end{itemize}
+  \item Replicates are taken forward to mimic rotational panel design.
+  \begin{itemize}
+      \item Split households can be considered for this step, \texttt{split=TRUE}
+  \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+
+% 2
+\begin{frame}[fragile]{Draw bootstrap replicates}
+<<packages, include=FALSE>>=
+# cluster schätzen
+library(data.table)
+library(surveysd)
+library(mountSTAT)
+library(ggplot2)
+@
+
+<<draw.boot1, include=FALSE>>=
+dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
+
+UDB_AT <- dat[rb020=="AT"][!duplicated(paste(RB030,RB010,sep="_"))]
+
+UDB_AT[,DB050_old:=DB050]
+UDB_AT <- UDB_AT[!is.na(DB030)]
+@
+
+
+<<draw.boot2, eval=TRUE,echo=TRUE,size="small">>=
+UDB_AT_boot <- draw.bootstrap(UDB_AT,REP=10,hid="DB030",
+                              weights="RB050",year="RB010",
+                              strata=c("DB040","RB090"),
+                              split=TRUE,pid="RB030")
+
+unique(UDB_AT_boot[,.(DB030,w1,w2,w3)])
+@
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RECALIBRATE
+% 1
+\begin{frame}[fragile]{Calibrate Bootsrap Replicates}
+
+<<calibrate, eval=FALSE,echo=TRUE,size="small">>=
+recalib(dat,hid="DB030",weights="RB050",
+        b.rep=paste0("w",1:1000),year="RB010",
+        country=NULL,conP.var=c("RB090"),
+        conH.var=c("DB040","DB100"),...)
+@
+
+\begin{itemize}
+  \item Use output of \texttt{draw.bootstrap()} or
+  \item Rectangular data set with household identifier and bootstrap replicates.
+  \item Define households and/or personal variables to be calibrated onto
+  \item Calibration with \texttt{ipu2()} from Package simPop
+\end{itemize}
+\end{frame}
+
+% 1
+%\begin{frame}[fragile]{Calibrate Bootsrap Replicates}
+
+<<calibrate1, eval=TRUE,echo=TRUE,size="small",cache=TRUE,include=FALSE>>=
+UDB_AT_calib <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
+        b.rep=paste0("w",1:10),year="RB010",conP.var=c("RB090"),
+        conH.var=c("DB040","DB100"))
+UDB_AT_calib[,.(DB030,w1,w2,w3)]
+@
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ESTIMATE ERRORS
+% 1
+\begin{frame}[fragile]{Estimate standard errors}
+<<calcerror, eval=FALSE,echo=TRUE,size="small">>=
+calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
+             year="RB010",var="HX080",fun="weightedRatio",
+             cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,
+             add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
+@
+
+\begin{itemize}
+  \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
+  \item Function fun is applied on Variable var for, using each bootstrap weight.
+  \item Predefined functions available, also able to handle custom functions or functions from other packages
+  \begin{itemize}
+    \item Must return double or integer and second argument is weight
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+% 2
+\begin{frame}[fragile]{Estimate standard errors}
+
+\begin{itemize}
+  \item Define subgroups of sample using \texttt{cross\_var} (optional)
+  \item Estimate standard errors for changes between years with \texttt{year.diff} (optional)
+  \item Results of point estimates are averaged over \texttt{year.mean} years (optional)
+     \begin{itemize}
+        \item Apply filter with equal filter weights over time series
+     \end{itemize}
+  \item Estimate quantiles using parameter \texttt{p}.
+\end{itemize}
+\end{frame}
+
+% 3
+\begin{frame}[fragile]{Estimate standard errors}
+
+<<calcerror1, eval=TRUE,echo=TRUE,size="small">>=
+res <- calc.stError(UDB_AT_calib,weights="RB050",
+                    year="RB010",b.weights=paste0("w",1:10),
+                    var="HX080",cross_var=list("DB040",c("RB090","DB040")))
+res
+@
+
+\end{frame}
+
+% 4
+\begin{frame}[fragile]{Estimate standard errors}
+<<calcerror2, eval=TRUE,echo=TRUE,size="small">>=
+# Apply function which is not in package 'surveysd'
+# take the gini - index
+library(laeken,quietly=TRUE)
+# simulate income
+UDB_AT_calib[,income:=
+               exp(rnorm(.N,mean=sample(7:10,1),sd=0.5)),
+             by=list(DB100)]
+
+# gini() returns list
+# calc.stError needs function that returns double or integer
+help_gini <- function(x,w){
+  return(gini(x,w)$value)
+}
+@
+\end{frame}
+
+% 5
+\begin{frame}[fragile]{Estimate standard errors}
+<<calcerror3, eval=TRUE,echo=TRUE,size="small">>=
+res_inc <- calc.stError(UDB_AT_calib,fun="help_gini",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:10),
+                    var="income",cross_var=list("DB040",c("RB090","DB040")),
+                    year.diff=c("2014-2008"),p=c(.025,.975))
+res_inc
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%
+% PLOT METHOD
+% 1
+\begin{frame}[fragile]{Plot Method}
+<<plot1, eval=TRUE,echo=TRUE,size="scriptsize",fig.height=4,fig.width=6.5>>=
+plot(res_inc,type="grouping",
+     groups="DB040",sd.type="ribbon")
+@
+\end{frame}
+
+\begin{frame}[fragile]{Final Remarks}
+\begin{itemize}
+  \item R-Package surveysd for error estimation on surveys with rotating panel design
+    \begin{itemize}
+      \item Can be applied on surveys without rotating panel design or single year
+      \item But less functionality available
+    \end{itemize}
+  \item Simple to use R-Package which support a harmonious approach for estimating standard errors
+    \begin{itemize}
+      \item Small area estimation needs modelling assumptions
+      \item Administrative data not always available
+    \end{itemize}
+  \item Other R-Package \texttt{vardpoor} for error estimation using \textit{ultimate cluster approach}
+    \begin{itemize}
+      \item Sampling design not fully represented
+      \item Error estimation through linearization of given point estimates 
+    \end{itemize}
+  \item Check it out on github: https://github.com/statistikat/surveysd  
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}
+
