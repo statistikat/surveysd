@@ -76,9 +76,9 @@
  
 \begin{document}
 % define title and authors
-\title{R-Package \texttt{surveysd} - Error estimation for surveys with rotating panel design}
+\title{The R Package \texttt{surveysd}}
 
-\author[Johannes, Gussenbauer]{Johannes, Gussenbauer, Kowarik Alexander, Matthias Till}
+\author[Johannes, Gussenbauer]{Johannes Gussenbauer, Alexander Kowarik, Matthias Till}
 \institute[www.statistik.at]{Statistik Austria}
 \date[May 2017]{May, 2017}
 
@@ -87,11 +87,12 @@
 \logo{\pgfuseimage{logo}}
 {
 \usebackgroundtemplate{\includegraphics[height=0.95\paperheight,width=\paperwidth]{../../vimdocs/Vorlagen/titlepage}}
-\begin{frame}
-\titlepage
-\end{frame}
+%\begin{frame}
+%\titlepage
+%\end{frame}
 }
 \setcounter{tocdepth}{1}
+
 
 % MOTIVATION
 \begin{frame}[fragile]{Motivation}
@@ -133,7 +134,8 @@
     \vspace{.5cm}
   \item Uses multiple (consecutive) waves of a survey
   \begin{itemize}
-    \item Similar approach as proposed by VIJAY, but with bootstrap instead of jack-knife
+    \item Similar approach as proposed by VIJAY
+    \item Average bootstrap replicates over waves
   \end{itemize}
     \vspace{.5cm}
   \item Easy to use, even for R-Beginners
@@ -157,7 +159,7 @@
 % 1
 \begin{frame}[fragile]{Draw bootstrap replicates}
 
-<<draw.boot, eval=FALSE,echo=TRUE,size="small">>=
+<<eval=FALSE,echo=TRUE,size="footnotesize">>=
 draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
                year="RB010",strata="DB040",cluster=NULL,
                totals=NULL,single.PSU=c("merge","mean"),
@@ -184,36 +186,33 @@ draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
 
 % 2
 \begin{frame}[fragile]{Draw bootstrap replicates}
-<<packages, include=FALSE>>=
-# cluster schätzen
-library(data.table)
-library(surveysd)
-library(mountSTAT)
-library(ggplot2)
+
+<<eval=FALSE,echo=TRUE,size="footnotesize">>=
+draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
+               year="RB010",strata="DB040",cluster=NULL,
+               totals=NULL,single.PSU=c("merge","mean"),
+               boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
 @
 
-<<draw.boot1, include=FALSE>>=
-dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
-dat[,RB050:=gsub(",","\\.",RB050)]
-dat[,RB050:=as.numeric(RB050)]
+\begin{itemize}
+  \item Rectangular data set with household identifier
+  \item Column with sampling weight, year
+  \item Define arbitrary sampling design with \texttt{strata} and \texttt{cluster}
+  \item Automatic detection and dealing with single PSUs
+  \item Bootstrap replicates are drawn for each year.
+    \begin{itemize}
+        \item Applies rescaled bootstrap for stratified multistage sampling
+    \end{itemize}
+  \item Replicates are taken forward to mimic rotational panel design.
+  \begin{itemize}
+      \item Split households can be considered for this step, \texttt{split=TRUE}
+  \end{itemize}
 
-UDB_AT <- dat[rb020=="AT"][!duplicated(paste(RB030,RB010,sep="_"))]
-
-UDB_AT[,DB050_old:=DB050]
-UDB_AT <- UDB_AT[!is.na(DB030)]
-@
-
-
-<<draw.boot2, eval=TRUE,echo=TRUE,size="small">>=
-UDB_AT_boot <- draw.bootstrap(UDB_AT,REP=10,hid="DB030",
-                              weights="RB050",year="RB010",
-                              strata=c("DB040","RB090"),
-                              split=TRUE,pid="RB030")
-
-unique(UDB_AT_boot[,.(DB030,w1,w2,w3)])
-@
+\end{itemize}
 
 \end{frame}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -221,7 +220,7 @@ unique(UDB_AT_boot[,.(DB030,w1,w2,w3)])
 % 1
 \begin{frame}[fragile]{Calibrate Bootsrap Replicates}
 
-<<calibrate, eval=FALSE,echo=TRUE,size="small">>=
+<<calibrate, eval=FALSE,echo=TRUE,size="footnotesize">>=
 recalib(dat,hid="DB030",weights="RB050",
         b.rep=paste0("w",1:1000),year="RB010",
         country=NULL,conP.var=c("RB090"),
@@ -236,24 +235,13 @@ recalib(dat,hid="DB030",weights="RB050",
 \end{itemize}
 \end{frame}
 
-% 1
-%\begin{frame}[fragile]{Calibrate Bootsrap Replicates}
-
-<<calibrate1, eval=TRUE,echo=TRUE,size="small",cache=TRUE,include=FALSE>>=
-UDB_AT_calib <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
-        b.rep=paste0("w",1:10),year="RB010",conP.var=c("RB090"),
-        conH.var=c("DB040","DB100"))
-UDB_AT_calib[,.(DB030,w1,w2,w3)]
-@
-%\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ESTIMATE ERRORS
 % 1
 \begin{frame}[fragile]{Estimate standard errors}
-<<calcerror, eval=FALSE,echo=TRUE,size="small">>=
+<<eval=FALSE,echo=TRUE,size="footnotesize">>=
 calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
              year="RB010",var="HX080",fun="weightedRatio",
              cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,
@@ -264,6 +252,26 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
   \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
   \item Function fun is applied on Variable var for, using each bootstrap weight.
   \item Predefined functions available, also able to handle custom functions or functions from other packages
+  \begin{itemize}
+    \item Must return double or integer and second argument is weight
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+% ESTIMATE ERRORS
+% 1
+\begin{frame}[fragile]{Estimate standard errors}
+<<eval=FALSE,echo=TRUE,size="footnotesize">>=
+calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
+             year="RB010",var="HX080",fun="weightedRatio",
+             cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,
+             add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
+@
+
+\begin{itemize}
+  \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
+  \item Function fun is applied on Variable var for, using each bootstrap weight.
+  \item Predefined functions available, but custom functions or functions from other packages can be supplied
   \begin{itemize}
     \item Must return double or integer and second argument is weight
   \end{itemize}
@@ -286,25 +294,51 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 
 % 3
 \begin{frame}[fragile]{Estimate standard errors}
+<<packages, include=FALSE,eval=TRUE>>=
+# cluster schätzen
+library(data.table)
+library(surveysd)
+library(mountSTAT)
+library(ggplot2)
 
-<<calcerror1, eval=TRUE,echo=TRUE,size="small">>=
-res <- calc.stError(UDB_AT_calib,weights="RB050",
-                    year="RB010",b.weights=paste0("w",1:10),
-                    var="HX080",cross_var=list("DB040",c("RB090","DB040")))
-res
+dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
+dat[,RB050:=gsub(",","\\.",RB050)]
+dat[,RB050:=as.numeric(RB050)]
+
+UDB_AT <- dat[rb020=="AT"][!duplicated(paste(RB030,RB010,sep="_"))]
+
+UDB_AT[,DB050_old:=DB050]
+UDB_AT <- UDB_AT[!is.na(DB030)]
+
+UDB_AT_boot <- draw.bootstrap(UDB_AT,REP=10,hid="DB030",
+                              weights="RB050",year="RB010",
+                              strata=c("DB040","RB090"),
+                              split=TRUE,pid="RB030")
+UDB_AT_calib <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
+        b.rep=paste0("w",1:10),year="RB010",conP.var=c("RB090"),
+        conH.var=c("DB040","DB100"))
+@
+
+
+<<calcerror1, eval=TRUE,echo=TRUE,size="footnotesize">>=
+calc.stError(UDB_AT_calib,weights="RB050",
+             year="RB010",b.weights=paste0("w",1:10),
+             var="HX080",cross_var=list("DB040",c("RB090","DB040")))
+
 @
 
 \end{frame}
 
 % 4
 \begin{frame}[fragile]{Estimate standard errors}
-<<calcerror2, eval=TRUE,echo=TRUE,size="small">>=
+<<calcerror2, eval=TRUE,echo=TRUE,size="footnotesize">>=
 # Apply function which is not in package 'surveysd'
 # take the gini - index
 library(laeken,quietly=TRUE)
 # simulate income
+set.seed(1234)
 UDB_AT_calib[,income:=
-               exp(rnorm(.N,mean=sample(7:10,1),sd=0.5)),
+               exp(rnorm(.N,mean=sample(7:10,1),sd=1)),
              by=list(DB100)]
 
 # gini() returns list
@@ -317,12 +351,11 @@ help_gini <- function(x,w){
 
 % 5
 \begin{frame}[fragile]{Estimate standard errors}
-<<calcerror3, eval=TRUE,echo=TRUE,size="small">>=
-res_inc <- calc.stError(UDB_AT_calib,fun="help_gini",
-                    weights="RB050",year="RB010",b.weights=paste0("w",1:10),
-                    var="income",cross_var=list("DB040",c("RB090","DB040")),
-                    year.diff=c("2014-2008"),p=c(.025,.975))
-res_inc
+<<calcerror3, eval=TRUE,echo=TRUE,size="footnotesize">>=
+calc.stError(UDB_AT_calib,fun="help_gini",
+             weights="RB050",year="RB010",b.weights=paste0("w",1:10),
+             var="income",cross_var=list("DB040",c("RB090","DB040")),
+             year.diff=c("2014-2008"),p=c(.025,.975))
 @
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%
@@ -332,6 +365,15 @@ res_inc
 % PLOT METHOD
 % 1
 \begin{frame}[fragile]{Plot Method}
+<<calcerror4,include=FALSE, eval=TRUE,size="footnotesize">>=
+res_inc <- calc.stError(UDB_AT_calib,fun="help_gini",
+                    weights="RB050",year="RB010",b.weights=paste0("w",1:10),
+                    var="income",cross_var=list("DB040",c("RB090","DB040")),
+                    year.diff=c("2014-2008"),p=c(.025,.975))
+res_inc
+
+@
+
 <<plot1, eval=TRUE,echo=TRUE,size="scriptsize",fig.height=4,fig.width=6.5>>=
 plot(res_inc,type="grouping",
      groups="DB040",sd.type="ribbon")
@@ -340,21 +382,14 @@ plot(res_inc,type="grouping",
 
 \begin{frame}[fragile]{Final Remarks}
 \begin{itemize}
-  \item R-Package surveysd for error estimation on surveys with rotating panel design
+  \item Simple to use R-Package
+  \vspace{.5cm}
+  \item Supports a harmonious approach for estimating standard errors on surveysd with rotating panel design
     \begin{itemize}
-      \item Can be applied on surveys without rotating panel design or single year
-      \item But less functionality available
+      \item Achieve more accuracy by averaging over multiple years 
+      \item No need for administrative data or modelling assumptions
     \end{itemize}
-  \item Simple to use R-Package which support a harmonious approach for estimating standard errors
-    \begin{itemize}
-      \item Small area estimation needs modelling assumptions
-      \item Administrative data not always available
-    \end{itemize}
-  \item Other R-Package \texttt{vardpoor} for error estimation using \textit{ultimate cluster approach}
-    \begin{itemize}
-      \item Sampling design not fully represented
-      \item Error estimation through linearization of given point estimates 
-    \end{itemize}
+  \vspace{.5cm}
   \item Check it out on github: https://github.com/statistikat/surveysd  
 \end{itemize}
 \end{frame}
