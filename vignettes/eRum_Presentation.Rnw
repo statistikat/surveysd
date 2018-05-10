@@ -97,30 +97,37 @@
 % MOTIVATION
 \begin{frame}[fragile]{Motivation}
 \begin{itemize}
-  \item EU-SILC and at risk of social exclusion (`arose`)
+  \item EU-SILC and at risk of social exclusion
   \vspace{.5cm}
-  \item Qualitatively high well-being indicators at national or NUTS1
+  \item High quality indicators on national- but estimates on sub-national level have poor accuracy.
+    \begin{itemize}
+    \item SAE-Methods \rightarrow modelling assumptions
+    \item Use administrative data (see povmap) \rightarrow not always available
+  \end{itemize}
   \vspace{.5cm}
-  \item Lower NUTS-Levels usually yield poor estimates
+  \item Difficulty estimating variance of differences between waves
   \vspace{.5cm}
   \item Methodology, which is easy to apply and yields better estimates on sub-national levels?
+  \item $\rightarrow$ R-Package \texttt{surveysd}
 \end{itemize}
 \end{frame}
 
 
-% METHODS
-\begin{frame}[fragile]{Methods}
+% MOTIVATION
+\begin{frame}[fragile]{Motivation}
 \begin{itemize}
-  \item Many techniques already exist for estimating indicators on sub-national levels.
-  \item Already existing techniques, for example
-  
-  \begin{itemize}
-    \item Small area estimation
-    \item Use administrative data to impute variable of interest (see povmap)
+  \item EU-SILC and at risk of social exclusion
+  \vspace{.5cm}
+  \item High quality indicators on national- but estimates on sub-national level have poor accuracy.
+    \begin{itemize}
+    \item SAE-Methods \rightarrow modelling assumptions
+    \item Use administrative data (see povmap) \rightarrow not always available
   \end{itemize}
-  
-  \item Modells need assumptions and administrative data is not always available 
-  \item Need a more harmonious approach R-Package $\rightarrow$ \texttt{surveysd}
+  \vspace{.5cm}
+  \item Difficulty estimating variance of differences between waves
+  \vspace{.5cm}
+  \item Methodology, which is easy to apply and yields better estimates on sub-national levels?
+  \item $\rightarrow$ R-Package \texttt{surveysd}
 \end{itemize}
 \end{frame}
 
@@ -128,14 +135,16 @@
 % surveysd
 \begin{frame}[fragile]{surveysd}
 \begin{itemize}
-  \item R-package for variance estimation on regional levels
+  \item R-package for variance estimation on surveys with rotating panel design
     \vspace{.5cm}
   \item Variance estimation via bootstrap techniques
+    \begin{itemize}
+      \item Rescaled bootstrap for stratified multistage sampling
+    \end{itemize}
     \vspace{.5cm}
-  \item Uses multiple (consecutive) waves of a survey
+  \item Improve accuracy by using multiple (consecutive) waves of the survey
   \begin{itemize}
-    \item Similar approach as proposed by VIJAY
-    \item Average bootstrap replicates over waves
+    \item Average bootstrap replicates over waves (see VIJAY)
   \end{itemize}
     \vspace{.5cm}
   \item Easy to use, even for R-Beginners
@@ -168,23 +177,18 @@ draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
 
 \begin{itemize}
   \item Rectangular data set with household identifier
-  \item Column with sampling weight, year
-  \item Define arbitrary sampling design with \texttt{strata} and \texttt{cluster}
+  \item Describe sampling design with \texttt{strata} and \texttt{cluster}
   \item Automatic detection and dealing with single PSUs
-  \item Bootstrap replicates are drawn for each year.
-    \begin{itemize}
-        \item Applies rescaled bootstrap for stratified multistage sampling
-    \end{itemize}
-  \item Replicates are taken forward to mimic rotational panel design.
+  \item Replicates are taken forward to mimic rotational panel design
   \begin{itemize}
-      \item Split households can be considered for this step, \texttt{split=TRUE}
+      \item Split households are considered
   \end{itemize}
 
 \end{itemize}
 
 \end{frame}
 
-% 2
+% 1
 \begin{frame}[fragile]{Draw bootstrap replicates}
 
 <<eval=FALSE,echo=TRUE,size="footnotesize">>=
@@ -196,16 +200,11 @@ draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
 
 \begin{itemize}
   \item Rectangular data set with household identifier
-  \item Column with sampling weight, year
-  \item Define arbitrary sampling design with \texttt{strata} and \texttt{cluster}
+  \item Describe sampling design with \texttt{strata} and \texttt{cluster}
   \item Automatic detection and dealing with single PSUs
-  \item Bootstrap replicates are drawn for each year.
-    \begin{itemize}
-        \item Applies rescaled bootstrap for stratified multistage sampling
-    \end{itemize}
-  \item Replicates are taken forward to mimic rotational panel design.
+  \item Replicates are taken forward to mimic rotational panel design
   \begin{itemize}
-      \item Split households can be considered for this step, \texttt{split=TRUE}
+      \item Split households are considered
   \end{itemize}
 
 \end{itemize}
@@ -228,10 +227,8 @@ recalib(dat,hid="DB030",weights="RB050",
 @
 
 \begin{itemize}
-  \item Use output of \texttt{draw.bootstrap()} or
-  \item Rectangular data set with household identifier and bootstrap replicates.
-  \item Define households and/or personal variables to be calibrated onto
   \item Calibration with \texttt{ipu2()} from Package simPop
+  \item Define households and/or personal variables to be calibrated onto
 \end{itemize}
 \end{frame}
 
@@ -250,7 +247,7 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 
 \begin{itemize}
   \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
-  \item Function fun is applied on Variable var for, using each bootstrap weight.
+  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight.
   \item Predefined functions available, also able to handle custom functions or functions from other packages
   \begin{itemize}
     \item Must return double or integer and second argument is weight
@@ -267,11 +264,10 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
              cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,
              add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
 @
-
 \begin{itemize}
   \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
-  \item Function fun is applied on Variable var for, using each bootstrap weight.
-  \item Predefined functions available, but custom functions or functions from other packages can be supplied
+  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight.
+  \item Predefined functions available, also able to handle custom functions or functions from other packages
   \begin{itemize}
     \item Must return double or integer and second argument is weight
   \end{itemize}
@@ -282,8 +278,8 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 \begin{frame}[fragile]{Estimate standard errors}
 
 \begin{itemize}
-  \item Define subgroups of sample using \texttt{cross\_var} (optional)
-  \item Estimate standard errors for changes between years with \texttt{year.diff} (optional)
+  \item Estimate errors on subgroups with \texttt{cross\_var} (optional)
+  \item Estimate standard errors for differences between years with \texttt{year.diff} (optional)
   \item Results of point estimates are averaged over \texttt{year.mean} years (optional)
      \begin{itemize}
         \item Apply filter with equal filter weights over time series
@@ -314,14 +310,14 @@ UDB_AT_boot <- draw.bootstrap(UDB_AT,REP=10,hid="DB030",
                               weights="RB050",year="RB010",
                               strata=c("DB040","RB090"),
                               split=TRUE,pid="RB030")
-UDB_AT_calib <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
+UDB_AT <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
         b.rep=paste0("w",1:10),year="RB010",conP.var=c("RB090"),
         conH.var=c("DB040","DB100"))
 @
 
 
 <<calcerror1, eval=TRUE,echo=TRUE,size="footnotesize">>=
-calc.stError(UDB_AT_calib,weights="RB050",
+calc.stError(UDB_AT,weights="RB050",
              year="RB010",b.weights=paste0("w",1:10),
              var="HX080",cross_var=list("DB040",c("RB090","DB040")))
 
@@ -337,7 +333,7 @@ calc.stError(UDB_AT_calib,weights="RB050",
 library(laeken,quietly=TRUE)
 # simulate income
 set.seed(1234)
-UDB_AT_calib[,income:=
+UDB_AT[,income:=
                exp(rnorm(.N,mean=sample(7:10,1),sd=1)),
              by=list(DB100)]
 
@@ -352,7 +348,7 @@ help_gini <- function(x,w){
 % 5
 \begin{frame}[fragile]{Estimate standard errors}
 <<calcerror3, eval=TRUE,echo=TRUE,size="footnotesize">>=
-calc.stError(UDB_AT_calib,fun="help_gini",
+calc.stError(UDB_AT,fun="help_gini",
              weights="RB050",year="RB010",b.weights=paste0("w",1:10),
              var="income",cross_var=list("DB040",c("RB090","DB040")),
              year.diff=c("2014-2008"),p=c(.025,.975))
