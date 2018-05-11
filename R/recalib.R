@@ -122,6 +122,12 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
     stop("Not all elements in conH.var are column names in dat")
   }
 
+  var.miss <- unlist(dat[,lapply(.SD,function(z){sum(is.na(z))}),.SDcols=c(conH.var,conP.var)])
+  var.miss <- var.miss[var.miss>0]
+  if(length(var.miss)>0){
+    stop("Missing values detected in column(s)",var.miss)
+  }
+  
   # check year
   if(length(year)!=1){
     stop(paste0(year," must have length 1"))
@@ -316,7 +322,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 	    }else{
 	      set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
 	                             conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-	                             w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor"#, check_hh_vars = check_hh_vars
+	                             w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor", check_hh_vars = check_hh_vars
 	      )[,calibWeight])
 	      if(dat[,any(is.na(get(g)))]){
 	        calib.fail <- c(calib.fail,g)

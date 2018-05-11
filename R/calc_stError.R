@@ -6,7 +6,7 @@
 #'
 #' @usage calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),year="RB010",var="HX080",
 #'                     fun="weightedRatio",cross_var=NULL,year.diff=NULL,
-#'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10)
+#'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
 #'
 #'
 #' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.
@@ -365,15 +365,18 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
 
   outx <- dcast(outx,form,value.var=val.var,fill=NA)
   # reorder output
+  # outx.names <- colnames(outx)
+  # outx.names.sub <- gsub(paste0(paste0(val.var,"_"),collapse="|"),"",outx.names)
+  # ord.names <- c()
+  # for(i in var){
+  #   ord.names <- c(ord.names,which(outx.names.sub==i))
+  # }
+  # 
+  # outx.names <- outx.names[c(1:(min(ord.names)-1),ord.names)]
+  col.order <- as.vector(outer(paste0(val.var,"_"),var,FUN="paste0"))
   outx.names <- colnames(outx)
-  outx.names.sub <- gsub(paste0(paste0(val.var,"_"),collapse="|"),"",outx.names)
-  ord.names <- c()
-  for(i in var){
-    ord.names <- c(ord.names,which(outx.names.sub==i))
-  }
-
-  outx.names <- outx.names[c(1:(min(ord.names)-1),ord.names)]
-  outx <- outx[,mget(outx.names)]
+  col.order <- c(outx.names[!outx.names%in%col.order],col.order)
+  setcolorder(outx,col.order)
 
   # specify parameters for output
   if(fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){

@@ -34,7 +34,7 @@ plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","groupi
   if(!variable%in%dat$param$var){
     stop("No results for ",variable," present in the data!")
   }
-  if(type=="grouping"&is.null(groups)){
+  if(type=="grouping"){
     other_var <- unique(unlist(dat$param$cross_var))
     if(is.null(groups)){
       stop("Paramter 'groups' cannot be NULL if type='grouping'!")

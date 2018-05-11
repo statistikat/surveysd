@@ -3,8 +3,9 @@
 #' @description Draw bootstrap replicates from survey data with rotating panel design.
 #' Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 #'
-#' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",strata="DB040",
-#'                      year="RB010",totals=NULL,boot.names=NULL,split=FALSE,pid=NULL)
+#' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",year="RB010",
+#'                       strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
+#'                       boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
@@ -93,7 +94,7 @@
 #' @import data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata=NULL,cluster=NULL,totals=NULL,
+draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata="DB040",cluster=NULL,totals=NULL,
                            single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=TRUE){
 
   ##########################################################
