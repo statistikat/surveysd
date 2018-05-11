@@ -525,7 +525,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  roll.miss <- c(roll.miss,list(est=var.est[,unique(est)]))
 		  roll.est <- data.table(expand.grid(c(roll.miss,list(ID=unique(var.est$ID)))))
 
-		  if(nrow(roll.est)>nrow(unique(var.est,by=c(year,z)))){
+		  if(nrow(roll.est)>nrow(var.est)){
 		    var.est <- merge(roll.est,var.est,by=c(year,z,"ID","est"),all.x=TRUE)
 		    setkeyv(var.est,year)
 		    var.est[is.na(V1),N:=0]
@@ -568,6 +568,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		      d.m.est[,c(year):=paste0(paste(d[[i.diff.mean]],collapse="-"),"-mean")]
 		    })
 		    diff.mean.est <- rbindlist(diff.mean.est)
+		    diff.mean.est[,est_type:="diff_mean"]
 		  }
 		}
 
@@ -590,7 +591,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		}
 
 
-		out.z <- merge(subset(var.est,ID==1,select=c(year,z,"V1","N","est","est_type")),sd.est,by=c(year,z,"est"))
+		out.z <- merge(var.est[ID==1,-"ID"],sd.est,by=c(year,z,"est"))
 
 		if(bias){
 		  bias.est <- var.est[ID!=1,.(mean=mean(V1)),by=c(year,z)]
