@@ -111,7 +111,9 @@ plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","groupi
     dt.eval("plot.group1.yearmean[,",year,":=tstrsplit(",year,",split='_',keep=",round((dat$param$year.mean+1)/2),")]")
 
     setnames(plot.group1.yearmean,c(ste_var,ste_bool),c(ste_var_mean,ste_bool_mean))
-    plot.group1.year <- merge(plot.group1.year,plot.group1.yearmean[,mget(c(year,other_var,ste_var_mean,ste_bool_mean))],all.x=TRUE)
+    plot.group1.year <- merge(plot.group1.year,
+                              dt.eval("plot.group1.yearmean[,.(",paste(c(year,other_var,ste_var_mean,ste_bool_mean),collapse=","),")]"),
+                              all.x=TRUE)
 
     # prepare plot.group2 for plotting
     plot.group2.year <- plot.group2[GROUPING=="Years"]
@@ -119,7 +121,9 @@ plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","groupi
     dt.eval("plot.group2.yearmean[,",year,":=tstrsplit(",year,",split='_',keep=",round((dat$param$year.mean+1)/2),")]")
 
     setnames(plot.group2.yearmean,c(ste_var,ste_bool),c(ste_var_mean,ste_bool_mean))
-    plot.group2.year <- merge(plot.group2.year,plot.group2.yearmean[,mget(c(year,other_var,ste_var_mean,ste_bool_mean))],all.x=TRUE)
+    plot.group2.year <- merge(plot.group2.year,
+                              dt.eval("plot.group2.yearmean[,.(",paste(c(year,other_var,ste_var_mean,ste_bool_mean),collapse=","),")]"),
+                              all.x=TRUE)
 
     ste_var2 <- paste0(ste_var,"2")
     ste_var_mean2 <- paste0(ste_var_mean,"2")
@@ -141,8 +145,8 @@ plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","groupi
     dt.eval("plot.group1.year[,",groups[2],":=factor(",groups[2],")]")
 
     # plot results of subgroups and add results for mean over k years
-    p1 <- ggplot(plot.group1.year,aes(get(year),get(val_var),group=get(groups[2])))+
-      geom_line(aes(colour=get(groups[2])))
+    p1 <- dt.eval("ggplot(plot.group1.year,aes(",year,",",val_var,",group=",groups[2],"))+
+      geom_line(aes(colour=get(groups[2])))")
 
     if(sd.type=="ribbon"){
       p1 <- p1 + geom_ribbon(aes(ymin = get(val_var)-get(ste_var),
@@ -155,8 +159,8 @@ plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","groupi
                                  fill=get(groups[2]),colour=get(groups[2])),linetype = 2, alpha= 0.5)
 
       # add results for group[1] -> higher level grouping
-      p1 <- p1 + geom_line(aes(get(year),get(val_var2)),color="black")+
-        geom_ribbon(aes(ymin = get(val_var2)-get(ste_var2),
+      p1 <- dt.eval("p1 + geom_line(aes(",year,",",val_var2,"),color='black')")
+      p1 <- p1 + geom_ribbon(aes(ymin = get(val_var2)-get(ste_var2),
                         ymax = get(val_var2)+get(ste_var2)),fill="grey",linetype = 2, alpha= 0.1)
 
       # add results for group[1] and k-year-mean
@@ -171,21 +175,21 @@ plot.surveysd <- function(dat,variable=dat$param$var[1],type=c("summary","groupi
       plot.group1.year[get(ste_bool2)==TRUE,shape_bool2:="high st.Error"]
       plot.group1.year[get(ste_bool_mean2)==TRUE,shape_bool2:="high st.Error for mean"]
 
-      p1 <- p1 + geom_point(data=plot.group1.year[get(ste_bool)==TRUE],
-                            aes(get(year),get(val_var),shape=shape_bool))
+      p1 <- dt.eval("p1 + geom_point(data=plot.group1.year[get(ste_bool)==TRUE],
+                            aes(",year,",",val_var,",shape=shape_bool))")
 
       # add results for k-mean-years
-      p1 <- p1 + geom_point(data=plot.group1.year[get(ste_bool_mean)==TRUE],
-                            aes(get(year),get(val_var),shape=shape_bool))
+      p1 <- dt.eval("p1 + geom_point(data=plot.group1.year[get(ste_bool_mean)==TRUE],
+                            aes(",year,",",val_var,",shape=shape_bool))")
 
       # add results for group[1] -> higher level grouping
-      p1 <- p1 + geom_line(aes(get(year),get(val_var2),linetype="main"))
-      p1 <- p1 + geom_point(data=plot.group1.year[get(ste_bool2)==TRUE],
-                            aes(get(year),get(val_var),shape=shape_bool2))
+      p1 <- dt.eval("p1 + geom_line(aes(",year,",",val_var2,",linetype='main'))")
+      p1 <- dt.eval("p1 + geom_point(data=plot.group1.year[get(ste_bool2)==TRUE],
+                            aes(",year,",",val_var,",shape=shape_bool2))")
 
       # add results for group[1] and k-year-mean
-      p1 <- p1 + geom_point(data=plot.group1.year[get(ste_bool_mean2)==TRUE],
-                            aes(get(year),get(val_var),shape=shape_bool2))
+      p1 <- dt.eval("p1 + geom_point(data=plot.group1.year[get(ste_bool_mean2)==TRUE],
+                            aes(",year,",",val_var,",shape=shape_bool2))")
 
     }
 

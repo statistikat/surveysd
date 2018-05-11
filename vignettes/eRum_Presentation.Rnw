@@ -97,15 +97,15 @@
 % MOTIVATION
 \begin{frame}[fragile]{Motivation}
 \begin{itemize}
-  \item EU-SILC and at risk of social exclusion
+  \item EU-SILC $\rightarrow$ poverty rates
   \vspace{.5cm}
-  \item High quality indicators on national- but estimates on sub-national level have poor accuracy.
+  \item High quality indicators on national- but estimates on sub-national level have poor accuracy
     \begin{itemize}
-    \item SAE-Methods \rightarrow modelling assumptions
-    \item Use administrative data (see povmap) \rightarrow not always available
+    \item SAE-Methods $\rightarrow$ modelling assumptions
+    \item Use administrative data (see (Qinghua and Lanjouw 2009)) $\rightarrow$ not always available
   \end{itemize}
   \vspace{.5cm}
-  \item Difficulty estimating variance of differences between waves
+  \item Estimate error of differences between waves $\rightarrow$ many covariates (tedious)
   \vspace{.5cm}
   \item Methodology, which is easy to apply and yields better estimates on sub-national levels?
   \item $\rightarrow$ R-Package \texttt{surveysd}
@@ -116,20 +116,21 @@
 % MOTIVATION
 \begin{frame}[fragile]{Motivation}
 \begin{itemize}
-  \item EU-SILC and at risk of social exclusion
+  \item EU-SILC $\rightarrow$ poverty rates
   \vspace{.5cm}
-  \item High quality indicators on national- but estimates on sub-national level have poor accuracy.
+  \item High quality indicators on national- but estimates on sub-national level have poor accuracy
     \begin{itemize}
-    \item SAE-Methods \rightarrow modelling assumptions
-    \item Use administrative data (see povmap) \rightarrow not always available
+    \item SAE-Methods $\rightarrow$ modelling assumptions
+    \item Use administrative data (see (Qinghua and Lanjouw 2009)) $\rightarrow$ not always available
   \end{itemize}
   \vspace{.5cm}
-  \item Difficulty estimating variance of differences between waves
+  \item Estimate error of differences between waves $\rightarrow$ many covariates (tedious)
   \vspace{.5cm}
   \item Methodology, which is easy to apply and yields better estimates on sub-national levels?
   \item $\rightarrow$ R-Package \texttt{surveysd}
 \end{itemize}
 \end{frame}
+
 
 
 % surveysd
@@ -139,12 +140,12 @@
     \vspace{.5cm}
   \item Variance estimation via bootstrap techniques
     \begin{itemize}
-      \item Rescaled bootstrap for stratified multistage sampling
+      \item Rescaled bootstrap for stratified multistage sampling (Preston, 2009)
     \end{itemize}
     \vspace{.5cm}
   \item Improve accuracy by using multiple (consecutive) waves of the survey
   \begin{itemize}
-    \item Average bootstrap replicates over waves (see VIJAY)
+    \item Average bootstrap replicates over waves (Betti et al., 2012)
   \end{itemize}
     \vspace{.5cm}
   \item Easy to use, even for R-Beginners
@@ -155,11 +156,11 @@
 % MAIN FUNCTIONALITY
 \begin{frame}[fragile]{Main functionality}
 \begin{itemize}
-  \item Draw bootstrap replicates `draw.bootstrap()`
+  \item Draw bootstrap replicates $\rightarrow$ \texttt{draw.bootstrap()}
       \vspace{.5cm}
-  \item Calibrate bootstrap replicates `recalib()`
+  \item Calibrate bootstrap replicates $\rightarrow$ \texttt{recalib()}
       \vspace{.5cm}
-  \item Estimate standard errors `calc.stError()`
+  \item Estimate standard errors $\rightarrow$ \texttt{calc.stError()}
 \end{itemize}
 \end{frame}
 
@@ -226,8 +227,10 @@ recalib(dat,hid="DB030",weights="RB050",
         conH.var=c("DB040","DB100"),...)
 @
 
+\vspace{.5cm}
 \begin{itemize}
   \item Calibration with \texttt{ipu2()} from Package simPop
+  \vspace{.5cm}
   \item Define households and/or personal variables to be calibrated onto
 \end{itemize}
 \end{frame}
@@ -246,8 +249,8 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 @
 
 \begin{itemize}
-  \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
-  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight.
+  \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights
+  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight
   \item Predefined functions available, also able to handle custom functions or functions from other packages
   \begin{itemize}
     \item Must return double or integer and second argument is weight
@@ -266,7 +269,7 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 @
 \begin{itemize}
   \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
-  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight.
+  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight
   \item Predefined functions available, also able to handle custom functions or functions from other packages
   \begin{itemize}
     \item Must return double or integer and second argument is weight
@@ -278,13 +281,13 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 \begin{frame}[fragile]{Estimate standard errors}
 
 \begin{itemize}
-  \item Estimate errors on subgroups with \texttt{cross\_var} (optional)
-  \item Estimate standard errors for differences between years with \texttt{year.diff} (optional)
   \item Results of point estimates are averaged over \texttt{year.mean} years (optional)
      \begin{itemize}
         \item Apply filter with equal filter weights over time series
      \end{itemize}
-  \item Estimate quantiles using parameter \texttt{p}.
+  \item Estimate standard errors for differences between waves with \texttt{year.diff} (optional)   
+  \item Estimate errors on subgroups with \texttt{cross\_var} (optional)
+  \item Estimate quantiles using parameter \texttt{p}
 \end{itemize}
 \end{frame}
 
@@ -313,13 +316,15 @@ UDB_AT_boot <- draw.bootstrap(UDB_AT,REP=10,hid="DB030",
 UDB_AT <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
         b.rep=paste0("w",1:10),year="RB010",conP.var=c("RB090"),
         conH.var=c("DB040","DB100"))
+setnames(UDB_AT,c("RB050","RB010","HX080","DB040","RB090","DB100"),
+         c("weights","year","poverty","region","gender","urban"))
 @
 
 
 <<calcerror1, eval=TRUE,echo=TRUE,size="footnotesize">>=
-calc.stError(UDB_AT,weights="RB050",
-             year="RB010",b.weights=paste0("w",1:10),
-             var="HX080",cross_var=list("DB040",c("RB090","DB040")))
+calc.stError(UDB_AT,weights="weights",
+             year="year",b.weights=paste0("w",1:10),
+             var="poverty",cross_var=list("region",c("gender","region")))
 
 @
 
@@ -335,7 +340,7 @@ library(laeken,quietly=TRUE)
 set.seed(1234)
 UDB_AT[,income:=
                exp(rnorm(.N,mean=sample(7:10,1),sd=1)),
-             by=list(DB100)]
+             by=list(urban)]
 
 # gini() returns list
 # calc.stError needs function that returns double or integer
@@ -349,8 +354,8 @@ help_gini <- function(x,w){
 \begin{frame}[fragile]{Estimate standard errors}
 <<calcerror3, eval=TRUE,echo=TRUE,size="footnotesize">>=
 calc.stError(UDB_AT,fun="help_gini",
-             weights="RB050",year="RB010",b.weights=paste0("w",1:10),
-             var="income",cross_var=list("DB040",c("RB090","DB040")),
+             weights="weights",year="year",b.weights=paste0("w",1:10),
+             var="income",cross_var=list("region",c("gender","region")),
              year.diff=c("2014-2008"),p=c(.025,.975))
 @
 \end{frame}
@@ -362,17 +367,16 @@ calc.stError(UDB_AT,fun="help_gini",
 % 1
 \begin{frame}[fragile]{Plot Method}
 <<calcerror4,include=FALSE, eval=TRUE,size="footnotesize">>=
-res_inc <- calc.stError(UDB_AT_calib,fun="help_gini",
-                    weights="RB050",year="RB010",b.weights=paste0("w",1:10),
-                    var="income",cross_var=list("DB040",c("RB090","DB040")),
-                    year.diff=c("2014-2008"),p=c(.025,.975))
-res_inc
+res_inc <- calc.stError(UDB_AT,fun="help_gini",
+             weights="weights",year="year",b.weights=paste0("w",1:10),
+             var="income",cross_var=list("region",c("gender","region")),
+             year.diff=c("2014-2008"),p=c(.025,.975))
 
 @
 
 <<plot1, eval=TRUE,echo=TRUE,size="scriptsize",fig.height=4,fig.width=6.5>>=
 plot(res_inc,type="grouping",
-     groups="DB040",sd.type="ribbon")
+     groups="region",sd.type="ribbon")
 @
 \end{frame}
 
@@ -380,7 +384,7 @@ plot(res_inc,type="grouping",
 \begin{itemize}
   \item Simple to use R-Package
   \vspace{.5cm}
-  \item Supports a harmonious approach for estimating standard errors on surveysd with rotating panel design
+  \item Supports a harmonious approach for estimating standard errors on surveys with rotating panel design
     \begin{itemize}
       \item Achieve more accuracy by averaging over multiple years 
       \item No need for administrative data or modelling assumptions
