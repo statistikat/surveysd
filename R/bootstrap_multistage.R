@@ -52,7 +52,7 @@
 
 
 rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",
-                               single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE,new.method=TRUE){
+                               single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE,new.method=FALSE){
   
   # prepare input
   input <- c(strata,cluster,fpc)
