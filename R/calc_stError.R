@@ -5,7 +5,7 @@
 #' In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive years, which results in a reduction of the standard error.
 #'
 #' @usage calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),year="RB010",var="HX080",
-#'                     fun="weightedRatio",cross_var=NULL,year.diff=NULL,
+#'                     fun="weightedRatio",group=NULL,year.diff=NULL,
 #'                     year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
 #'
 #'
@@ -16,13 +16,13 @@
 #' @param var character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each sample year.
 #' @param fun character specifying the function which will be applied on \code{var} for each sample year.
 #' Possible arguments are \code{weightedRatio,weightedRatioNat,weightedSum,sampSize,popSize} as well as any other function which returns a double or integer and uses weights as its second argument.
-#' @param cross_var character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
-#' The pointestimates are then estimated for each subgroup seperately. If \code{cross_var=NULL} the data will split into sample years by default.
+#' @param group character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{year}.
+#' The pointestimates are then estimated for each subgroup seperately. If \code{group=NULL} the data will split into sample years by default.
 #' @param year.diff character vectors, defining years for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"year1 - year2"}. Can be NULL
 #' @param year.mean integer, defining the range of years over which the sample mean of point estimates is additionally calcualted.
 #' @param bias boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.
 #' @param add.arg character specifying additional arguments for \code{fun}. Can be \code{NULL}.
-#' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{cross_var}.
+#' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{year} and the entries in \code{group}.
 #' Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.
 #' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.
 #'
@@ -33,7 +33,7 @@
 #'   \item Column indicating the household ID;
 #'   \item Column containing the household sample weights;
 #'   \item Columns which contain the bootstrap weights (see output of \code{\link{recalib}});
-#'   \item Columns listed in \code{var} as well as in \code{cross_var}
+#'   \item Columns listed in \code{var} as well as in \code{group}
 #' }
 #' For each variable in \code{var} as well as sample year the function \code{fun} is applied using the original as well as the bootstrap sample weights.\cr
 #' The point estimate is then selected as the result of \code{fun} when using the original sample weights and it's standard error is estimated with the result of \code{fun} using the bootstrap sample weights. \cr
@@ -43,10 +43,10 @@
 #' For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is calculated for \code{var} equal to 1, e.g \code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
 #' Using the option \code{weightedRatioNat} the weighted ratio (in \%) is divided by the weighted ratio at the national level for each \code{year}.
 #' \cr
-#' If \code{cross_var} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{cross_var}.\cr
-#' For instance if \code{cross_var = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
-#' For variables in \code{cross_var} which have \code{NA}s in \code{dat} the rows containing the missings will be discarded. \cr
-#' When \code{cross_var} is a list of character vectors, subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
+#' If \code{group} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{group}.\cr
+#' For instance if \code{group = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{year}.
+#' For variables in \code{group} which have \code{NA}s in \code{dat} the rows containing the missings will be discarded. \cr
+#' When \code{group} is a list of character vectors, subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
 #' \cr
 #' When defining \code{year.diff} the difference of point estimates between years as well their standard errors are calculated.\cr
 #' The entries in \code{year.diff} must have the form of \code{"year1 - year2"} which means that the results of the point estimates for \code{year2} will be substracted from the results of the point estimates for \code{year1}.\cr
@@ -62,7 +62,7 @@
 #' \cr
 #' If \code{fun} needs more arguments they can be set in add.arg.\cr
 #' \cr
-#' The parameter \code{size.limit} indicates a lower bound of the sample size for subsets in \code{dat} created by \code{cross_var}. If the sample size of a subset falls below \code{size.limit} a warning will be displayed.\cr
+#' The parameter \code{size.limit} indicates a lower bound of the sample size for subsets in \code{dat} created by \code{group}. If the sample size of a subset falls below \code{size.limit} a warning will be displayed.\cr
 #' In addition all subsets for which this is the case can be selected from the output of \code{calc.stError} with \code{$smallGroups}.\cr
 #' With the parameter \code{cv.limit} one can set an upper bound on the coefficient of variantion. Estimates which exceed this bound are flagged with \code{TRUE} and are available in the function output with \code{$cvHigh}.
 #' \code{cv.limit} must be a positive integer and is treated internally as \%, e.g. for \code{cv.limit=1} the estimate will be flagged if the coefficient of variantion exceeds 1\%.\cr
@@ -98,28 +98,28 @@
 #'
 #' # estimate weightedRatio for HX080 per year
 #' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
-#'                        fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=NULL)
+#'                        fun="weightedRatio",group=NULL,year.diff=NULL,year.mean=NULL)
 #'
 #' # estimate weightedRatio for HX080 per year and RB090
-#' cross_var <- "RB090"
+#' group <- "RB090"
 #' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
-#'                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=NULL)
+#'                        fun="weightedRatio",group=group,year.diff=NULL,year.mean=NULL)
 #'
 #'
 #' # use average over 3 years for standard error estimation
 #' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
-#'                        fun="weightedRatio",cross_var=cross_var,year.diff=NULL,year.mean=3)
+#'                        fun="weightedRatio",group=group,year.diff=NULL,year.mean=3)
 #'
 #' # get estimate for difference of year 2016 and 2013
 #' year.diff <- c("2015-2009")
 #' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
-#'                        fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+#'                        fun="weightedRatio",group=group,year.diff=year.diff,year.mean=3)
 #'
 #' # apply function to multiple variables and define different subsets
 #' var <- c("HX080","arose")
-#' cross_var <- list("RB090","DB040",c("RB090","DB040"))
+#' group <- list("RB090","DB040",c("RB090","DB040"))
 #' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX080",
-#'                        fun="weightedRatio",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+#'                        fun="weightedRatio",group=group,year.diff=year.diff,year.mean=3)
 #'
 #' # use a function from an other package that has sampling weights as its second argument
 #' # for example ging() from laeken
@@ -131,7 +131,7 @@
 #' }
 #'
 #' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),year="RB010",var="HX090",
-#'                        fun="help_gini",cross_var=cross_var,year.diff=year.diff,year.mean=3)
+#'                        fun="help_gini",group=group,year.diff=year.diff,year.mean=3)
 #'
 #' # exporting data
 #' # get point estimates
@@ -149,7 +149,7 @@
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and for k-year rolling means
 calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
-                         fun="weightedRatio",cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
+                         fun="weightedRatio",group=NULL,year.diff=NULL,year.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
 
   ##########################################################
   # INPUT CHECKING
@@ -192,7 +192,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
   }
 
   # check var
-  if(any(!var%in%c.names)){
+  if(any(!var%in%c(c.names))){
     stop("Not all elements in var are column names in dat")
   }
   if(any(!unlist(lapply(dat[,mget(b.weights)],is.numeric)))){
@@ -209,18 +209,18 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
     }
   }
 
-  # check cross_var
-  if(is.null(cross_var)){
-    cross_var <- list(NULL)
+  # check group
+  if(is.null(group)){
+    group <- list(NULL)
   }
-  if(class(cross_var)!="list"){
-    cross_var <- as.list(cross_var)
+  if(class(group)!="list"){
+    group <- as.list(group)
   }
-  if(!any(unlist(lapply(cross_var,is.null)))){
-    cross_var <- c(list(NULL),cross_var)
+  if(!any(unlist(lapply(group,is.null)))){
+    group <- c(list(NULL),group)
   }
-  if(any(!unlist(cross_var)%in%c.names)){
-    stop("Not all elements on cross_var are column names in dat")
+  if(any(!unlist(group)%in%c.names)){
+    stop("Not all elements on group are column names in dat")
   }
 
   # check year.mean
@@ -302,10 +302,10 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
 	# define columns in which NAs are present (will be discarded for the evaluation)
 
 
-  col_cross <- unique(unlist(cross_var))
+  col_cross <- unique(unlist(group))
   if(!is.null(col_cross)){
     no.na <- unlist(dat[,lapply(.SD,function(z){all(!is.na(z))}),.SDcols=col_cross])
-    no.na <- colnames(dat)[colnames(dat)%in%col_cross][!no.na]
+    no.na <- names(no.na)[!no.na]
 
     if(length(no.na)>0){
       cat("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
@@ -322,10 +322,10 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
 	}
 
 	# calculate point estimates
-  outx <- help.stError(dat=dat,year=year,var=var,weights=weights,b.weights=b.weights,fun=fun,cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,bias=bias,no.na=no.na,add.arg=add.arg,size.limit=size.limit,p=p)
+  outx <- help.stError(dat=dat,year=year,var=var,weights=weights,b.weights=b.weights,fun=fun,group=group,year.diff=year.diff,year.mean=year.mean,bias=bias,no.na=no.na,add.arg=add.arg,size.limit=size.limit,p=p)
 
   outx.names <- colnames(outx)
-  outx.names <- outx.names[!outx.names%in%c("val","N","est_type","stE","mean","size",p.names)]
+  outx.names <- outx.names[!outx.names%in%c("val","est_type","stE","mean","size",p.names)]
   # get meta data like stE_high - size - increase in effektive sample size
   # flag stE if values are especially high
   outx[,stE_high:=((stE/val)*100)>cv.limit]
@@ -344,19 +344,19 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
     if(bias){
       samp_eff[,"mean":=NULL]
     }
-    samp_eff[,c("size","val","est_type","N"):=NULL]
+    samp_eff[,c("size","val","est_type","N","n"):=NULL]
     setnames(samp_eff,"stE","stE_roll")
     same_names <- intersect(colnames(samp_eff),colnames(outx))
 
-    samp_eff <- merge(samp_eff,outx[,mget(c("stE","N",same_names))],by=same_names)
-    samp_eff[,N_inc:=((stE/stE_roll)^2-1)*N]
-    samp_eff[,c(paste0(year,"_roll"),"stE_roll","stE","N"):=NULL]
+    samp_eff <- merge(samp_eff,outx[,mget(c("stE","n",same_names))],by=same_names)
+    samp_eff[,n_inc:=((stE/stE_roll)^2-1)*n]
+    samp_eff[,c(paste0(year,"_roll"),"stE_roll","stE","n"):=NULL]
   }else{
     samp_eff <- NULL
   }
 
   # create Matrix for groups which have small sizes
-  size_group <- unique(subset(outx[size==TRUE],select=c(outx.names[outx.names!="est"],"N")))
+  size_group <- unique(subset(outx[size==TRUE],select=c(outx.names[outx.names!="est"],"n")))
 
   val.var <- c("val","stE",p.names)
   if(bias){
@@ -385,7 +385,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
     fun.package <- find(fun)
   }
 
-  param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,package=find(fun),cross_var=cross_var,year.diff=year.diff,year.mean=year.mean,
+  param <- list(number.bweights=length(b.weights),year=year,var=var,fun=fun,package=find(fun),group=group,year.diff=year.diff,year.mean=year.mean,
                 bias=bias,add.arg=add.arg,size.limit=size.limit,cv.limit=cv.limit)
 
   output <- list(Estimates=outx,smallGroups=size_group,cvHigh=sd_bool,stEDecrease=samp_eff,param=param)
@@ -399,7 +399,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),year,var,
 
 # function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per year and for k-year rolling means
-help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,cross_var,year.diff=NULL,year.mean=NULL,bias=FALSE,no.na,add.arg=NULL,size.limit=20,p=NULL){
+help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,group,year.diff=NULL,year.mean=NULL,bias=FALSE,no.na,add.arg=NULL,size.limit=20,p=NULL){
 
   # use c++ implementation for weightedRatio
   if(fun=="weightedRatio"){
@@ -417,20 +417,22 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
   #res.names <- paste0("r",1:length(c(weights,b.weights)))
 	# formulate function and arguments
-	if(fun=="sampSize"){
-		eval.fun <- c(res.names,"=.N)")
-	}else if(fun=="popSize"){
-		eval.fun <- paste0(res.names,"=sum(",c(weights,b.weights),")")
-	}else{
+	# if(fun=="sampSize"){
+	# 	eval.fun <- c(res.names,"=.N)")
+	# }else if(fun=="popSize"){
+	#   # var.popSize <- rep(var,each=length(c(weights,b.weights)))
+	# 	# eval.fun <- paste0(res.names,"=sum(",c(weights,b.weights),"[",var.popSize,"==1])")
+	# 	eval.fun <- paste0(res.names,"=sum(",c(weights),")")
+	# }else{
 	  if(!is.null(add.arg)){
 	    add.arg <- paste(add.arg,collapse=",")
 	    eval.fun <- paste0(res.names,"=",fun,"(",paste(c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,sep=","),")")
 	  }else{
 	    eval.fun <- paste0(res.names,"=",fun,"(",c(t(outer(var,c(weights,b.weights), paste_c))),")")
 	  }
-
-	  eval.fun <- paste0(".(.N,",paste(eval.fun,collapse=","),")")
-	}
+# 
+# 	}
+  eval.fun <- paste0(".(n=.N,N=sum(",weights,"),",paste(eval.fun,collapse=","),")")
 
   # define parameter for quantile calculation
   if(!is.null(p)){
@@ -461,6 +463,8 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
       year.diff.b <- TRUE
       year.diff.mean <- lapply(year.diff,function(z){
         z <- as.numeric(z)
+        # steps <- (year.mean-1)/2
+        # diff.feasable <- all(c(z+steps,z,z-steps)%in%years)
         if(z[1]+(year.mean-1)<=max(years)){
           lapply(1:year.mean,function(s){
             z+s-1
@@ -481,14 +485,14 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
     yearsList <- NULL
   }
 
-	# apply function to all elemnts of cross_var
+	# apply function to all elemnts of group
 	# apply also mean and standard deviation for estimates
-	out <- lapply(cross_var,function(z){
+	out <- lapply(group,function(z){
 
 	  # use only unique values for grouping (duplicates are discarded)
 	  # if year in z also discard -> always group by year
 	  z <- unique(z[!z==year])
-		na.check <- z[!z%in%no.na]
+		na.check <- z[z%in%no.na]
 		if(length(na.check)>0){
 			na.eval <- paste(paste0("(!is.na(",na.check,"))"),collapse="&")
 		}else{
@@ -510,7 +514,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  }
 		}
 
-		var.est <- melt(var.est,id.vars=c(year,z,"N"),measure.vars=res.names,value.name = "V1")
+		var.est <- melt(var.est,id.vars=c(year,z,"n","N"),measure.vars=res.names,value.name = "V1")
 		var.est[,c("est","ID"):=tstrsplit(variable,"\\.")]
 		var.est[,est_type:="norm"]
 		var.est[,variable:=NULL]
@@ -529,6 +533,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		    var.est <- merge(roll.est,var.est,by=c(year,z,"ID","est"),all.x=TRUE)
 		    setkeyv(var.est,year)
 		    var.est[is.na(V1),N:=0]
+		    var.est[is.na(V1),n:=0]
 		  }
 		}
 
@@ -537,6 +542,19 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  roll.est <- var.est[,list(V1=rollMeanC(x=V1,k=year.mean,type="c"),V2=yearsList),by=c("ID",z,"est")]
 		  setnames(roll.est,"V2",year)
 		  roll.est[,est_type:="roll"]
+		  if(!is.null(z)){
+		    roll.Nn <- var.est[ID==1&est==var[1],list(N=rollMeanC(x=N,k=year.mean,type="c"),
+		                                              n=rollMeanC(x=n,k=year.mean,type="c"),V2=yearsList),by=c(z)]
+		  }else{
+		    roll.Nn <- var.est[ID==1&est==var[1],list(N=rollMeanC(x=N,k=year.mean,type="c"),
+		                                              n=rollMeanC(x=n,k=year.mean,type="c"),V2=yearsList)]
+		  }
+
+		  setnames(roll.Nn,"V2",year)
+
+		  # merge results
+		  roll.est <- merge(roll.est,roll.Nn,by=c(z,year),all.x=TRUE)
+
 		}
 
 		if(year.diff.b){
@@ -550,10 +568,24 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		  })
 		  diff.est <- rbindlist(diff.est)
 		  diff.est[,est_type:="diff"]
+      
+		  # calcualte N and n for groups and diff
+		  diff.Nn <- lapply(year.diff,function(y){
+		    y_cond <- paste(year,paste0("c(",paste(y,collapse=","),")"),sep="%in%")
+		    diff.y <- dt.eval("var.est[ID==1&est==var[1]&",y_cond,",.(n=mean(n),N=mean(N)),by=list(",by.diff,")]")
+		    diff.y[,c(year):=paste(y,collapse="-")]
+		    diff.y[,c("est","ID"):=NULL]
+		    return(diff.y)
+		  })
+		  diff.Nn <- rbindlist(diff.Nn)
 
+		  # merge results
+		  diff.est <- merge(diff.est,diff.Nn,by=c(z,year),all.x=TRUE)
+		  
 		  # calcualte differences between years and mean over consecutive differences
 		  if(!is.null(unlist(year.diff.mean))){
-		    i.diff.mean <- (year.mean+1)/2
+		    # i.diff.mean <- (year.mean+1)/2
+		    i.diff.mean <- 1
 		    diff.mean.est <- lapply(year.diff.mean,function(d){
 		      # calculate differences for all pairwise years in d
 		      d.m.est <- lapply(d,function(y){
@@ -569,6 +601,19 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 		    })
 		    diff.mean.est <- rbindlist(diff.mean.est)
 		    diff.mean.est[,est_type:="diff_mean"]
+		    
+		    # calcualte N and n for groups and diff
+		    diff.roll.Nn <- lapply(year.diff.mean,function(y){
+		      y_cond <- paste(year,paste0("c(",paste(unlist(y),collapse=","),")"),sep="%in%")
+		      diff.y <- dt.eval("var.est[ID==1&est==var[1]&",y_cond,",.(n=mean(n),N=mean(N)),by=list(",by.diff,")]")
+		      diff.y[,c(year):=paste0(paste(y[[i.diff.mean]],collapse="-"),"-mean")]
+		      diff.y[,c("est","ID"):=NULL]
+		      return(diff.y)
+		    })
+		    diff.roll.Nn <- rbindlist(diff.roll.Nn)
+		   
+		    # merge results
+		    diff.mean.est <- merge(diff.mean.est,diff.roll.Nn,by=c(z,year),all.x=TRUE)
 		  }
 		}
 
@@ -592,7 +637,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
 
 		out.z <- merge(var.est[ID==1,-"ID"],sd.est,by=c(year,z,"est"))
-
+    
 		if(bias){
 		  bias.est <- var.est[ID!=1,.(mean=mean(V1)),by=c(year,z)]
 		  out.z <- merge(out.z,bias.est,by=c(year,z))
@@ -600,7 +645,7 @@ help.stError <- function(dat,year,var,weights,b.weights=paste0("w",1:1000),fun,c
 
 		# define size groups - groups with zero size do not fall under size-output
 		# for groups with zero size the resutling estimatese will be NAs
-		out.z[(!is.na(N))&N>0,size:=N<size.limit]
+		out.z[(!is.na(n))&n>0,size:=n<size.limit]
 
 		return(out.z)
 
@@ -670,8 +715,8 @@ print.surveysd <- function(sd.result){
   n.years <- unique(sd.result[["Estimates"]][[sd.result[["param"]][["year"]]]])
   n.years <- length(n.years[!grepl("-|_",n.years)])
 
-  if(!is.null(unlist(sd.result[["param"]][["cross_var"]]))){
-    n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["cross_var"]])))]))
+  if(!is.null(unlist(sd.result[["param"]][["group"]]))){
+    n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["group"]])))]))
   }else{
     n.groups <- NULL
   }
@@ -712,7 +757,7 @@ print.surveysd <- function(sd.result){
 
   # get number of point estimates where sd exceeds cv.limit
   stEtoohigh <- colnames(sd.result[["cvHigh"]])
-  stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(sd.result[["param"]][["year"]],unique(unlist(sd.result[["param"]][["cross_var"]])))]
+  stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(sd.result[["param"]][["year"]],unique(unlist(sd.result[["param"]][["group"]])))]
   stEtoohigh <- as.matrix(subset(sd.result[["cvHigh"]],select=stEtoohigh))
   if(sum(stEtoohigh,na.rm=TRUE)>0){
     cat("Estimted standard error exceeds",sd.result[["param"]][["cv.limit"]],"% of the the point estimate in",sum(stEtoohigh,na.rm=TRUE),"cases\n")

@@ -95,7 +95,7 @@
 
 
 draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata="DB040",cluster=NULL,totals=NULL,
-                           single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=TRUE){
+                           single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE){
 
   ##########################################################
   # INPUT CHECKING
