@@ -3,7 +3,7 @@
 #' @description
 #' Calibrate weights for bootstrap replicates by using iterative proportional updating to match population totals on various household and personal levels.
 #'
-#' @usage recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),year="RB010",
+#' @usage recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="RB010",
 #'                country=NULL,conP.var=c("RB090"),conH.var=c("DB040","DB100"),...)
 #'
 #' @details
@@ -11,25 +11,25 @@
 #' replication according to population totals for person- or household-specific variables. \cr
 #' \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 #' \itemize{
-#'   \item Column indicating the sample year;
+#'   \item Column indicating the sample period;
 #'   \item Column indicating the household ID;
 #'   \item Column containing the household sample weights;
 #'   \item Columns which contain the bootstrap replicates (see output of \code{\link{draw.bootstrap}});
 #'   \item Columns indicating person- or household-specific variables for which sample weight should be adjusted.
 #' }
-#' For each year and each variable in \code{conP.var} and/or \code{conH.var} contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
+#' For each period and each variable in \code{conP.var} and/or \code{conH.var} contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
 #' Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using \code{\link[simpPop]{ipu2}} to match the previously calcualted contingency tables.
 #' In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 #'
 #'
-#' @param dat either data.frame or data.table containing the sample survey for various years.
+#' @param dat either data.frame or data.table containing the sample survey for various periods.
 #' @param hid character specifying the name of the column in \code{dat} containing the household ID.
 #' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
 #' @param b.rep character specifying the names of the columns in \code{dat} containing bootstrap weights which should be recalibratet
-#' @param year character specifying the name of the column in \code{dat} containing the sample years.
+#' @param period character specifying the name of the column in \code{dat} containing the sample period.
 #' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
 #' In this case the calibration procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
-#' @param conP.var character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{year} and
+#' @param conP.var character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{period} and
 #' @param conH.var character vector containig household-specific variables to which weights should be calibrated.
 #' @param ... additional arguments passed on to function \code{\link[simpPop]{ipu2}} from the \code{simPop} package.
 #'
@@ -49,17 +49,17 @@
 #' # dat_at <- fread("path//to//austrian//data.csv")
 #'
 #' dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-#'                            year="RB010",split=TRUE,pid="RB030")
+#'                            period="RB010",split=TRUE,pid="RB030")
 #'
 #'
 #' # calibrate weight for bootstrap replicates
 #' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-#'                           year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+#'                           period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
 #'
 #'
 #' # calibrate on other variable
 #' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-#'                           year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
+#'                           period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
 #'
 #'
 #' # save calibrated bootstrap weights as .RData
@@ -70,7 +70,7 @@
 #' @export recalib
 #' @import simPop data.table
 
-recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),year="jahr",country=NULL,conP.var=c("RB090"),
+recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="jahr",country=NULL,conP.var=c("RB090"),
 										conH.var=c("DB040","DB100"),...){
   ##########################################################
   # INPUT CHECKING
@@ -128,12 +128,12 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
     stop("Missing values detected in column(s)",var.miss)
   }
   
-  # check year
-  if(length(year)!=1){
-    stop(paste0(year," must have length 1"))
+  # check period
+  if(length(period)!=1){
+    stop(paste0(period," must have length 1"))
   }
-  if(!year%in%c.names){
-    stop(paste0(year," is not a column in dat"))
+  if(!period%in%c.names){
+    stop(paste0(period," is not a column in dat"))
   }
 
   # check country
@@ -162,7 +162,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 
   eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
 
-  # combine year and county
+  # combine period and county
   if(!is.null(country)){
     country_lev <- dt.eval("dat[,unique(",country,")]")
   }else{
@@ -199,7 +199,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
   # improves runtime for ipu2
   #
 
-  vars <- c(year,country,conP.var,conH.var)
+  vars <- c(period,country,conP.var,conH.var)
   vars.class <- unlist(lapply(dat[,mget(vars)],function(z){
     z.class <- class(z)
     if(z.class[1]=="labelled"){
@@ -221,15 +221,15 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 	    conP <- lapply(country_lev,function(co){
 	      dat_co <- dt.eval("dat[",country,"=='",co,"']")
 	      lapply(conP.var,function(z){
-	        form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
-	        dt.eval("xtabs(",form.z,",data=dat_co[,sum(",weights,"),by=list(",year,",",z,")])")
+	        form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
+	        dt.eval("xtabs(",form.z,",data=dat_co[,sum(",weights,"),by=list(",period,",",z,")])")
 	      })
 	    })
 	    names(conP) <- country_lev
 	  }else{
 	    conP <- lapply(conP.var,function(z){
-	      form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
-	      dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",year,",",z,")])")
+	      form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
+	      dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",period,",",z,")])")
 	    })
 	  }
 	}else{
@@ -237,20 +237,20 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 	}
 	if(!is.null(conH.var)){
     if(!is.null(country)){
-      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",year,",",country,")]")
+      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,",",country,")]")
       conH <- lapply(country_lev,function(co){
         dat_co <- dt.eval("dat[",country,"=='",co,"']")
         conH <- lapply(conH.var,function(z){
-          form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
-          dt.eval("xtabs(",form.z,",data=dat_co[,sum(onePerson*",weights,"),by=list(",year,",",z,")])")
+          form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
+          dt.eval("xtabs(",form.z,",data=dat_co[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
         })
       })
       names(conH) <- country_lev
     }else{
-      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",year,")]")
+      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,")]")
       conH <- lapply(conH.var,function(z){
-        form.z <- paste0("V1~",paste(gsub(",","+",year),z,sep="+"))
-        dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",year,",",z,")])")
+        form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
+        dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
       })
     }
 
@@ -260,11 +260,11 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),yea
 
 
 	# define new Index
-	new_id <- paste(c(hid,year,country),collapse=",")
+	new_id <- paste(c(hid,period,country),collapse=",")
 	dt.eval("dat[,hidfactor:=factor(paste0(",new_id,"))]")
 
 	# calibrate weights to conP and conH
-	select.var <- c("hidfactor",weights,year,country,conP.var,conH.var)
+	select.var <- c("hidfactor",weights,period,country,conP.var,conH.var)
 	calib.fail <- c()
 
   if(!is.null(country)){
