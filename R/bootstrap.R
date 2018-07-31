@@ -3,7 +3,7 @@
 #' @description Draw bootstrap replicates from survey data with rotating panel design.
 #' Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 #'
-#' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",year="RB010",
+#' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
 #'                       strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
 #'                       boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
 #'
@@ -11,7 +11,7 @@
 #' @param REP integer indicating the number of bootstrap replicates.
 #' @param hid character specifying the name of the column in \code{dat} containing the household ID.
 #' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
-#' @param year character specifying the name of the column in \code{dat} containing the sample years.
+#' @param period character specifying the name of the column in \code{dat} containing the sample periods.
 #' @param strata character vector specifying the name of the column in \code{dat} by which the population was stratified.
 #' If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
 #' Setting in addition \code{cluter} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.
@@ -24,12 +24,14 @@
 #' In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
 #' @param split logical, if TRUE split households are considered using \code{pid}, for more information see Details.
 #' @param pid column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.
+#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample! 
+#'
 #' @return the survey data with the number of REP bootstrap replicates added as columns.
 #'
 #' @details \code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
 #' \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 #' \itemize{
-#'   \item Column indicating the sample year;
+#'   \item Column indicating the sample period;
 #'   \item Column indicating the household ID;
 #'   \item Column containing the household sample weights;
 #'   \item Columns by which population was stratified during the sampling process.
@@ -44,14 +46,14 @@
 #' For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 #' and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 #'
-#' Bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link{bootstrap}}.
-#' Afterwards the bootstrap replicates for each household are carried forward from the first year the household enters the survey to all the censecutive years it stays in the survey.\cr
+#' Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link{bootstrap}}.
+#' Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
 #' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
 #' 
 #' If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
 #' This takes into account the issue of a houshold splitting up.
 #' Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
-#' People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous years.
+#' People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous periods.
 #'
 #' @return Returns a data.table containing the original data as well as the number of \code{REP} columns containing the bootstrap replicates for each repetition.\cr
 #' The columns of the bootstrap replicates are by default labeled "w\emph{Number}" where \emph{Number} goes from 1 to \code{REP}.
@@ -77,12 +79,12 @@
 #' dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
 #'
 #' dat_boot <- draw.bootstrap(dat=dat_es,REP=250,hid="DB030",weights="RB050",strata=c("DB050","I"),cluster="DB060",
-#'                            year="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
+#'                            period="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
 #'
 #' # example for SILC-data for Austria
 #' # dat_at <- fread("path//to//austrian//data.csv")
 #' dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-#'                            year="RB010",split=TRUE,pid="RB030")
+#'                            period="RB010",split=TRUE,pid="RB030")
 #'
 #'
 #' # save bootstrap replicates as .RData
@@ -94,7 +96,7 @@
 #' @import data.table
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata="DB040",cluster=NULL,totals=NULL,
+draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluster=NULL,totals=NULL,
                            single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE){
 
   ##########################################################
@@ -109,7 +111,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata="DB040",cluster=
   c.names <- colnames(dat)
   
   # check for missing values
-  spec.variables <- c(hid,weights,year,strata,cluster,totals,country,pid)
+  spec.variables <- c(hid,weights,period,strata,cluster,totals,country,pid)
   spec.variables <- spec.variables[!spec.variables%in%c("1","I")]
   dat.na <- dat[,mget(spec.variables)]
   dat.na <- sapply(dat.na,function(z){any(is.na(z))})
@@ -147,12 +149,12 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata="DB040",cluster=
     stop(paste0(weights," must be a numeric column"))
   }
 
-  # check year
-  if(length(year)!=1){
-    stop("year must have length 1")
+  # check period
+  if(length(period)!=1){
+    stop("period must have length 1")
   }
-  if(!year%in%c.names){
-    stop(paste0(year," is not a column in dat"))
+  if(!period%in%c.names){
+    stop(paste0(period," is not a column in dat"))
   }
 
   # check design
@@ -289,19 +291,19 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,year,strata="DB040",cluster=
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE,new.method=new.method),by=c(year,country)]
+  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE,new.method=new.method),by=c(period,country)]
 
-  # keep bootstrap replicates of first year for each household
+  # keep bootstrap replicates of first period for each household
   if(split){
-    dat <- generate.HHID(dat,time.step=year,pid=pid,hid=hid)
+    dat <- generate.HHID(dat,time.step=period,pid=pid,hid=hid)
   }
   by.c <- paste(c(hid,country),collapse=",")
-  dt.eval("dat[,occurence_first_year :=min(",year,"),by=list(",by.c,")]")
+  dt.eval("dat[,occurence_first_period :=min(",period,"),by=list(",by.c,")]")
   select.first.occurence <- paste0(c(hid,w.names),collapse = ",")
-  dat.first.occurence <- unique(dt.eval("dat[",year,"==occurence_first_year,.(",select.first.occurence,")]"),by=hid)
+  dat.first.occurence <- unique(dt.eval("dat[",period,"==occurence_first_period,.(",select.first.occurence,")]"),by=hid)
   dat[,c(w.names):=NULL]
   dat <- merge(dat,dat.first.occurence,by=hid,all.x=TRUE)
-  dat[,occurence_first_year:=NULL]
+  dat[,occurence_first_period:=NULL]
   
   
   # remove columns

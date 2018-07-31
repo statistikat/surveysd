@@ -18,7 +18,8 @@
 #' For \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.
 #' @param return.value either "data" or "replicates" specifying the return value of the function. For "data" the survey data is returned as class \code{data.table}, for "replicates" only the bootstrap replicates are returned as \code{data.table}.
 #' @param check.input logical, if TRUE the input will be checked before applying the bootstrap procedure
-#'
+#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample! 
+#' 
 #' @details For specifying multistage sampling designs the column names in \code{strata},\code{cluster} and \code{fpc} need to seperated by ">".\cr
 #' For multistage sampling the strings are read from left to right meaning that the column name before the first ">" is taken as the column for stratification/clustering/number of PSUs at the first and the column after the last ">" is taken as the column for stratification/clustering/number of PSUs at the last stage.
 #' If for some stages the sample was not stratified or clustered one must specify this by "1" or "I", e.g. \code{strata=c("strata1>I>strata3")} if there was no stratification at the second stage or \code{cluster=c("cluster1>cluster2>I")} if there were no clusters at the last stage.\cr
