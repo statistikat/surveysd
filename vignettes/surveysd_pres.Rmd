@@ -146,7 +146,9 @@ dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
 dat[,RB050:=gsub(",","\\.",RB050)]
 dat[,RB050:=as.numeric(RB050)]
 
-dat_es <- dat[RB020=="ES"]
+
+dat_es <- dat[rb020=="ES"]
+dat_es <- dat_es[!is.na(DB030)]
 dat_es[,.(RB010,RB030,DB040,arose,hsize,HX040,db050)]
 dat_es[agex==100,agex:=80]
 ```
@@ -154,8 +156,8 @@ dat_es[agex==100,agex:=80]
 ## Drawing bootstrap replicates
 ```{r boot1,size="tiny"}
 # draw 20 boostrap replicates with strata
-dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="db030",
-                             weights="RB050",strata="db050",
+dat_boot_1 <- draw.bootstrap(dat=copy(dat_es),REP=20,hid="DB030",
+                             weights="RB050",strata="DB050",
                              year="RB010")
 ```
 

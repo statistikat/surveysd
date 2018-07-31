@@ -4,11 +4,11 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),year="RB010",
+recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="RB010",
                country=NULL,conP.var=c("RB090"),conH.var=c("DB040","DB100"),...)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the sample survey for various years.}
+\item{dat}{either data.frame or data.table containing the sample survey for various periods.}
 
 \item{hid}{character specifying the name of the column in \code{dat} containing the household ID.}
 
@@ -16,12 +16,12 @@ recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),year="RB010",
 
 \item{b.rep}{character specifying the names of the columns in \code{dat} containing bootstrap weights which should be recalibratet}
 
-\item{year}{character specifying the name of the column in \code{dat} containing the sample years.}
+\item{period}{character specifying the name of the column in \code{dat} containing the sample period.}
 
 \item{country}{character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
 In this case the calibration procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.}
 
-\item{conP.var}{character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{year} and}
+\item{conP.var}{character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{period} and}
 
 \item{conH.var}{character vector containig household-specific variables to which weights should be calibrated.}
 
@@ -39,13 +39,13 @@ Calibrate weights for bootstrap replicates by using iterative proportional updat
 replication according to population totals for person- or household-specific variables. \cr
 \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 \itemize{
-  \item Column indicating the sample year;
+  \item Column indicating the sample period;
   \item Column indicating the household ID;
   \item Column containing the household sample weights;
   \item Columns which contain the bootstrap replicates (see output of \code{\link{draw.bootstrap}});
   \item Columns indicating person- or household-specific variables for which sample weight should be adjusted.
 }
-For each year and each variable in \code{conP.var} and/or \code{conH.var} contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
+For each period and each variable in \code{conP.var} and/or \code{conH.var} contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
 Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using \code{\link[simpPop]{ipu2}} to match the previously calcualted contingency tables.
 In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 }
@@ -56,17 +56,17 @@ library(data.table)
 # dat_at <- fread("path//to//austrian//data.csv")
 
 dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-                           year="RB010",split=TRUE,pid="RB030")
+                           period="RB010",split=TRUE,pid="RB030")
 
 
 # calibrate weight for bootstrap replicates
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-                          year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+                          period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
 
 
 # calibrate on other variable
 dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-                          year="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
+                          period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
 
 
 # save calibrated bootstrap weights as .RData

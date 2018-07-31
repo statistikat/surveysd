@@ -4,8 +4,9 @@
 \alias{draw.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",strata="DB040",
-                     year="RB010",totals=NULL,boot.names=NULL)
+draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
+                      strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
+                      boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data with rotating panel design.}
@@ -16,7 +17,7 @@ draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",strata="DB040",
 
 \item{weights}{character specifying the name of the column in \code{dat} containing the sample weights.}
 
-\item{year}{character specifying the name of the column in \code{dat} containing the sample years.}
+\item{period}{character specifying the name of the column in \code{dat} containing the sample periods.}
 
 \item{strata}{character vector specifying the name of the column in \code{dat} by which the population was stratified.
 If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
@@ -36,6 +37,8 @@ In this case the bootstep procedure will be applied on each country seperately. 
 \item{split}{logical, if TRUE split households are considered using \code{pid}, for more information see Details.}
 
 \item{pid}{column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.}
+
+\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample!}
 }
 \value{
 the survey data with the number of REP bootstrap replicates added as columns.
@@ -52,7 +55,7 @@ Survey information, like ID, sample weights, strata and population totals per st
 \code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
 \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 \itemize{
-  \item Column indicating the sample year;
+  \item Column indicating the sample period;
   \item Column indicating the household ID;
   \item Column containing the household sample weights;
   \item Columns by which population was stratified during the sampling process.
@@ -62,18 +65,19 @@ For this case the number of PSUs is calculated and added to \code{dat} using \co
 if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.\cr
 In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.\cr
 
-If \code{cluster} is \code{NULL} or does not contain the \code{hid} at the last stage \code{hid} it will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
+If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stage, \code{hid} will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
 \code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.\cr
 For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 
-The bootstrap replicates are drawn for each survey year (\code{year}) using the function \code{\link{bootstrap}}.
-Afterwards the bootstrap replicates for each household are carried forward from the first year the household enters the survey to all the censecutive years it stays in the survey.\cr
+Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link{bootstrap}}.
+Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
 This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
+
 If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
 This takes into account the issue of a houshold splitting up.
 Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
-People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous years.
+People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous periods.
 }
 \examples{
 library(data.table)
@@ -91,12 +95,12 @@ strata[,N.households:=STRATA_sum/N.cluster]#'
 dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
 
 dat_boot <- draw.bootstrap(dat=dat_es,REP=250,hid="DB030",weights="RB050",strata=c("DB050","I"),cluster="DB060",
-                           year="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
+                           period="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
 
 # example for SILC-data for Austria
 # dat_at <- fread("path//to//austrian//data.csv")
 dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-                           year="RB010",split=TRUE,pid="RB030")
+                           period="RB010",split=TRUE,pid="RB030")
 
 
 # save bootstrap replicates as .RData
