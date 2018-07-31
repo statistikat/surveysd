@@ -28,6 +28,8 @@ For \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap re
 \item{return.value}{either "data" or "replicates" specifying the return value of the function. For "data" the survey data is returned as class \code{data.table}, for "replicates" only the bootstrap replicates are returned as \code{data.table}.}
 
 \item{check.input}{logical, if TRUE the input will be checked before applying the bootstrap procedure}
+
+\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample!}
 }
 \value{
 returns the complete data set including the bootstrap replicates or just the bootstrap replicates, depending on \code{return.value="data"} or \code{return.value="replicates"} respectively.
