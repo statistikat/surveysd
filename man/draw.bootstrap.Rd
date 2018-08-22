@@ -6,7 +6,7 @@
 \usage{
 draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
                       strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
-                      boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
+                      boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data with rotating panel design.}
@@ -38,7 +38,7 @@ In this case the bootstep procedure will be applied on each country seperately. 
 
 \item{pid}{column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.}
 
-\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample!}
+\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample!}
 }
 \value{
 the survey data with the number of REP bootstrap replicates added as columns.
