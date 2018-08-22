@@ -29,7 +29,7 @@ For \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap re
 
 \item{check.input}{logical, if TRUE the input will be checked before applying the bootstrap procedure}
 
-\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample!}
+\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample!}
 }
 \value{
 returns the complete data set including the bootstrap replicates or just the bootstrap replicates, depending on \code{return.value="data"} or \code{return.value="replicates"} respectively.
@@ -50,14 +50,14 @@ library(laeken)
 library(data.table)
 
 data("eusilc")
-eusilc <- data.table(eusilc)
+setDT(eusilc)
 
-eusilc[!duplicated(db030),N.housholds:=sum(db090),by=db040]
-rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
+eusilc[!duplicated(db030),N.households:=sum(db090),by=db040]
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
 
 eusilc[,new_strata:=paste(db040,rb090,sep="_")]
 eusilc[!duplicated(db030),N.housholds:=sum(db090),by=new_strata]
-rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
 
 
 }

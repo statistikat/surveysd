@@ -5,7 +5,7 @@
 #'
 #' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
 #'                       strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
-#'                       boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
+#'                       boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
@@ -24,7 +24,7 @@
 #' In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
 #' @param split logical, if TRUE split households are considered using \code{pid}, for more information see Details.
 #' @param pid column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.
-#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample! 
+#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample! 
 #'
 #' @return the survey data with the number of REP bootstrap replicates added as columns.
 #'
@@ -110,15 +110,6 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
 
   c.names <- colnames(dat)
   
-  # check for missing values
-  spec.variables <- c(hid,weights,period,strata,cluster,totals,country,pid)
-  spec.variables <- spec.variables[!spec.variables%in%c("1","I")]
-  dat.na <- dat[,mget(spec.variables)]
-  dat.na <- sapply(dat.na,function(z){any(is.na(z))})
-  if(any(dat.na)){
-    stop("Missing values found in column(s): ", paste(names(dat.na[dat.na==TRUE]),collapse=", "))
-  }
-  
   # check REP
   if(length(REP)!=1){
     stop("REP must have length 1")
@@ -156,25 +147,44 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   if(!period%in%c.names){
     stop(paste0(period," is not a column in dat"))
   }
-
+  if(!class(dat[[period]])%in%c("numeric","integer")){
+    stop(paste0(period," is not an integer or numeric column"))
+  }
+  
   # check design
   if(is.null(strata)){
     strata <- "I"
   }
+  
   if(is.null(cluster)){
+    cluster <- hid
+  }else if(cluster%in%c("1","I")){
     cluster <- hid
   }else{
     if(!hid%in%cluster){
       cluster <- c(cluster,hid)
     }
   }
+  
   if(!all(strata[!strata%in%c("1","I")]%in%c.names)){
     stop("Not all elements in strata are column names in dat")
   }
   if(any(!cluster[!cluster%in%c("1","I")]%in%c.names)){
     stop("Not all names in cluster are column names in dat")
   }
-
+  if(any(!totals%in%c.names)){
+    stop("Not all names in totals are column names in dat")
+  }
+  
+  # check for missing values
+  spec.variables <- c(hid,weights,period,strata,cluster,totals,country,pid)
+  spec.variables <- spec.variables[!spec.variables%in%c("1","I")]
+  dat.na <- dat[,mget(spec.variables)]
+  dat.na <- sapply(dat.na,function(z){any(is.na(z))})
+  if(any(dat.na)){
+    stop("Missing values found in column(s): ", paste(names(dat.na[dat.na==TRUE]),collapse=", "))
+  }
+  
   if(length(cluster)>1){
     if(length(cluster)!=length(strata)){
       stop("strata and cluster need to have the same number of stages!\n Please use either '1' or 'I' if there was no clustering or stratification in one of the stages.")
@@ -190,8 +200,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
       strata <- "STRATA_VAR_HELP"
     }
   }
-
-
+  
   # check single.PSUs
   single.PSU <- single.PSU[1]
   if(is.null(single.PSU)){
@@ -249,7 +258,8 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
     if(length(cluster)==1){
       # if no clusters are specified calculate number of households in each strata
       totals <- "fpc"
-      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=list(",paste(c(strata,country),collapse=","),")]")
+      fpc.strata <- strata[!strata%in%c("I","1")] 
+      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=c(fpc.strata,country)]")
     }else{
       # else leave totals NULL
       # if(length(cluster)>1){
@@ -264,7 +274,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }else{
 
     if(length(totals)!=length(strata)){
-      stop("totals must specified for each stage")
+      stop("totals must be specified for each stage")
     }
     if(any(!totals%in%c.names)){
       stop("Not all elements in totals are column names in dat")
@@ -316,6 +326,9 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }
   if("STRATA_VAR_HELP"%in%colnames(dat)){
     dat[,STRATA_VAR_HELP:=NULL]
+  }
+  if("fpc"%in%colnames(dat)){
+    dat[,fpc:=NULL]
   }
 
   return(dat)

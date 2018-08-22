@@ -18,7 +18,7 @@
 #' For \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.
 #' @param return.value either "data" or "replicates" specifying the return value of the function. For "data" the survey data is returned as class \code{data.table}, for "replicates" only the bootstrap replicates are returned as \code{data.table}.
 #' @param check.input logical, if TRUE the input will be checked before applying the bootstrap procedure
-#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be overestimated! Use this if for some strata the whole population is in the sample! 
+#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample! 
 #' 
 #' @details For specifying multistage sampling designs the column names in \code{strata},\code{cluster} and \code{fpc} need to seperated by ">".\cr
 #' For multistage sampling the strings are read from left to right meaning that the column name before the first ">" is taken as the column for stratification/clustering/number of PSUs at the first and the column after the last ">" is taken as the column for stratification/clustering/number of PSUs at the last stage.
@@ -39,14 +39,14 @@
 #' library(data.table)
 #'
 #' data("eusilc")
-#' eusilc <- data.table(eusilc)
+#' setDT(eusilc)
 #'
-#' eusilc[!duplicated(db030),N.housholds:=sum(db090),by=db040]
-#' rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
+#' eusilc[!duplicated(db030),N.households:=sum(db090),by=db040]
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
 #'
 #' eusilc[,new_strata:=paste(db040,rb090,sep="_")]
 #' eusilc[!duplicated(db030),N.housholds:=sum(db090),by=new_strata]
-#' rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
 #'
 #'
 #' @import matrixStats
@@ -101,7 +101,12 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     check.values <- check.values[!check.values%in%c("1","I")]
     check.values <- check.values[!check.values%in%colnames(dat)]
     if(length(check.values)>0){
-      stop("dat does not contain the column(s)",check.values)
+      stop("dat does not contain the column(s): ",check.values)
+    }
+    
+    # check if there are missings in fpc
+    if(any(is.na(dat[,.SD,.SDcols=c(fpc)]))){
+      stop("missing values not allowed in fpc")
     }
     
     # check return.value
@@ -158,6 +163,12 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     if(clust.val%in%c("1","I")){
       clust.val <- paste0("ID_help_",i)
       dat[,c(clust.val):=.I,by=c(by.val)]
+    }
+    # check of fpc[i] is well defined
+    # fpc[i] can not have different values per each by.val
+    check.fpc <- dt.eval("dat[,uniqueN(",fpc[i],"),by=c(by.val)][V1>1]")
+    if(nrow(check.fpc)>0){
+      stop("values in ", fpc[i]," do vary in some strata-cluster combinations at stage ",i)
     }
     
     singles <- dt.eval("dat[,sum(!duplicated(",clust.val,")),by=c(by.val)][V1==1]")
