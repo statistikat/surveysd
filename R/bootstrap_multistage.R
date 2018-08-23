@@ -79,7 +79,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
     }else{
       dat <- data.table(dat)
     }
-    
+
     # check REP
     if(!is.numeric(REP)){
       stop("REP needs to be numeric")
@@ -135,6 +135,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
       fpc[fpc%in%overwrite.names] <- overwrite.names.new[fpc%in%overwrite.names]
     }
   }
+  dat <- copy(dat)
   
   # set index for data to return dat in correct order
   dat[,InitialOrder:=.I]
@@ -288,7 +289,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
         setnames(dat,c(c.names),drop.names)
       }
     }
-    dat[,c("f","n_prev","n_draw_prev","InitialOrder"):=NULL]
+    dat[,c("f","n_prev","n_draw_prev","InitialOrder","sum_prev"):=NULL]
     return(dat)
   }else if(return.value=="replicates"){
     return(dat[,mget(bootRep)])
