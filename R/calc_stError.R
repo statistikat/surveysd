@@ -166,10 +166,10 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
     stop("weights must have length 1")
   }
   if(!weights%in%c.names){
-    stop(paste0(weights," is not a column in dat"))
+    stop(weights," is not a column in dat")
   }
   if(!is.numeric(dt.eval("dat[,",weights,"]"))){
-    stop(paste0(weights," must be a numeric column"))
+    stop(weights," must be a numeric column")
   }
 
   # check b.weights
@@ -196,7 +196,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
     stop("Not all elements in var are column names in dat")
   }
   if(any(!unlist(lapply(dat[,mget(b.weights)],is.numeric)))){
-    stop(paste0("Columns containing ",paste(var,collapse=",")," must all be numeric"))
+    stop("Columns containing ",paste(var,collapse=",")," must all be numeric")
   }
 
   # check fun
@@ -205,7 +205,16 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
   }
   if(!fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){
     if(!exists(fun,mode="function")){
-      stop(paste0("Function ",fun," is undefined"))
+      stop("Function ",fun," is undefined")
+    }else{
+      
+      test.val <- dt.eval("dat[,",fun,"(",var,",",weights,")]")
+      if(!is.numeric(test.val)|is.integer(test.val)){
+        stop("Function ",fun," does not return integer or numeric value")
+      }
+      if(length(test.val)>1){
+        stop("Function ",fun," does return more than one value. Only functions which return a single value are allowed.")
+      }
     }
   }
 
@@ -235,11 +244,12 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
       stop("period.mean cannot have a decimal part")
     }
     if(period.mean%%2==0){
-      cat("period.mean must be odd - mean over periods will not be calculated")
+      warning("period.mean must be odd - mean over periods will not be calculated")
       period.mean <- NULL
-    }
-    if(period.mean==1){
-      period.mean <- NULL
+    }else{
+      if(period.mean==1){
+        period.mean <- NULL
+      }
     }
   }
 
@@ -286,12 +296,12 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
     rm.index <- rep(0,length(period.diff))
     for(i in 1:length(period.diff)){
       if(any(!period.diff[[i]]%in%periods.dat)){
-        cat("Removing",paste(period.diff[[i]],collapse="-"),"from period.diff - period(s) not present in column",period,"\n")
+        warning("Removing ",paste(period.diff[[i]],collapse="-")," from period.diff - period(s) not present in column ",period,"\n")
         rm.index[i] <- 1
       }
     }
     if(all(rm.index==1)){
-      cat("No differences will be calculated\n")
+      warning("No differences will be calculated\n")
       period.diff <- NULL
     }else{
       period.diff <- period.diff[rm.index==0]
@@ -312,7 +322,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
     no.na <- names(no.na)[!no.na]
 
     if(length(no.na)>0){
-      cat("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
+      warning("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
     }
 
   }else{
@@ -335,8 +345,8 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
   outx[,stE_high:=((stE/val)*100)>cv.limit]
 
   # create bool matrix for stE_high
-  sd_bool <- subset(outx,select=c("stE_high",outx.names))
-  form <- as.formula(paste(paste(outx.names[outx.names!="est"],collapse="+"),"est",sep="~"))
+  sd_bool <- subset(outx,select=c("stE_high",outx.names[!outx.names%in%c("N","n")]))
+  form <- as.formula(paste(paste(outx.names[!outx.names%in%c("N","n","est")],collapse="+"),"est",sep="~"))
   sd_bool <- dcast(sd_bool,form,value.var="stE_high")
 
   # create matrix for increase of sample size
@@ -366,7 +376,8 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
   if(bias){
     val.var <- c(val.var,"mean")
   }
-
+  
+  form <- as.formula(paste(paste(outx.names[outx.names!="est"],collapse="+"),"est",sep="~"))
   outx <- dcast(outx,form,value.var=val.var,fill=NA)
   # reorder output
   col.order <- as.vector(outer(paste0(val.var,"_"),var,FUN="paste0"))
@@ -441,7 +452,7 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
         
       }
       periodsList <- NULL
-      cat(paste0("Not enough periods present in data to calculate mean over ",period.mean," periods.\n"))
+      warning("Not enough periods present in data to calculate mean over ",period.mean," periods.\n")
       period.mean <- NULL
     }
 
@@ -460,7 +471,7 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
             c(z_upper[s],z_lower[s])
           })
         }else{
-          cat(paste0("Cannot calculate differences between periods ",z[1]," and ",z[2]," over ",period.mean," periods.\n"))
+          warning("Cannot calculate differences between periods ",z[1]," and ",z[2]," over ",period.mean," periods.\n")
           NULL
         }
       })

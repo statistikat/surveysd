@@ -5,7 +5,7 @@
 #'
 #' @usage draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
 #'                       strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
-#'                       boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE)
+#'                       boot.names=NULL,split=FALSE,pid=NULL,new.method=FALSE)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
@@ -15,13 +15,11 @@
 #' @param strata character vector specifying the name of the column in \code{dat} by which the population was stratified.
 #' If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
 #' Setting in addition \code{cluter} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.
-#' @param cluster character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.
+#' @param cluster character vector specifying cluster in the data. If not already specified in \code{cluster} household ID is taken es the lowest level cluster.
 #' @param totals character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. Is ONLY optional if \code{cluster} is \code{NULL} or equal \code{hid} and \code{strata} contains one columnname!
 #' Then the households per strata will be calcualted using the \code{weights} argument. If clusters and strata for multiple stages are specified \code{totals} needs to be a vector of \code{length(strata)} specifying the column on \code{dat}
 #' that contain the total number of PSUs at each stage. \code{totals} is interpreted from left the right, meaning that the first argument corresponds to the number of PSUs at the first and the last argument to the number of PSUs at the last stage.
 #' @param boot.names character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".
-#' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
-#' In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
 #' @param split logical, if TRUE split households are considered using \code{pid}, for more information see Details.
 #' @param pid column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.
 #' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample! 
@@ -97,7 +95,7 @@
 
 
 draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluster=NULL,totals=NULL,
-                           single.PSU=c("merge","mean"),boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE){
+                           single.PSU=c("merge","mean"),boot.names=NULL,split=FALSE,pid=NULL,new.method=FALSE){
 
   ##########################################################
   # INPUT CHECKING
@@ -106,7 +104,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }else if(class(dat)[1]!="data.table"){
     stop("dat must be a data.frame or data.table")
   }
-
+  dat <- copy(dat)
 
   c.names <- colnames(dat)
   
@@ -158,9 +156,12 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   
   if(is.null(cluster)){
     cluster <- hid
-  }else if(cluster%in%c("1","I")){
-    cluster <- hid
   }else{
+    if(length(cluster)==1){
+      if(cluster%in%c("1","I")){
+        cluster <- hid
+      }
+    }
     if(!hid%in%cluster){
       cluster <- c(cluster,hid)
     }
@@ -177,7 +178,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }
   
   # check for missing values
-  spec.variables <- c(hid,weights,period,strata,cluster,totals,country,pid)
+  spec.variables <- c(hid,weights,period,strata,cluster,totals,pid)
   spec.variables <- spec.variables[!spec.variables%in%c("1","I")]
   dat.na <- dat[,mget(spec.variables)]
   dat.na <- sapply(dat.na,function(z){any(is.na(z))})
@@ -211,17 +212,6 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
     }
   }
 
-
-  # check country
-  if(!is.null(country)){
-    if(length(country)!=1){
-      stop("country must have length 1")
-    }
-    if(!country%in%c.names){
-      stop(paste0(country," is not a column in dat"))
-    }
-  }
-
   # check boot.names
   if(!is.null(boot.names)){
     if(!grepl("^[[:alpha:]]",boot.names)){
@@ -248,6 +238,11 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
         }
       }
     }
+    # check if pid is unique in each household and period
+    unique.pid <- dt.eval("dat[,uniqueN(",pid,")==.N,by=c(period,hid)][V1==FALSE]")
+    if(nrow(unique.pid)>0){
+      stop("pid is not unique in each household for each period")
+    }
   }
 
   # check totals
@@ -259,7 +254,7 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
       # if no clusters are specified calculate number of households in each strata
       totals <- "fpc"
       fpc.strata <- strata[!strata%in%c("I","1")] 
-      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=c(fpc.strata,country)]")
+      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=c(fpc.strata)]")
     }else{
       # else leave totals NULL
       # if(length(cluster)>1){
@@ -301,14 +296,14 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE,new.method=new.method),by=c(period,country)]
+  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE,new.method=new.method),by=c(period)]
 
   # keep bootstrap replicates of first period for each household
   if(split){
     dat <- generate.HHID(dat,time.step=period,pid=pid,hid=hid)
   }
-  by.c <- paste(c(hid,country),collapse=",")
-  dt.eval("dat[,occurence_first_period :=min(",period,"),by=list(",by.c,")]")
+
+  dt.eval("dat[,occurence_first_period :=min(",period,"),by=c(hid)]")
   select.first.occurence <- paste0(c(hid,w.names),collapse = ",")
   dat.first.occurence <- unique(dt.eval("dat[",period,"==occurence_first_period,.(",select.first.occurence,")]"),by=hid)
   dat[,c(w.names):=NULL]

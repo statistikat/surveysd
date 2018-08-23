@@ -27,14 +27,12 @@
 #' @param weights character specifying the name of the column in \code{dat} containing the sample weights.
 #' @param b.rep character specifying the names of the columns in \code{dat} containing bootstrap weights which should be recalibratet
 #' @param period character specifying the name of the column in \code{dat} containing the sample period.
-#' @param country character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
-#' In this case the calibration procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.
-#' @param conP.var character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{period} and
-#' @param conH.var character vector containig household-specific variables to which weights should be calibrated.
+#' @param conP.var character vector containig person-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per \code{period} using \code{weights}.
+#' @param conH.var character vector containig household-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per \code{period} using \code{weights}.
 #' @param ... additional arguments passed on to function \code{\link[simpPop]{ipu2}} from the \code{simPop} package.
 #'
 #'
-#' @return Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates, which are labeled like the bootstrap replicates.
+#' @return Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates. The original bootstrap replicates are overwritten by the calibrated weights.
 #' If calibration of a bootstrap replicate does not converge the bootsrap weight is not returned and numeration of the returned bootstrap weights is reduced by one.
 #'
 #'
@@ -59,7 +57,7 @@
 #'
 #' # calibrate on other variable
 #' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-#'                           period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
+#'                           period="RB010",b.rep=paste0("w",1:250),conP.var=NULL,conH.var = NULL)
 #'
 #'
 #' # save calibrated bootstrap weights as .RData
@@ -70,7 +68,7 @@
 #' @export recalib
 #' @import simPop data.table
 
-recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="jahr",country=NULL,conP.var=c("RB090"),
+recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="jahr",conP.var=c("RB090"),
 										conH.var=c("DB040","DB100"),...){
   ##########################################################
   # INPUT CHECKING
@@ -79,7 +77,8 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
   }else if(class(dat)[1]!="data.table"){
     stop("dat must be a data.frame or data.table")
   }
-
+  dat <- copy(dat)
+  
   c.names <- colnames(dat)
 
   # check hid
@@ -121,11 +120,14 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
   if(!all(conH.var%in%c.names)){
     stop("Not all elements in conH.var are column names in dat")
   }
+  if(is.null(conH.var)&is.null(conP.var)){
+    stop("conH.var and conP.var cannot both be NULL")
+  }
 
   var.miss <- unlist(dat[,lapply(.SD,function(z){sum(is.na(z))}),.SDcols=c(conH.var,conP.var)])
   var.miss <- var.miss[var.miss>0]
   if(length(var.miss)>0){
-    stop("Missing values detected in column(s)",var.miss)
+    stop("Missing values detected in column(s)",names(var.miss))
   }
   
   # check period
@@ -134,16 +136,6 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
   }
   if(!period%in%c.names){
     stop(paste0(period," is not a column in dat"))
-  }
-
-  # check country
-  if(!is.null(country)){
-    if(length(country)!=1){
-      stop(paste0(country," must have length 1"))
-    }
-    if(!country%in%c.names){
-      stop(paste0(country," is not a column in dat"))
-    }
   }
 
 
@@ -161,39 +153,6 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
   ellipsis[["conversion_messages"]] <- getEllipsis("conversion_messages",FALSE,ellipsis)
 
   eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
-
-  # combine period and county
-  if(!is.null(country)){
-    country_lev <- dt.eval("dat[,unique(",country,")]")
-  }else{
-    country_lev <- NULL
-  }
-
-
-  # recode factors to numeric or character
-  # is needed for ipu2 call
-  # if(!ipu2new){
-  #   options(warn=-1) # turn off warnings
-  #   con.var <- c(conP.var,conH.var)
-  #   con.var.recode <- rep(FALSE,length(con.var))
-  #   for(i in 1:length(con.var)){
-  #     if(dt.eval("dat[,class(",con.var[i],")]")=="factor"){
-  #       isf.i <- paste0(con.var[i],"isfactor")
-  #       dt.eval("dat[,",isf.i,":=",con.var[i],"]")
-  #       dt.eval("dat[,",con.var[i],":=as.numeric(levels(",con.var[i],"))[",con.var[i],"]]")
-  #
-  #       if(any(dt.eval("dat[,is.na(",con.var[i],")]"))){
-  #         dt.eval("dat[,",con.var[i],":=levels(",isf.i,")[",isf.i,"]]")
-  #       }
-  #
-  #       con.var.recode[i] <- TRUE
-  #     }
-  #   }
-  #   con.var <- con.var[con.var.recode]
-  #   # turn warnings on again
-  #   options(warn=0)
-  #   hidf_factor <- FALSE
-  # }
 
   # recode household and person variables to factor
   # improves runtime for ipu2
@@ -217,119 +176,59 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 
 	# calculate contingency tables
 	if(!is.null(conP.var)){
-	  if(!is.null(country)){
-	    conP <- lapply(country_lev,function(co){
-	      dat_co <- dt.eval("dat[",country,"=='",co,"']")
-	      lapply(conP.var,function(z){
-	        form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
-	        dt.eval("xtabs(",form.z,",data=dat_co[,sum(",weights,"),by=list(",period,",",z,")])")
-	      })
-	    })
-	    names(conP) <- country_lev
-	  }else{
-	    conP <- lapply(conP.var,function(z){
-	      form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
-	      dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",period,",",z,")])")
-	    })
-	  }
+	  conP <- lapply(conP.var,function(z){
+	    form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
+	    dt.eval("xtabs(",form.z,",data=dat[,sum(",weights,"),by=list(",period,",",z,")])")
+	  })
 	}else{
 		conP <- NULL
 	}
 	if(!is.null(conH.var)){
-    if(!is.null(country)){
-      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,",",country,")]")
-      conH <- lapply(country_lev,function(co){
-        dat_co <- dt.eval("dat[",country,"=='",co,"']")
-        conH <- lapply(conH.var,function(z){
-          form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
-          dt.eval("xtabs(",form.z,",data=dat_co[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
-        })
-      })
-      names(conH) <- country_lev
-    }else{
-      dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,")]")
-      conH <- lapply(conH.var,function(z){
-        form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
-        dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
-      })
-    }
-
+	  dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,")]")
+	  conH <- lapply(conH.var,function(z){
+	    form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
+	    dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
+	  })
 	}else{
 		conH <- NULL
 	}
 
 
 	# define new Index
-	new_id <- paste(c(hid,period,country),collapse=",")
+	new_id <- paste(c(hid,period),collapse=",")
 	dt.eval("dat[,hidfactor:=factor(paste0(",new_id,"))]")
 
 	# calibrate weights to conP and conH
-	select.var <- c("hidfactor",weights,period,country,conP.var,conH.var)
+	select.var <- c("hidfactor",weights,period,conP.var,conH.var)
 	calib.fail <- c()
 
-  if(!is.null(country)){
-	  dat_country <- list()
-	  for(co in country_lev){
-	    dat_c <- dt.eval("dat[",country,"=='",co,"']")
-	    for(g in b.rep){
-	      set(dat_c,j=g,value=dt.eval("dat_c[,",g,"*",weights,"]"))
-
-	      # check if margins for bootstrap weights are always positive
-	      check.conP <- lapply(conP,function(z){
-	        check.z <- dt.eval("dat_c[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
-	        nrow(check.z)>0
-	      })
-	      check.conH <- lapply(conH,function(z){
-	        check.z <- dt.eval("dat_c[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
-	        nrow(check.z)>0
-	      })
-
-	      if(any(unlist(c(check.conH,check.conP)))){
-	        calib.fail <- c(calib.fail,g)
-	        set(dat,j=g,value=NA_real_)
-	      }else{
-	        set(dat_c,j=g,value=ipu2(dat=copy(dat_c[,mget(c(g,select.var))]),conP=conP[[co]],
-	                                 conH=conH[[co]],verbose=verbose,epsP=epsP,epsH=epsH,
-	                                 w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor"
-	                                 # check_hh_vars = check_hh_vars,conversion_messages = conversion_messages # nur für neue ipu2 version
-	        )[,calibWeight])
-	        if(dat[,any(is.na(get(g)))]){
-	          calib.fail <- c(calib.fail,g)
-	        }
-	      }
-	    }
-	    dat_country <- c(dat_country,list(dat_c))
-	  }
-	  dat <- rbindlist(dat_country)
-	  rm(dat_country)
-	}else{
-	  for(g in b.rep){
-	    set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
-
-	    # check if margins for bootstrap weights are always positive
-	    check.conP <- lapply(conP,function(z){
-	      check.z <- dt.eval("dat[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
-	      nrow(check.z)>0
-	    })
-	    check.conH <- lapply(conH,function(z){
-	      check.z <- dt.eval("dat[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
-	      nrow(check.z)>0
-	    })
-
-	    if(any(unlist(c(check.conH,check.conP)))){
+	for(g in b.rep){
+	  set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
+	  
+	  # check if margins for bootstrap weights are always positive
+	  check.conP <- lapply(conP,function(z){
+	    check.z <- dt.eval("dat[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
+	    nrow(check.z)>0
+	  })
+	  check.conH <- lapply(conH,function(z){
+	    check.z <- dt.eval("dat[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
+	    nrow(check.z)>0
+	  })
+	  
+	  if(any(unlist(c(check.conH,check.conP)))){
+	    calib.fail <- c(calib.fail,g)
+	    set(dat,j=g,value=NA_real_)
+	  }else{
+	    set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
+	                           conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
+	                           w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor", check_hh_vars = check_hh_vars
+	    )[,calibWeight])
+	    if(dat[,any(is.na(get(g)))]){
 	      calib.fail <- c(calib.fail,g)
-	      set(dat,j=g,value=NA_real_)
-	    }else{
-	      set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
-	                             conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
-	                             w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor", check_hh_vars = check_hh_vars
-	      )[,calibWeight])
-	      if(dat[,any(is.na(get(g)))]){
-	        calib.fail <- c(calib.fail,g)
-	      }
 	    }
 	  }
 	}
+
 
 	# paste warnings if calibration failed in some instances
 	if(length(calib.fail)>0){
@@ -338,7 +237,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 	  b.rep <- b.rep[!b.rep%in%calib.fail]
 
 	  if(length(b.rep)==0){
-	    cat("Calibration failed for bootstrap replicates\n")
+	    cat("Calibration failed for all bootstrap replicates\n")
 	    cat("Returning no bootstrap weights\n")
 	  }else{
 	    cat("Calibration failed for bootstrap replicates",calib.fail,"\n")
@@ -353,17 +252,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 
 	dat[,hidfactor:=NULL]
 
-	# if(!ipu2new){
-	#   # replace the recoded variables by the original ones
-	#   if(length(con.var)>0){
-	#     for(i in 1:length(con.var)){
-	#       isf.i <- paste0(con.var[i],"isfactor")
-	#       dt.eval("dat[,",con.var[i],":=",isf.i ,"]")
-	#       dt.eval("dat[,",isf.i ,":=NULL]")
-	#     }
-	#   }
-	# }else{
-	  # recode vars back to either integer of character
+	# recode vars back to either integer of character
 	for(i in 1:length(vars.class)){
 	  if(vars.class[i]%in%c("integer","numeric")){
 	    dt.eval("dat[,",vars[i],":=as.numeric(as.character(",vars[i],"))]")
@@ -371,7 +260,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 	    dt.eval("dat[,",vars[i],":=as.character(",vars[i],")]")
 	  }
 	}
-	# }
+
 
 	return(dat)
 }
