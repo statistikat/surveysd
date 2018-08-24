@@ -4,8 +4,8 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="RB010",
-               country=NULL,conP.var=c("RB090"),conH.var=c("DB040","DB100"),...)
+recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),
+               period="year",conP.var=c("RB090"),conH.var=c("DB040","DB100"),...)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for various periods.}
@@ -18,17 +18,14 @@ recalib(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="RB010",
 
 \item{period}{character specifying the name of the column in \code{dat} containing the sample period.}
 
-\item{country}{character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
-In this case the calibration procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.}
+\item{conP.var}{character vector containig person-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per \code{period} using \code{weights}.}
 
-\item{conP.var}{character vector containig person-specific variables to which weights should be calibrated. for which contingency tables for the population tables are calculatet per \code{period} and}
+\item{conH.var}{character vector containig household-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per \code{period} using \code{weights}.}
 
-\item{conH.var}{character vector containig household-specific variables to which weights should be calibrated.}
-
-\item{...}{additional arguments passed on to function \code{\link[simpPop]{ipu2}} from the \code{simPop} package.}
+\item{...}{additional arguments passed on to function \code{\link[simPop]{ipu2}} from the \code{simPop} package.}
 }
 \value{
-Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates, which are labeled like the bootstrap replicates.
+Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates. The original bootstrap replicates are overwritten by the calibrated weights.
 If calibration of a bootstrap replicate does not converge the bootsrap weight is not returned and numeration of the returned bootstrap weights is reduced by one.
 }
 \description{
@@ -46,37 +43,34 @@ replication according to population totals for person- or household-specific var
   \item Columns indicating person- or household-specific variables for which sample weight should be adjusted.
 }
 For each period and each variable in \code{conP.var} and/or \code{conH.var} contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
-Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using \code{\link[simpPop]{ipu2}} to match the previously calcualted contingency tables.
+Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using \code{\link[simPop]{ipu2}} to match the previously calcualted contingency tables.
 In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 }
 \examples{
+\dontrun{
+library(surveysd)
+library(laeken)
 library(data.table)
-# run on UDB SILC-data
-# example for SILC-data for Austria
-# dat_at <- fread("path//to//austrian//data.csv")
 
-dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-                           period="RB010",split=TRUE,pid="RB030")
+eusilc <- surveysd:::demo.eusilc()
 
-
+dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
+                           period="year")
+                           
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-                          period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
+                          period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040"))
 
 
-# calibrate on other variable
-dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-                          period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("HX080","DB100"))
-
-
-# save calibrated bootstrap weights as .RData
-save(dat_boot_calib,file="dat_calibweight.RData")
-# or .csv-file
-write.csv2(dat_boot_calib,file="dat_calibweight.csv",row.names=FALSE)
+# calibrate on other variables
+dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
+                          period="RB010",b.rep=paste0("w",1:10),
+                          conP.var=c("rb090","age"),conH.var = c("db040","hsize"))
+}
 
 }
 \seealso{
-\code{\link[simpPop]{ipu2}} for more information on iterative proportional fitting.
+\code{\link[simPop]{ipu2}} for more information on iterative proportional fitting.
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria

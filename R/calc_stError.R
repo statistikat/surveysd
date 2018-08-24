@@ -4,10 +4,10 @@
 #' Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{draw.bootstrap}} and \code{\link{recalib}}).
 #' In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error.
 #'
-#' @usage calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),period="RB010",var="HX080",
+#' @usage calc.stError(dat,weights,b.weights=paste0("w",1:1000),period,var,
 #'                     fun="weightedRatio",group=NULL,period.diff=NULL,
-#'                     period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
-#'
+#'                     period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,
+#'                     cv.limit=10,p=NULL)#'
 #'
 #' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.
 #' @param weights character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.
@@ -25,6 +25,7 @@
 #' @param size.limit integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{period} and the entries in \code{group}.
 #' Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.
 #' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.
+#' @param p numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.
 #'
 #' @details \code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample period in \code{dat}.
 #' \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
@@ -84,42 +85,40 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#'
+#' 
+#' \dontrun{
+#' library(surveysd)
+#' library(laeken)
 #' library(data.table)
-#' # run on EU-SILC UDB data for Austria
-#' # dat_at <- fread("path//to//austrian//data.csv")
-#'
-#' dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-#'                            period="RB010",split=TRUE,pid="RB030")
-#'
+#' 
+#' eusilc <- surveysd:::demo.eusilc()
+#' 
+#' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
+#'                            period="year")
+#'                            
 #' # calibrate weight for bootstrap replicates
-#' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-#'                           period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+#' dat_boot_calib <- recalib(copy(dat_boot),hid="db030",weights="rb050",
+#'                           period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040"))
 #'
-#' # estimate weightedRatio for HX080 per period
-#' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+#' # estimate weightedRatio for povmd60 per period
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
 #'                        fun="weightedRatio",group=NULL,period.diff=NULL,period.mean=NULL)
 #'
-#' # estimate weightedRatio for HX080 per period and RB090
-#' group <- "RB090"
-#' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+#' # estimate weightedRatio for povmd60 per period and rb090
+#' group <- "rb090"
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
 #'                        fun="weightedRatio",group=group,period.diff=NULL,period.mean=NULL)
 #'
 #'
 #' # use average over 3 periods for standard error estimation
-#' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
 #'                        fun="weightedRatio",group=group,period.diff=NULL,period.mean=3)
 #'
 #' # get estimate for difference of period 2016 and 2013
-#' period.diff <- c("2015-2009")
-#' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+#' period.diff <- c("2015-2011")
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
 #'                        fun="weightedRatio",group=group,period.diff=period.diff,period.mean=3)
 #'
-#' # apply function to multiple variables and define different subsets
-#' var <- c("HX080","arose")
-#' group <- list("RB090","DB040",c("RB090","DB040"))
-#' err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
-#'                        fun="weightedRatio",group=group,period.diff=period.diff,period.mean=3)
 #'
 #' # use a function from an other package that has sampling weights as its second argument
 #' # for example ging() from laeken
@@ -130,27 +129,23 @@
 #'  return(gini(x,w)$value)
 #' }
 #'
-#' err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX090",
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
 #'                        fun="help_gini",group=group,period.diff=period.diff,period.mean=3)
-#'
-#' # exporting data
-#' # get point estimates
-#' results <- err.est$Estimates
-#' write2.csv(results,file="My_Results.csv",row.names=FALSE)
+#' }
 #'
 #'
 #' @export calc.stError
 #' @export print.surveysd
-#' @useDynLib surveysd
-#' @importFrom Rcpp sourceCpp
-#' @import simPop data.table Rcpp
+#'
 
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
 calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
                          fun="weightedRatio",group=NULL,period.diff=NULL,period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL){
-
+  
+  stE_high <- stE <- val <- as.formula <- est_type <- n_inc <- stE_roll <- n <- size <- NULL
+  
   ##########################################################
   # INPUT CHECKING
   if(class(dat)[1]=="data.frame"){
@@ -370,7 +365,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
   }
 
   # create Matrix for groups which have small sizes
-  size_group <- unique(subset(outx[size==TRUE],select=c(outx.names[outx.names!="est"],"n")))
+  size_group <- unique(subset(outx[size==TRUE],select=c(outx.names[!outx.names%in%c("est","N")])))
 
   val.var <- c("val","stE",p.names)
   if(bias){
@@ -407,7 +402,9 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
 # function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
 help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun,group,period.diff=NULL,period.mean=NULL,bias=FALSE,no.na,add.arg=NULL,size.limit=20,p=NULL){
-
+  
+  N <- variable <- est_type <- est <- V1 <- n <- ID <- sd <- . <- size <- 
+  
   # use c++ implementation for weightedRatio
   if(fun=="weightedRatio"){
     fun <- "weightedRatioC"
@@ -705,31 +702,31 @@ quantileNA <- function(x,probs,p.names,np=length(probs)){
 
 
 # print function for surveysd objects
-print.surveysd <- function(sd.result){
+print.surveysd <- function(x,...){
 
   # get parameter
-  col.val <- grepl("^val_*.",colnames(sd.result[["Estimates"]]))
-  col.val <- colnames(sd.result[["Estimates"]])[col.val]
+  col.val <- grepl("^val_*.",colnames(x[["Estimates"]]))
+  col.val <- colnames(x[["Estimates"]])[col.val]
   # get number of estimates ~ variables in number of groups using function fun from package pack
-  n.estimates <- nrow(sd.result[["Estimates"]])*length(col.val)
+  n.estimates <- nrow(x[["Estimates"]])*length(col.val)
   # get number of subgroup which fall below size
-  n.periods <- unique(sd.result[["Estimates"]][[sd.result[["param"]][["period"]]]])
+  n.periods <- unique(x[["Estimates"]][[x[["param"]][["period"]]]])
   n.periods <- length(n.periods[!grepl("-|_",n.periods)])
 
-  if(!is.null(unlist(sd.result[["param"]][["group"]]))){
-    n.groups <- nrow(unique(sd.result[["Estimates"]][,.N,by=c(unique(unlist(sd.result[["param"]][["group"]])))]))
+  if(!is.null(unlist(x[["param"]][["group"]]))){
+    n.groups <- nrow(unique(x[["Estimates"]][,.N,by=c(unique(unlist(x[["param"]][["group"]])))]))
   }else{
     n.groups <- NULL
   }
 
   # get number of missing values in the output due to subgroups with no observations or subgroups with all observations equal NA
-  n.NAs <- sum(is.na(sd.result[["Estimates"]][,mget(col.val)]))
+  n.NAs <- sum(is.na(x[["Estimates"]][,mget(col.val)]))
 
   # print number of estimates calculated as well as functino and variables used
-  if(!is.na(sd.result[["param"]][["package"]][1])){
-    cat("Calculated point estimates for variable(s)\n\n",paste(sd.result[["param"]][["var"]],sep=","),"\n\nusing function",sd.result[["param"]][["fun"]],"from",sd.result[["param"]][["package"]][1],"\n\n")
+  if(!is.na(x[["param"]][["package"]][1])){
+    cat("Calculated point estimates for variable(s)\n\n",paste(x[["param"]][["var"]],sep=","),"\n\nusing function",x[["param"]][["fun"]],"from",x[["param"]][["package"]][1],"\n\n")
   }else{
-    cat("Calculated point estimates for variable(s)\n\n",paste(sd.result[["param"]][["var"]],sep=","),"\n\nusing function",sd.result[["param"]][["fun"]],"\n\n")
+    cat("Calculated point estimates for variable(s)\n\n",paste(x[["param"]][["var"]],sep=","),"\n\nusing function",x[["param"]][["fun"]],"\n\n")
   }
 
   if(!is.null(n.groups)){
@@ -738,12 +735,12 @@ print.surveysd <- function(sd.result){
     cat("Results hold",n.estimates,"point estimates for",n.periods,"periods\n")
   }
   cat("\n")
-  if(nrow(sd.result[["smallGroups"]])!=0){
-    if(nrow(sd.result[["smallGroups"]])>10){
-      cat(nrow(sd.result[["smallGroups"]]),"subgroups contained less than",sd.result[["param"]][["size.limit"]],"observations\n")
+  if(nrow(x[["smallGroups"]])!=0){
+    if(nrow(x[["smallGroups"]])>10){
+      cat(nrow(x[["smallGroups"]]),"subgroups contained less than",x[["param"]][["size.limit"]],"observations\n")
     }else{
-      cat("Subgroups with less than",sd.result[["param"]][["size.limit"]],"observations\n")
-      print(sd.result[["smallGroups"]])
+      cat("Subgroups with less than",x[["param"]][["size.limit"]],"observations\n")
+      print(x[["smallGroups"]])
     }
     cat("\n")
   }
@@ -757,11 +754,11 @@ print.surveysd <- function(sd.result){
 
 
   # get number of point estimates where sd exceeds cv.limit
-  stEtoohigh <- colnames(sd.result[["cvHigh"]])
-  stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(sd.result[["param"]][["period"]],unique(unlist(sd.result[["param"]][["group"]])))]
-  stEtoohigh <- as.matrix(subset(sd.result[["cvHigh"]],select=stEtoohigh))
+  stEtoohigh <- colnames(x[["cvHigh"]])
+  stEtoohigh <- stEtoohigh[!stEtoohigh%in%c(x[["param"]][["period"]],unique(unlist(x[["param"]][["group"]])))]
+  stEtoohigh <- as.matrix(subset(x[["cvHigh"]],select=stEtoohigh))
   if(sum(stEtoohigh,na.rm=TRUE)>0){
-    cat("Estimted standard error exceeds",sd.result[["param"]][["cv.limit"]],"% of the the point estimate in",sum(stEtoohigh,na.rm=TRUE),"cases\n")
+    cat("Estimted standard error exceeds",x[["param"]][["cv.limit"]],"% of the the point estimate in",sum(stEtoohigh,na.rm=TRUE),"cases\n")
     cat("\n")
   }
 }

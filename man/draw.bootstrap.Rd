@@ -4,9 +4,9 @@
 \alias{draw.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
-                      strata="DB040",cluster=NULL,totals=NULL,single.PSU=c("merge","mean"),
-                      boot.names=NULL,country=NULL,split=FALSE,pid=NULL,new.method=FALSE)
+draw.bootstrap(dat,REP=1000,hid,weights,period,strata="DB040",cluster=NULL,
+                      totals=NULL,single.PSU=c("merge","mean"),boot.names=NULL,
+                      split=FALSE,pid=NULL,new.method=FALSE)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data with rotating panel design.}
@@ -23,16 +23,17 @@ draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",period="RB010",
 If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
 Setting in addition \code{cluter} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.}
 
-\item{cluster}{character vector specifying cluster in the data. If \code{NULL} household ID is taken es the lowest level cluster.}
+\item{cluster}{character vector specifying cluster in the data. If not already specified in \code{cluster} household ID is taken es the lowest level cluster.}
 
 \item{totals}{character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. Is ONLY optional if \code{cluster} is \code{NULL} or equal \code{hid} and \code{strata} contains one columnname!
 Then the households per strata will be calcualted using the \code{weights} argument. If clusters and strata for multiple stages are specified \code{totals} needs to be a vector of \code{length(strata)} specifying the column on \code{dat}
 that contain the total number of PSUs at each stage. \code{totals} is interpreted from left the right, meaning that the first argument corresponds to the number of PSUs at the first and the last argument to the number of PSUs at the last stage.}
 
-\item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}
+\item{single.PSU}{either "merge" or "mean" defining how single PSUs need to be dealt with.
+For \code{single.PSU="merge"} single PSUs at each stage are merged with the strata or cluster with the next least number of PSUs. If multiple of those exist one will be select via random draw
+For \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.}
 
-\item{country}{character specifying the name of the column in \code{dat} containing the country name. Is only used if \code{dat} contains data from multiple countries.
-In this case the bootstep procedure will be applied on each country seperately. If \code{country=NULL} the household identifier must be unique for each household.}
+\item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}
 
 \item{split}{logical, if TRUE split households are considered using \code{pid}, for more information see Details.}
 
@@ -70,7 +71,7 @@ If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stag
 For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 
-Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link{bootstrap}}.
+Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link[surveysd]{bootstrap}}.
 Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
 This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
 
@@ -80,33 +81,31 @@ Any person in this new split household will get the same bootstrap replicate as 
 People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous periods.
 }
 \examples{
+
+\dontrun{
+library(surveysd)
+library(laeken)
 library(data.table)
 
-# run on UDB SILC-data
+eusilc <- surveysd:::demo.eusilc()
 
-# example for SILC-data for Spain
-# dat_es <- fread("path//to//spanish//data.csv")
+dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040"),
+                           period="year")
 
-# approximate Number of clusters if not known
-strata <- dat_es[,.(STRATA_sum=sum(RB050[!duplicated(DB030)])),by=list(DB050,RB010)]
-strata[,STRATA_ratio:=STRATA_sum/sum(STRATA_sum),by=RB010]
-strata[,N.cluster:=random_round(STRATA_ratio*35917),by=RB010]
-strata[,N.households:=STRATA_sum/N.cluster]#'
-dat_es <- merge(dat_es,strata[,.(DB050,RB010,N.cluster,N.households)],by=c("DB050","RB010"))
+dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040","age"),
+                           period="year")
+                           
+                           
+# create spit households
+eusilc[year>min(year)&!duplicated(db030),
+       rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
+       by=year]
 
-dat_boot <- draw.bootstrap(dat=dat_es,REP=250,hid="DB030",weights="RB050",strata=c("DB050","I"),cluster="DB060",
-                           period="RB010",totals=c("N.cluster","N.households"),split=TRUE,pid="RB030")
-
-# example for SILC-data for Austria
-# dat_at <- fread("path//to//austrian//data.csv")
-dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-                           period="RB010",split=TRUE,pid="RB030")
-
-
-# save bootstrap replicates as .RData
-save(dat_boot,file="dat_replicates.RData")
-# or .csv-file
-write.csv2(dat_boot,file="dat_replicates.csv",row.names=FALSE)
+dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040","age"),
+                           period="year",split=TRUE,pid="rb030split")
+# split households were considered e.g. household and split household were both selected or not selected                                                       
+dat_boot[,uniqueN(w1),by=rb030split][V1>1]
+}
 
 }
 \seealso{
