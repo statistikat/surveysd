@@ -7,26 +7,9 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-data("eusilc")
-setDT(eusilc)
-# generate yearly data for y years
-# 25% drop out from 1 year to the other
-y <- 7
-eusilc[,year:=2010]
-eusilc.i <- copy(eusilc)
-nsamp <- round(eusilc[,uniqueN(db030)]*.25)
-nextIDs <- (1:nsamp)+eusilc[,max(db030)]
-for(i in 1:7){
-  eusilc.i[db030%in%sample(unique(eusilc.i$db030),nsamp),db030:=nextIDs[.GRP],by=db030]
-  eusilc.i[,year:=year+1]
-  eusilc <- rbind(eusilc,eusilc.i)
-  nextIDs <- (1:nsamp)+eusilc[,max(db030)]
-}
-eusilc[,rb030:=as.integer(paste0(db030,"0",1:.N)),by=list(year,db030)]
-
+eusilc <- surveysd:::demo.eusilc()
 eusilc <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040")
-eusilc[,age:=cut(age,c(-Inf,16,25,45,65,Inf))]
-eusilc[,hsize:=cut(hsize,c(0:5,Inf))]
+
 # test input parameter
 test_that("test para - data",{
   expect_error(recalib(as.matrix(eusilc),hid="db030",weights="db090",b.rep=paste0("w",1:10),period="year",
@@ -44,14 +27,14 @@ test_that("test para - REP",{
                        conP.var="rb090",conH.var="db040"),"Not all elements in b.rep are column names in dat")
 })
 
-test_that("test para - hid, weights and period"){
+test_that("test para - hid, weights and period",{
   expect_error(recalib(eusilc,hid="db030s",weights="db090",b.rep=paste0("w",1:10),period="year",
                        conP.var="rb090",conH.var="db040"),"db030s is not a column in dat")
   expect_error(recalib(eusilc,hid="db030",weights="db090s",b.rep=paste0("w",1:10),period="year",
                        conP.var="rb090",conH.var="db040"),"db090s is not a column in dat")
   expect_error(recalib(eusilc,hid="db030",weights="db090",b.rep=paste0("w",1:10),period="years",
                        conP.var="rb090",conH.var="db040"),"years is not a column in dat")
-}
+})
 
 test_that("test para - conP.var conH.var",{
  

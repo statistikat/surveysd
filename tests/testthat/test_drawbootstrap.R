@@ -7,26 +7,10 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-data("eusilc")
-setDT(eusilc)
-eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
-eusilc[!duplicated(db030),N.households.error:=sum(db090),by=db040]
-eusilc[,N.households.all:=sum(db090[!duplicated(db030)])]
-
-# generate yearly data for y years
-# 25% drop out from 1 year to the other
-y <- 7
-eusilc[,year:=2010]
-eusilc.i <- copy(eusilc)
-nsamp <- round(eusilc[,uniqueN(db030)]*.25)
-nextIDs <- (1:nsamp)+eusilc[,max(db030)]
-for(i in 1:7){
-  eusilc.i[db030%in%sample(unique(eusilc.i$db030),nsamp),db030:=nextIDs[.GRP],by=db030]
-  eusilc.i[,year:=year+1]
-  eusilc <- rbind(eusilc,eusilc.i)
-  nextIDs <- (1:nsamp)+eusilc[,max(db030)]
-}
-eusilc[,rb030:=as.integer(paste0(db030,"0",1:.N)),by=list(year,db030)]
+eusilc <- surveysd:::demo.eusilc()
+eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=.(year,db040)]
+eusilc[!duplicated(db030),N.households.error:=sum(db090),by=.(year,db040)]
+eusilc[,N.households.all:=sum(db090[!duplicated(db030)]),by=.(year)]
 
 # test input parameter
 test_that("test para - data",{
@@ -42,7 +26,7 @@ test_that("test para - REP",{
                "REP must have length 1")
 })
 
-test_that("test para - hid, weights and period"{
+test_that("test para - hid, weights and period",{
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030s",weights="db090",period="year",strata="db040"),
                "db030s is not a column in dat")
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090s",period="year",strata="db040"),
@@ -78,7 +62,7 @@ test_that("test para - strata, cluster and totals",{
   
 })
 
-test_that("test para - bootnames, split and pid"){
+test_that("test para - bootnames, split and pid",{
   
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split="FALSE"),
                "split needs to be logical")
@@ -99,7 +83,7 @@ test_that("test para - bootnames, split and pid"){
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="1"),
                "boot.names must start with an alphabetic character")
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="weight"),NA)
-}
+})
 
 test_that("test para - single.PSU",{
   expect_warning(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",single.PSU="something"),

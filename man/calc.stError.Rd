@@ -4,9 +4,10 @@
 \alias{calc.stError}
 \title{Calcualte point estimates and their standard errors using bootstrap weights.}
 \usage{
-calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),period="RB010",var="HX080",
+calc.stError(dat,weights,b.weights=paste0("w",1:1000),period,var,
                     fun="weightedRatio",group=NULL,period.diff=NULL,
-                    period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
+                    period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,
+                    cv.limit=10,p=NULL)#'
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.}
@@ -37,6 +38,8 @@ The pointestimates are then estimated for each subgroup seperately. If \code{gro
 Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.}
 
 \item{cv.limit}{non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.}
+
+\item{p}{numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.}
 }
 \value{
 Returns a list containing:
@@ -98,41 +101,39 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 }
 \examples{
 
+\dontrun{
+library(surveysd)
+library(laeken)
 library(data.table)
-# run on EU-SILC UDB data for Austria
-# dat_at <- fread("path//to//austrian//data.csv")
 
-dat_boot <- draw.bootstrap(dat=dat_at,REP=250,hid="DB030",weights="RB050",strata="DB040",
-                           period="RB010",split=TRUE,pid="RB030")
+eusilc <- surveysd:::demo.eusilc()
 
+dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
+                           period="year")
+                           
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat=copy(dat_boot),hid="DB030",weights="RB050",
-                          period="RB010",b.rep=paste0("w",1:250),conP.var=c("RB090"),conH.var = c("DB040"))
+dat_boot_calib <- recalib(copy(dat_boot),hid="db030",weights="rb050",
+                          period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040"))
 
-# estimate weightedRatio for HX080 per period
-err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+# estimate weightedRatio for povmd60 per period
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
                        fun="weightedRatio",group=NULL,period.diff=NULL,period.mean=NULL)
 
-# estimate weightedRatio for HX080 per period and RB090
-group <- "RB090"
-err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+# estimate weightedRatio for povmd60 per period and rb090
+group <- "rb090"
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
                        fun="weightedRatio",group=group,period.diff=NULL,period.mean=NULL)
 
 
 # use average over 3 periods for standard error estimation
-err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
                        fun="weightedRatio",group=group,period.diff=NULL,period.mean=3)
 
 # get estimate for difference of period 2016 and 2013
-period.diff <- c("2015-2009")
-err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
+period.diff <- c("2015-2011")
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
                        fun="weightedRatio",group=group,period.diff=period.diff,period.mean=3)
 
-# apply function to multiple variables and define different subsets
-var <- c("HX080","arose")
-group <- list("RB090","DB040",c("RB090","DB040"))
-err.est <- calc.stError(dat_boot_calib,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX080",
-                       fun="weightedRatio",group=group,period.diff=period.diff,period.mean=3)
 
 # use a function from an other package that has sampling weights as its second argument
 # for example ging() from laeken
@@ -143,13 +144,9 @@ help_gini <- function(x,w){
  return(gini(x,w)$value)
 }
 
-err.est <- calc.stError(dat,weights="RB050",b.weights=paste0("w",1:250),period="RB010",var="HX090",
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
                        fun="help_gini",group=group,period.diff=period.diff,period.mean=3)
-
-# exporting data
-# get point estimates
-results <- err.est$Estimates
-write2.csv(results,file="My_Results.csv",row.names=FALSE)
+}
 
 
 }

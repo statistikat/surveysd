@@ -7,25 +7,9 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-data("eusilc")
-setDT(eusilc)
-# generate yearly data for y years
-# 25% drop out from 1 year to the other
-y <- 7
-eusilc[,year:=2010]
-eusilc.i <- copy(eusilc)
-nsamp <- round(eusilc[,uniqueN(db030)]*.25)
-nextIDs <- (1:nsamp)+eusilc[,max(db030)]
-for(i in 1:7){
-  eusilc.i[db030%in%sample(unique(eusilc.i$db030),nsamp),db030:=nextIDs[.GRP],by=db030]
-  eusilc.i[,year:=year+1]
-  eusilc <- rbind(eusilc,eusilc.i)
-  nextIDs <- (1:nsamp)+eusilc[,max(db030)]
-}
-eusilc[,rb030:=as.integer(paste0(db030,"0",1:.N)),by=list(year,db030)]
-eusilc[,povmd60:=as.numeric(eqIncome<.6*laeken::weightedMedian(eqIncome[!duplicated(db030)],w=db090[!duplicated(db030)])),by=year]
-eusilc[,age:=cut(age,c(-Inf,16,25,45,65,Inf))]
-eusilc[,hsize:=cut(hsize,c(0:5,Inf))]
+source_file("helper_myfun.R")
+
+eusilc <- surveysd:::demo.eusilc()
 
 eusilc <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040")
 eusilc <- recalib(eusilc,hid="db030",weights="db090",b.rep=paste0("w",1:10),period="year",
@@ -63,16 +47,8 @@ test_that("test para - weights, b.weights, year and group",{
 })
 
 
-myfun <- function(x,w){
-  return(sum(w*x))
-}
-myfun.char <- function(x,w){
-  return(as.character(sum(w*x)))
-}
-myfun.mulval <- function(x,w){
-  return(w*x)
-}
 test_that("test para -  var and fun",{
+  
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60s",
                             group=c("rb090","db040")),"Not all elements in var are column names in dat")
   
@@ -82,7 +58,6 @@ test_that("test para -  var and fun",{
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
                             fun="myfun.undefined",group=c("rb090","db040")),"Function myfun.undefined is undefined")
-  
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60NA",
                             fun="myfun",group=c("rb090","db040")),NA)

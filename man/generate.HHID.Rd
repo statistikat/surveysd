@@ -4,12 +4,12 @@
 \alias{generate.HHID}
 \title{Generate new houshold ID for survey data with rotating panel design taking into account split households}
 \usage{
-generate.HHID(dat, time.step = "RB010", pid = "RB030", hid = "DB030")
+generate.HHID(dat, period = "RB010", pid = "RB030", hid = "DB030")
 }
 \arguments{
 \item{dat}{data table of data frame containing the survey data}
 
-\item{time.step}{column name of \code{dat} containing an indicator for the rotations, e.g years, quarters, months, ect...}
+\item{period}{column name of \code{dat} containing an indicator for the rotations, e.g years, quarters, months, ect...}
 
 \item{pid}{column name of \code{dat} containing the personal identifier. This needs to be fixed for an indiviual throught the whole survey}
 
@@ -26,5 +26,26 @@ This leads to the creation of so called split households. Using a peronal ID (th
 a new houshold ID is assigned to the original and the split household.
 }
 \examples{
+
+library(surveysd)
+library(laeken)
+library(data.table)
+
+eusilc <- surveysd:::demo.eusilc() 
+eusilc[,rb030split:=rb030]
+
+# create spit households
+eusilc[year>min(year)&!duplicated(db030),
+       rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
+       by=year]
+
+# pid which are in split households
+eusilc[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
+
+eusilc.new <- generate.HHID(eusilc,period="year",pid="rb030split",hid="db030")
+
+# no longer any split households in the data
+eusilc.new[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
+
 
 }

@@ -3,8 +3,9 @@
 #' Draw bootstrap replicates from survey data using the rescaled bootstrap for stratified multistage sampling, presented by Preston, J. (2009).
 #'
 #' @usage rescaled.bootstrap(dat,REP=1000,strata="DB050>1",cluster="DB060>DB030",
-#'                           fpc="N.cluster>N.households",check.input=TRUE,single.PSU=c("merge"),
-#'                           return.value=c("data"))
+#'                           fpc="N.cluster>N.households",single.PSU=c("merge","mean"),
+#'                           return.value=c("data","replicates"),check.input=TRUE,
+#'                           new.method=FALSE)
 #'
 #' @param dat either data frame or data table containing the survey sample
 #' @param REP integer indicating the number of bootstraps to be drawn
@@ -41,19 +42,22 @@
 #' data("eusilc")
 #' setDT(eusilc)
 #'
-#' eusilc[!duplicated(db030),N.households:=sum(db090),by=db040]
+#' eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
 #' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
 #'
 #' eusilc[,new_strata:=paste(db040,rb090,sep="_")]
-#' eusilc[!duplicated(db030),N.housholds:=sum(db090),by=new_strata]
+#' eusilc[,N.housholds:=sum(db090[!duplicated(db030)]),by=new_strata]
 #' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
 #'
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=1000,strata=c("new_strata"),cluster="db030",fpc="N.households")
+#' 
 #'
-#' @import matrixStats
 
 
-rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",fpc=" N.cluster>N.households",
+rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster="DB060>DB030",fpc="N.cluster>N.households",
                                single.PSU=c("merge","mean"), return.value=c("data","replicates"),check.input=TRUE,new.method=FALSE){
+  
+  InitialOrder <- N <- SINGLE_BOOT_FLAG <- SINGLE_BOOT_FLAG_FINAL <- f <- n_prev <- n_draw_prev <- sum_prev <- n_draw <- NULL 
   
   # prepare input
   input <- c(strata,cluster,fpc)
@@ -122,20 +126,19 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB0
         warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
       }
     }
-    
-    # check if variable f, N, n are in data.table
-    overwrite.names <- c("f","N","n","n_prev","n_draw","n_draw_prev")
-    overwrite.names <- overwrite.names[overwrite.names%in%colnames(dat)]
-    if(length(overwrite.names)>0){
-      overwrite.names.new <- paste0("ORIGINAL_",overwrite.names)
-      setnames(dat,overwrite.names,overwrite.names.new)
-      
-      strata[strata%in%overwrite.names] <- overwrite.names.new[strata%in%overwrite.names]
-      cluster[cluster%in%overwrite.names] <- overwrite.names.new[cluster%in%overwrite.names]
-      fpc[fpc%in%overwrite.names] <- overwrite.names.new[fpc%in%overwrite.names]
-    }
   }
   dat <- copy(dat)
+  # check if variable f, N, n are in data.table
+  overwrite.names <- c("f","N","n","n_prev","n_draw","n_draw_prev")
+  overwrite.names <- overwrite.names[overwrite.names%in%colnames(dat)]
+  if(length(overwrite.names)>0){
+    overwrite.names.new <- paste0("ORIGINAL_",overwrite.names)
+    setnames(dat,overwrite.names,overwrite.names.new)
+    
+    strata[strata%in%overwrite.names] <- overwrite.names.new[strata%in%overwrite.names]
+    cluster[cluster%in%overwrite.names] <- overwrite.names.new[cluster%in%overwrite.names]
+    fpc[fpc%in%overwrite.names] <- overwrite.names.new[fpc%in%overwrite.names]
+  }
   
   # set index for data to return dat in correct order
   dat[,InitialOrder:=.I]

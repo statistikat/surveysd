@@ -1,0 +1,65 @@
+#################################
+# test plot.surveysd()
+#
+
+context("plot.surveysd()")
+library(surveysd)
+library(laeken)
+library(data.table)
+library(ggplot2)
+
+data("eusilc")
+setDT(eusilc)
+# generate yearly data for y years
+# 25% drop out from 1 year to the other
+y <- 7
+eusilc[,year:=2010]
+eusilc.i <- copy(eusilc)
+nsamp <- round(eusilc[,uniqueN(db030)]*.25)
+hhincome <- eusilc[!duplicated(db030)][["eqIncome"]]
+nextIDs <- (1:nsamp)+eusilc[,max(db030)]
+for(i in 1:y){
+  eusilc.i[db030%in%sample(unique(eusilc.i$db030),nsamp),
+           c("db030","eqIncome"):=.(nextIDs[.GRP],sample(hhincome,.N)),
+                                    by=db030]
+  eusilc.i[,year:=year+1]
+  eusilc <- rbind(eusilc,eusilc.i)
+  nextIDs <- (1:nsamp)+eusilc[,max(db030)]
+}
+eusilc[,rb030:=as.integer(paste0(db030,"0",1:.N)),by=list(year,db030)]
+eusilc[,povmd60:=as.numeric(eqIncome<.6*laeken::weightedMedian(eqIncome[!duplicated(db030)],w=db090[!duplicated(db030)])),by=year]
+eusilc[,hsize:=cut(hsize,c(0:5,Inf))]
+
+eusilc <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040")
+eusilc <- recalib(eusilc,hid="db030",weights="db090",b.rep=paste0("w",1:10),period="year",
+                  conP.var="rb090",conH.var="db040")
+eusilc <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
+                       group=list("rb090","db040",c("rb090","db040"),"hsize"))
+
+# test input parameter
+test_that("test para - variable and type",{
+  
+  expect_error(plot(eusilc),NA)
+  
+  expect_error(plot(eusilc,variable = "povmd60s"), "No results for povmd60s present in the data!")
+  expect_error(plot(eusilc,variable = "povmd60"), NA)
+  
+  expect_error(plot(eusilc,variable = "povmd60",type="summarys"), "Parameter type can only take values 'summary' or 'grouping'!")
+  expect_error(plot(eusilc,variable = "povmd60",type="summary"),NA)
+  
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping"),"Paramter 'groups' cannot be NULL if type='grouping'!")
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups="rb090"),NA)
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups="rb090s"),
+               "Variables in 'groups' must contain variables from dat$params$group!",fixed=TRUE)
+  
+})
+
+test_that("test para - groups and sd.type",{
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups="rb090",sd.type = "dots"),"Parameter 'sd.type' can only take values 'ribbon' or 'dot'!")
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups="rb090",sd.type = "ribbon"),NA)
+  
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups=c("db040","rb090"),sd.type = "ribbon"),NA)
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups=c("db040","rb090"),sd.type = "dot"),NA)
+  expect_error(plot(eusilc,variable = "povmd60",type="grouping",groups=c("db040","hsize"),sd.type = "ribbon"),
+               "No results for the combination of db040 and hsize present in the data")
+})

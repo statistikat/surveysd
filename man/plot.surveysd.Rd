@@ -4,12 +4,11 @@
 \alias{plot.surveysd}
 \title{Plot surveysd-Objects}
 \usage{
-\method{plot}{surveysd}(dat, variable = dat$param$var[1],
-  type = c("summary", "grouping"), groups = NULL, sd.type = c("dot",
-  "ribbon"))
+\method{plot}{surveysd}(x, variable = x$param$var[1], type = c("summary",
+  "grouping"), groups = NULL, sd.type = c("dot", "ribbon"), ...)
 }
 \arguments{
-\item{dat}{object of class 'surveysd' output of function \code{\link{calc.stError}}}
+\item{x}{object of class 'surveysd' output of function \code{\link{calc.stError}}}
 
 \item{variable}{Name of the variable for which standard errors have been calcualated in \code{dat}}
 
@@ -18,14 +17,50 @@ For 'summary' a barplot is created giving an overview of the number of estimates
 For 'grouping' results for point estimate and standard error are plotted for pre defined groups.}
 
 \item{groups}{If \code{type='grouping'} variables must be defined by which the data is grouped. Only 2 levels are supported as of right now.
-If only one group is defined the higher group will be the estimate over the whole year.
+If only one group is defined the higher group will be the estimate over the whole period.
 Results are plotted for the first argument in \code{groups} as well as for the combination of \code{groups[1]} and \code{groups[2]}.}
 
 \item{sd.type}{can bei either \code{'ribbon'} or \code{'dot'} and is only used if \code{type='grouping'}. Default is \code{"dot"}
-For \code{sd.type='dot'} point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-years exceeded the value \code{cv.limit} (see \code{\link{calc.stError}}).
+For \code{sd.type='dot'} point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value \code{cv.limit} (see \code{\link{calc.stError}}).
 For \code{sd.type='ribbon'} the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
-The calculated standard errors using the mean over k years are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.}
+The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.}
 }
 \description{
 Plot results of \code{calc.stError()}
+}
+\examples{
+
+\dontrun{
+library(surveysd)
+library(laeken)
+library(data.table)
+
+eusilc <- surveysd:::demo.eusilc()
+
+dat_boot <- draw.bootstrap(eusilc,REP=250,hid="db030",weights="rb050",strata=c("db040"),
+                           period="year")
+                           
+# calibrate weight for bootstrap replicates
+dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
+                          period="year",b.rep=paste0("w",1:250),conP.var=c("rb090"),conH.var = c("db040"))
+
+# estimate weightedRatio for povmd60 per period
+group <- list("rb090","db040",c("rb090","db040"))
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:250),period="year",var="povmd60",
+                       fun="weightedRatio",group=c("rb090","db040"),period.diff=NULL,period.mean=NULL)
+
+                                                
+plot(err.est)                        
+
+# plot results for rb090
+# dotted line is the result on the national level
+plot(err.est,type="grouping",groups="rb090")
+
+# plot results for rb090 in each db040
+plot(err.est,type="grouping",groups=c("rb090","db040"))
+
+# plot results for db040 in each rb090
+plot(err.est,type="grouping",groups=c("db040","rb090"))
+}
+
 }
