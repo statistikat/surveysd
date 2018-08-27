@@ -3,9 +3,6 @@
 #' @description Draw bootstrap replicates from survey data with rotating panel design.
 #' Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
 #'
-#' @usage draw.bootstrap(dat,REP=1000,hid,weights,period,strata="DB040",cluster=NULL,
-#'                       totals=NULL,single.PSU=c("merge","mean"),boot.names=NULL,
-#'                       split=FALSE,pid=NULL,new.method=FALSE)
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
@@ -47,7 +44,7 @@
 #' For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 #' and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 #'
-#' Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link[surveysd]{bootstrap}}.
+#' Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link[surveysd]{rescaled.bootstrap}}.
 #' Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
 #' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
 #' 
@@ -85,9 +82,11 @@
 #'        rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
 #'        by=year]
 #'
-#' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040","age"),
-#'                            period="year",split=TRUE,pid="rb030split")
-#' # split households were considered e.g. household and split household were both selected or not selected                                                       
+#' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
+#'                            strata=c("db040","age"),period="year",
+#'                            split=TRUE,pid="rb030split")
+#' # split households were considered e.g. household and 
+#' # split household were both selected or not selected 
 #' dat_boot[,uniqueN(w1),by=rb030split][V1>1]
 #' }
 #' 

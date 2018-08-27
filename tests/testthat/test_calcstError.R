@@ -1,13 +1,12 @@
 #################################
 # test calc.stError()
 #
+Sys.unsetenv("R_TESTS")
 
 context("calc.stError()")
 library(surveysd)
 library(laeken)
 library(data.table)
-
-source_file("helper_myfun.R")
 
 eusilc <- surveysd:::demo.eusilc()
 
@@ -49,6 +48,8 @@ test_that("test para - weights, b.weights, year and group",{
 
 test_that("test para -  var and fun",{
   
+  # source_test_helpers("helper_myfun.R")
+  
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60s",
                             group=c("rb090","db040")),"Not all elements in var are column names in dat")
   
@@ -58,6 +59,30 @@ test_that("test para -  var and fun",{
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
                             fun="myfun.undefined",group=c("rb090","db040")),"Function myfun.undefined is undefined")
+  
+  myfun <- function(x,w){
+    return(sum(w*x))
+  }
+  myfun.char <- function(x,w){
+    return(as.character(sum(w*x)))
+  }
+  myfun.mulval <- function(x,w){
+    return(w*x)
+  }
+  dummyFun <- function(a){
+    if(exists(a,mode="function")){
+      "can find the function"
+    }else{
+      "cannot find the function"
+    }
+  }
+  
+  print(myfun)
+  print(myfun.char)
+  print(myfun.mulval)
+  print(parent.frame())
+  print(dummyFun("myfun"))
+  print(dummyFun("myfun.mulval"))
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60NA",
                             fun="myfun",group=c("rb090","db040")),NA)

@@ -14,6 +14,7 @@
 #' For \code{sd.type='dot'} point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value \code{cv.limit} (see \code{\link{calc.stError}}).
 #' For \code{sd.type='ribbon'} the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
 #' The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.
+#' @param ... additional arguments supplied to plot.
 #' 
 #' @examples
 #' 
@@ -29,12 +30,14 @@
 #'                            
 #' # calibrate weight for bootstrap replicates
 #' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
-#'                           period="year",b.rep=paste0("w",1:250),conP.var=c("rb090"),conH.var = c("db040"))
+#'                           period="year",b.rep=paste0("w",1:250),
+#'                           conP.var=c("rb090"),conH.var = c("db040"))
 #'
 #' # estimate weightedRatio for povmd60 per period
 #' group <- list("rb090","db040",c("rb090","db040"))
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:250),period="year",var="povmd60",
-#'                        fun="weightedRatio",group=c("rb090","db040"),period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:250),
+#'                         period="year",var="povmd60",fun="weightedRatio",
+#'                         group=c("rb090","db040"),period.diff=NULL,period.mean=NULL)
 #' 
 #'                                                 
 #' plot(err.est)                        
@@ -50,8 +53,7 @@
 #' plot(err.est,type="grouping",groups=c("db040","rb090"))
 #' }
 #' 
-#' @export plot.surveysd
-#' 
+#' @export  
 
 plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping"),
                           groups=NULL,sd.type=c("dot","ribbon"),...){

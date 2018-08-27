@@ -1,11 +1,13 @@
 ##############################################################
 # Helper-Functions
 #
-#' @import ggplot2 matrixStats laeken
+#' @import ggplot2 
 #' @import simPop data.table Rcpp
 #' @importFrom "graphics" "plot"
 #' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd"
 #' @importFrom "utils" "data" "find" "tail"
+#' @importFrom "matrixStats" "rowProds"
+#' @importFrom "laeken" "weightedMedian"
 #' @useDynLib surveysd
 
 
@@ -46,9 +48,9 @@ paste_addarg <- function(a,b){
 # helpfunction to generate multiple years of eusilc data
 demo.eusilc <- function(y=7){
   
-  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- age <- hsize <- . <- NULL
+  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <- . <- NULL
   
-  data("eusilc")
+  data("eusilc",package="laeken",envir = environment())
   setDT(eusilc)
   # generate yearly data for y years
   # 25% drop out from 1 year to the other
