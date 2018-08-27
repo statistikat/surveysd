@@ -73,11 +73,13 @@ test_that("test para - bootnames, split and pid",{
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030error"),
                "pid is not unique in each household for each period")
   
-  eusilc[,rb030new:=rb030]
-  eusilc[year>min(year)][!duplicated(db030),rb030new:=sample(eusilc[year==(unlist(.BY)-1)]$rb030,20),by=year]
   
-  eusilc.split <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030new")
-  eusilc.split <- eusilc.split[,lapply(.SD,uniqueN),by=rb030new,.SDcols=paste0("w",1:10)]
+  eusilc[,rb030split:=rb030]
+  eusilc[year>min(year)&!duplicated(db030),
+         rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
+         by=year]
+  eusilc.split <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030split")
+  eusilc.split <- eusilc.split[,lapply(.SD,uniqueN),by=rb030split,.SDcols=paste0("w",1:10)]
   expect_true(all(eusilc.split[,.SD,.SDcols=paste0("w",1:10)]==1))
   
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="1"),

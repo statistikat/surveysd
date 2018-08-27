@@ -4,10 +4,6 @@
 #' Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{draw.bootstrap}} and \code{\link{recalib}}).
 #' In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error.
 #'
-#' @usage calc.stError(dat,weights,b.weights=paste0("w",1:1000),period,var,
-#'                     fun="weightedRatio",group=NULL,period.diff=NULL,
-#'                     period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,
-#'                     cv.limit=10,p=NULL)#'
 #'
 #' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.
 #' @param weights character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.
@@ -98,26 +94,31 @@
 #'                            
 #' # calibrate weight for bootstrap replicates
 #' dat_boot_calib <- recalib(copy(dat_boot),hid="db030",weights="rb050",
-#'                           period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040"))
+#'                           period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),
+#'                           conH.var = c("db040"))
 #'
 #' # estimate weightedRatio for povmd60 per period
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-#'                        fun="weightedRatio",group=NULL,period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+#'                         period="year",var="povmd60",fun="weightedRatio",
+#'                         group=NULL,period.diff=NULL,period.mean=NULL)
 #'
 #' # estimate weightedRatio for povmd60 per period and rb090
 #' group <- "rb090"
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-#'                        fun="weightedRatio",group=group,period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+#'                         period="year",var="povmd60",fun="weightedRatio",
+#'                         group=group,period.diff=NULL,period.mean=NULL)
 #'
 #'
 #' # use average over 3 periods for standard error estimation
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-#'                        fun="weightedRatio",group=group,period.diff=NULL,period.mean=3)
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+#'                         period="year",var="povmd60",fun="weightedRatio",
+#'                         group=group,period.diff=NULL,period.mean=3)
 #'
 #' # get estimate for difference of period 2016 and 2013
 #' period.diff <- c("2015-2011")
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-#'                        fun="weightedRatio",group=group,period.diff=period.diff,period.mean=3)
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+#'                         period="year",var="povmd60",fun="weightedRatio",
+#'                         group=group,period.diff=period.diff,period.mean=3)
 #'
 #'
 #' # use a function from an other package that has sampling weights as its second argument
@@ -129,13 +130,13 @@
 #'  return(gini(x,w)$value)
 #' }
 #'
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-#'                        fun="help_gini",group=group,period.diff=period.diff,period.mean=3)
+#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+#'                         period="year",var="povmd60",fun="help_gini",group=group,
+#'                         period.diff=period.diff,period.mean=3)
 #' }
 #'
 #'
 #' @export calc.stError
-#' @export print.surveysd
 #'
 
 
@@ -200,6 +201,8 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
   }
   if(!fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){
     if(!exists(fun,mode="function")){
+      print(environment(get(fun)))
+      print(get(fun))
       stop("Function ",fun," is undefined")
     }else{
       
@@ -701,7 +704,16 @@ quantileNA <- function(x,probs,p.names,np=length(probs)){
 }
 
 
-# print function for surveysd objects
+#' @title Print function for surveysd objects
+#' 
+#' @description
+#' Prints the results of a call to \code{\link[surveysd]{calc.stError}}. Shows used variables and function, number of point estiamtes
+#' as well as properties of the results.
+#' 
+#' @param x an object of class \code{'surveysd'}
+#' @param ... additonal parameters
+#'
+#' @export  
 print.surveysd <- function(x,...){
 
   # get parameter

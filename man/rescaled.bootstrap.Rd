@@ -4,10 +4,10 @@
 \alias{rescaled.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-rescaled.bootstrap(dat,REP=1000,strata="DB050>1",cluster=" DB060>DB030",
-                          fpc=" N.cluster>N.households",single.PSU=c("merge","mean"),
-                          return.value=c("data","replicates"),check.input=TRUE,
-                          new.method=FALSE)
+rescaled.bootstrap(dat, REP = 1000, strata = "DB050>1",
+  cluster = "DB060>DB030", fpc = "N.cluster>N.households",
+  single.PSU = c("merge", "mean"), return.value = c("data", "replicates"),
+  check.input = TRUE, new.method = FALSE)
 }
 \arguments{
 \item{dat}{either data frame or data table containing the survey sample}
@@ -54,13 +54,16 @@ data("eusilc")
 setDT(eusilc)
 
 eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",cluster="db030",fpc="N.households")
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",
+                                       cluster="db030",fpc="N.households")
 
 eusilc[,new_strata:=paste(db040,rb090,sep="_")]
 eusilc[,N.housholds:=sum(db090[!duplicated(db030)]),by=new_strata]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),cluster="db030",fpc="N.households")
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
+                                       cluster="db030",fpc="N.households")
 
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=1000,strata=c("new_strata"),cluster="db030",fpc="N.households")
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=1000,strata=c("new_strata"),
+                                       cluster="db030",fpc="N.households")
 
 
 }

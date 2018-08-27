@@ -4,10 +4,10 @@
 \alias{calc.stError}
 \title{Calcualte point estimates and their standard errors using bootstrap weights.}
 \usage{
-calc.stError(dat,weights,b.weights=paste0("w",1:1000),period,var,
-                    fun="weightedRatio",group=NULL,period.diff=NULL,
-                    period.mean=3,bias=FALSE,add.arg=NULL,size.limit=20,
-                    cv.limit=10,p=NULL)#'
+calc.stError(dat, weights, b.weights = paste0("w", 1:1000), period, var,
+  fun = "weightedRatio", group = NULL, period.diff = NULL,
+  period.mean = 3, bias = FALSE, add.arg = NULL, size.limit = 20,
+  cv.limit = 10, p = NULL)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.}
@@ -113,26 +113,31 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("d
                            
 # calibrate weight for bootstrap replicates
 dat_boot_calib <- recalib(copy(dat_boot),hid="db030",weights="rb050",
-                          period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),conH.var = c("db040"))
+                          period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),
+                          conH.var = c("db040"))
 
 # estimate weightedRatio for povmd60 per period
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                       fun="weightedRatio",group=NULL,period.diff=NULL,period.mean=NULL)
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+                        period="year",var="povmd60",fun="weightedRatio",
+                        group=NULL,period.diff=NULL,period.mean=NULL)
 
 # estimate weightedRatio for povmd60 per period and rb090
 group <- "rb090"
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                       fun="weightedRatio",group=group,period.diff=NULL,period.mean=NULL)
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+                        period="year",var="povmd60",fun="weightedRatio",
+                        group=group,period.diff=NULL,period.mean=NULL)
 
 
 # use average over 3 periods for standard error estimation
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                       fun="weightedRatio",group=group,period.diff=NULL,period.mean=3)
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+                        period="year",var="povmd60",fun="weightedRatio",
+                        group=group,period.diff=NULL,period.mean=3)
 
 # get estimate for difference of period 2016 and 2013
 period.diff <- c("2015-2011")
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                       fun="weightedRatio",group=group,period.diff=period.diff,period.mean=3)
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+                        period="year",var="povmd60",fun="weightedRatio",
+                        group=group,period.diff=period.diff,period.mean=3)
 
 
 # use a function from an other package that has sampling weights as its second argument
@@ -144,8 +149,9 @@ help_gini <- function(x,w){
  return(gini(x,w)$value)
 }
 
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                       fun="help_gini",group=group,period.diff=period.diff,period.mean=3)
+err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
+                        period="year",var="povmd60",fun="help_gini",group=group,
+                        period.diff=period.diff,period.mean=3)
 }
 
 
