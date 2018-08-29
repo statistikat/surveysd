@@ -22,7 +22,7 @@
 #' Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.
 #' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.
 #' @param p numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.
-#'
+#' 
 #' @details \code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample period in \code{dat}.
 #' \code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
 #' \itemize{
@@ -200,9 +200,8 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
     stop("fun must have length 1")
   }
   if(!fun%in%c("weightedRatio","weightedRatioNat","weightedSum","sampSize","popSize")){
+    
     if(!exists(fun,mode="function")){
-      print(environment(get(fun)))
-      print(get(fun))
       stop("Function ",fun," is undefined")
     }else{
       
