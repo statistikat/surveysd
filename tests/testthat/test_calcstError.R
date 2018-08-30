@@ -58,28 +58,139 @@ test_that("test para -  var and fun",{
                             group=c("rb090","db040")),NA)
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                            fun="myfun.undefined",group=c("rb090","db040")),"Function myfun.undefined is undefined")
+                            fun=myfun.undefined,group=c("rb090","db040")),"object 'myfun.undefined' not found")
   
-  # myfun <- function(x,w){
-  #   return(sum(w*x))
-  # }
-  # myfun.char <- function(x,w){
-  #   return(as.character(sum(w*x)))
-  # }
-  # myfun.mulval <- function(x,w){
-  #   return(w*x)
-  # }
-  # 
-  # expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60NA",
-  #                           fun="myfun",group=c("rb090","db040")),NA)
-  # expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
-  #                           fun="myfun",group=c("rb090","db040")),NA)
-  # 
-  # expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
-  #                           fun="myfun.char",group=c("rb090","db040")),"Function myfun.char does not return integer or numeric value")
-  # 
-  # expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
-  #                           fun="myfun.mulval",group=c("rb090","db040")),"Function myfun.mulval does return more than one value. Only functions which return a single value are allowed.")
+  myfun <- function(x,w){
+    return(sum(w*x))
+  }
+  myfun.char <- function(x,w){
+    return(as.character(sum(w*x)))
+  }
+  myfun.mulval <- function(x,w){
+    return(w*x)
+  }
+
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60NA",
+                            fun=myfun,group=c("rb090","db040")),NA)
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
+                            fun=myfun,group=c("rb090","db040")),NA)
+
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
+                            fun=myfun.char,group=c("rb090","db040")),"Function in fun does not return integer or numeric value")
+
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
+                            fun=myfun.mulval,group=c("rb090","db040")),"Function in fun does return more than one value. Only functions which return a single value are allowed.")
+
+  help_gini <- function(x,w){
+    laeken::gini(x,w)$value
+  }
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                            fun=help_gini,group=c("rb090","db040")),NA)
+  
+})
+
+test_that("test para -  ellipsies",{
+  
+  help_gini <- function(x,w,percent=TRUE){
+    if(percent){
+      laeken::gini(x,w)$value
+    }else{
+      laeken::gini(x,w)$value/100
+    }
+  }
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                            fun=help_gini,group=c("rb090","db040"),percent=TRUE),NA)
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                            fun=help_gini,group=c("rb090","db040"),percent=FALSE),NA)
+  res_perc <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                           fun=help_gini,group=c("rb090","db040"),percent=TRUE)
+  res <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                      fun=help_gini,group=c("rb090","db040"),percent=FALSE)
+  
+  expect_true(all.equal(res$Estimates[,.(val_eqIncome=val_eqIncome*100,stE_eqIncome=stE_eqIncome*100)],
+            res_perc$Estimates[,.(val_eqIncome,stE_eqIncome)]))
+})
+
+test_that("test para -  implemented functions",{
+  
+  comp <- rep(FALSE,1000)
+  for(i in 1:1000){
+    x <- sample(c(1,0,NA_real_),200,prob=c(.45,.45,.1),replace=TRUE)
+    w <- sample(30:400,200,replace=TRUE)
+    
+    r_res <- surveysd:::weightedRatioR(x,w)
+    c_res <- weightedRatio(x,w)
+    
+    comp[i] <- abs(r_res-c_res)<1e-10
+  }
+  expect_true(all(comp))
+  comp <- rep(FALSE,1000)
+  for(i in 1:1000){
+    x <- sample(c(1,0,NA_real_),200,prob=c(.45,.45,.1),replace=TRUE)
+    w <- sample(30:400,200,replace=TRUE)
+    
+    r_res <- surveysd:::weightedSumR(x,w)
+    c_res <- weightedSum(x,w)
+    
+    comp[i] <- abs(r_res-c_res)<1e-10
+  }
+  expect_true(all(comp))
+})
+
+test_that("test para - fun.adjust.var and adjust.var",{
+  
+  group <- list("rb090","db040",c("rb090","db040"))
+  povmd <- function(x,w){
+    md <- laeken::weightedMedian(x,w)*0.6
+    pmd60 <- x<md
+    return(as.integer(pmd60))
+  }
+
+  expect_error(calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                            period="year",var="povmd60",fun=weightedRatio,
+                            group=group,fun.adjust.var=povmd,adjust.var="eqIncome"),NA)
+  
+  myfun.char <- function(x,w){
+    return(as.character(sum(w*x)))
+  }
+  expect_error(calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                            period="year",var="povmd60",fun=weightedRatio,
+                            group=group,fun.adjust.var=myfun.char,adjust.var="eqIncome"),"Function in fun.adjust.var does not return integer or numeric value")
+  
+  expect_error(calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                            period="year",var="povmd60",fun=weightedRatio,
+                            group=group,fun.adjust.var=povmd,adjust.var=1),"adjust.var needs to be a character")
+  expect_error(calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                            period="year",var="povmd60",fun=weightedRatio,
+                            group=group,fun.adjust.var=povmd,adjust.var="1"),"adjust.var must be a column name in dat")
+  expect_error(calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                            period="year",var="povmd60",fun=weightedRatio,
+                            group=group,fun.adjust.var=povmd,adjust.var=c("eqIncome","1")),"adjust.var can only be a single variable name")
+  
+  
+  # compare fun.adjust.var with results not using fun.adjust.var
+  err.est <- calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                          period="year",var="povmd60",fun=weightedRatio,
+                          group=group,fun.adjust.var=povmd,adjust.var="eqIncome")
+  povmd2 <- function(x,w){
+    md <- laeken::weightedMedian(x,w)*0.6
+    pmd60 <- x<md
+    # weighted ratio is directly estimated inside my function
+    return(sum(w[pmd60])/sum(w)*100)
+  }
+  
+  err.est.different <- calc.stError(eusilc,weights="rb050",b.weights=paste0("w",1:10),
+                                    period="year",var="eqIncome",fun=povmd2,
+                                    group=group,fun.adjust.var=NULL,adjust.var=NULL)
+  
+  
+  expect_true(all.equal(err.est.different$Estimates[is.na(rb090)&is.na(db040),.(val_eqIncome,stE_eqIncome)],
+            err.est$Estimates[is.na(rb090)&is.na(db040),.(val_povmd60,stE_povmd60)],
+            check.attributes = FALSE))
+  expect_false(isTRUE(all.equal(err.est.different$Estimates[!(is.na(rb090)&is.na(db040)),.(val_eqIncome,stE_eqIncome)],
+                        err.est$Estimates[!(is.na(rb090)&is.na(db040)),.(val_povmd60,stE_povmd60)],
+                        check.attributes = FALSE)))
+  
 })
 
 test_that("test para - period.diff, period.mean",{
@@ -138,9 +249,9 @@ test_that("test para - bias, size.limit, cv.limit, p",{
 test_that("test return",{
   eusilc.est <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
                              group=c("rb090","db040"))
-  eusilc.comp <- rbindlist(list(eusilc[,.(V1=surveysd:::weightedRatioC(povmd60,db090),N_true=sum(db090)),by=year],
-                                eusilc[,.(V1=surveysd:::weightedRatioC(povmd60,db090),N_true=sum(db090)),by=list(year,rb090)],
-                                eusilc[,.(V1=surveysd:::weightedRatioC(povmd60,db090),N_true=sum(db090)),by=list(year,db040)]),use.names=TRUE,fill=TRUE)
+  eusilc.comp <- rbindlist(list(eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=year],
+                                eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=list(year,rb090)],
+                                eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=list(year,db040)]),use.names=TRUE,fill=TRUE)
   eusilc.comp[,year:=as.character(year)]
   eusilc.comp <- merge(eusilc.comp, eusilc.est$Estimates[,.(year,rb090,db040,N,val_povmd60)])
   expect_true(nrow(eusilc.comp[V1!=val_povmd60])==0)
