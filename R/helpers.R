@@ -8,6 +8,7 @@
 #' @importFrom "utils" "data" "find" "tail"
 #' @importFrom "matrixStats" "rowProds"
 #' @importFrom "laeken" "weightedMedian"
+#' @importFrom "methods" "formalArgs"
 #' @useDynLib surveysd
 
 
@@ -44,6 +45,34 @@ paste_addarg <- function(a,b){
   return(paste(a[[1]],b,paste(a[2:length(a)],collapse=","),sep=","))
 }
 
+# helpfunctions for point estimates
+weightedRatioNat <- function(x,w,N){
+  weightedRatio(x,w)/N*100
+}
+weightedRatioR <- function(x,w){
+  sum(w[x==1],na.rm=TRUE)/sum(w[!is.na(x)],na.rm=TRUE)*100
+}
+weightedSumR <- function(x,w){
+  sum(as.numeric(x)*w,na.rm=TRUE)
+}
+
+povmd <- function(x,w){
+  md <- laeken::weightedMedian(x,w)*0.6
+  pmd60 <- x<md
+  return(as.integer(pmd60))
+}
+
+# helpfunction for quantile calcultion with missings
+quantileNA <- function(x,probs,p.names,np=length(probs)){
+  
+  if(any(is.na(x))){
+    out <- rep(NA_real_,np)
+  }else{
+    out <- quantile(x,probs=probs)
+  }
+  names(out) <- p.names
+  return(out)
+}
 
 # helpfunction to generate multiple years of eusilc data
 demo.eusilc <- function(y=7){
@@ -69,7 +98,7 @@ demo.eusilc <- function(y=7){
   }
   
   eusilc[,rb030:=as.integer(paste0(db030,"0",1:.N)),by=list(year,db030)]
-  eusilc[,povmd60:=as.numeric(eqIncome<.6*laeken::weightedMedian(eqIncome[!duplicated(db030)],w=db090[!duplicated(db030)])),by=year]
+  eusilc[,povmd60:=as.numeric(eqIncome<.6*laeken::weightedMedian(eqIncome,w=db090)),by=year]
   eusilc[,age:=cut(age,c(-Inf,16,25,45,65,Inf))]
   eusilc[,hsize:=cut(hsize,c(0:5,Inf))]
   

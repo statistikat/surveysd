@@ -71,8 +71,25 @@ NumericVector rollSumC(NumericVector x, int k, char type) {
 
 
 // function for weighted ratio
+//' @name PointEstimates
+//' @title Weighted Point Estimates
+//' 
+//' @description Predefined functions for weighted point estimates in package \code{surveysd}.
+//' 
+//' @param x numeric vector 
+//' @param w weight vector 
+//' 
+//' @details Predefined functions are weighted ratio and weighted sum.
+//'
+//' @return
+//' Each of the functions return a single numeric value
+//' @examples
+//' x <- 1:10
+//' w <- 10:1
+//' weightedRatio(x,w)
+//' @export
 // [[Rcpp::export]]
-double weightedRatioC(NumericVector x, NumericVector w) {
+double weightedRatio(NumericVector x, NumericVector w) {
 
   int n = x.size();
   double upper=0;
@@ -92,8 +109,14 @@ double weightedRatioC(NumericVector x, NumericVector w) {
 }
 
 // function for weighted sum
+//' @rdname PointEstimates
+//' @examples
+//' x <- 1:10
+//' w <- 10:1
+//' weightedSum(x,w)
+//' @export
 // [[Rcpp::export]]
-double weightedSumC(NumericVector x, NumericVector w) {
+double weightedSum(NumericVector x, NumericVector w) {
 
   int n = x.size();
   double out=0;

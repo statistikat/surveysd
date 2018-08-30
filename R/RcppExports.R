@@ -9,11 +9,34 @@ rollSumC <- function(x, k, type) {
     .Call('_surveysd_rollSumC', PACKAGE = 'surveysd', x, k, type)
 }
 
-weightedRatioC <- function(x, w) {
-    .Call('_surveysd_weightedRatioC', PACKAGE = 'surveysd', x, w)
+#' @name PointEstimates
+#' @title Weighted Point Estimates
+#' 
+#' @description Predefined functions for weighted point estimates in package \code{surveysd}.
+#' 
+#' @param x numeric vector 
+#' @param w weight vector 
+#' 
+#' @details Predefined functions are weighted ratio and weighted sum.
+#'
+#' @return
+#' Each of the functions return a single numeric value
+#' @examples
+#' x <- 1:10
+#' w <- 10:1
+#' weightedRatio(x,w)
+#' @export
+weightedRatio <- function(x, w) {
+    .Call('_surveysd_weightedRatio', PACKAGE = 'surveysd', x, w)
 }
 
-weightedSumC <- function(x, w) {
-    .Call('_surveysd_weightedSumC', PACKAGE = 'surveysd', x, w)
+#' @rdname PointEstimates
+#' @examples
+#' x <- 1:10
+#' w <- 10:1
+#' weightedSum(x,w)
+#' @export
+weightedSum <- function(x, w) {
+    .Call('_surveysd_weightedSum', PACKAGE = 'surveysd', x, w)
 }
 
