@@ -62,30 +62,42 @@ test_that("test para - strata, cluster and totals",{
   
 })
 
-test_that("test para - bootnames, split and pid",{
+
+
+  test_that("test para - bootnames, split and pid",{
+    
+    expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split="FALSE"),
+                 "split needs to be logical")
+    expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE),
+                 "when split is TRUE pid needs to be a string")
+    
+    eusilc[,rb030error:=rb030[1],by=list(year,db030)]
+    expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030error"),
+                 "pid is not unique in each household for each period")
+    
+    # create split households
+    eusilc[,rb030split:=rb030]
+    year <- eusilc[,unique(year)]
+    year <- year[-1]
+    leaf_out <- c()
+    for(y in year){
+      split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030%in%leaf_out,sample(rb030,20)]
+      overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,.(rb030=sample(rb030,20))]
+      overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
+
+      eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
+      leaf_out <- c(leaf_out,eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),unique(db030)])
+    }
+    eusilc.split <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030split")
+    eusilc.split <- eusilc.split[,lapply(.SD,uniqueN),by=rb030split,.SDcols=paste0("w",1:10)]
+    expect_true(all(eusilc.split[,.SD,.SDcols=paste0("w",1:10)]==1))
+    
+    expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="1"),
+                 "boot.names must start with an alphabetic character")
+    expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="weight"),NA)
+  })
   
-  expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split="FALSE"),
-               "split needs to be logical")
-  expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE),
-               "when split is TRUE pid needs to be a string")
-  
-  eusilc[,rb030error:=rb030[1],by=list(year,db030)]
-  expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030error"),
-               "pid is not unique in each household for each period")
-  
-  
-  eusilc[,rb030split:=rb030]
-  eusilc[year>min(year)&!duplicated(db030),
-         rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
-         by=year]
-  eusilc.split <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split=TRUE,pid="rb030split")
-  eusilc.split <- eusilc.split[,lapply(.SD,uniqueN),by=rb030split,.SDcols=paste0("w",1:10)]
-  expect_true(all(eusilc.split[,.SD,.SDcols=paste0("w",1:10)]==1))
-  
-  expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="1"),
-               "boot.names must start with an alphabetic character")
-  expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="weight"),NA)
-})
+
 
 test_that("test para - single.PSU",{
   expect_warning(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",single.PSU="something"),
