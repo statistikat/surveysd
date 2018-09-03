@@ -48,7 +48,6 @@ Afterwards the bootstrap replicates are multiplied with the original sample weig
 In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 }
 \examples{
-\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -66,9 +65,8 @@ dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
 
 # calibrate on other variables
 dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
-                          period="RB010",b.rep=paste0("w",1:10),
+                          period="year",b.rep=paste0("w",1:10),
                           conP.var=c("rb090","age"),conH.var = c("db040","hsize"))
-}
 
 }
 \seealso{

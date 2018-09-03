@@ -98,7 +98,6 @@
 #'
 #' @examples
 #' 
-#' \dontrun{
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
@@ -208,8 +207,6 @@
 #' all.equal(err.est.different$Estimates[!(is.na(rb090)&is.na(db040))],
 #' err.est$Estimates[!(is.na(rb090)&is.na(db040))],
 #' check.attributes = FALSE)
-#' 
-#' }
 #'
 #'
 #' @export calc.stError
