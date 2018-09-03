@@ -82,7 +82,6 @@ People who enter already existing households will also get the same bootstrap re
 }
 \examples{
 
-\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -97,9 +96,18 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("d
                            
                            
 # create spit households
-eusilc[year>min(year)&!duplicated(db030),
-       rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
-       by=year]
+eusilc[,rb030split:=rb030]
+year <- eusilc[,unique(year)]
+year <- year[-1]
+leaf_out <- c()
+for(y in year){
+  split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030\%in\%leaf_out,sample(rb030,20)]
+  overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030\%in\%leaf_out,.(rb030=sample(rb030,20))]
+  overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
+  
+  eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
+  leaf_out <- c(leaf_out,eusilc[rb030\%in\%c(overwrite.person$rb030,overwrite.person$rb030split),unique(db030)])
+}
 
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
                            strata=c("db040","age"),period="year",
@@ -107,7 +115,6 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
 # split households were considered e.g. household and 
 # split household were both selected or not selected 
 dat_boot[,uniqueN(w1),by=rb030split][V1>1]
-}
 
 }
 \seealso{

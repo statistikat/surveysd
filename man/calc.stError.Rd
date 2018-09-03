@@ -121,7 +121,6 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 }
 \examples{
 
-\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -231,8 +230,6 @@ check.attributes = FALSE)
 all.equal(err.est.different$Estimates[!(is.na(rb090)&is.na(db040))],
 err.est$Estimates[!(is.na(rb090)&is.na(db040))],
 check.attributes = FALSE)
-
-}
 
 
 }

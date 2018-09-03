@@ -63,7 +63,6 @@
 #'
 #' @examples
 #'
-#' \dontrun{
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
@@ -97,7 +96,6 @@
 #' # split households were considered e.g. household and 
 #' # split household were both selected or not selected 
 #' dat_boot[,uniqueN(w1),by=rb030split][V1>1]
-#' }
 #' 
 #' @export draw.bootstrap
 #'

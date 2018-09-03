@@ -39,7 +39,6 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#' \dontrun{
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
@@ -57,9 +56,8 @@
 #'
 #' # calibrate on other variables
 #' dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
-#'                           period="RB010",b.rep=paste0("w",1:10),
+#'                           period="year",b.rep=paste0("w",1:10),
 #'                           conP.var=c("rb090","age"),conH.var = c("db040","hsize"))
-#' }
 #'
 #' @export recalib
 #'
