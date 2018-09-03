@@ -261,8 +261,8 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
 
 
     # define paramters for plot
-    ylabel <- paste0(x$param$fun," of ",variable)
-    p1 <- p1 + xlab("")+ylab(ylabel)+
+    ylabel <- paste0("Point Estimate on variable ",x$param$var)
+    p1 <- p1 + xlab(x$param$period)+ylab(ylabel)+
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 

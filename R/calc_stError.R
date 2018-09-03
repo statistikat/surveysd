@@ -488,7 +488,7 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
   col.order <- c(outx.names[!outx.names%in%col.order],col.order)
   setcolorder(outx,col.order)
 
-  param <- list(number.bweights=length(b.weights),period=period,var=var,fun,fun.adjust.var=fun.adjust.var,adjust.var=adjust.var,group=group,period.diff=period.diff,period.mean=period.mean,
+  param <- list(number.bweights=length(b.weights),period=period,var=var,fun=fun,fun.adjust.var=fun.adjust.var,adjust.var=adjust.var,group=group,period.diff=period.diff,period.mean=period.mean,
                 bias=bias,size.limit=size.limit,cv.limit=cv.limit,...)
 
   output <- list(Estimates=outx,smallGroups=size_group,cvHigh=sd_bool,stEDecrease=samp_eff,param=param)
@@ -811,7 +811,7 @@ print.surveysd <- function(x,...){
   n.NAs <- sum(is.na(x[["Estimates"]][,mget(col.val)]))
 
   # print number of estimates calculated as well as functino and variables used
-  cat("Calculated point estimates for variable(s)\n\n",paste(x[["param"]][["var"]],sep=","),"\n\nusing function\n",x[["param"]][["fun"]],"\n\n")
+  cat("Calculated point estimates for variable(s)\n\n",paste(x[["param"]][["var"]],sep=","),"\n\n")
 
   if(!is.null(n.groups)){
     cat("Results hold",n.estimates,"point estimates for",n.periods,"periods in",n.groups,"subgroups\n")

@@ -9,5 +9,3 @@ This is the development place for R-package surveysd
 
 Estimate standard deviation of estimates in complex surveys using bootstrap weights.
 
-
-
