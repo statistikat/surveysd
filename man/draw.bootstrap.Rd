@@ -101,12 +101,16 @@ year <- eusilc[,unique(year)]
 year <- year[-1]
 leaf_out <- c()
 for(y in year){
-  split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030\%in\%leaf_out,sample(rb030,20)]
-  overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030\%in\%leaf_out,.(rb030=sample(rb030,20))]
+  split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030\%in\%leaf_out,
+                         sample(rb030,20)]
+  overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030\%in\%leaf_out,
+                             .(rb030=sample(rb030,20))]
   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
   
   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
-  leaf_out <- c(leaf_out,eusilc[rb030\%in\%c(overwrite.person$rb030,overwrite.person$rb030split),unique(db030)])
+  leaf_out <- c(leaf_out,
+                eusilc[rb030\%in\%c(overwrite.person$rb030,overwrite.person$rb030split),
+                unique(db030)])
 }
 
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
