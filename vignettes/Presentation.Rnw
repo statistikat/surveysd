@@ -78,18 +78,18 @@
 % define title and authors
 \title{The R Package \texttt{surveysd}}
 
-\author[Johannes, Gussenbauer]{Johannes Gussenbauer, Alexander Kowarik, Matthias Till}
+\author[Alexander, Kowarik]{Johannes Gussenbauer, Alexander Kowarik, Matthias Till}
 \institute[www.statistik.at]{Statistik Austria}
-\date[May 2017]{May, 2017}
+\date[September 2018]{September, 2018}
 
 % slides
 \pgfdeclareimage[height=0.87cm,width=2cm]{logo}{../../vimdocs/Vorlagen/logo}
 \logo{\pgfuseimage{logo}}
 {
 \usebackgroundtemplate{\includegraphics[height=0.95\paperheight,width=\paperwidth]{../../vimdocs/Vorlagen/titlepage}}
-%\begin{frame}
-%\titlepage
-%\end{frame}
+\begin{frame}
+\titlepage
+\end{frame}
 }
 \setcounter{tocdepth}{1}
 
@@ -111,26 +111,6 @@
   \item $\rightarrow$ R-Package \texttt{surveysd}
 \end{itemize}
 \end{frame}
-
-
-% MOTIVATION
-\begin{frame}[fragile]{Motivation}
-\begin{itemize}
-  \item EU-SILC $\rightarrow$ poverty rates
-  \vspace{.5cm}
-  \item High quality indicators on national- but estimates on sub-national level have poor accuracy
-    \begin{itemize}
-    \item SAE-Methods $\rightarrow$ modelling assumptions
-    \item Use administrative data (see (Qinghua and Lanjouw 2009)) $\rightarrow$ not always available
-  \end{itemize}
-  \vspace{.5cm}
-  \item Estimate error of differences between waves $\rightarrow$ many covariates (tedious)
-  \vspace{.5cm}
-  \item Methodology, which is easy to apply and yields better estimates on sub-national levels?
-  \item $\rightarrow$ R-Package \texttt{surveysd}
-\end{itemize}
-\end{frame}
-
 
 
 % surveysd
@@ -170,33 +150,9 @@
 \begin{frame}[fragile]{Draw bootstrap replicates}
 
 <<eval=FALSE,echo=TRUE,size="footnotesize">>=
-draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
-               year="RB010",strata="DB040",cluster=NULL,
-               totals=NULL,single.PSU=c("merge","mean"),
-               boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
-@
-
-\begin{itemize}
-  \item Rectangular data set with household identifier
-  \item Describe sampling design with \texttt{strata} and \texttt{cluster}
-  \item Automatic detection and dealing with single PSUs
-  \item Replicates are taken forward to mimic rotational panel design
-  \begin{itemize}
-      \item Split households are considered
-  \end{itemize}
-
-\end{itemize}
-
-\end{frame}
-
-% 1
-\begin{frame}[fragile]{Draw bootstrap replicates}
-
-<<eval=FALSE,echo=TRUE,size="footnotesize">>=
-draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
-               year="RB010",strata="DB040",cluster=NULL,
-               totals=NULL,single.PSU=c("merge","mean"),
-               boot.names=NULL,country=NULL,split=FALSE,pid=NULL)
+draw.bootstrap(dat, REP = 1000, hid, weights, period, strata = "db040",
+  cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
+  boot.names = NULL, split = FALSE, pid = NULL)
 @
 
 \begin{itemize}
@@ -221,10 +177,9 @@ draw.bootstrap(dat,REP=1000,hid="DB030",weights="RB050",
 \begin{frame}[fragile]{Calibrate Bootsrap Replicates}
 
 <<calibrate, eval=FALSE,echo=TRUE,size="footnotesize">>=
-recalib(dat,hid="DB030",weights="RB050",
-        b.rep=paste0("w",1:1000),year="RB010",
-        country=NULL,conP.var=c("RB090"),
-        conH.var=c("DB040","DB100"),...)
+recalib(dat, hid = "db030", weights = "rb050", b.rep = paste0("w",
+  1:1000), period = "year", conP.var = c("rb090"), conH.var = c("db040",
+  "db100"), ...)
 @
 
 \vspace{.5cm}
@@ -242,10 +197,11 @@ recalib(dat,hid="DB030",weights="RB050",
 % 1
 \begin{frame}[fragile]{Estimate standard errors}
 <<eval=FALSE,echo=TRUE,size="footnotesize">>=
-calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
-             year="RB010",var="HX080",fun="weightedRatio",
-             cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,
-             add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
+calc.stError(dat, weights="rb050", b.weights = paste0("w", 1:1000),
+  period="year", var="povmd60", fun = weightedRatio, national = FALSE, 
+  group = NULL, fun.adjust.var = NULL, adjust.var = NULL,
+  period.diff = NULL, period.mean = 3, bias = FALSE, 
+  size.limit = 20, cv.limit = 10, p = NULL, ...)
 @
 
 \begin{itemize}
@@ -258,35 +214,17 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 \end{itemize}
 \end{frame}
 
-% ESTIMATE ERRORS
-% 1
-\begin{frame}[fragile]{Estimate standard errors}
-<<eval=FALSE,echo=TRUE,size="footnotesize">>=
-calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
-             year="RB010",var="HX080",fun="weightedRatio",
-             cross_var=NULL,year.diff=NULL,year.mean=3,bias=FALSE,
-             add.arg=NULL,size.limit=20,cv.limit=10,p=NULL)
-@
-\begin{itemize}
-  \item Use output of \texttt{recalib()} or rectangular data with bootstrap weights.
-  \item Function \texttt{fun} is applied on variable \texttt{var} using each bootstrap weight
-  \item Predefined functions available, also able to handle custom functions or functions from other packages
-  \begin{itemize}
-    \item Must return double or integer and second argument is weight
-  \end{itemize}
-\end{itemize}
-\end{frame}
 
 % 2
 \begin{frame}[fragile]{Estimate standard errors}
 
 \begin{itemize}
-  \item Results of point estimates are averaged over \texttt{year.mean} years (optional)
+  \item Results of point estimates are averaged over \texttt{period.mean} years (optional)
      \begin{itemize}
         \item Apply filter with equal filter weights over time series
      \end{itemize}
-  \item Estimate standard errors for differences between waves with \texttt{year.diff} (optional)   
-  \item Estimate errors on subgroups with \texttt{cross\_var} (optional)
+  \item Estimate standard errors for differences between waves with \texttt{period.diff} (optional)   
+  \item Estimate errors on subgroups with \texttt{group} (optional)
   \item Estimate quantiles using parameter \texttt{p}
 \end{itemize}
 \end{frame}
@@ -297,35 +235,26 @@ calc.stError(dat,weights="RB050",b.weights=paste0("w",1:1000),
 # cluster schätzen
 library(data.table)
 library(surveysd)
-library(mountSTAT)
 library(ggplot2)
 
-dat <- fread(paste0(mountO(),"/B/Datenaustausch/NETSILC3/udb_short_new.csv"))
-dat[,RB050:=gsub(",","\\.",RB050)]
-dat[,RB050:=as.numeric(RB050)]
+dat <- surveysd:::demo.eusilc()
 
-UDB_AT <- dat[rb020=="AT"][!duplicated(paste(RB030,RB010,sep="_"))]
-
-UDB_AT[,DB050_old:=DB050]
-UDB_AT <- UDB_AT[!is.na(DB030)]
-
-UDB_AT_boot <- draw.bootstrap(UDB_AT,REP=10,hid="DB030",
-                              weights="RB050",year="RB010",
-                              strata=c("DB040","RB090"),
-                              split=TRUE,pid="RB030")
-UDB_AT <- recalib(UDB_AT_boot,hid="DB030",weights="RB050",
-        b.rep=paste0("w",1:10),year="RB010",conP.var=c("RB090"),
-        conH.var=c("DB040","DB100"))
-setnames(UDB_AT,c("RB050","RB010","HX080","DB040","RB090","DB100"),
-         c("weights","year","poverty","region","gender","urban"))
+dat <- draw.bootstrap(dat,REP=10,hid="db030",
+                              weights="rb050",period="year",
+                              strata=c("db040","rb090"),
+                              split=TRUE,pid="rb030")
+dat <- recalib(dat,hid="db030",weights="rb050",
+        b.rep=paste0("w",1:10),period="year",conP.var=c("rb090","age"),
+        conH.var=c("db040","hsize"))
+setnames(dat,c("rb050","db040","rb090"),
+         c("weights","region","gender"))
 @
 
 
 <<calcerror1, eval=TRUE,echo=TRUE,size="footnotesize">>=
-calc.stError(UDB_AT,weights="weights",
-             year="year",b.weights=paste0("w",1:10),
-             var="poverty",cross_var=list("region",c("gender","region")))
-
+calc.stError(dat,weights="weights",
+             period="year",b.weights=paste0("w",1:10),
+             var="povmd60",group=list("region",c("gender","region")))
 @
 
 \end{frame}
@@ -336,11 +265,6 @@ calc.stError(UDB_AT,weights="weights",
 # Apply function which is not in package 'surveysd'
 # take the gini - index
 library(laeken,quietly=TRUE)
-# simulate income
-set.seed(1234)
-UDB_AT[,income:=
-               exp(rnorm(.N,mean=sample(7:10,1),sd=1)),
-             by=list(urban)]
 
 # gini() returns list
 # calc.stError needs function that returns double or integer
@@ -353,10 +277,10 @@ help_gini <- function(x,w){
 % 5
 \begin{frame}[fragile]{Estimate standard errors}
 <<calcerror3, eval=TRUE,echo=TRUE,size="footnotesize">>=
-calc.stError(UDB_AT,fun="help_gini",
-             weights="weights",year="year",b.weights=paste0("w",1:10),
-             var="income",cross_var=list("region",c("gender","region")),
-             year.diff=c("2014-2008"),p=c(.025,.975))
+calc.stError(dat,fun=help_gini,
+             weights="weights",period="year",b.weights=paste0("w",1:10),
+             var="eqIncome",group=list("region",c("gender","region")),
+             period.diff=c("2016-2011"),p=c(.025,.975))
 @
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%
@@ -367,10 +291,10 @@ calc.stError(UDB_AT,fun="help_gini",
 % 1
 \begin{frame}[fragile]{Plot Method}
 <<calcerror4,include=FALSE, eval=TRUE,size="footnotesize">>=
-res_inc <- calc.stError(UDB_AT,fun="help_gini",
-             weights="weights",year="year",b.weights=paste0("w",1:10),
-             var="income",cross_var=list("region",c("gender","region")),
-             year.diff=c("2014-2008"),p=c(.025,.975))
+res_inc <- calc.stError(dat,fun=help_gini,
+             weights="weights",period="year",b.weights=paste0("w",1:10),
+             var="eqIncome",group=list("region",c("gender","region")),
+             period.diff=c("2016-2011"),p=c(.025,.975))
 
 @
 
