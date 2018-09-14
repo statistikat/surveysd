@@ -10,10 +10,22 @@ library(data.table)
 eusilc <- surveysd:::demo.eusilc()
 eusilc[,rb030split:=rb030]
 # create spit households
-
-eusilc[year>min(year)&!duplicated(db030),
-       rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
-       by=year]
+eusilc[,rb030split:=rb030]
+year <- eusilc[,unique(year)]
+year <- year[-1]
+leaf_out <- c()
+for(y in year){
+  split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030%in%leaf_out,
+                         sample(rb030,20)]
+  overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,
+                             .(rb030=sample(rb030,20))]
+  overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
+  
+  eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
+  leaf_out <- c(leaf_out,
+                eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
+                       unique(db030)])
+}
 
 # test input parameter
 test_that("test para - data",{
@@ -41,7 +53,4 @@ test_that("test return",{
   dat.HHID <- dat.HHID[,uniqueN(db030),by=rb030split][V1>1]
   expect_true(nrow(dat.HHID)==0)
 })
-
-
-
 
