@@ -20,7 +20,9 @@
 #' library(laeken)
 #' library(data.table)
 #'
-#' eusilc <- surveysd:::demo.eusilc() 
+#' eusilc <- surveysd:::demo.eusilc()
+#' 
+#' # create spit households   
 #' eusilc[,rb030split:=rb030]
 #' year <- eusilc[,unique(year)]
 #' year <- year[-1]
@@ -36,12 +38,7 @@
 #'   leaf_out <- c(leaf_out,
 #'                 eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
 #'                 unique(db030)])
-#' }
-#' 
-#' # create spit households
-#' eusilc[year>min(year)&!duplicated(db030),
-#'        rb030split:=surveysd:::randomInsert(rb030split,eusilc[year==(unlist(.BY)-1)]$rb030,20),
-#'        by=year]
+#' } 
 #' 
 #' # pid which are in split households
 #' eusilc[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
