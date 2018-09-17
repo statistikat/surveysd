@@ -62,7 +62,7 @@ eusilc[,N.housholds:=sum(db090[!duplicated(db030)]),by=new_strata]
 eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
                                        cluster="db030",fpc="N.households")
 
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=1000,strata=c("new_strata"),
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
                                        cluster="db030",fpc="N.households")
 
 
