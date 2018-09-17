@@ -94,7 +94,8 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("d
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040","age"),
                            period="year")
                            
-                           
+
+\dontrun{                                                       
 # create spit households
 eusilc[,rb030split:=rb030]
 year <- eusilc[,unique(year)]
@@ -119,6 +120,7 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
 # split households were considered e.g. household and 
 # split household were both selected or not selected 
 dat_boot[,uniqueN(w1),by=rb030split][V1>1]
+}
 
 }
 \seealso{

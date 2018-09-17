@@ -62,11 +62,12 @@ dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
                           period="year",b.rep=paste0("w",1:10),
                           conP.var=c("rb090"),conH.var = c("db040"))
 
-
+\dontrun{
 # calibrate on other variables
 dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
                           period="year",b.rep=paste0("w",1:10),
                           conP.var=c("rb090","age"),conH.var = c("db040","hsize"))
+}
 
 }
 \seealso{
