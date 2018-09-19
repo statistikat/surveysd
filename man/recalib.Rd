@@ -5,8 +5,8 @@
 \title{Calibrate weights}
 \usage{
 recalib(dat, hid = "DB030", weights = "RB050", b.rep = paste0("w",
-  1:1000), period = "year", conP.var = c("RB090"), conH.var = c("DB040",
-  "DB100"), ...)
+  1:1000), period = "year", conP.var = c("RB090"),
+  conH.var = c("DB040", "DB100"), ...)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for various periods.}
@@ -48,6 +48,7 @@ Afterwards the bootstrap replicates are multiplied with the original sample weig
 In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 }
 \examples{
+\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -62,7 +63,7 @@ dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
                           period="year",b.rep=paste0("w",1:10),
                           conP.var=c("rb090"),conH.var = c("db040"))
 
-\dontrun{
+
 # calibrate on other variables
 dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
                           period="year",b.rep=paste0("w",1:10),
