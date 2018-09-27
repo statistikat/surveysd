@@ -81,7 +81,7 @@ Any person in this new split household will get the same bootstrap replicate as 
 People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous periods.
 }
 \examples{
-
+\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -95,7 +95,7 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("d
                            period="year")
                            
 
-\dontrun{                                                       
+                                                      
 # create spit households
 eusilc[,rb030split:=rb030]
 year <- eusilc[,unique(year)]

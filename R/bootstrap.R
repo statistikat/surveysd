@@ -62,7 +62,7 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#'
+#' \dontrun{
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
@@ -76,7 +76,7 @@
 #'                            period="year")
 #'                            
 #' 
-#' \dontrun{                                                       
+#'                                                       
 #' # create spit households
 #' eusilc[,rb030split:=rb030]
 #' year <- eusilc[,unique(year)]
