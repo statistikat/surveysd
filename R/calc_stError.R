@@ -567,9 +567,6 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
         }
       }))
     }else{
-      if(period.mean%%2==0){
-        
-      }
       periodsList <- NULL
       warning("Not enough periods present in data to calculate mean over ",period.mean," periods.\n")
       period.mean <- NULL
