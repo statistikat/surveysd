@@ -120,7 +120,7 @@ When specifying \code{period.mean}, the decrease in standard error for choosing 
 The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error of most point estimates converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
 }
 \examples{
-
+\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -145,6 +145,7 @@ group <- "rb090"
 err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
                         period="year",var="povmd60",fun=weightedRatio,
                         group=group,period.diff=NULL,period.mean=NULL)
+                        
 
 # estimate weightedRatio for povmd60 per period and rb090, db040 and combination of both
 group <- list("rb090","db040",c("rb090","db040"))
@@ -152,7 +153,6 @@ err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10
                         period="year",var="povmd60",fun=weightedRatio,
                         group=group,period.diff=NULL,period.mean=NULL)
 
-\dontrun{
 err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
                         period="year",var="povmd60",fun=weightedRatio,
                         group=group,period.diff=NULL,period.mean=NULL)
