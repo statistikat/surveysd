@@ -57,7 +57,7 @@ eusilc <- surveysd:::demo.eusilc()
 
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
                            period="year")
-                           
+
 # calibrate weight for bootstrap replicates
 dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
                           period="year",b.rep=paste0("w",1:10),
