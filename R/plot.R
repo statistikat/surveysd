@@ -1,33 +1,33 @@
 #' Plot surveysd-Objects
 #'
-#' Plot results of \code{calc.stError()}
+#' Plot results of `calc.stError()`
 #'
-#' @param x object of class 'surveysd' output of function \code{\link{calc.stError}}
-#' @param variable Name of the variable for which standard errors have been calcualated in \code{dat}
+#' @param x object of class 'surveysd' output of function [calc.stError]
+#' @param variable Name of the variable for which standard errors have been calcualated in `dat`
 #' @param type can bei either 'summary' or 'grouping', default value is 'summary'.
-#' For 'summary' a barplot is created giving an overview of the number of estimates having the flag \code{smallGroup}, \code{cvHigh}, both or none of them.
+#' For 'summary' a barplot is created giving an overview of the number of estimates having the flag `smallGroup`, `cvHigh`, both or none of them.
 #' For 'grouping' results for point estimate and standard error are plotted for pre defined groups.
-#' @param groups If \code{type='grouping'} variables must be defined by which the data is grouped. Only 2 levels are supported as of right now.
+#' @param groups If `type='grouping'` variables must be defined by which the data is grouped. Only 2 levels are supported as of right now.
 #' If only one group is defined the higher group will be the estimate over the whole period.
-#' Results are plotted for the first argument in \code{groups} as well as for the combination of \code{groups[1]} and \code{groups[2]}.
-#' @param sd.type can bei either \code{'ribbon'} or \code{'dot'} and is only used if \code{type='grouping'}. Default is \code{"dot"}
-#' For \code{sd.type='dot'} point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value \code{cv.limit} (see \code{\link{calc.stError}}).
-#' For \code{sd.type='ribbon'} the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
-#' The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.
+#' Results are plotted for the first argument in `groups` as well as for the combination of `groups[1]` and `groups[2]`.
+#' @param sd.type can bei either `'ribbon'` or `'dot'` and is only used if `type='grouping'`. Default is `"dot"`
+#' For `sd.type='dot'` point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value `cv.limit` (see [calc.stError]).
+#' For `sd.type='ribbon'` the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
+#' The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~`groups[1]`) are coloured grey.
 #' @param ... additional arguments supplied to plot.
-#' 
+#'
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
-#' 
+#'
 #' eusilc <- surveysd:::demo.eusilc()
-#' 
+#'
 #' dat_boot <- draw.bootstrap(eusilc,REP=250,hid="db030",weights="rb050",strata=c("db040"),
 #'                            period="year")
-#'                            
+#'
 #' # calibrate weight for bootstrap replicates
 #' dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
 #'                           period="year",b.rep=paste0("w",1:250),
@@ -38,29 +38,29 @@
 #' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:250),
 #'                         period="year",var="povmd60",fun="weightedRatio",
 #'                         group=c("rb090","db040"),period.diff=NULL,period.mean=NULL)
-#' 
-#'                                                 
-#' plot(err.est)                        
-#' 
+#'
+#'
+#' plot(err.est)
+#'
 #' # plot results for rb090
 #' # dotted line is the result on the national level
 #' plot(err.est,type="grouping",groups="rb090")
-#' 
+#'
 #' # plot results for rb090 in each db040
 #' plot(err.est,type="grouping",groups=c("rb090","db040"))
-#' 
+#'
 #' # plot results for db040 in each rb090
 #' plot(err.est,type="grouping",groups=c("db040","rb090"))
 #' }
-#' 
-#' @export  
+#'
+#' @export
 
 plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping"),
                           groups=NULL,sd.type=c("dot","ribbon"),...){
 
   res_type <- GROUPING <- shape_bool <- shape_bool2 <- NULL
-  
-  
+
+
   #################
   # Input checking
   type <- type[1]
@@ -75,16 +75,16 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
     stop("No results for ",variable," present in the data!")
   }
   if(type=="grouping"){
-    
+
     if(is.null(groups)){
       stop("Paramter 'groups' cannot be NULL if type='grouping'!")
     }
-    
+
     other_var <- unique(unlist(x$param$group))
     if(any(!groups%in%other_var)){
       stop("Variables in 'groups' must contain variables from x$params$group!")
     }
-    
+
     match_group <- lapply(x$param$group,function(z){
       if(!is.null(z)){
         identical(sort(z),sort(groups))
@@ -147,12 +147,12 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
     if(length(groups)==1){
       groups <- c(period,groups)
     }
-    
+
     if(length(other_var)>0){
       na_var <- other_var[!other_var%in%groups]
       exp1_2 <- paste(paste0("is.na(",na_var,")"),collapse="&")
       exp1 <- paste0("c(!is.na(",groups[1],")&!is.na(",groups[2],")&",exp1_2,")")
-      
+
       na_var <- other_var[!other_var%in%groups[1]]
       exp2_2 <- paste(paste0("is.na(",na_var,")"),collapse="&")
       exp2 <- paste0("c(!is.na(",groups[1],")&",exp2_2,")")
@@ -160,7 +160,7 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
       exp1 <- paste0("c(!is.na(",groups[1],")&!is.na(",groups[2],"))")
       exp2 <- paste0("c(!is.na(",groups[1],")&is.na(",groups[2],"))")
     }
-    
+
 
     plot.group1 <- dt.eval("plot.x[",exp1,"]")
     plot.group2 <- dt.eval("plot.x[",exp2,"]")
@@ -307,8 +307,8 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
 
 define_type <- function(plot.x,x,variable="HX080"){
 
-  SMALLGROUP <- res_type <- NULL  
-  
+  SMALLGROUP <- res_type <- NULL
+
   val_variable <- paste("val",variable,sep="_")
   poss.values <- c("Missing","cvHigh","SmallGroup+cvHigh","SmallGroup","OK")
 
@@ -318,7 +318,7 @@ define_type <- function(plot.x,x,variable="HX080"){
   plot.x <- x$smallGroups[plot.x,,on=c(merge.on)]
   merge.on <- unique(c(x$param$period,unlist(x$param$group)))
   plot.x <- x$cvHigh[plot.x,,on=c(merge.on)]
-  
+
   # define type
   plot.x[!is.na(SMALLGROUP)&get(variable)==FALSE,res_type:="SmallGroup"]
   plot.x[!is.na(SMALLGROUP)&get(variable)==TRUE,res_type:="SmallGroup+cvHigh"]
