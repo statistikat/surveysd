@@ -223,187 +223,178 @@ calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
 
   ##########################################################
   # INPUT CHECKING
-  if(class(dat)[1]=="data.frame"){
+  if (class(dat)[1] == "data.frame") {
     dat <- as.data.table(dat)
-  }else if(class(dat)[1]!="data.table"){
+  }else if (class(dat)[1] != "data.table") {
     stop("dat must be a data.frame or data.table")
   }
 
   c.names <- colnames(dat)
 
   # check weights
-  if(length(weights)!=1){
+  if (length(weights) != 1)
     stop("weights must have length 1")
-  }
-  if(!weights%in%c.names){
-    stop(weights," is not a column in dat")
-  }
-  if(!is.numeric(dt.eval("dat[,",weights,"]"))){
-    stop(weights," must be a numeric column")
-  }
+
+  if (!weights %in% c.names)
+    stop(weights, " is not a column in dat")
+
+  if(!is.numeric(dt.eval("dat[,", weights, "]")))
+    stop(weights, " must be a numeric column")
+
 
   # check b.weights
-  if(!all(b.weights%in%c.names)){
+  if (!all(b.weights %in% c.names))
     stop("Not all elements in b.rep are column names in dat")
-  }
-  if(any(!grepl("^[[:alpha:]]",b.weights))){
+
+  if (any(!grepl("^[[:alpha:]]", b.weights)))
     stop("Column names of bootstrap replicates must start with alphabetic character")
-  }
-  if(any(!unlist(lapply(dat[,mget(b.weights)],is.numeric)))){
+
+  if (any(!unlist(lapply(dat[, mget(b.weights)], is.numeric))))
     stop("Columns containing bootstrap replicates must be numeric")
-  }
 
   # check period
-  if(length(period)!=1){
+  if (length(period)!=1)
     stop("period must have length 1")
-  }
-  if(!period%in%c.names){
+
+  if (!period%in%c.names)
     stop(paste0(period," is not a column in dat"))
-  }
+
 
   # check var
-  if(any(!var%in%c(c.names))){
+  if (any(!var%in%c(c.names)))
     stop("Not all elements in var are column names in dat")
-  }
-  if(any(!unlist(lapply(dat[,mget(b.weights)],is.numeric)))){
-    stop("Columns containing ",paste(var,collapse=",")," must all be numeric")
-  }
+
+  if (any(!unlist(lapply(dat[, mget(b.weights)], is.numeric))))
+    stop("Columns containing ",paste(var, collapse = ",")," must all be numeric")
+
 
   # check national
-  if(class(national)!="logical"){
+  if (!is.logical(national))
     stop("national can only be logical")
-  }
+
 
   # check fun and ...
-  if(class(fun)!="function"){
+  if (!is.function(fun))
     stop("fun can only be a function")
-  }
-  if(!"..."%in%formalArgs(fun)){
+
+  if (!"..." %in% formalArgs(fun)) {
     ellipsNames <- names(list(...))
-    if(any(!ellipsNames%in%formalArgs(fun))){
-      stop(ellipsNames[!ellipsNames%in%formalArgs(fun)]," not argument(s) of supplied function.")
-    }
+    if (any(!ellipsNames %in% formalArgs(fun)))
+      stop(ellipsNames[!ellipsNames %in% formalArgs(fun)], " not argument(s) of supplied function.")
   }
 
-  test.val <- dt.eval("dat[,fun(",var,",",weights,",...)]")
-  if(!is.numeric(test.val)&!is.integer(test.val)){
+  test.val <- dt.eval("dat[,fun(", var, ",", weights, ",...)]")
+  if (!is.numeric(test.val) & !is.integer(test.val))
     stop("Function in fun does not return integer or numeric value")
-  }
-  if(length(test.val)>1){
+
+  if (length(test.val) > 1)
     stop("Function in fun does return more than one value. Only functions which return a single value are allowed.")
-  }
 
   # check fun.adjust.var
-  if(!is.null(fun.adjust.var)){
-    if(class(fun.adjust.var)!="function"){
+  if (!is.null(fun.adjust.var)) {
+    if (!is.function(fun.adjust.var))
       stop("fun.adjust.var can only be a function or NULL")
-    }
 
-    test.val <- dt.eval("dat[,fun.adjust.var(",var,",",weights,",...)]")
-    if(!is.numeric(test.val)&!is.integer(test.val)){
+    test.val <- dt.eval("dat[,fun.adjust.var(", var, ",", weights, ",...)]")
+    if(!is.numeric(test.val) & !is.integer(test.val))
       stop("Function in fun.adjust.var does not return integer or numeric value")
-    }
   }
   # check adjust.var
   if(!is.null(adjust.var)){
-    if(class(adjust.var)!="character"){
+    if (class(adjust.var) != "character")
       stop("adjust.var needs to be a character")
-    }
-    if(length(adjust.var)>1){
+
+    if (length(adjust.var) > 1)
       stop("adjust.var can only be a single variable name")
-    }
-    if(!adjust.var%in%c.names){
+
+    if (!adjust.var %in% c.names)
       stop("adjust.var must be a column name in dat")
-    }
   }
 
   # check group
-  if(is.null(group)){
+  if (is.null(group))
     group <- list(NULL)
-  }
-  if(class(group)!="list"){
+
+  if (class(group) != "list")
     group <- as.list(group)
-  }
-  if(!any(unlist(lapply(group,is.null)))){
+
+  if (!any(unlist(lapply(group,is.null))))
     group <- c(list(NULL),group)
-  }
-  if(any(!unlist(group)%in%c.names)){
+
+  if (any(!unlist(group) %in% c.names))
     stop("Not all elements on group are column names in dat")
-  }
 
   # check period.mean
-  if(!is.null(period.mean)){
-    if(length(period.mean)!=1){
+  if (!is.null(period.mean)) {
+    if (length(period.mean) != 1)
       stop("period.mean must have length 1")
-    }
-    if(!is.numeric(period.mean)){
+
+    if (!is.numeric(period.mean))
       stop("period.mean must contain one numeric value")
-    }
-    if(period.mean%%1!=0){
+
+    if (period.mean%%1 != 0)
       stop("period.mean cannot have a decimal part")
-    }
-    if(period.mean%%2==0){
+
+    if (period.mean%%2 == 0) {
       warning("period.mean must be odd - mean over periods will not be calculated")
       period.mean <- NULL
-    }else{
-      if(period.mean==1){
+    } else {
+      if (period.mean == 1)
         period.mean <- NULL
-      }
     }
   }
 
 
   # check bias
-  if(length(bias)!=1){
+  if (length(bias) != 1)
     stop("period.mean must have length 1")
-  }
-  if(!is.logical(bias)){
+
+  if (!is.logical(bias))
     stop("bias can only be TRUE of FALSE")
-  }
 
   # check size.limit
-  if(length(size.limit)!=1){
+  if (length(size.limit) != 1)
     stop("size.limit must have length 1")
-  }
-  if(!is.numeric(size.limit)){
+
+  if (!is.numeric(size.limit))
     stop("size.limit must contain one numeric value")
-  }
+
 
   # check cv.limit
-  if(length(cv.limit)!=1){
+  if (length(cv.limit) != 1)
     stop("cv.limit must have length 1")
-  }
-  if(!is.numeric(cv.limit)){
+
+  if (!is.numeric(cv.limit))
     stop("cv.limit must contain one numeric value")
-  }
 
   # check p
-  if(!is.null(p)){
-    if(!is.numeric(p)){
+  if (!is.null(p)) {
+    if (!is.numeric(p))
       stop("p must be a numeric vector")
-    }
-    if(any(!p%between%c(0,1))){
+
+    if (any(!p %between% c(0, 1)))
       stop("Values in p must be between 0 and 1")
-    }
+
   }
 
   # check period.diff
-  if(!is.null(period.diff)){
-    periods.dat <- dt.eval("dat[,unique(",period,")]")
-    period.diff <- strsplit(period.diff,"-")
+  if (!is.null(period.diff)) {
+    periods.dat <- dt.eval("dat[,unique(", period, ")]")
+    period.diff <- strsplit(period.diff, "-")
 
-    rm.index <- rep(0,length(period.diff))
+    rm.index <- rep(0, length(period.diff))
     for(i in 1:length(period.diff)){
-      if(any(!period.diff[[i]]%in%periods.dat)){
-        warning("Removing ",paste(period.diff[[i]],collapse="-")," from period.diff - period(s) not present in column ",period,"\n")
+      if (any(!period.diff[[i]] %in% periods.dat)) {
+        warning("Removing ", paste(period.diff[[i]], collapse = "-"),
+                " from period.diff - period(s) not present in column ", period, "\n")
         rm.index[i] <- 1
       }
     }
-    if(all(rm.index==1)){
+    if (all(rm.index == 1)) {
       warning("No differences will be calculated\n")
       period.diff <- NULL
-    }else{
-      period.diff <- period.diff[rm.index==0]
+    } else {
+      period.diff <- period.diff[rm.index == 0]
     }
   }
 
