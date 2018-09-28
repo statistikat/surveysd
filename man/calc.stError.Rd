@@ -11,7 +11,7 @@ calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL, ...)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \code{\link{draw.bootstrap}} and \code{\link{recalib}}.}
+\item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \link{draw.bootstrap} and \link{recalib}.}
 
 \item{weights}{character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.}
 
@@ -37,7 +37,7 @@ The pointestimates are then estimated for each subgroup seperately. If \code{gro
 
 \item{period.mean}{odd integer, defining the range of periods over which the sample mean of point estimates is additionally calcualted.}
 
-\item{bias}{boolean, if TRUE the sample mean over the point estimates of the bootstrap weights is returned.}
+\item{bias}{boolean, if \code{TRUE} the sample mean over the point estimates of the bootstrap weights is returned.}
 
 \item{size.limit}{integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{period} and the entries in \code{group}.
 Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.}
@@ -51,27 +51,33 @@ Warnings are returned if the number of observations in a subgroup falls below \c
 \value{
 Returns a list containing:
 \itemize{
-  \item \code{Estimates}: data.table containing period differences and/or k period averages for estimates of \code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
-  In addition the sample size, \code{n}, and poplutaion size for each group is added to the output.
-  \item \code{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
-  \item \code{cvHigh}: data.table containing a boolean variable which indicates for each estimate if the estimated standard error exceeds \code{cv.limit}.
-  \item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is gained when averaging over k periods. Only returned if \code{period.mean} is not \code{NULL}.
+\item \code{Estimates}: data.table containing period differences and/or k period averages for estimates of
+\code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
+In addition the sample size, \code{n}, and poplutaion size for each group is added to the output.
+\item \code{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
+\item \code{cvHigh}: data.table containing a boolean variable which indicates for each estimate if the
+estimated standard error exceeds \code{cv.limit}.
+\item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is
+gained when averaging over k periods. Only returned if \code{period.mean} is not \code{NULL}.
 }
 }
 \description{
-Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \code{\link{draw.bootstrap}} and \code{\link{recalib}}).
+Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \link{draw.bootstrap} and \link{recalib}).
 In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error.
 }
 \details{
-\code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors defined by \code{fun} and \code{var} for each sample period in \code{dat}.
-\code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
+\code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors
+defined by \code{fun} and \code{var} for each sample period in \code{dat}.
+\code{dat} must be household data where household members correspond to multiple rows with the same household identifier.
+The data should at least containt the following columns:
 \itemize{
-  \item Column indicating the sample period;
-  \item Column indicating the household ID;
-  \item Column containing the household sample weights;
-  \item Columns which contain the bootstrap weights (see output of \code{\link{recalib}});
-  \item Columns listed in \code{var} as well as in \code{group}
+\item Column indicating the sample period;
+\item Column indicating the household ID;
+\item Column containing the household sample weights;
+\item Columns which contain the bootstrap weights (see output of \link{recalib});
+\item Columns listed in \code{var} as well as in \code{group}
 }
+
 For each variable in \code{var} as well as sample period the function \code{fun} is applied using the original as well as the bootstrap sample weights.\cr
 The point estimate is then selected as the result of \code{fun} when using the original sample weights and it's standard error is estimated with the result of \code{fun} using the bootstrap sample weights. \cr
 \cr
@@ -93,7 +99,8 @@ For applying \code{fun} on \code{var} the estimates for the bootstrap replicate 
 \deqn{fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...}
 the function \code{fun} will be applied in the way
 \deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...}
-where \code{var.1}, \code{var.2},... correspond to the estimates resulting from \code{fun.adjust.var} and \code{adjust.var}.
+
+where \code{var.1}, \code{var.2}, \code{...} correspond to the estimates resulting from \code{fun.adjust.var} and \code{adjust.var}.
 NOTE: This procedure is especially usefull if the \code{var} is dependent on \code{weights} and \code{fun} is applied on subgroups of the data set. Then it is not possible to capture this
 procedure with \code{fun} and \code{var}, see examples for a more hands on explanation.
 \cr
@@ -225,8 +232,8 @@ all.equal(err.est.different$Estimates[!(is.na(rb090) & is.na(db040))],
 
 }
 \seealso{
-\code{\link{draw.bootstrap}} \cr
-\code{\link{recalib}}
+\link{draw.bootstrap} \cr
+\link{recalib}
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
