@@ -21,7 +21,7 @@ draw.bootstrap(dat, REP = 1000, hid, weights, period, strata = "DB040",
 
 \item{strata}{character vector specifying the name of the column in \code{dat} by which the population was stratified.
 If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
-Setting in addition \code{cluter} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.}
+Setting in addition \code{cluster} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.}
 
 \item{cluster}{character vector specifying cluster in the data. If not already specified in \code{cluster} household ID is taken es the lowest level cluster.}
 
@@ -54,13 +54,15 @@ Survey information, like ID, sample weights, strata and population totals per st
 }
 \details{
 \code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
-\code{dat} must be household data where household members correspond to multiple rows with the same household identifier. The data should at least containt the following columns:
+\code{dat} must be household data where household members correspond to multiple rows with the same household
+identifier. The data should at least containt the following columns:
 \itemize{
-  \item Column indicating the sample period;
-  \item Column indicating the household ID;
-  \item Column containing the household sample weights;
-  \item Columns by which population was stratified during the sampling process.
+\item Column indicating the sample period;
+\item Column indicating the household ID;
+\item Column containing the household sample weights;
+\item Columns by which population was stratified during the sampling process.
 }
+
 For single stage sampling design a column the argument \code{totals} is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
 For this case the number of PSUs is calculated and added to \code{dat} using \code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling design is always assumed and
 if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.\cr
@@ -71,7 +73,7 @@ If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stag
 For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
 
-Bootstrap replicates are drawn for each survey period (\code{period}) using the function \code{\link[surveysd]{rescaled.bootstrap}}.
+Bootstrap replicates are drawn for each survey period (\code{period}) using the function \link{rescaled.bootstrap}.
 Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
 This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
 
@@ -93,9 +95,9 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("d
 
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040","age"),
                            period="year")
-                           
 
-                                                      
+
+
 # create spit households
 eusilc[,rb030split:=rb030]
 year <- eusilc[,unique(year)]
@@ -107,7 +109,7 @@ for(y in year){
   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030\%in\%leaf_out,
                              .(rb030=sample(rb030,20))]
   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
-  
+
   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
   leaf_out <- c(leaf_out,
                 eusilc[rb030\%in\%c(overwrite.person$rb030,overwrite.person$rb030split),
@@ -117,14 +119,14 @@ for(y in year){
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
                            strata=c("db040","age"),period="year",
                            split=TRUE,pid="rb030split")
-# split households were considered e.g. household and 
-# split household were both selected or not selected 
+# split households were considered e.g. household and
+# split household were both selected or not selected
 dat_boot[,uniqueN(w1),by=rb030split][V1>1]
 }
 
 }
 \seealso{
-\code{\link[data.table]{data.table}} for more information on data.table objects.
+\code{\link[data.table:data.table]{data.table}} for more information on data.table objects.
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
