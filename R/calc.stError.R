@@ -113,37 +113,31 @@
 #'                           conH.var = c("db040"))
 #'
 #' # estimate weightedRatio for povmd60 per period
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=NULL,period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = NULL, period.diff = NULL, period.mean = NULL)
 #'
 #' # estimate weightedRatio for povmd60 per period and rb090
 #' group <- "rb090"
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=group,period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = group, period.diff = NULL, period.mean = NULL)
 #'
 #'
 #' # estimate weightedRatio for povmd60 per period and rb090, db040 and combination of both
 #' group <- list("rb090","db040",c("rb090","db040"))
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=group,period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = group, period.diff = NULL, period.mean = NULL)
 #'
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=group,period.diff=NULL,period.mean=NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = group, period.diff = NULL, period.mean = NULL)
 #'
 #' # use average over 3 periods for standard error estimation
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=group,period.diff=NULL,period.mean=3)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = group, period.diff = NULL, period.mean = 3)
 #'
 #' # get estimate for difference of period 2016 and 2013
 #' period.diff <- c("2015-2011")
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=group,period.diff=period.diff,period.mean=3)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = group, period.diff = period.diff, period.mean = 3)
 #'
 #'
 #' # use a function from an other package that has sampling weights as its second argument
@@ -151,13 +145,12 @@
 #' library(laeken)
 #'
 #' # set up help function that returns only the gini index
-#' help_gini <- function(x,w){
-#'  return(gini(x,w)$value)
+#' help_gini <- function(x, w){
+#'  return(gini(x, w)$value)
 #' }
 #'
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=help_gini,group=group,
-#'                         period.diff=period.diff,period.mean=3)
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = help_gini, group = group,
+#'                         period.diff = period.diff, period.mean = 3)
 #'
 #'
 #' # using fun.adjust.var and adjust.var to estimate povmd60 indicator
@@ -165,9 +158,9 @@
 #'
 #' # this function estimates the povmd60 indicator with x as income vector
 #' # and w as weight vector
-#' povmd <- function(x,w){
-#'  md <- laeken::weightedMedian(x,w)*0.6
-#'  pmd60 <- x<md
+#' povmd <- function(x, w){
+#'  md <- laeken::weightedMedian(x, w)*0.6
+#'  pmd60 <- x < md
 #'  return(as.integer(pmd60))
 #' }
 #'
@@ -175,18 +168,17 @@
 #' # the povmd60 indicator for each bootstrap weight
 #' # and the resultung indicators are passed to function weightedRatio
 #'
-#' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="povmd60",fun=weightedRatio,
-#'                         group=group,fun.adjust.var=povmd,adjust.var="eqIncome")
+#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#'                         group = group, fun.adjust.var = povmd, adjust.var = "eqIncome")
 #'
 #' # why fun.adjust.var and adjust.var are needed (!!!):
 #' # one could also use the following function
 #' # and set fun.adjust.var=NULL,adjust.var=NULL
 #' # and set fun = povmd, var = "eqIncome"
 #'
-#' povmd2 <- function(x,w){
-#'  md <- laeken::weightedMedian(x,w)*0.6
-#'  pmd60 <- x<md
+#' povmd2 <- function(x, w){
+#'  md <- laeken::weightedMedian(x, w)*0.6
+#'  pmd60 <- x < md
 #'  # weighted ratio is directly estimated inside my function
 #'  return(sum(w[pmd60])/sum(w)*100)
 #' }
@@ -194,19 +186,18 @@
 #' # but this results in different results in subgroups
 #' # compared to using fun.adjust.var and adjust.var
 #'
-#' err.est.different <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-#'                         period="year",var="eqIncome",fun=povmd2,
-#'                         group=group,fun.adjust.var=NULL,adjust.var=NULL)
+#' err.est.different <- calc.stError(dat_boot_calib, var = "eqIncome", fun = povmd2,
+#'                                   group = group, fun.adjust.var = NULL, adjust.var = NULL)
 #'
 #' # results are equal for yearly estimates
-#' all.equal(err.est.different$Estimates[is.na(rb090)&is.na(db040)],
-#' err.est$Estimates[is.na(rb090)&is.na(db040)],
-#' check.attributes = FALSE)
+#' all.equal(err.est.different$Estimates[is.na(rb090) & is.na(db040)],
+#'           err.est$Estimates[is.na(rb090)&is.na(db040)],
+#'           check.attributes = FALSE)
 #'
 #' # but for subgroups (rb090, db040) results vary
-#' all.equal(err.est.different$Estimates[!(is.na(rb090)&is.na(db040))],
-#' err.est$Estimates[!(is.na(rb090)&is.na(db040))],
-#' check.attributes = FALSE)
+#' all.equal(err.est.different$Estimates[!(is.na(rb090) & is.na(db040))],
+#'           err.est$Estimates[!(is.na(rb090)&is.na(db040))],
+#'           check.attributes = FALSE)
 #' }
 #'
 #' @export calc.stError
@@ -215,9 +206,10 @@
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
-calc.stError <- function(dat,weights,b.weights=paste0("w",1:1000),period,var,
-                         fun=weightedRatio,national=FALSE,group=NULL,fun.adjust.var=NULL,adjust.var=NULL,
-                         period.diff=NULL,period.mean=3,bias=FALSE,size.limit=20,cv.limit=10,p=NULL,...){
+calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(dat, "b.rep"), period = attr(dat, "period"), var,
+                         fun = weightedRatio, national = FALSE, group = NULL, fun.adjust.var = NULL,
+                         adjust.var = NULL, period.diff = NULL, period.mean = 3, bias = FALSE,
+                         size.limit = 20, cv.limit = 10, p = NULL, ...){
 
   stE_high <- stE <- val <- as.formula <- est_type <- n_inc <- stE_roll <- n <- size <- NULL
 

@@ -43,32 +43,32 @@
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
-#' 
+#'
 #' eusilc <- surveysd:::demo.eusilc()
-#' 
+#'
 #' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
 #'                            period="year")
-#'                            
+#'
 #' # calibrate weight for bootstrap replicates
 #' dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
 #'                           period="year",b.rep=paste0("w",1:10),
 #'                           conP.var=c("rb090"),conH.var = c("db040"))
 #'
-#' 
+#'
 #' # calibrate on other variables
 #' dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
 #'                           period="year",b.rep=paste0("w",1:10),
 #'                           conP.var=c("rb090","age"),conH.var = c("db040","hsize"))
 #' }
-#' 
+#'
 #' @export recalib
 #'
 
 recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),period="year",conP.var=c("RB090"),
 										conH.var=c("DB040","DB100"),...){
-  
+
   verbose <- epsP <- epsH <- bound <- maxIter <- meanHH <- check_hh_vars <- hidfactor <- calibWeight <- NULL
-  
+
   ##########################################################
   # INPUT CHECKING
   if(class(dat)[1]=="data.frame"){
@@ -77,7 +77,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
     stop("dat must be a data.frame or data.table")
   }
   dat <- copy(dat)
-  
+
   c.names <- colnames(dat)
 
   # check hid
@@ -128,7 +128,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
   if(length(var.miss)>0){
     stop("Missing values detected in column(s)",names(var.miss))
   }
-  
+
   # check period
   if(length(period)!=1){
     stop(paste0(period," must have length 1"))
@@ -203,7 +203,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 
 	for(g in b.rep){
 	  set(dat,j=g,value=dt.eval("dat[,",g,"*",weights,"]"))
-	  
+
 	  # check if margins for bootstrap weights are always positive
 	  check.conP <- lapply(conP,function(z){
 	    check.z <- dt.eval("dat[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
@@ -213,7 +213,7 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 	    check.z <- dt.eval("dat[,sum(",g,"),by=list(",paste(names(dimnames(z)),collapse=","),")][V1==0]")
 	    nrow(check.z)>0
 	  })
-	  
+
 	  if(any(unlist(c(check.conH,check.conP)))){
 	    calib.fail <- c(calib.fail,g)
 	    set(dat,j=g,value=NA_real_)
@@ -260,8 +260,9 @@ recalib <- function(dat,hid="DB030",weights="RB050",b.rep=paste0("w",1:1000),per
 	  }
 	}
 
+	attr(dat, "weights") <- weights
+	attr(dat, "period") <- period
+	attr(dat, "b.rep") <- b.rep
 
 	return(dat)
 }
-
-
