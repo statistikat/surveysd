@@ -127,35 +127,35 @@ library(data.table)
 
 eusilc <- surveysd:::demo.eusilc()
 
-dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
-                           period="year")
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
+                           strata = c("db040"), period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(copy(dat_boot),hid="db030",weights="rb050",
-                          period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),
+dat_boot_calib <- recalib(copy(dat_boot), hid = "db030", weights = "rb050",
+                          period = "year", b.rep = paste0("w", 1:10), conP.var = c("rb090"),
                           conH.var = c("db040"))
 
 # estimate weightedRatio for povmd60 per period
 err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
-                        group = NULL, period.diff = NULL, period.mean = NULL)
+                        period.mean = NULL)
 
 # estimate weightedRatio for povmd60 per period and rb090
 group <- "rb090"
 err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
-                        group = group, period.diff = NULL, period.mean = NULL)
+                        group = group, period.mean = NULL)
 
 
 # estimate weightedRatio for povmd60 per period and rb090, db040 and combination of both
-group <- list("rb090","db040",c("rb090","db040"))
+group <- list("rb090", "db040", c("rb090", "db040"))
 err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
-                        group = group, period.diff = NULL, period.mean = NULL)
+                        group = group, period.mean = NULL)
 
 err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
-                        group = group, period.diff = NULL, period.mean = NULL)
+                        group = group, period.mean = NULL)
 
 # use average over 3 periods for standard error estimation
 err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
-                        group = group, period.diff = NULL, period.mean = 3)
+                        group = group, period.mean = 3)
 
 # get estimate for difference of period 2016 and 2013
 period.diff <- c("2015-2011")
@@ -219,7 +219,7 @@ all.equal(err.est.different$Estimates[is.na(rb090) & is.na(db040)],
 
 # but for subgroups (rb090, db040) results vary
 all.equal(err.est.different$Estimates[!(is.na(rb090) & is.na(db040))],
-          err.est$Estimates[!(is.na(rb090)&is.na(db040))],
+          err.est$Estimates[!(is.na(rb090) & is.na(db040))],
           check.attributes = FALSE)
 }
 
