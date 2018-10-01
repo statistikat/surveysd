@@ -4,9 +4,9 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat, hid = "DB030", weights = "RB050", b.rep = paste0("w",
-  1:1000), period = "year", conP.var = c("RB090"),
-  conH.var = c("DB040", "DB100"), ...)
+recalib(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
+  b.rep = attr(dat, "b.rep"), period = attr(dat, "period"),
+  conP.var = c("RB090"), conH.var = c("DB040", "DB100"), ...)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for various periods.}
@@ -56,19 +56,16 @@ library(data.table)
 
 eusilc <- surveysd:::demo.eusilc()
 
-dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
-                           period="year")
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
+                           strata = c("db040"), period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
-                          period="year",b.rep=paste0("w",1:10),
-                          conP.var=c("rb090"),conH.var = c("db040"))
+dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090"), conH.var = c("db040"))
 
 
 # calibrate on other variables
-dat_boot_calib <- recalib(dat_boot,hid="db030",weights="rb050",
-                          period="year",b.rep=paste0("w",1:10),
-                          conP.var=c("rb090","age"),conH.var = c("db040","hsize"))
+dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090", "age"),
+                          conH.var = c("db040","hsize"))
 }
 
 }

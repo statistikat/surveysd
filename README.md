@@ -22,29 +22,26 @@ eusilc <- surveysd:::demo.eusilc()
 #### Draw bootstrap replicates
 
 ```{r}
-dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="rb050",strata=c("db040"),
-                           period="year")
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050", 
+                           strata = c("db040"), period = "year")
 ```
    
 #### Calibrate bootstrap replicates
 ```{r}
-dat_boot_calib <- recalib(copy(dat_boot),hid="db030",weights="rb050",
-                          period="year",b.rep=paste0("w",1:10),conP.var=c("rb090"),
-                          conH.var = c("db040"))
+dat_boot_calib <- recalib(copy(dat_boot), conP.var = c("rb090"), conH.var = c("db040"))
 ```
 
-#### Estimate weighted ratio for variable povmd60 per period and rb090
+#### Estimate weighted ratio for variable `povmd60` per period and `rb090`
+
 ```{r}
-group <- "rb090"
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-                        period="year",var="povmd60",fun=weightedRatio,
-                        group=group,period.diff=NULL,period.mean=NULL)
+err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+                        group = "rb090", period.diff = NULL, period.mean = NULL)
 ```
 
-#### Estimate weighted ratio for povmd60 per period and rb090, db040 and combination of both
+#### Estimate weighted ratio for povmd60 per period and `rb090`, `db040` and combination of both
+
 ```{r}
-group <- list("rb090","db040",c("rb090","db040"))
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:10),
-                        period="year",var="povmd60",fun=weightedRatio,
-                        group=group,period.diff=NULL,period.mean=NULL)
+group <- list("rb090", "db040", c("rb090","db040"))
+err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+                        group = group, period.diff = NULL, period.mean = NULL)
 ```
