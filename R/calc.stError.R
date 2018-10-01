@@ -114,9 +114,7 @@
 #'                            strata = c("db040"), period = "year")
 #'
 #' # calibrate weight for bootstrap replicates
-#' dat_boot_calib <- recalib(copy(dat_boot), hid = "db030", weights = "rb050",
-#'                           period = "year", b.rep = paste0("w", 1:10), conP.var = c("rb090"),
-#'                           conH.var = c("db040"))
+#' dat_boot_calib <- recalib(copy(dat_boot), conP.var = c("rb090"), conH.var = c("db040"))
 #'
 #' # estimate weightedRatio for povmd60 per period
 #' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,

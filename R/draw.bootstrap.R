@@ -341,6 +341,11 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   if("fpc"%in%colnames(dat)){
     dat[,fpc:=NULL]
   }
+  
+  attr(dat, "weights") <- weights
+  attr(dat, "period") <- period
+  attr(dat, "b.rep") <- w.names
+  attr(dat, "hid") <- hid
 
   return(dat)
 }
