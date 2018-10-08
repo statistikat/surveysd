@@ -64,10 +64,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(surveysd)
-#' library(laeken)
-#' library(data.table)
-#'
 #' eusilc <- surveysd:::demo.eusilc()
 #'
 #' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040"),
@@ -101,7 +97,7 @@
 #'                            split=TRUE,pid="rb030split")
 #' # split households were considered e.g. household and
 #' # split household were both selected or not selected
-#' dat_boot[,uniqueN(w1),by=rb030split][V1>1]
+#' dat_boot[,data.table::uniqueN(w1),by=rb030split][V1>1]
 #' }
 #'
 #' @export draw.bootstrap
@@ -341,11 +337,11 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   if("fpc"%in%colnames(dat)){
     dat[,fpc:=NULL]
   }
-  
-  attr(dat, "weights") <- weights
-  attr(dat, "period") <- period
-  attr(dat, "b.rep") <- w.names
-  attr(dat, "hid") <- hid
+
+  setattr(dat, "weights", weights)
+  setattr(dat, "period", period)
+  setattr(dat, "b.rep", w.names)
+  setattr(dat, "hid", hid)
 
   return(dat)
 }

@@ -128,17 +128,13 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 }
 \examples{
 \dontrun{
-library(surveysd)
-library(laeken)
-library(data.table)
-
 eusilc <- surveysd:::demo.eusilc()
 
 dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
                            strata = c("db040"), period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(copy(dat_boot), conP.var = c("rb090"), conH.var = c("db040"))
+dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090"), conH.var = c("db040"))
 
 # estimate weightedRatio for povmd60 per period
 err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
@@ -169,7 +165,7 @@ err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
 
 
 # use a function from an other package that has sampling weights as its second argument
-# for example ging() from laeken
+# for example gini() from laeken
 library(laeken)
 
 # set up help function that returns only the gini index

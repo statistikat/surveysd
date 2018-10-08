@@ -40,22 +40,18 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(surveysd)
-#' library(laeken)
-#' library(data.table)
 #'
 #' eusilc <- surveysd:::demo.eusilc()
 #'
 #' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
-#'                            strata = c("db040"), period = "year")
+#'                            strata = "db040", period = "year")
 #'
 #' # calibrate weight for bootstrap replicates
-#' dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090"), conH.var = c("db040"))
+#' dat_boot_calib <- recalib(dat_boot, conP.var = "rb090", conH.var = "db040")
 #'
 #'
 #' # calibrate on other variables
-#' dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090", "age"),
-#'                           conH.var = c("db040","hsize"))
+#' dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090", "age"), conH.var = c("db040", "hsize"))
 #' }
 #'
 #' @export recalib
@@ -258,9 +254,9 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 	  }
 	}
 
-	attr(dat, "weights") <- weights
-	attr(dat, "period") <- period
-	attr(dat, "b.rep") <- b.rep
+	setattr(dat, "weights", weights)
+	setattr(dat, "period", period)
+	setattr(dat, "b.rep", b.rep)
 
 	return(dat)
 }
