@@ -1,12 +1,12 @@
 #' helpfunction to generate multiple years of eusilc data
 #'
 #' Create a dummy dataset to be used for demonstrating the functionalities of the `surveysd` package
-#' based on [leaken::eusilc]. Please refer to the documentation page of the original data for
+#' based on [laeken::eusilc]. Please refer to the documentation page of the original data for
 #' details about the variables.
 #'
 #' @param n Number of years to generate. Should be at least 1
 #' @param prettyNames Create easy-to-read names for certain variables. Recommended for demonstration
-#'                    purposes. Otherwise, use the original codes documented in [leaken::eusilc].
+#'                    purposes. Otherwise, use the original codes documented in [laeken::eusilc].
 #'
 #' @details
 #' If `prettyNames` is `TRUE`, the following variables will be available in an easy-to-read manner.
@@ -23,12 +23,14 @@
 #' * `year`. Simulated reference period
 #' * `povertyRisk`. Logical variable determining whether a respondent is at risk of poverty
 #'
+#' @importFrom dplyr recode
 #' @examples
 #' demo.eusilc(n = 1, prettyNames = TRUE)[, c(1:8, 26, 28:30)]
 #' @export
 demo.eusilc <- function(n = 8, prettyNames = FALSE) {
 
-  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <- . <- NULL
+  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <- . <-
+    povertyRisk <- ecoStat <- NULL
 
   data("eusilc", package = "laeken", envir = environment())
   setDT(eusilc)
@@ -65,7 +67,6 @@ demo.eusilc <- function(n = 8, prettyNames = FALSE) {
       ecoStat, `1` = "full time", `2` = "part time", `3` = "unemployed",
       `4` = "education", `5` = "retired", `6` = "disabled", `7` = "domestic")]
     data.table::setnames(eusilc, "rb050", "pWeight")
-    #data.table::setnames(eusilc, "db090", "hWeight")
     data.table::setnames(eusilc, "povmd60", "povertyRisk")
     eusilc[, povertyRisk := as.logical(povertyRisk)]
   }
