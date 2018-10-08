@@ -10,11 +10,11 @@ demo.eusilc(n = 8, prettyNames = FALSE)
 \item{n}{Number of years to generate. Should be at least 1}
 
 \item{prettyNames}{Create easy-to-read names for certain variables. Recommended for demonstration
-purposes. Otherwise, use the original codes documented in \link[leaken:eusilc]{leaken::eusilc}.}
+purposes. Otherwise, use the original codes documented in \link[laeken:eusilc]{laeken::eusilc}.}
 }
 \description{
 Create a dummy dataset to be used for demonstrating the functionalities of the \code{surveysd} package
-based on \link[leaken:eusilc]{leaken::eusilc}. Please refer to the documentation page of the original data for
+based on \link[laeken:eusilc]{laeken::eusilc}. Please refer to the documentation page of the original data for
 details about the variables.
 }
 \details{
