@@ -47,11 +47,8 @@ For single stage sampling using stratification this can usually be done by addin
 Spaces in each of the strings will be removed, so if column names contain spaces they should be renamed before calling this procedure!
 }
 \examples{
-library(laeken)
-library(data.table)
-
-data("eusilc")
-setDT(eusilc)
+data(eusilc, package = "laeken")
+data.table::setDT(eusilc)
 
 eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
 eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",

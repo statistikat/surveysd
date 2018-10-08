@@ -13,9 +13,6 @@ Estimate standard deviation of estimates in complex surveys using bootstrap weig
 #### Load dummy data
 ```{r}
 library(surveysd)
-library(laeken)
-library(data.table)
-
 eusilc <- surveysd:::demo.eusilc()
 ``` 
 
@@ -28,7 +25,7 @@ dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
    
 #### Calibrate bootstrap replicates
 ```{r}
-dat_boot_calib <- recalib(copy(dat_boot), conP.var = c("rb090"), conH.var = c("db040"))
+dat_boot_calib <- recalib(dat_boot, conP.var = "rb090", conH.var = "db040")
 ```
 
 #### Estimate weighted ratio for variable `povmd60` per period and `rb090`

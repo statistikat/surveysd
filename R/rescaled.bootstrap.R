@@ -32,11 +32,8 @@
 #' @author Johannes Gussenbauer, Statistics Austria
 #'
 #' @examples
-#' library(laeken)
-#' library(data.table)
-#'
-#' data("eusilc")
-#' setDT(eusilc)
+#' data(eusilc, package = "laeken")
+#' data.table::setDT(eusilc)
 #'
 #' eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
 #' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",

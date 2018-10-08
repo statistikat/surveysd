@@ -84,10 +84,6 @@ People who enter already existing households will also get the same bootstrap re
 }
 \examples{
 \dontrun{
-library(surveysd)
-library(laeken)
-library(data.table)
-
 eusilc <- surveysd:::demo.eusilc()
 
 dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040"),
@@ -121,7 +117,7 @@ dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
                            split=TRUE,pid="rb030split")
 # split households were considered e.g. household and
 # split household were both selected or not selected
-dat_boot[,uniqueN(w1),by=rb030split][V1>1]
+dat_boot[,data.table::uniqueN(w1),by=rb030split][V1>1]
 }
 
 }
