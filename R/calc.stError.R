@@ -104,39 +104,39 @@
 #'
 #' @examples
 #' \dontrun{
-#' eusilc <- surveysd:::demo.eusilc()
+#' eusilc <- demo.eusilc(prettyNames = TRUE)
 #'
-#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
-#'                            strata = c("db040"), period = "year")
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#'                            strata = "region", period = "year")
 #'
 #' # calibrate weight for bootstrap replicates
-#' dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090"), conH.var = c("db040"))
+#' dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 #'
-#' # estimate weightedRatio for povmd60 per period
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' # estimate weightedRatio for povertyRisk per period
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         period.mean = NULL)
 #'
-#' # estimate weightedRatio for povmd60 per period and rb090
-#' group <- "rb090"
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' # estimate weightedRatio for povertyRisk per period and gender
+#' group <- "gender"
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.mean = NULL)
 #'
 #'
-#' # estimate weightedRatio for povmd60 per period and rb090, db040 and combination of both
-#' group <- list("rb090", "db040", c("rb090", "db040"))
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' # estimate weightedRatio for povertyRisk per period and gender, region and combination of both
+#' group <- list("gender", "region", c("gender", "region"))
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.mean = NULL)
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.mean = NULL)
 #'
 #' # use average over 3 periods for standard error estimation
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.mean = 3)
 #'
 #' # get estimate for difference of period 2016 and 2013
 #' period.diff <- c("2015-2011")
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.diff = period.diff, period.mean = 3)
 #'
 #'
@@ -149,7 +149,10 @@
 #'  return(gini(x, w)$value)
 #' }
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = help_gini, group = group,
+#' ## make sure povertyRisk get coerced to a numeric in order to work with the external functions
+#' dat_boot_calib[, povertyRisk := as.numeric(povertyRisk)]
+#'
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = help_gini, group = group,
 #'                         period.diff = period.diff, period.mean = 3)
 #'
 #'
@@ -168,7 +171,7 @@
 #' # the povmd60 indicator for each bootstrap weight
 #' # and the resultung indicators are passed to function weightedRatio
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povmd60", fun = weightedRatio,
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, fun.adjust.var = povmd, adjust.var = "eqIncome")
 #'
 #' # why fun.adjust.var and adjust.var are needed (!!!):
@@ -190,13 +193,13 @@
 #'                                   group = group, fun.adjust.var = NULL, adjust.var = NULL)
 #'
 #' # results are equal for yearly estimates
-#' all.equal(err.est.different$Estimates[is.na(rb090) & is.na(db040)],
-#'           err.est$Estimates[is.na(rb090)&is.na(db040)],
+#' all.equal(err.est.different$Estimates[is.na(gender) & is.na(region)],
+#'           err.est$Estimates[is.na(gender)&is.na(region)],
 #'           check.attributes = FALSE)
 #'
-#' # but for subgroups (rb090, db040) results vary
-#' all.equal(err.est.different$Estimates[!(is.na(rb090) & is.na(db040))],
-#'           err.est$Estimates[!(is.na(rb090) & is.na(db040))],
+#' # but for subgroups (gender, region) results vary
+#' all.equal(err.est.different$Estimates[!(is.na(gender) & is.na(region))],
+#'           err.est$Estimates[!(is.na(gender) & is.na(region))],
 #'           check.attributes = FALSE)
 #' }
 #'

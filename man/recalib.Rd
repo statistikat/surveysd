@@ -51,17 +51,18 @@ In this process the columns of the bootstrap replicates are overwritten by the c
 \examples{
 \dontrun{
 
-eusilc <- surveysd:::demo.eusilc()
+eusilc <- demo.eusilc(prettyNames = TRUE)
 
-dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "db030", weights = "rb050",
-                           strata = "db040", period = "year")
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+                           strata = "region", period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat_boot, conP.var = "rb090", conH.var = "db040")
+dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 
 
 # calibrate on other variables
-dat_boot_calib <- recalib(dat_boot, conP.var = c("rb090", "age"), conH.var = c("db040", "hsize"))
+dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
+                          conH.var = c("region", "hsize"))
 }
 
 }

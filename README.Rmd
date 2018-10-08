@@ -33,7 +33,9 @@ ______________________________________
 
 ```{r}
 library(surveysd)
-eusilc <- surveysd:::demo.eusilc(n = 2, prettyNames = TRUE)
+
+set.seed(1234)
+eusilc <- demo.eusilc(n = 2, prettyNames = TRUE)
 ``` 
 
 #### Draw bootstrap replicates
