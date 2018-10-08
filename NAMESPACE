@@ -3,6 +3,7 @@
 S3method(plot,surveysd)
 S3method(print,surveysd)
 export(calc.stError)
+export(demo.eusilc)
 export(draw.bootstrap)
 export(generate.HHID)
 export(recalib)
