@@ -64,40 +64,40 @@
 #'
 #' @examples
 #' \dontrun{
-#' eusilc <- surveysd:::demo.eusilc()
+#' eusilc <- demo.eusilc(prettyNames = TRUE)
 #'
-#' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040"),
-#'                            period="year")
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#'                            strata = "region", period="year")
 #'
-#' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",strata=c("db040","age"),
-#'                            period="year")
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#'                            strata = c("region", "age"), period = "year")
 #'
 #'
 #'
 #' # create spit households
-#' eusilc[,rb030split:=rb030]
-#' year <- eusilc[,unique(year)]
+#' eusilc[, pidsplit := pid]
+#' year <- eusilc[, unique(year)]
 #' year <- year[-1]
 #' leaf_out <- c()
 #' for(y in year){
-#'   split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030%in%leaf_out,
-#'                          sample(rb030,20)]
-#'   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,
-#'                              .(rb030=sample(rb030,20))]
-#'   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
+#'   split.person <- eusilc[year == (y-1) & !duplicated(hid) & !(hid %in% leaf_out),
+#'                          sample(pid, 20)]
+#'   overwrite.person <- eusilc[(year == (y)) & !duplicated(hid) & !(hid %in% leaf_out),
+#'                              .(pid = sample(pid, 20))]
+#'   overwrite.person[, c("pidsplit", "year_curr") := .(split.person, y)]
 #'
-#'   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
+#'   eusilc[overwrite.person, pidsplit := i.pidsplit, on = .(pid, year >= year_curr)]
 #'   leaf_out <- c(leaf_out,
-#'                 eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
-#'                 unique(db030)])
+#'                 eusilc[pid %in% c(overwrite.person$pid, overwrite.person$pidsplit),
+#'                 unique(hid)])
 #' }
 #'
-#' dat_boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",
-#'                            strata=c("db040","age"),period="year",
-#'                            split=TRUE,pid="rb030split")
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#'                            strata = c("region", "age"), period = "year", split = TRUE,
+#'                            pid = "pidsplit")
 #' # split households were considered e.g. household and
 #' # split household were both selected or not selected
-#' dat_boot[,data.table::uniqueN(w1),by=rb030split][V1>1]
+#' dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
 #' }
 #'
 #' @export draw.bootstrap
