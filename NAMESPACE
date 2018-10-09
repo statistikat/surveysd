@@ -2,6 +2,12 @@
 
 S3method(plot,surveysd)
 S3method(print,surveysd)
+export(WeightedMean)
+export(WeightedMedian)
+export(WeightedRatio)
+export(WeightedSize)
+export(WeightedSum)
+export(aggregateReplicates)
 export(calc.stError)
 export(demo.eusilc)
 export(draw.bootstrap)
