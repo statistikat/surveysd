@@ -3,6 +3,12 @@ Type: Package
 Title: Survey Standard Error Estimation for Cumulated Estimates and their Differences in Complex Panel Designs
 Version: 0.1.0
 Date: 2018-09-19
+Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
+                     email = "Johannes.Gussenbauer@statistik.gv.at"),
+              person("Alexander", "Kowarik", role = "aut",
+                     email = "Alexander.Kowarik@statistik.gv.at"),
+              person("Gregor", "de Cillia", role = "aut",
+                     email = "Gregor.deCillia@statistik.gv.at"))
 Author: Johannes Gussenbauer, Alexander Kowarik, Matthias Till
 Maintainer: Johannes Gussenbauer <Johannes.Gussenbauer@statistik.gv.at>
 Description: Calculate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstrapping considers survey design with a rotating panel.
@@ -11,6 +17,8 @@ LazyData: true
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.12),data.table,simPop(>= 1.1.0),matrixStats, ggplot2, laeken, methods, dplyr
 LinkingTo: Rcpp
+URL: https://github.com/statistikat/surveysd
+BugReports: https://github.com/statistikat/surveysd/issues
 RoxygenNote: 6.1.0.9000
 Suggests: testthat
 Roxygen: list(markdown = TRUE)

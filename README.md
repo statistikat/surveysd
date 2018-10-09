@@ -1,27 +1,26 @@
 
+surveysd
+========
+
 [![Build Status](https://travis-ci.org/statistikat/surveysd.svg?branch=master)](https://travis-ci.org/statistikat/surveysd) <!--[![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master)--> <!--[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)--> <!--[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)--> <!--[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)-->
 
-surveysd
---------
+This is the development place for the R-package `surveysd`. This package can be used to estimate the standard deviation of estimates in complex surveys using bootstrap weights.
 
-This is the development place for R-package `surveysd`
+Installation
+------------
 
-Estimate standard deviation of estimates in complex surveys using bootstrap weights.
-
-### Installation
-
-This package can be installed like any other R package on github via `devtools::install_github`
+This package can be installed like any other R package on github via `install_github`
 
 ``` r
-library(devtools)
-install_github("statistikat/surveysd")
+devtools::install_github("statistikat/surveysd")
 ```
 
-------------------------------------------------------------------------
+Syntax example
+--------------
 
-### Syntax example
+This example showcases the three most important functions in the surveysd package: `draw.boostrap`, `recalib` and `calc.stError`.
 
-#### Load dummy data
+### Load dummy data
 
 ``` r
 library(surveysd)
@@ -30,7 +29,7 @@ set.seed(1234)
 eusilc <- demo.eusilc(n = 2, prettyNames = TRUE)
 ```
 
-#### Draw bootstrap replicates
+### Draw bootstrap replicates
 
 Use stratified resampling without replacement to generate 10 samples. Those samples are consistent with respect to the reference periods.
 
@@ -39,7 +38,7 @@ dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")
 ```
 
-#### Calibrate bootstrap replicates
+### Calibrate bootstrap replicates
 
 Calibrate each sample according to the distribution of `gender` (on a personal level) and `region` (on a household level).
 
@@ -58,7 +57,7 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
     ## Convergence reached in  2  steps 
     ## Convergence reached in  2  steps
 
-#### Estimate with respect to a grouping variable
+### Estimate with respect to a grouping variable
 
 Estimate relative amount of persons at risk of poverty per period and `gender`.
 
@@ -78,7 +77,7 @@ err.est$Estimates
 
 The output contains estimates (`val_povertyRisk`) as well as standard errors (`stE_povertyRisk`) measured in percent.
 
-#### Estimate with respect to several variables
+### Estimate with respect to several variables
 
 Estimate relative amount of persons at risk of poverty per period for each `region`, `gender`, and combination of both.
 
