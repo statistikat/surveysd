@@ -1,0 +1,21 @@
+reference:
+- title: data import
+  contents:
+  - '`demo.eusilc`'
+- title: calibration
+  contents:
+  - matches('bootstrap')
+  - '`generate.HHID`'
+  - '`recalib`'
+- title: estimation of standard errors
+  contents:
+  - '`PointEstimates`'
+  - '`calc.stError`'
+  - matches('surveysd')
+
+development:
+  mode: unreleased
+
+template:
+  params:
+    bootswatch: cosmo

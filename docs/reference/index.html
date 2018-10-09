@@ -11,8 +11,8 @@
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -58,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased package">0.1.0</span>
       </span>
     </div>
 
@@ -108,7 +108,53 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <h2 id="section-data-import" class="hasAnchor"><a href="#section-data-import" class="anchor"></a>data import</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="demo.eusilc.html">demo.eusilc()</a></code> </p>
+        </td>
+        <td><p>helpfunction to generate multiple years of eusilc data</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-calibration" class="hasAnchor"><a href="#section-calibration" class="anchor"></a>calibration</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="draw.bootstrap.html">draw.bootstrap()</a></code> </p>
+        </td>
+        <td><p>Draw bootstrap replicates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rescaled.bootstrap.html">rescaled.bootstrap()</a></code> </p>
+        </td>
+        <td><p>Draw bootstrap replicates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="generate.HHID.html">generate.HHID()</a></code> </p>
+        </td>
+        <td><p>Generate new houshold ID for survey data with rotating panel design taking into account split households</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="recalib.html">recalib()</a></code> </p>
+        </td>
+        <td><p>Calibrate weights</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-estimation-of-standard-errors" class="hasAnchor"><a href="#section-estimation-of-standard-errors" class="anchor"></a>estimation of standard errors</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -127,24 +173,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="demo.eusilc.html">demo.eusilc()</a></code> </p>
-        </td>
-        <td><p>helpfunction to generate multiple years of eusilc data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="draw.bootstrap.html">draw.bootstrap()</a></code> </p>
-        </td>
-        <td><p>Draw bootstrap replicates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="generate.HHID.html">generate.HHID()</a></code> </p>
-        </td>
-        <td><p>Generate new houshold ID for survey data with rotating panel design taking into account split households</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="plot.surveysd.html">plot(<i>&lt;surveysd&gt;</i>)</a></code> </p>
         </td>
         <td><p>Plot surveysd-Objects</p></td>
@@ -154,18 +182,6 @@
           <p><code><a href="print.surveysd.html">print(<i>&lt;surveysd&gt;</i>)</a></code> </p>
         </td>
         <td><p>Print function for surveysd objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="recalib.html">recalib()</a></code> </p>
-        </td>
-        <td><p>Calibrate weights</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rescaled.bootstrap.html">rescaled.bootstrap()</a></code> </p>
-        </td>
-        <td><p>Draw bootstrap replicates</p></td>
       </tr>
     </tbody>
     </table>
@@ -174,7 +190,9 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#section-data-import">data import</a></li>
+      <li><a href="#section-calibration">calibration</a></li>
+      <li><a href="#section-estimation-of-standard-errors">estimation of standard errors</a></li>
     </ul>
   </div>
 </div>
