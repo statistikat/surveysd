@@ -9,7 +9,7 @@ Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
                      email = "Alexander.Kowarik@statistik.gv.at"),
               person("Gregor", "de Cillia", role = "aut",
                      email = "Gregor.deCillia@statistik.gv.at"),
-              person("Mathhias", "Till", role = "ctb",
+              person("Matthias", "Till", role = "ctb",
                      email = "Matthias.Till@statistik.gv.at"))
 Author: Johannes Gussenbauer [aut, cre], Alexander Kowarik [aut], Matthias Till [ctb],
   Gregor de Cillia [aut]
