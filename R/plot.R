@@ -36,8 +36,8 @@
 #' # estimate weightedRatio for povmd60 per period
 #' group <- list("rb090","db040",c("rb090","db040"))
 #' err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:250),
-#'                         period="year",var="povmd60",fun="weightedRatio",
-#'                         group=c("rb090","db040"),period.diff=NULL,period.mean=NULL)
+#'                         period="year",var="povmd60",fun=weightedRatio,
+#'                         group=group ,period.diff=NULL,period.mean=NULL)
 #'
 #'
 #' plot(err.est)
@@ -46,10 +46,14 @@
 #' # dotted line is the result on the national level
 #' plot(err.est,type="grouping",groups="rb090")
 #'
+#' # plot results for rb090
+#' # with standard errors as ribbons
+#' plot(err.est,type="grouping",groups="rb090",sd.type="ribbon")
+#' 
 #' # plot results for rb090 in each db040
 #' plot(err.est,type="grouping",groups=c("rb090","db040"))
 #'
-#' # plot results for db040 in each rb090
+#' # plot results for db040 in each rb090 with standard errors as ribbons
 #' plot(err.est,type="grouping",groups=c("db040","rb090"))
 #' }
 #'
@@ -150,8 +154,12 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
 
     if(length(other_var)>0){
       na_var <- other_var[!other_var%in%groups]
-      exp1_2 <- paste(paste0("is.na(",na_var,")"),collapse="&")
-      exp1 <- paste0("c(!is.na(",groups[1],")&!is.na(",groups[2],")&",exp1_2,")")
+      if(length(na_var)>0){
+        na_var <- paste(paste0("is.na(",na_var,")"),collapse="&")
+        na_var <- paste0("&",na_var)
+      }
+      
+      exp1 <- paste0("c(!is.na(",groups[1],")&!is.na(",groups[2],")",na_var,")")
 
       na_var <- other_var[!other_var%in%groups[1]]
       exp2_2 <- paste(paste0("is.na(",na_var,")"),collapse="&")
@@ -167,43 +175,59 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
 
     val_var <- paste0("val_",variable)
     ste_var <- paste0("stE_",variable)
-    ste_var_mean <- paste0(ste_var,"_mean")
     ste_bool <- variable
-    ste_bool_mean <- paste0(ste_bool,"_mean")
-
+    
+    
     # prepare plot.group1 for plotting
     plot.group1.period <- plot.group1[GROUPING=="Single Periods"]
     plot.group1.periodmean <- plot.group1[GROUPING==paste0(x$param$period.mean,"-Period-Mean")]
-    dt.eval("plot.group1.periodmean[,",period,":=tstrsplit(",period,",split='_',keep=",round((x$param$period.mean+1)/2),")]")
-
-    setnames(plot.group1.periodmean,c(ste_var,ste_bool),c(ste_var_mean,ste_bool_mean))
-    plot.group1.period <- merge(plot.group1.period,
-                              dt.eval("plot.group1.periodmean[,.(",paste(c(period,other_var,ste_var_mean,ste_bool_mean),collapse=","),")]"),
-                              all.x=TRUE)
-
+    
     # prepare plot.group2 for plotting
     plot.group2.period <- plot.group2[GROUPING=="Single Periods"]
     plot.group2.periodmean <- plot.group2[GROUPING==paste0(x$param$period.mean,"-Period-Mean")]
-    dt.eval("plot.group2.periodmean[,",period,":=tstrsplit(",period,",split='_',keep=",round((x$param$period.mean+1)/2),")]")
-
-    setnames(plot.group2.periodmean,c(ste_var,ste_bool),c(ste_var_mean,ste_bool_mean))
-    plot.group2.period <- merge(plot.group2.period,
-                              dt.eval("plot.group2.periodmean[,.(",paste(c(period,other_var,ste_var_mean,ste_bool_mean),collapse=","),")]"),
-                              all.x=TRUE)
-
+    
+    # rename data columns for plot.group2
     ste_var2 <- paste0(ste_var,"2")
-    ste_var_mean2 <- paste0(ste_var_mean,"2")
     val_var2 <- paste0(val_var,"2")
-    ste_bool2 <- paste0(variable,"2")
-    ste_bool_mean2 <- paste0(ste_bool_mean,"2")
-    setnames(plot.group2.period,c(ste_var,ste_var_mean,val_var,ste_bool,ste_bool_mean),c(ste_var2,ste_var_mean2,val_var2,ste_bool2,ste_bool_mean2))
-    # merge with plot.group
+    ste_bool2 <- paste0(ste_bool,"2")
+    
+    # prepare output differently if period.mean has been used
+    if(!is.null(err.est$param$period.mean)){
+      period.mean <- TRUE
+      
+      ste_var_mean <- paste0(ste_var,"_mean")
+      ste_bool_mean <- paste0(ste_bool,"_mean")
+      
+      dt.eval("plot.group1.periodmean[,",period,":=tstrsplit(",period,",split='_',keep=",round((x$param$period.mean+1)/2),")]")
+      
+      setnames(plot.group1.periodmean,c(ste_var,ste_bool),c(ste_var_mean,ste_bool_mean))
+      
+      plot.group1.period <- merge(plot.group1.period,
+                                  dt.eval("plot.group1.periodmean[,.(",paste(c(period,other_var,ste_var_mean,ste_bool_mean),collapse=","),")]"),
+                                  all.x=TRUE)
+      
+      dt.eval("plot.group2.periodmean[,",period,":=tstrsplit(",period,",split='_',keep=",round((x$param$period.mean+1)/2),")]")
+      
+      setnames(plot.group2.periodmean,c(ste_var,ste_bool),c(ste_var_mean,ste_bool_mean))
+      plot.group2.period <- merge(plot.group2.period,
+                                  dt.eval("plot.group2.periodmean[,.(",paste(c(period,other_var,ste_var_mean,ste_bool_mean),collapse=","),")]"),
+                                  all.x=TRUE)
+      
+      change.names <- c(ste_var,val_var,ste_bool,ste_var_mean,ste_bool_mean)
+    }else{
+      period.mean <- FALSE
+      change.names <- c(ste_var,val_var,ste_bool)
+    }
 
+    setnames(plot.group2.period,change.names,paste0(change.names,"2"))
+    select.group2 <- paste0(change.names,"2")
+ 
+    # merge with plot.group
     if(period==groups[1]){
-      plot.group1.period <- merge(plot.group1.period,plot.group2.period[,mget(c(groups[1],ste_var2,ste_var_mean2,val_var2,ste_bool2,ste_bool_mean2))],
+      plot.group1.period <- merge(plot.group1.period,plot.group2.period[,mget(c(groups[1],select.group2))],
                                 all.x=TRUE,by=groups[1])
     }else{
-      plot.group1.period <- merge(plot.group1.period,plot.group2.period[,mget(c(groups[1],period,ste_var2,ste_var_mean2,val_var2,ste_bool2,ste_bool_mean2))],
+      plot.group1.period <- merge(plot.group1.period,plot.group2.period[,mget(c(groups[1],period,select.group2))],
                                 all.x=TRUE,by=c(groups[1],period))
     }
 
@@ -219,44 +243,52 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
                                  ymax = get(val_var)+get(ste_var),
                                  fill=get(groups[2]),colour=get(groups[2])),linetype = 2, alpha= 0.1)
 
-      # add results for k-mean-periods
-      p1 <- p1 + geom_ribbon(aes(ymin = get(val_var)-get(ste_var_mean),
-                                 ymax = get(val_var)+get(ste_var_mean),
-                                 fill=get(groups[2]),colour=get(groups[2])),linetype = 2, alpha= 0.5)
-
+      
       # add results for group[1] -> higher level grouping
-      p1 <- dt.eval("p1 + geom_line(aes(",period,",",val_var2,"),color='black')")
+      p1 <- dt.eval("p1 + geom_line(aes(",period,",",val_var2,",linetype='dotted'),color='black')")
       p1 <- p1 + geom_ribbon(aes(ymin = get(val_var2)-get(ste_var2),
-                        ymax = get(val_var2)+get(ste_var2)),fill="grey",linetype = 2, alpha= 0.1)
+                                 ymax = get(val_var2)+get(ste_var2)),fill="grey",linetype = 2, alpha= 0.1)
+      
+      if(period.mean){
+        # add results for k-mean-periods
+        p1 <- p1 + geom_ribbon(aes(ymin = get(val_var)-get(ste_var_mean),
+                                   ymax = get(val_var)+get(ste_var_mean),
+                                   fill=get(groups[2]),colour=get(groups[2])),linetype = 2, alpha= 0.5)
+        
+        # add results for group[1] and k-period-mean
+        p1 <- p1 + geom_ribbon(aes(ymin = get(val_var2)-get(ste_var_mean2),
+                                   ymax = get(val_var2)+get(ste_var_mean2)),fill="grey",linetype = 2, alpha= 0.5)
+      }
 
-      # add results for group[1] and k-period-mean
-      p1 <- p1 + geom_ribbon(aes(ymin = get(val_var2)-get(ste_var_mean2),
-                                 ymax = get(val_var2)+get(ste_var_mean2)),fill="grey",linetype = 2, alpha= 0.5)
     }else{
       plot.group1.period[,shape_bool:="Low st.Error"]
       plot.group1.period[get(ste_bool)==TRUE,shape_bool:="high st.Error"]
-      plot.group1.period[get(ste_bool_mean)==TRUE,shape_bool:="high st.Error for mean"]
-
       plot.group1.period[,shape_bool2:="Low st.Error"]
       plot.group1.period[get(ste_bool2)==TRUE,shape_bool2:="high st.Error"]
-      plot.group1.period[get(ste_bool_mean2)==TRUE,shape_bool2:="high st.Error for mean"]
+      
+      if(period.mean){
+        plot.group1.period[get(ste_bool_mean)==TRUE,shape_bool:="high st.Error for mean"]
+        plot.group1.period[get(ste_bool_mean2)==TRUE,shape_bool2:="high st.Error for mean"]
+      }
 
       p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool)==TRUE],
                             aes(",period,",",val_var,",shape=shape_bool))")
-
-      # add results for k-mean-periods
-      p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool_mean)==TRUE],
-                            aes(",period,",",val_var,",shape=shape_bool))")
-
+      
       # add results for group[1] -> higher level grouping
-      p1 <- dt.eval("p1 + geom_line(aes(",period,",",val_var2,",linetype='main'))")
+      p1 <- dt.eval("p1 + geom_line(aes(",period,",",val_var2,",linetype='solid'))")
       p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool2)==TRUE],
                             aes(",period,",",val_var,",shape=shape_bool2))")
-
-      # add results for group[1] and k-period-mean
-      p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool_mean2)==TRUE],
-                            aes(",period,",",val_var,",shape=shape_bool2))")
-
+      
+      if(period.mean){
+        # add results for k-mean-periods
+        p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool_mean)==TRUE],
+                      aes(",period,",",val_var,",shape=shape_bool))")
+        
+        # add results for group[1] and k-period-mean
+        p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool_mean2)==TRUE],
+                      aes(",period,",",val_var,",shape=shape_bool2))")
+        
+      }
     }
 
 
@@ -270,11 +302,13 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
     if(groups[1]==period){
       p1 <- p1 + facet_wrap(~get(groups[2]))
       if(sd.type=="ribbon"){
-        p1 <- p1 +  theme(legend.position = "none")
+        p1 <- p1 + guides(fill=FALSE,
+                          colour=FALSE,
+                          linetype=guide_legend(title=""))
+        p1 <- p1 + scale_linetype_manual(values=c("solid"),labels=paste0("Result for ",groups[1]))
       }else{
         shapes <- c(1,16)
         names(shapes) <- c("high st.Error","high st.Error for mean")
-        cols <- c("main"="grey")
         p1 <- p1 + scale_shape_manual(values=shapes)
         p1 <- p1 + scale_colour_discrete(guide = FALSE)+
         # p1 <- p1 + scale_colour_discrete(value="grey")
@@ -284,12 +318,13 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
     }else{
       p1 <- p1 + facet_wrap(~get(groups[1]))
       if(sd.type=="ribbon"){
-        p1 <- p1 + guides(fill=guide_legend(title=groups[2]))+
-          guides(colour=guide_legend(title=groups[2]))
+        p1 <- p1 + guides(fill=guide_legend(title=groups[2]),
+                          colour=guide_legend(title=groups[2]),
+                          linetype=guide_legend(title=""))
+        p1 <- p1 + scale_linetype_manual(values=c("solid"),labels=paste0("Result for ",groups[1]))
       }else{
         shapes <- c(1,16)
         names(shapes) <- c("high st.Error","high st.Error for mean")
-        cols <- c("main"="grey")
         p1 <- p1 + scale_shape_manual(values=shapes)+
           guides(colour=guide_legend(title=groups[2]),
                  linetype=guide_legend(title=""),
@@ -300,7 +335,6 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
     }
 
     plot(p1)
-
   }
 }
 
