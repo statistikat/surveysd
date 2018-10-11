@@ -103,58 +103,68 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#' \dontrun{
-#' eusilc <- demo.eusilc(prettyNames = TRUE)
+#' # Import data and calibrate
 #'
+#' set.seed(1234)
+#' eusilc <- demo.eusilc(prettyNames = TRUE)
 #' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
 #'                            strata = "region", period = "year")
-#'
-#' # calibrate weight for bootstrap replicates
 #' dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 #'
 #' # estimate weightedRatio for povertyRisk per period
+#'
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         period.mean = NULL)
+#' err.est$Estimates
+#'
+#' # calculate weightedRatio for povertyRisk and fraction of one-person households per period
+#'
+#' err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio,
+#'                         period.mean = NULL)
+#' err.est$Estimates
 #'
 #' # estimate weightedRatio for povertyRisk per period and gender
+#'
 #' group <- "gender"
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.mean = NULL)
-#'
+#' err.est$Estimates
 #'
 #' # estimate weightedRatio for povertyRisk per period and gender, region and combination of both
+#'
 #' group <- list("gender", "region", c("gender", "region"))
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, period.mean = NULL)
-#'
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, period.mean = NULL)
+#' err.est$Estimates
 #'
 #' # use average over 3 periods for standard error estimation
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, period.mean = 3)
+#'
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, period.mean = 3)
+#' err.est$Estimates
 #'
 #' # get estimate for difference of period 2016 and 2013
+#'
 #' period.diff <- c("2015-2011")
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, period.diff = period.diff, period.mean = 3)
-#'
+#'                         period.diff = period.diff, period.mean = 3)
+#' err.est$Estimates
 #'
 #' # use a function from an other package that has sampling weights as its second argument
 #' # for example gini() from laeken
+#'
 #' library(laeken)
 #'
-#' # set up help function that returns only the gini index
+#' ## set up help function that returns only the gini index
 #' help_gini <- function(x, w){
 #'  return(gini(x, w)$value)
 #' }
 #'
 #' ## make sure povertyRisk get coerced to a numeric in order to work with the external functions
-#' dat_boot_calib[, povertyRisk := as.numeric(povertyRisk)]
+#' invisible(dat_boot_calib[, povertyRisk := as.numeric(povertyRisk)])
 #'
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = help_gini, group = group,
 #'                         period.diff = period.diff, period.mean = 3)
-#'
+#' err.est$Estimates
 #'
 #' # using fun.adjust.var and adjust.var to estimate povmd60 indicator
 #' # for each period and bootstrap weight before applying the weightedRatio point estimate
@@ -173,6 +183,7 @@
 #'
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         group = group, fun.adjust.var = povmd, adjust.var = "eqIncome")
+#' err.est$Estimates
 #'
 #' # why fun.adjust.var and adjust.var are needed (!!!):
 #' # one could also use the following function
@@ -191,17 +202,17 @@
 #'
 #' err.est.different <- calc.stError(dat_boot_calib, var = "eqIncome", fun = povmd2,
 #'                                   group = group, fun.adjust.var = NULL, adjust.var = NULL)
+#' err.est.different$Estimates
 #'
-#' # results are equal for yearly estimates
+#' ## results are equal for yearly estimates
 #' all.equal(err.est.different$Estimates[is.na(gender) & is.na(region)],
 #'           err.est$Estimates[is.na(gender)&is.na(region)],
 #'           check.attributes = FALSE)
 #'
-#' # but for subgroups (gender, region) results vary
+#' ## but for subgroups (gender, region) results vary
 #' all.equal(err.est.different$Estimates[!(is.na(gender) & is.na(region))],
 #'           err.est$Estimates[!(is.na(gender) & is.na(region))],
 #'           check.attributes = FALSE)
-#' }
 #'
 #' @export calc.stError
 #'
