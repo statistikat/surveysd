@@ -1,6 +1,6 @@
 
-surveysd
-========
+surveysd <img src="man/figures/logo.png" align="right" alt="" />
+================================================================
 
 [![Build Status](https://travis-ci.org/statistikat/surveysd.svg?branch=master)](https://travis-ci.org/statistikat/surveysd) [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
