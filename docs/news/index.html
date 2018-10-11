@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print function for surveysd objects — print.surveysd • surveysd</title>
+<title>Changelog • surveysd</title>
 
 <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
 
@@ -32,10 +32,7 @@
 
 
 
-<meta property="og:title" content="Print function for surveysd objects — print.surveysd" />
-
-<meta property="og:description" content="Prints the results of a call to calc.stError. Shows used variables and function, number of point estiamtes
-as well as properties of the results." />
+<meta property="og:title" content="Changelog" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -54,7 +51,7 @@ as well as properties of the results." />
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -118,43 +115,38 @@ as well as properties of the results." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print function for surveysd objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/statistikat/surveysd/blob/master/R/print.R'><code>R/print.R</code></a></small>
-    <div class="hidden name"><code>print.surveysd.Rd</code></div>
+      <h1>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/statistikat/surveysd/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    
-    <p>Prints the results of a call to <a href='calc.stError.html'>calc.stError</a>. Shows used variables and function, number of point estiamtes
-as well as properties of the results.</p>
-    
-    </div>
-
-    <pre class="usage"><span class='co'># S3 method for surveysd</span>
-<span class='fu'>print</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p>an object of class <code>'surveysd'</code></p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>additonal parameters</p></td>
-    </tr>
-    </table>
-    
-
+    <div id="surveysd-0-2-0" class="section level1">
+<h1 class="page-header">
+<a href="#surveysd-0-2-0" class="anchor"></a>surveysd 0.2.0</h1>
+<ul>
+<li>Documentation updates
+<ul>
+<li>Use markown pre-processing for documentation</li>
+<li>Add github pages, more badges and a logo</li>
+<li>export <code>draw.bootstrap</code> and include <code>prettyNames</code> argument. update documenentation examples to use new variable names</li>
+<li>Don’t load <code>laeken</code> and <code>data.table</code> in examples</li>
+<li>rewrite <code>vignettes/TheoryWord.Rmd</code> into a dynamic markdown file describing the methodology of the package</li>
+</ul>
+</li>
+<li>Automatically pass variable names for household id, weights and reference period from <code>draw.bootstrap</code> to downstream functions</li>
+<li>Reorganize names of R source files</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-                </ul>
-
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#surveysd-0-2-0">0.2.0</a></li>
+      </ul>
+    </div>
   </div>
+
 </div>
 
       <footer>
