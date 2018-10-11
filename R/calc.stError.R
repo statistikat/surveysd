@@ -278,7 +278,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
       stop(ellipsNames[!ellipsNames %in% formalArgs(fun)], " not argument(s) of supplied function.")
   }
 
-  test.val <- dt.eval("dat[,fun(", var, ",", weights, ",...)]")
+  test.val <- dt.eval("dat[,fun(", var[1], ",", weights, ",...)]")
   if (!is.numeric(test.val) & !is.integer(test.val))
     stop("Function in fun does not return integer or numeric value")
 
@@ -407,7 +407,8 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
     no.na <- names(no.na)[!no.na]
 
     if(length(no.na)>0){
-      warning("Missing values found in column name(s)",no.na,"\n Cells with missing values are discarded for the calculation!\n")
+      print.no.na <- paste0(no.na,collapse = ", ")
+      warning("Missing values found in column name(s) ",print.no.na,"\n Cells with missing values are discarded for the calculation!\n")
     }
 
   }else{
