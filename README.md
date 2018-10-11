@@ -1,9 +1,13 @@
 
-surveysd
-========
+surveysd <img src="man/figures/logo.png" align="right" alt="" />
+================================================================
 
-[![Build Status](https://travis-ci.org/statistikat/surveysd.svg?branch=master)](https://travis-ci.org/statistikat/surveysd) <!--[![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master)--> <!--[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)--> <!--[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)--> <!--[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)-->
+[![Build Status](https://travis-ci.org/statistikat/surveysd.svg?branch=master)](https://travis-ci.org/statistikat/surveysd) [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![GitHub last commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd/commits/master) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd)
 
+<!--[![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master)-->
+<!--[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)-->
+<!--[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)-->
+<!--[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)-->
 This is the development place for the R-package `surveysd`. This package can be used to estimate the standard deviation of estimates in complex surveys using bootstrap weights.
 
 Installation

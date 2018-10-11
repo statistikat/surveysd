@@ -1,9 +1,0 @@
-%% change fontsize of R code
-\let\oldShaded\Shaded
-\let\endoldShaded\endShaded
-\renewenvironment{Shaded}{\tiny\oldShaded}{\endoldShaded}
-
-%% change fontsize of output
-\let\oldverbatim\verbatim
-\let\endoldverbatim\endverbatim
-\renewenvironment{verbatim}{\tiny\oldverbatim}{\endoldverbatim}
