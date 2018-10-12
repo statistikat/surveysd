@@ -8,7 +8,7 @@ output:
     theme: united
     df_print: kable
     toc: true
-    toc_depth: 2
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
@@ -35,7 +35,7 @@ dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 
-## print opart of the dataset
+## print part of the dataset
 dat_boot_calib[1:5, .(year, povertyRisk, eqIncome, onePerson, pWeight, w1, w2, w3, w4, w5)]
 ```
 
@@ -64,31 +64,40 @@ Columns that use the `val_` prefix denote the point estimate belonging to the "m
 dataset, which is `pWeight` in case of the dataset used here.
 
 Columns with the `stE_` prefix denote standard errors calculated with bootstrap replicates. The
-replicates result in using `w1`, `w2`, ..., `w5` instead of `pWeight` when applying the estimator.
+replicates result in using `w1`, `w2`, ..., `w10` instead of `pWeight` when applying the estimator.
+
+`n` and denotes the number of observations for the year and `N` denotes the total weight of those
+persons.
 
 ### Custom estimators
 
 In order to define a custom estimator function to be used in `fun`, the function needs to have
 two arguments like the example below.
 
-```{r, eval = FALSE}
+```{r}
+## define custom estimator
 myWeightedSum <- function(x, w) {
   sum(x*w)
 }
+
+## check if results are equal to the one using `suveysd::weightedSum()`
+totalIncome2 <- totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum, 
+                                            period.mean = NULL)
+all.equal(totalIncome, totalIncome2)
 ```
 
 The parameters `x` and `w` can be assumed to be vectors with equal length with `w` being numeric and
 `x` being the column defined in the `var` argument. It will be called once for each period (in this
 case `year`) and for each weight column (in this case `pWeight`, `w1`, `w2`, ..., `w10`)
 
-## Multiple estimators
+### Multiple estimators
 
 In case an estimator should be applied to several columns of the dataset, `var` can be set to
 a vector containing all necessary columns.
 
 ```{r}
 multipleRates <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio, 
-                            period.mean = NULL)
+                              period.mean = NULL)
 multipleRates$Estimates
 ```
 Here we see the relative number of persons at risk of poverty and the relative number of one-person
@@ -112,21 +121,28 @@ To calculate the ratio of persons at risk of poverty for each federal state of a
 
 ```{r}
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
-                    group = "region")
+                             group = "region")
 povertyRates$Estimates
 ```
 
-The last column with `region = NA` denotes the aggregate over all regions.
+The last column with `region = NA` denotes the aggregate over all regions. Note that the
+columns `N` and `n` now show the weighted and unweighted number of persons in each region.
 
 ### Several grouping variables
 
-The following call of `calc.stError()` demonstrates how several grouping variables can be used to 
-split up the data. There are three options.
+In case more than one grouping variable is used, there are several options of calling 
+`calc.stError()` depending on whether combinations of grouping levels should be regarded or not.
+We will consider the variables `gender` and `region` as our grouping variables and show three 
+options on how `calc.stError()` can be called.
 
 #### Option 1: All regions and all genders
 
 Calculate the point estimate and standard error for each region and each gender. The number of 
-rows in the output is therefore `9 + 2 + 1`.
+rows in the output is therefore 
+
+$$n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.$$
+
+The last row is again the estimate for the whole period.
 
 ```{r}
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
@@ -137,7 +153,10 @@ povertyRates$Estimates
 
 #### Option 2: All combinations of `state` and `gender`
 
-The number of rows in the output is `9*2 + 1`.
+Split the data by all cobinations of the two grouping variables. This will result in a larger 
+output-table of the size
+
+$$n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.$$
 
 ```{r}
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
@@ -153,7 +172,9 @@ In this case, the estimates and standard errors are calculated for
 * every state and
 * every combination of state and gender.
 
-The number of rows in the output is therefore `9*2 + 9 + 2 + 1`.
+The number of rows in the output is therefore 
+
+$$n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.$$
 
 ```{r}
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
