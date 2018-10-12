@@ -143,6 +143,7 @@ err.est$Estimates
 
 # calculate weightedRatio for povertyRisk and fraction of one-person households per period
 
+dat_boot_calib[, onePerson := nrow(.SD) == 1, by = .(year, hid)]
 err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio,
                         period.mean = NULL)
 err.est$Estimates
