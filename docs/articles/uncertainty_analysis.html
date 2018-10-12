@@ -117,7 +117,9 @@ dat_boot_calib &lt;-<span class="st"> </span><span class="kw"><a href="../refere
 ## Convergence reached in  3  steps 
 ## Convergence reached in  2  steps 
 ## Convergence reached in  4  steps</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## print opart of the dataset
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat_boot_calib[, onePerson <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">nrow</span>(.SD) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, by =<span class="st"> </span>.(year, hid)]
+
+## print part of the dataset
 dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, eqIncome, onePerson, pWeight, w1, w2, w3, w4, w5)]</code></pre></div>
 <div class="kable-table">
 <table class="table">
@@ -125,7 +127,7 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <th align="right">year</th>
 <th align="left">povertyRisk</th>
 <th align="right">eqIncome</th>
-<th align="right">onePerson</th>
+<th align="left">onePerson</th>
 <th align="right">pWeight</th>
 <th align="right">w1</th>
 <th align="right">w2</th>
@@ -138,7 +140,7 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <td align="right">2010</td>
 <td align="left">FALSE</td>
 <td align="right">16090.69</td>
-<td align="right">1</td>
+<td align="left">FALSE</td>
 <td align="right">504.5696</td>
 <td align="right">1008.633</td>
 <td align="right">1.199585</td>
@@ -150,7 +152,7 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <td align="right">2010</td>
 <td align="left">FALSE</td>
 <td align="right">16090.69</td>
-<td align="right">0</td>
+<td align="left">FALSE</td>
 <td align="right">504.5696</td>
 <td align="right">1008.633</td>
 <td align="right">1.199585</td>
@@ -162,7 +164,7 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <td align="right">2010</td>
 <td align="left">FALSE</td>
 <td align="right">16090.69</td>
-<td align="right">0</td>
+<td align="left">FALSE</td>
 <td align="right">504.5696</td>
 <td align="right">1008.633</td>
 <td align="right">1.199585</td>
@@ -174,7 +176,7 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <td align="right">2011</td>
 <td align="left">FALSE</td>
 <td align="right">16090.69</td>
-<td align="right">1</td>
+<td align="left">FALSE</td>
 <td align="right">504.5696</td>
 <td align="right">1035.097</td>
 <td align="right">1.242683</td>
@@ -186,7 +188,7 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <td align="right">2011</td>
 <td align="left">FALSE</td>
 <td align="right">16090.69</td>
-<td align="right">0</td>
+<td align="left">FALSE</td>
 <td align="right">504.5696</td>
 <td align="right">1035.097</td>
 <td align="right">1.242683</td>
@@ -346,23 +348,30 @@ totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 </table>
 </div>
 <p>Columns that use the <code>val_</code> prefix denote the point estimate belonging to the “main weight” of the dataset, which is <code>pWeight</code> in case of the dataset used here.</p>
-<p>Columns with the <code>stE_</code> prefix denote standard errors calculated with bootstrap replicates. The replicates result in using <code>w1</code>, <code>w2</code>, …, <code>w5</code> instead of <code>pWeight</code> when applying the estimator.</p>
+<p>Columns with the <code>stE_</code> prefix denote standard errors calculated with bootstrap replicates. The replicates result in using <code>w1</code>, <code>w2</code>, …, <code>w10</code> instead of <code>pWeight</code> when applying the estimator.</p>
+<p><code>n</code> and denotes the number of observations for the year and <code>N</code> denotes the total weight of those persons.</p>
 <div id="custom-estimators" class="section level3">
 <h3 class="hasAnchor">
 <a href="#custom-estimators" class="anchor"></a>Custom estimators</h3>
 <p>In order to define a custom estimator function to be used in <code>fun</code>, the function needs to have two arguments like the example below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myWeightedSum &lt;-<span class="st"> </span><span class="cf">function</span>(x, w) {
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## define custom estimator
+myWeightedSum &lt;-<span class="st"> </span><span class="cf">function</span>(x, w) {
   <span class="kw">sum</span>(x<span class="op">*</span>w)
-}</code></pre></div>
+}
+
+## check if results are equal to the one using `suveysd::weightedSum()`
+totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum, 
+                                            <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
+<span class="kw">all.equal</span>(totalIncome, totalIncome2)</code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
 <p>The parameters <code>x</code> and <code>w</code> can be assumed to be vectors with equal length with <code>w</code> being numeric and <code>x</code> being the column defined in the <code>var</code> argument. It will be called once for each period (in this case <code>year</code>) and for each weight column (in this case <code>pWeight</code>, <code>w1</code>, <code>w2</code>, …, <code>w10</code>)</p>
 </div>
-</div>
-<div id="multiple-estimators" class="section level2">
-<h2 class="hasAnchor">
-<a href="#multiple-estimators" class="anchor"></a>Multiple estimators</h2>
+<div id="multiple-estimators" class="section level3">
+<h3 class="hasAnchor">
+<a href="#multiple-estimators" class="anchor"></a>Multiple estimators</h3>
 <p>In case an estimator should be applied to several columns of the dataset, <code>var</code> can be set to a vector containing all necessary columns.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multipleRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="kw">c</span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), <span class="dt">fun =</span> weightedRatio, 
-                            <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
+                              <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
 multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
 <table class="table">
@@ -382,8 +391,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">14.44422</td>
 <td align="right">0.4688685</td>
-<td align="right">42.83855</td>
-<td align="right">0.3298943</td>
+<td align="right">14.85737</td>
+<td align="right">0.4608975</td>
 </tr>
 <tr class="even">
 <td align="right">2011</td>
@@ -391,8 +400,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">14.60155</td>
 <td align="right">0.4024223</td>
-<td align="right">42.83855</td>
-<td align="right">0.3804563</td>
+<td align="right">14.85737</td>
+<td align="right">0.4204098</td>
 </tr>
 <tr class="odd">
 <td align="right">2012</td>
@@ -400,8 +409,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">15.24983</td>
 <td align="right">0.4220349</td>
-<td align="right">42.83855</td>
-<td align="right">0.4304860</td>
+<td align="right">14.85737</td>
+<td align="right">0.4487607</td>
 </tr>
 <tr class="even">
 <td align="right">2013</td>
@@ -409,8 +418,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">15.60219</td>
 <td align="right">0.4683628</td>
-<td align="right">42.83855</td>
-<td align="right">0.3068252</td>
+<td align="right">14.85737</td>
+<td align="right">0.3993618</td>
 </tr>
 <tr class="odd">
 <td align="right">2014</td>
@@ -418,8 +427,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">15.57112</td>
 <td align="right">0.4106918</td>
-<td align="right">42.83855</td>
-<td align="right">0.3273890</td>
+<td align="right">14.85737</td>
+<td align="right">0.3364885</td>
 </tr>
 <tr class="even">
 <td align="right">2015</td>
@@ -427,8 +436,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">15.59373</td>
 <td align="right">0.2814149</td>
-<td align="right">42.83855</td>
-<td align="right">0.2886085</td>
+<td align="right">14.85737</td>
+<td align="right">0.2616768</td>
 </tr>
 <tr class="odd">
 <td align="right">2016</td>
@@ -436,8 +445,8 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">15.69460</td>
 <td align="right">0.3654845</td>
-<td align="right">42.83855</td>
-<td align="right">0.1833664</td>
+<td align="right">14.85737</td>
+<td align="right">0.1749362</td>
 </tr>
 <tr class="even">
 <td align="right">2017</td>
@@ -445,13 +454,14 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <td align="right">8182222</td>
 <td align="right">15.81567</td>
 <td align="right">0.2807620</td>
-<td align="right">42.83855</td>
-<td align="right">0.2193366</td>
+<td align="right">14.85737</td>
+<td align="right">0.2631210</td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>Here we see the relative number of persons at risk of poverty and the relative number of one-person households.</p>
+</div>
 </div>
 <div id="grouping" class="section level2">
 <h2 class="hasAnchor">
@@ -462,7 +472,7 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
   <span class="kw">attr</span>(dat2, att) &lt;-<span class="st"> </span><span class="kw">attr</span>(dat_boot_calib, att)</code></pre></div>
 <p>To calculate the ratio of persons at risk of poverty for each federal state of austria, <code>group = "region"</code> can be used.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
-                    <span class="dt">group =</span> <span class="st">"region"</span>)
+                             <span class="dt">group =</span> <span class="st">"region"</span>)
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
 <table class="table">
@@ -558,15 +568,17 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 </tbody>
 </table>
 </div>
-<p>The last column with <code>region = NA</code> denotes the aggregate over all regions.</p>
+<p>The last column with <code>region = NA</code> denotes the aggregate over all regions. Note that the columns <code>N</code> and <code>n</code> now show the weighted and unweighted number of persons in each region.</p>
 <div id="several-grouping-variables" class="section level3">
 <h3 class="hasAnchor">
 <a href="#several-grouping-variables" class="anchor"></a>Several grouping variables</h3>
-<p>The following call of <code><a href="../reference/calc.stError.html">calc.stError()</a></code> demonstrates how several grouping variables can be used to split up the data. There are three options.</p>
+<p>In case more than one grouping variable is used, there are several options of calling <code><a href="../reference/calc.stError.html">calc.stError()</a></code> depending on whether combinations of grouping levels should be regarded or not. We will consider the variables <code>gender</code> and <code>region</code> as our grouping variables and show three options on how <code><a href="../reference/calc.stError.html">calc.stError()</a></code> can be called.</p>
 <div id="option-1-all-regions-and-all-genders" class="section level4">
 <h4 class="hasAnchor">
 <a href="#option-1-all-regions-and-all-genders" class="anchor"></a>Option 1: All regions and all genders</h4>
-<p>Calculate the point estimate and standard error for each region and each gender. The number of rows in the output is therefore <code>9 + 2 + 1</code>.</p>
+<p>Calculate the point estimate and standard error for each region and each gender. The number of rows in the output is therefore</p>
+<p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.\]</span></p>
+<p>The last row is again the estimate for the whole period.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
                              <span class="dt">group =</span> <span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
@@ -698,7 +710,8 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <h4 class="hasAnchor">
 <a href="#option-2-all-combinations-of-state-and-gender" class="anchor"></a>Option 2: All combinations of <code>state</code> and <code>gender</code>
 </h4>
-<p>The number of rows in the output is <code>9*2 + 1</code>.</p>
+<p>Split the data by all cobinations of the two grouping variables. This will result in a larger output-table of the size</p>
+<p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.\]</span></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
                              <span class="dt">group =</span> <span class="kw">list</span>(<span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
@@ -898,7 +911,8 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <li>every state and</li>
 <li>every combination of state and gender.</li>
 </ul>
-<p>The number of rows in the output is therefore <code>9*2 + 9 + 2 + 1</code>.</p>
+<p>The number of rows in the output is therefore</p>
+<p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.\]</span></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
                              <span class="dt">group =</span> <span class="kw">list</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
@@ -1198,9 +1212,17 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#prerequisites">Prerequisites</a></li>
-      <li><a href="#estimator-functions">Estimator functions</a></li>
+      <li>
+<a href="#estimator-functions">Estimator functions</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#custom-estimators">Custom estimators</a></li>
       <li><a href="#multiple-estimators">Multiple estimators</a></li>
-      <li><a href="#grouping">Grouping</a></li>
+      </ul>
+</li>
+      <li>
+<a href="#grouping">Grouping</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#several-grouping-variables">Several grouping variables</a></li>
+      </ul>
+</li>
       </ul>
 </div>
       </div>
