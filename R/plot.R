@@ -192,11 +192,13 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
     ste_bool2 <- paste0(ste_bool,"2")
     
     # prepare output differently if period.mean has been used
-    if(!is.null(err.est$param$period.mean)){
+    if(!is.null(x$param$period.mean)){
       period.mean <- TRUE
       
       ste_var_mean <- paste0(ste_var,"_mean")
       ste_bool_mean <- paste0(ste_bool,"_mean")
+      ste_var_mean2 <- paste0(ste_var_mean,"2")
+      ste_bool_mean2 <- paste0(ste_bool_mean,"2")
       
       dt.eval("plot.group1.periodmean[,",period,":=tstrsplit(",period,",split='_',keep=",round((x$param$period.mean+1)/2),")]")
       
@@ -281,11 +283,11 @@ plot.surveysd <- function(x,variable=x$param$var[1],type=c("summary","grouping")
       
       if(period.mean){
         # add results for k-mean-periods
-        p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool_mean)==TRUE],
+        p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[",ste_bool_mean,"==TRUE],
                       aes(",period,",",val_var,",shape=shape_bool))")
         
         # add results for group[1] and k-period-mean
-        p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[get(ste_bool_mean2)==TRUE],
+        p1 <- dt.eval("p1 + geom_point(data=plot.group1.period[",ste_bool_mean2,"==TRUE],
                       aes(",period,",",val_var,",shape=shape_bool2))")
         
       }
