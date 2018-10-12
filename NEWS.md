@@ -1,3 +1,6 @@
+* Create vignette for error estimation
+* Bugfixes: 8c4529a, faed7f9
+
 # surveysd 0.2.0
 
 * Documentation updates
