@@ -1,0 +1,163 @@
+---
+title: "Uncertainty analysis with surveysd"
+pkgdown:
+  as_is: true
+output:
+  html_document:
+    highlight: pygments
+    theme: united
+    df_print: kable
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For the most part, this document will present the functionalities of the function 
+`surveysd::calc.stError()` which generates point estimates and standard errors for
+user-supplied estimation functions.
+
+## Prerequisites
+
+In order to use a dataset with `calc.stError()`, several weight columns have to be present. Each
+weight column corresponds to a bootstrap sample. In the following examples, we will use the data 
+from `demo.eusilc()` and attach the bootstrap weights using `draw.bootstrap()` and `recalib()`. Please 
+refer to the documentation of those functions for more detail.
+
+```{r}
+library(surveysd)
+
+set.seed(1234)
+eusilc <- demo.eusilc(prettyNames = TRUE)
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+                           strata = "region", period = "year")
+dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
+
+## print opart of the dataset
+dat_boot_calib[1:5, .(year, povertyRisk, eqIncome, onePerson, pWeight, w1, w2, w3, w4, w5)]
+```
+
+
+## Estimator functions
+
+The parameters `fun` and `var` in `calc.stError()` define the estimator to be used in the error 
+analysis. There are two built-in estimator functions `weightedSum()` and `weightedRatio()` which can
+be used as follows.
+
+
+```{r}
+povertyRate <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, period.mean = NULL)
+totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum, period.mean = NULL)
+```
+
+Those functions calculate the ratio of persons at risk of povery (in percent) and the total income.
+By default, the results are calculated seperately for each reference period
+
+```{r}
+povertyRate$Estimates
+totalIncome$Estimates
+```
+
+Columns that use the `val_` prefix denote the point estimate belonging to the "main weight" of the
+dataset, which is `pWeight` in case of the dataset used here.
+
+Columns with the `stE_` prefix denote standard errors calculated with bootstrap replicates. The
+replicates result in using `w1`, `w2`, ..., `w5` instead of `pWeight` when applying the estimator.
+
+### Custom estimators
+
+In order to define a custom estimator function to be used in `fun`, the function needs to have
+two arguments like the example below.
+
+```{r, eval = FALSE}
+myWeightedSum <- function(x, w) {
+  sum(x*w)
+}
+```
+
+The parameters `x` and `w` can be assumed to be vectors with equal length with `w` being numeric and
+`x` being the column defined in the `var` argument. It will be called once for each period (in this
+case `year`) and for each weight column (in this case `pWeight`, `w1`, `w2`, ..., `w10`)
+
+## Multiple estimators
+
+In case an estimator should be applied to several columns of the dataset, `var` can be set to
+a vector containing all necessary columns.
+
+```{r}
+multipleRates <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio, 
+                            period.mean = NULL)
+multipleRates$Estimates
+```
+Here we see the relative number of persons at risk of poverty and the relative number of one-person
+households.
+
+## Grouping
+
+The `groups` argument can be used to calculate estimators for different subsets of the data. This
+argument can take the grouping variable as a string that refers to a column name (usually a factor) 
+in `dat`. If set, all estimators are not only split by the reference period but also by the
+grouping variable. For simplicity, only one reference period of the above data is used.
+
+```{r}
+dat2 <- subset(dat_boot_calib, year == 2010)
+for (att  in c("period", "weights", "b.rep"))
+  attr(dat2, att) <- attr(dat_boot_calib, att)
+```
+
+To calculate the ratio of persons at risk of poverty for each federal state of austria, 
+`group = "region"` can be used.
+
+```{r}
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+                    group = "region")
+povertyRates$Estimates
+```
+
+The last column with `region = NA` denotes the aggregate over all regions.
+
+### Several grouping variables
+
+The following call of `calc.stError()` demonstrates how several grouping variables can be used to 
+split up the data. There are three options.
+
+#### Option 1: All regions and all genders
+
+Calculate the point estimate and standard error for each region and each gender. The number of 
+rows in the output is therefore `9 + 2 + 1`.
+
+```{r}
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+                             group = c("gender", "region"))
+povertyRates$Estimates
+
+```
+
+#### Option 2: All combinations of `state` and `gender`
+
+The number of rows in the output is `9*2 + 1`.
+
+```{r}
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+                             group = list(c("gender", "region")))
+povertyRates$Estimates
+```
+
+#### Option 3: Cobination of Option 1 and Option 2
+
+In this case, the estimates and standard errors are calculated for
+
+* every gender,
+* every state and
+* every combination of state and gender.
+
+The number of rows in the output is therefore `9*2 + 9 + 2 + 1`.
+
+```{r}
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+                             group = list("gender", "region", c("gender", "region")))
+povertyRates$Estimates
+```
+
