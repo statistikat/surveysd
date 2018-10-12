@@ -11,7 +11,7 @@
 #' @param period character specifying the name of the column in `dat` containing the sample periods.
 #' @param var character vector containing variable names in `dat` on which `fun` shall be applied for each sample period.
 #' @param fun function which will be applied on `var` for each sample period.
-#' Predefined functions are `weightedRatio,weightedSum`, but can also take any other function which returns a double or integer and uses weights as its second argument.
+#' Predefined functions are [weightedRatio], [weightedSum], but can also take any other function which returns a double or integer and uses weights as its second argument.
 #' @param national boolean, if TRUE point estimates resulting from fun will be divided by the point estimate at the national level.
 #' @param group character vectors or list of character vectors containig variables in `dat`. For each list entry `dat` will be split in subgroups according to the containing variables as well as `period`.
 #' The pointestimates are then estimated for each subgroup seperately. If `group=NULL` the data will split into sample periods by default.
