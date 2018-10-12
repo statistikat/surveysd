@@ -92,6 +92,9 @@ In addition the standard error of an estimate can be calcualted using the survey
     <li>
       <a href="../articles/Methodology.html">Methodology</a>
     </li>
+    <li>
+      <a href="../articles/uncertainty_analysis.html">Uncertainty analysis with surveysd</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -162,7 +165,7 @@ In addition the standard error of an estimate can be calcualted using the survey
     <tr>
       <th>fun</th>
       <td><p>function which will be applied on <code>var</code> for each sample period.
-Predefined functions are <code>weightedRatio,weightedSum</code>, but can also take any other function which returns a double or integer and uses weights as its second argument.</p></td>
+Predefined functions are <a href='PointEstimates.html'>weightedRatio</a>, <a href='PointEstimates.html'>weightedSum</a>, but can also take any other function which returns a double or integer and uses weights as its second argument.</p></td>
     </tr>
     <tr>
       <th>national</th>
@@ -434,8 +437,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># use a function from an other package that has sampling weights as its second argument</span>
 <span class='co'># for example gini() from laeken</span>
 
-<span class='fu'>library</span>(<span class='no'>laeken</span>)
-
+<span class='fu'>library</span>(<span class='no'>laeken</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: boot</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: MASS</span></div><div class='input'>
 <span class='co'>## set up help function that returns only the gini index</span>
 <span class='no'>help_gini</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>){
  <span class='fu'>return</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/laeken/topics/gini'>gini</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)$<span class='no'>value</span>)

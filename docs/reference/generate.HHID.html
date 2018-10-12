@@ -94,6 +94,9 @@ a new houshold ID is assigned to the original and the split household." />
     <li>
       <a href="../articles/Methodology.html">Methodology</a>
     </li>
+    <li>
+      <a href="../articles/uncertainty_analysis.html">Uncertainty analysis with surveysd</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -166,7 +169,8 @@ has a trailing "_orig".</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='fu'>library</span>(<span class='no'>surveysd</span>)
-<span class='fu'>library</span>(<span class='no'>laeken</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: boot</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: MASS</span></div><div class='input'><span class='fu'>library</span>(<span class='no'>data.table</span>)
+<span class='fu'>library</span>(<span class='no'>laeken</span>)
+<span class='fu'>library</span>(<span class='no'>data.table</span>)
 
 <span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>surveysd</span><span class='kw ns'>:::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/surveysd/topics/demo.eusilc'>demo.eusilc</a></span>()
 
@@ -179,10 +183,10 @@ has a trailing "_orig".</p>
 #&gt;      5:     2 (3,4]         Tyrol     202   (25,45]   male     1     AT
 #&gt;     ---                                                                
 #&gt; 118612:  5997 (3,4] Lower Austria  599704 (-Inf,16] female     4     AT
-#&gt; 118613: 14999 (0,1] Upper Austria 1499901   (25,45] female     1     AT
+#&gt; 118613: 16499 (0,1] Upper Austria 1649901   (25,45] female     1     AT
 #&gt; 118614: 16500 (0,1]         Tyrol 1650001   (25,45]   male     1     AT
-#&gt; 118615:  6000 (1,2]         Tyrol  600001   (45,65]   male     1     AT
-#&gt; 118616:  6000 (1,2]         Tyrol  600002   (45,65] female     6     AT
+#&gt; 118615: 15000 (1,2]         Tyrol 1500001   (45,65]   male     1     AT
+#&gt; 118616: 15000 (1,2]         Tyrol 1500002   (45,65] female     6     AT
 #&gt;           py010n py050n  py090n py100n py110n py120n py130n py140n hy040n
 #&gt;      1:  9756.25      0    0.00      0      0      0      0      0 4273.9
 #&gt;      2: 12471.60      0    0.00      0      0      0      0      0 4273.9
@@ -203,10 +207,10 @@ has a trailing "_orig".</p>
 #&gt;      5: 1549.72      0      0   2.13      0      0      0  2.1 27076.24
 #&gt;     ---                                                                
 #&gt; 118612: 1955.19      0      0   0.00      0      0      0  2.5 26508.20
-#&gt; 118613:    0.00      0      0 424.85      0      0      0  1.0 12002.63
-#&gt; 118614:    0.00      0      0 120.65      0      0      0  1.0 11496.79
-#&gt; 118615:    0.00      0      0   0.00      0      0      0  1.5 16288.30
-#&gt; 118616:    0.00      0      0   0.00      0      0      0  1.5 16288.30
+#&gt; 118613:    0.00      0      0 424.85      0      0      0  1.0 26270.99
+#&gt; 118614:    0.00      0      0 120.65      0      0      0  1.0 12850.17
+#&gt; 118615:    0.00      0      0   0.00      0      0      0  1.5 13548.47
+#&gt; 118616:    0.00      0      0   0.00      0      0      0  1.5 24523.01
 #&gt;            db090    rb050 year povmd60 rb030split
 #&gt;      1: 504.5696 504.5696 2010       0        101
 #&gt;      2: 504.5696 504.5696 2010       0        102
@@ -215,10 +219,10 @@ has a trailing "_orig".</p>
 #&gt;      5: 493.3824 493.3824 2010       0        202
 #&gt;     ---                                          
 #&gt; 118612: 556.4260 556.4260 2017       0     599704
-#&gt; 118613: 643.2557 643.2557 2017       0    1499901
+#&gt; 118613: 643.2557 643.2557 2017       0    1649901
 #&gt; 118614: 679.7288 679.7288 2017       0    1650001
-#&gt; 118615: 567.1544 567.1544 2017       0     600001
-#&gt; 118616: 567.1544 567.1544 2017       0     600002</div><div class='input'><span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='http://www.rdocumentation.org/packages/data.table/topics/duplicated'>unique</a></span>(<span class='no'>year</span>)]
+#&gt; 118615: 567.1544 567.1544 2017       0    1500001
+#&gt; 118616: 567.1544 567.1544 2017       0    1500002</div><div class='input'><span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='http://www.rdocumentation.org/packages/data.table/topics/duplicated'>unique</a></span>(<span class='no'>year</span>)]
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
 <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>()
 <span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>){
@@ -236,17 +240,17 @@ has a trailing "_orig".</p>
 
 <span class='co'># pid which are in split households</span>
 <span class='no'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/data.table/topics/duplicated'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>list</span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]</div><div class='output co'>#&gt;      rb030split V1
-#&gt;   1:      79701  2
-#&gt;   2:      98801  2
-#&gt;   3:     112401  2
-#&gt;   4:     135101  2
-#&gt;   5:     142701  2
+#&gt;   1:       6301  2
+#&gt;   2:      29401  2
+#&gt;   3:      53501  2
+#&gt;   4:      62401  2
+#&gt;   5:      70001  2
 #&gt;  ---              
-#&gt; 136:    1455601  2
-#&gt; 137:    1461101  2
-#&gt; 138:    1478101  2
-#&gt; 139:    1481601  2
-#&gt; 140:    1493101  2</div><div class='input'>
+#&gt; 136:    1465601  2
+#&gt; 137:    1468001  2
+#&gt; 138:    1483501  2
+#&gt; 139:    1484101  2
+#&gt; 140:    1496101  2</div><div class='input'>
 <span class='no'>eusilc.new</span> <span class='kw'>&lt;-</span> <span class='fu'>generate.HHID</span>(<span class='no'>eusilc</span>,<span class='kw'>period</span><span class='kw'>=</span><span class='st'>"year"</span>,<span class='kw'>pid</span><span class='kw'>=</span><span class='st'>"rb030split"</span>,<span class='kw'>hid</span><span class='kw'>=</span><span class='st'>"db030"</span>)
 
 <span class='co'># no longer any split households in the data</span>
