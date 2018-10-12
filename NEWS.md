@@ -1,5 +1,8 @@
+# surveysd 0.2.1
+
 * Create vignette for error estimation
-* Bugfixes: 8c4529a, faed7f9
+* Bugfixes for plotting and `...` argument in `calc.stError`
+* Documentation updates. Make example plots available in gh-pages
 
 # surveysd 0.2.0
 
