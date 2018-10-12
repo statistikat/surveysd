@@ -2,16 +2,23 @@ reference:
 - title: data import
   contents:
   - '`demo.eusilc`'
-- title: calibration
+- title: bootstrapping and calibration
+  desc: >
+    Functions to draw bootstrap samples and calibrate each sample accoring to population totals.
+    The methods used in these function relate to a rescaled bootstrap as described in
+    `vignette("Methodology")`.
   contents:
-  - matches('bootstrap')
-  - '`generate.HHID`'
-  - '`recalib`'
+    - matches('bootstrap')
+    - '`generate.HHID`'
+    - '`recalib`'
 - title: estimation of standard errors
+  desc: >
+    Apply estimators to each sample to generate standard errors as well as confidence intervals.
+    See `vignette("uncertainty_analysis")` for more details.
   contents:
-  - '`PointEstimates`'
-  - '`calc.stError`'
-  - matches('surveysd')
+    - '`PointEstimates`'
+    - '`calc.stError`'
+    - matches('surveysd')
 
 development:
   mode: unreleased
