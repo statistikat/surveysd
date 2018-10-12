@@ -22,7 +22,7 @@ calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
 \item{var}{character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each sample period.}
 
 \item{fun}{function which will be applied on \code{var} for each sample period.
-Predefined functions are \code{weightedRatio,weightedSum}, but can also take any other function which returns a double or integer and uses weights as its second argument.}
+Predefined functions are \link{weightedRatio}, \link{weightedSum}, but can also take any other function which returns a double or integer and uses weights as its second argument.}
 
 \item{national}{boolean, if TRUE point estimates resulting from fun will be divided by the point estimate at the national level.}
 
