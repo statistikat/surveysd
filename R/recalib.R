@@ -62,7 +62,7 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
                     period = attr(dat, "period"), conP.var = c("RB090"),
 										conH.var = c("DB040", "DB100"), ...) {
 
-  verbose <- epsP <- epsH <- bound <- maxIter <- meanHH <- check_hh_vars <- hidfactor <- calibWeight <- NULL
+  verbose <- epsP <- epsH <- bound <- maxIter <- meanHH <- check_hh_vars <- hidfactor <- calibWeight <- FirstPersonInHousehold_ <- NULL
 
   ##########################################################
   # INPUT CHECKING
@@ -178,12 +178,12 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 		conP <- NULL
 	}
 	if(!is.null(conH.var)){
-	  dt.eval("dat[,onePerson:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,")]")
+	  dt.eval("dat[,FirstPersonInHousehold_:=c(1L,rep(0,.N-1)),by=list(",hid,",",period,")]")
 	  conH <- lapply(conH.var,function(z){
 	    form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
-	    dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
+	    dt.eval("xtabs(",form.z,",data=dat[,sum(FirstPersonInHousehold_*",weights,"),by=list(",period,",",z,")])")
 	  })
-	  dat[,onePerson:=NULL]
+	  dat[,FirstPersonInHousehold_:=NULL]
 	}else{
 		conH <- NULL
 	}

@@ -7,8 +7,8 @@
 calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   "b.rep"), period = attr(dat, "period"), var, fun = weightedRatio,
   national = FALSE, group = NULL, fun.adjust.var = NULL,
-  adjust.var = NULL, period.diff = NULL, period.mean = 3,
-  bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL, ...)
+  adjust.var = NULL, period.diff = NULL, period.mean = 3, bias = FALSE,
+  size.limit = 20, cv.limit = 10, p = NULL, ...)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \link{draw.bootstrap} and \link{recalib}.}
@@ -143,7 +143,7 @@ err.est$Estimates
 
 # calculate weightedRatio for povertyRisk and fraction of one-person households per period
 
-dat_boot_calib[, onePerson := nrow(.SD) == 1, by = .(year, hid)]
+dat_boot_calib[, onePerson := .N == 1, by = .(year, hid)]
 err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio,
                         period.mean = NULL)
 err.est$Estimates
