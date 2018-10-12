@@ -33,39 +33,38 @@ Plot results of \code{calc.stError()}
 }
 \examples{
 
-\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
 
-eusilc <- surveysd:::demo.eusilc()
+eusilc <- demo.eusilc(prettyNames = TRUE)
 
-dat_boot <- draw.bootstrap(eusilc,REP=250,hid="db030",weights="rb050",strata=c("db040"),
-                           period="year")
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+                           strata = "region", period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat=copy(dat_boot),hid="db030",weights="rb050",
-                          period="year",b.rep=paste0("w",1:250),
-                          conP.var=c("rb090"),conH.var = c("db040"))
+dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 
 # estimate weightedRatio for povmd60 per period
-group <- list("rb090","db040",c("rb090","db040"))
-err.est <- calc.stError(dat_boot_calib,weights="rb050",b.weights=paste0("w",1:250),
-                        period="year",var="povmd60",fun="weightedRatio",
-                        group=c("rb090","db040"),period.diff=NULL,period.mean=NULL)
+group <- list("gender", "region", c("gender", "region"))
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+                        group = group , period.mean = NULL)
 
 
 plot(err.est)
 
-# plot results for rb090
+# plot results for gender
 # dotted line is the result on the national level
-plot(err.est,type="grouping",groups="rb090")
+plot(err.est, type = "grouping", groups = "gender")
+
+# plot results for gender
+# with standard errors as ribbons
+plot(err.est, type = "grouping", groups = "gender", sd.type = "ribbon")
 
 # plot results for rb090 in each db040
-plot(err.est,type="grouping",groups=c("rb090","db040"))
+plot(err.est, type = "grouping", groups = c("gender", "region"))
 
-# plot results for db040 in each rb090
-plot(err.est,type="grouping",groups=c("db040","rb090"))
-}
+# plot results for db040 in each rb090 with standard errors as ribbons
+plot(err.est,type = "grouping", groups = c("gender", "region"))
 
 }
