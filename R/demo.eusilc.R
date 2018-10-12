@@ -1,4 +1,4 @@
-#' helpfunction to generate multiple years of eusilc data
+#' Generate multiple years of EU-SILC data
 #'
 #' Create a dummy dataset to be used for demonstrating the functionalities of the `surveysd` package
 #' based on [laeken::eusilc]. Please refer to the documentation page of the original data for

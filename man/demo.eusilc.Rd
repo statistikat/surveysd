@@ -2,7 +2,7 @@
 % Please edit documentation in R/demo.eusilc.R
 \name{demo.eusilc}
 \alias{demo.eusilc}
-\title{helpfunction to generate multiple years of eusilc data}
+\title{Generate multiple years of EU-SILC data}
 \usage{
 demo.eusilc(n = 8, prettyNames = FALSE)
 }
