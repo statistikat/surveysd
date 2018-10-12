@@ -326,26 +326,97 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 8: 2017 14827 8182222        15.81567       0.2807620</div><div class='input'>
 <span class='co'># calculate weightedRatio for povertyRisk and fraction of one-person households per period</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
+<span class='no'>dat_boot_calib</span>[, <span class='no'>onePerson</span> <span class='kw'>:=</span> <span class='fu'>nrow</span>(<span class='no'>.SD</span>) <span class='kw'>==</span> <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>year</span>, <span class='no'>hid</span>)]</div><div class='output co'>#&gt;           hid hsize        region     pid       age gender   ecoStat
+#&gt;      1:     1 (2,3]         Tyrol     101   (25,45] female part time
+#&gt;      2:     1 (2,3]         Tyrol     102   (25,45]   male full time
+#&gt;      3:     1 (2,3]         Tyrol     103 (-Inf,16]   male      &lt;NA&gt;
+#&gt;      4:     1 (2,3]         Tyrol     101   (25,45] female part time
+#&gt;      5:     1 (2,3]         Tyrol     102   (25,45]   male full time
+#&gt;     ---                                                             
+#&gt; 118612: 16499 (1,2]    Burgenland 1649902   (45,65] female  domestic
+#&gt; 118613: 16500 (3,4] Lower Austria 1650001   (25,45] female full time
+#&gt; 118614: 16500 (3,4] Lower Austria 1650002   (45,65]   male full time
+#&gt; 118615: 16500 (3,4] Lower Austria 1650003   (16,25]   male full time
+#&gt; 118616: 16500 (3,4] Lower Austria 1650004 (-Inf,16] female education
+#&gt;         citizenship   py010n py050n py090n py100n py110n py120n py130n py140n
+#&gt;      1:          AT  9756.25      0      0      0      0      0      0      0
+#&gt;      2:       Other 12471.60      0      0      0      0      0      0      0
+#&gt;      3:        &lt;NA&gt;       NA     NA     NA     NA     NA     NA     NA     NA
+#&gt;      4:          AT  9756.25      0      0      0      0      0      0      0
+#&gt;      5:       Other 12471.60      0      0      0      0      0      0      0
+#&gt;     ---                                                                      
+#&gt; 118612:          AT     0.00      0      0      0      0      0      0      0
+#&gt; 118613:          AT 10884.59      0      0      0      0      0      0      0
+#&gt; 118614:          AT 25796.56      0      0      0      0      0      0      0
+#&gt; 118615:          AT 27634.15      0      0      0      0      0      0      0
+#&gt; 118616:          AT     0.00      0      0      0      0      0      0      0
+#&gt;         hy040n  hy050n hy070n hy080n hy090n hy110n hy130n hy145n eqSS eqIncome
+#&gt;      1: 4273.9 2428.11      0      0  33.39      0      0      0  1.8 16090.69
+#&gt;      2: 4273.9 2428.11      0      0  33.39      0      0      0  1.8 16090.69
+#&gt;      3: 4273.9 2428.11      0      0  33.39      0      0      0  1.8 16090.69
+#&gt;      4: 4273.9 2428.11      0      0  33.39      0      0      0  1.8 16090.69
+#&gt;      5: 4273.9 2428.11      0      0  33.39      0      0      0  1.8 16090.69
+#&gt;     ---                                                                       
+#&gt; 118612:    0.0    0.00      0      0 358.56      0      0      0  1.5 12564.17
+#&gt; 118613:    0.0 1955.19      0      0   0.00      0      0      0  2.5 10361.80
+#&gt; 118614:    0.0 1955.19      0      0   0.00      0      0      0  2.5 29738.73
+#&gt; 118615:    0.0 1955.19      0      0   0.00      0      0      0  2.5 21522.68
+#&gt; 118616:    0.0 1955.19      0      0   0.00      0      0      0  2.5 21394.55
+#&gt;            db090  pWeight year povertyRisk          w1         w2          w3
+#&gt;      1: 504.5696 504.5696 2010       FALSE 1008.632848   1.199585 1001.005171
+#&gt;      2: 504.5696 504.5696 2010       FALSE 1008.632848   1.199585 1001.005171
+#&gt;      3: 504.5696 504.5696 2010       FALSE 1008.632848   1.199585 1001.005171
+#&gt;      4: 504.5696 504.5696 2011       FALSE 1035.096922   1.242683 1029.521850
+#&gt;      5: 504.5696 504.5696 2011       FALSE 1035.096922   1.242683 1029.521850
+#&gt;     ---                                                                      
+#&gt; 118612: 480.9878 480.9878 2017       FALSE    2.307521 937.321961    2.432418
+#&gt; 118613: 556.4260 556.4260 2017        TRUE    1.110185   1.147724    1.166774
+#&gt; 118614: 556.4260 556.4260 2017       FALSE    1.110185   1.147724    1.166774
+#&gt; 118615: 556.4260 556.4260 2017       FALSE    1.110185   1.147724    1.166774
+#&gt; 118616: 556.4260 556.4260 2017       FALSE    1.110185   1.147724    1.166774
+#&gt;                  w4       w5          w6          w7          w8          w9
+#&gt;      1:    1.173130 1.182970    1.170096 1013.949284 1001.246413    1.182474
+#&gt;      2:    1.173130 1.182970    1.170096 1013.949284 1001.246413    1.182474
+#&gt;      3:    1.173130 1.182970    1.170096 1013.949284 1001.246413    1.182474
+#&gt;      4:    1.199530 1.179070    1.148942 1056.010229 1012.066699    1.158584
+#&gt;      5:    1.199530 1.179070    1.148942 1056.010229 1012.066699    1.158584
+#&gt;     ---                                                                     
+#&gt; 118612:    2.146966 2.122305  906.278641  945.842105    2.219826  977.930371
+#&gt; 118613: 1104.786730 1.161571 1162.923055    1.145839 1132.231947 1129.914984
+#&gt; 118614: 1104.786730 1.161571 1162.923055    1.145839 1132.231947 1129.914984
+#&gt; 118615: 1104.786730 1.161571 1162.923055    1.145839 1132.231947 1129.914984
+#&gt; 118616: 1104.786730 1.161571 1162.923055    1.145839 1132.231947 1129.914984
+#&gt;              w10 onePerson
+#&gt;      1: 1.188461     FALSE
+#&gt;      2: 1.188461     FALSE
+#&gt;      3: 1.188461     FALSE
+#&gt;      4: 1.247162     FALSE
+#&gt;      5: 1.247162     FALSE
+#&gt;     ---                   
+#&gt; 118612: 2.208481     FALSE
+#&gt; 118613: 1.130831     FALSE
+#&gt; 118614: 1.130831     FALSE
+#&gt; 118615: 1.130831     FALSE
+#&gt; 118616: 1.130831     FALSE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
                         <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
-#&gt; 1: 2010 14827 8182222        14.44422       0.4688685      42.83855
-#&gt; 2: 2011 14827 8182222        14.60155       0.4024223      42.83855
-#&gt; 3: 2012 14827 8182222        15.24983       0.4220349      42.83855
-#&gt; 4: 2013 14827 8182222        15.60219       0.4683628      42.83855
-#&gt; 5: 2014 14827 8182222        15.57112       0.4106918      42.83855
-#&gt; 6: 2015 14827 8182222        15.59373       0.2814149      42.83855
-#&gt; 7: 2016 14827 8182222        15.69460       0.3654845      42.83855
-#&gt; 8: 2017 14827 8182222        15.81567       0.2807620      42.83855
+#&gt; 1: 2010 14827 8182222        14.44422       0.4688685      14.85737
+#&gt; 2: 2011 14827 8182222        14.60155       0.4024223      14.85737
+#&gt; 3: 2012 14827 8182222        15.24983       0.4220349      14.85737
+#&gt; 4: 2013 14827 8182222        15.60219       0.4683628      14.85737
+#&gt; 5: 2014 14827 8182222        15.57112       0.4106918      14.85737
+#&gt; 6: 2015 14827 8182222        15.59373       0.2814149      14.85737
+#&gt; 7: 2016 14827 8182222        15.69460       0.3654845      14.85737
+#&gt; 8: 2017 14827 8182222        15.81567       0.2807620      14.85737
 #&gt;    stE_onePerson
-#&gt; 1:     0.3298943
-#&gt; 2:     0.3804563
-#&gt; 3:     0.4304860
-#&gt; 4:     0.3068252
-#&gt; 5:     0.3273890
-#&gt; 6:     0.2886085
-#&gt; 7:     0.1833664
-#&gt; 8:     0.2193366</div><div class='input'>
+#&gt; 1:     0.4608975
+#&gt; 2:     0.4204098
+#&gt; 3:     0.4487607
+#&gt; 4:     0.3993618
+#&gt; 5:     0.3364885
+#&gt; 6:     0.2616768
+#&gt; 7:     0.1749362
+#&gt; 8:     0.2631210</div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='st'>"gender"</span>
