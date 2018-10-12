@@ -183,6 +183,7 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 	    form.z <- paste0("V1~",paste(gsub(",","+",period),z,sep="+"))
 	    dt.eval("xtabs(",form.z,",data=dat[,sum(onePerson*",weights,"),by=list(",period,",",z,")])")
 	  })
+	  dat[,onePerson:=NULL]
 	}else{
 		conH <- NULL
 	}
