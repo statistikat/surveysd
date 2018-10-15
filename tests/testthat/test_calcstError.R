@@ -89,26 +89,38 @@ test_that("test para -  var and fun",{
   
 })
 
-test_that("test para -  ellipsies",{
+test_that("test para -  add.arg",{
   
-  help_gini <- function(x,w,percent=TRUE){
-    if(percent){
-      laeken::gini(x,w)$value
-    }else{
-      laeken::gini(x,w)$value/100
-    }
+  fun <- function(x,w,b,a){
+    sum(x*w*b)
   }
-  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
-                            fun=help_gini,group=c("rb090","db040"),percent=TRUE),NA)
-  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
-                            fun=help_gini,group=c("rb090","db040"),percent=FALSE),NA)
-  res_perc <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
-                           fun=help_gini,group=c("rb090","db040"),percent=TRUE)
-  res <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
-                      fun=help_gini,group=c("rb090","db040"),percent=FALSE)
+  add.arg = list(b="onePerson",c="randNumber")
+
+  eusilc[,onePerson:=.N==1,by=.(db030,year)]
+  eusilc[,randNumber:=rnorm(.N)]
   
-  expect_true(all.equal(res$Estimates[,.(val_eqIncome=val_eqIncome*100,stE_eqIncome=stE_eqIncome*100)],
-            res_perc$Estimates[,.(val_eqIncome,stE_eqIncome)]))
+  add.arg = list(b="onePerson",c="randNumber")
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                            fun=fun,group=c("rb090","db040"),add.arg=add.arg),"c not argument\\(s\\) of supplied function.")
+  
+  add.arg = list(b="onePerson",a="abcde")
+  expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                            fun=fun,group=c("rb090","db040"),add.arg=add.arg),"abcde not in column names of dat.")
+  
+  add.arg = list(b="onePerson",a="randNumber")
+  res_1 <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                           fun=fun,group=c("rb090","db040"),add.arg=add.arg)
+  
+  fun <- function(x,w,b,a){
+    sum(x*w*b*a)
+  } 
+  
+  res_2 <- calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="eqIncome",
+                        fun=fun,group=list(c("rb090","db040")),add.arg=add.arg)
+  res_2 <- res_2$Estimates[!is.na(rb090)&nchar(year)==4][,.(year=as.numeric(year),rb090,db040,val_eqIncome)]
+  res_direct <- eusilc[,fun(eqIncome,db090,onePerson,randNumber),by=.(year,rb090,db040)]
+  res <- merge(res_2,res_direct,by=c("year","rb090","db040"))
+  expect_true(nrow(res[val_eqIncome!=V1])==0)
 })
 
 test_that("test para -  implemented functions",{
