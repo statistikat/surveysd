@@ -24,7 +24,7 @@
 #' Warnings are returned if the number of observations in a subgroup falls below `size.limit`. In addition the concerned groups are available in the function output.
 #' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed `cv.limit`, for a point estimate, they are flagged and available in the function output.
 #' @param p numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of `var` are additionally estimated.
-#' @param add.arg additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the valued to column names in dat, see also examples.
+#' @param add.arg additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.
 #'
 #' @details `calc.stError` takes survey data (`dat`) and returns point estimates as well as their standard Errors
 #' defined by `fun` and `var` for each sample period in `dat`.
@@ -156,7 +156,7 @@
 #'                         period.mean = 0, add.arg=add.arg)
 #' err.est$Estimates
 #' # compare with direkt computation
-#' compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c(attr(dat_boot_calib,"period"))]
+#' compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c("year")]
 #' all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
 #'
 #' # use a function from an other package that has sampling weights as its second argument
@@ -538,7 +538,7 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
 
     # create new functions which divides by national level
     fun_original <- fun
-    fun <- dt.eval("function(x,w",add.arg,",national.arg){
+    fun <- dt.eval("function(",paste0(formalArgs(fun),collapse=","),",national.arg){
       fun_original(x,w,add.arg)/national.arg*100
     }")
   }
@@ -557,15 +557,15 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
     varnew <- c(var,paste0(var,".",2:(length(b.weights)+1)))
 
     if(national){
-      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),add.arg,",national.arg)")
+      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),add.arg,",",national.arg,")")
     }else{
-      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),",national.arg)")
+      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),add.arg,")")
     }
   }else{
 
     res.names <- c(t(outer(var, 1:length(c(weights,b.weights)), paste_)))
     if(national){
-      eval.fun <- paste0(res.names,"=fun(",paste(c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,sep=","),",national.arg)")
+      eval.fun <- paste0(res.names,"=fun(",paste(c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,sep=","),",",national.arg,")")
     }else{
       eval.fun <- paste0(res.names,"=fun(",c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,")")
     }

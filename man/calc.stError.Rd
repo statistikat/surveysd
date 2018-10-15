@@ -47,7 +47,7 @@ Warnings are returned if the number of observations in a subgroup falls below \c
 
 \item{p}{numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.}
 
-\item{add.arg}{additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the valued to column names in dat, see also examples.}
+\item{add.arg}{additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.}
 }
 \value{
 Returns a list containing:
@@ -181,7 +181,7 @@ err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = fun,
                         period.mean = 0, add.arg=add.arg)
 err.est$Estimates
 # compare with direkt computation
-compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c(attr(dat_boot_calib,"period"))]
+compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c("year")]
 all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
 
 # use a function from an other package that has sampling weights as its second argument

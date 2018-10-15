@@ -4,7 +4,7 @@
 \alias{draw.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-draw.bootstrap(dat, REP = 1000, hid = NULL, weights, period,
+draw.bootstrap(dat, REP = 1000, hid = NULL, weights, period = NULL,
   strata = NULL, cluster = NULL, totals = NULL,
   single.PSU = c("merge", "mean"), boot.names = NULL, split = FALSE,
   pid = NULL, new.method = FALSE)
