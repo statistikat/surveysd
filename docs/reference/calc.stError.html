@@ -139,8 +139,9 @@ In addition the standard error of an estimate can be calcualted using the survey
     <pre class="usage"><span class='fu'>calc.stError</span>(<span class='no'>dat</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'>attr</span>(<span class='no'>dat</span>, <span class='st'>"weights"</span>), <span class='kw'>b.weights</span> <span class='kw'>=</span> <span class='fu'>attr</span>(<span class='no'>dat</span>,
   <span class='st'>"b.rep"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='fu'>attr</span>(<span class='no'>dat</span>, <span class='st'>"period"</span>), <span class='no'>var</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
   <span class='kw'>national</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>bias</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>size.limit</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>cv.limit</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>bias</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>size.limit</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>cv.limit</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>add.arg</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -213,8 +214,8 @@ Warnings are returned if the number of observations in a subgroup falls below <c
       <td><p>numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of <code>var</code> are additionally estimated.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>additional arguments which will be passed to fun.</p></td>
+      <th>add.arg</th>
+      <td><p>additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.</p></td>
     </tr>
     </table>
     
@@ -281,7 +282,7 @@ The periods set in <code>period.diff</code> are always used as starting periods 
 <br />
 Setting <code>bias</code> to <code>TRUE</code> returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled <em>_mean</em> at the end.<br />
 <br />
-If <code>fun</code> needs more arguments they can be supplied in <code>...</code><br />
+If <code>fun</code> needs more arguments they can be supplied in <code>add.arg</code>. This can either be a named list or vector.<br />
 <br />
 The parameter <code>size.limit</code> indicates a lower bound of the sample size for subsets in <code>dat</code> created by <code>group</code>. If the sample size of a subset falls below <code>size.limit</code> a warning will be displayed.<br />
 In addition all subsets for which this is the case can be selected from the output of <code>calc.stError</code> with <code>$smallGroups</code>.<br />
@@ -316,8 +317,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; Convergence reached in  4  steps </div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1: 2010 14827 8182222        14.44422       0.4688685
 #&gt; 2: 2011 14827 8182222        14.60155       0.4024223
@@ -400,8 +400,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 118613: 1.130831     FALSE
 #&gt; 118614: 1.130831     FALSE
 #&gt; 118615: 1.130831     FALSE
-#&gt; 118616: 1.130831     FALSE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+#&gt; 118616: 1.130831     FALSE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
 #&gt; 1: 2010 14827 8182222        14.44422       0.4688685      14.85737
 #&gt; 2: 2011 14827 8182222        14.60155       0.4024223      14.85737
@@ -423,8 +422,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='st'>"gender"</span>
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;     year     n       N gender val_povertyRisk stE_povertyRisk
 #&gt;  1: 2010  7267 3979572   male        12.02660       0.5997306
 #&gt;  2: 2010  7560 4202650 female        16.73351       0.4032427
@@ -454,8 +452,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender, region and combination of both</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'>c</span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       3.2690518
 #&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       3.2269725
@@ -508,6 +505,25 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 14:           2016 14827 8182222      15.6946038       0.3654845
 #&gt; 15: 2016-2012-mean 14827 8182222       0.8546173       0.2615226
 #&gt; 16:           2017 14827 8182222      15.8156683       0.2807620</div><div class='input'>
+<span class='co'># use add.arg-argument</span>
+<span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>,<span class='no'>w</span>,<span class='no'>b</span>){
+  <span class='fu'>sum</span>(<span class='no'>x</span>*<span class='no'>w</span>*<span class='no'>b</span>)
+}
+<span class='no'>add.arg</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>b</span><span class='kw'>=</span><span class='st'>"onePerson"</span>)
+
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>fun</span>,
+                        <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>add.arg</span><span class='kw'>=</span><span class='no'>add.arg</span>)
+<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
+#&gt; 1: 2010 14827 8182222        273683.9       14937.185
+#&gt; 2: 2011 14827 8182222        243440.0       12195.792
+#&gt; 3: 2012 14827 8182222        232158.1       13059.077
+#&gt; 4: 2013 14827 8182222        237365.3       12130.902
+#&gt; 5: 2014 14827 8182222        225528.5       10352.447
+#&gt; 6: 2015 14827 8182222        216450.5       11411.815
+#&gt; 7: 2016 14827 8182222        204486.2        8027.944
+#&gt; 8: 2017 14827 8182222        209646.3        9811.293</div><div class='input'><span class='co'># compare with direkt computation</span>
+<span class='no'>compare.value</span> <span class='kw'>&lt;-</span> <span class='no'>dat_boot_calib</span>[,<span class='fu'>fun</span>(<span class='no'>povertyRisk</span>,<span class='no'>pWeight</span>,<span class='kw'>b</span><span class='kw'>=</span><span class='no'>onePerson</span>),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"year"</span>)]
+<span class='fu'>all</span>((<span class='no'>compare.value</span>$<span class='no'>V1</span>-<span class='no'>err.est</span>$<span class='no'>Estimates</span>$<span class='no'>val_povertyRisk</span>)<span class='kw'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 <span class='co'># use a function from an other package that has sampling weights as its second argument</span>
 <span class='co'># for example gini() from laeken</span>
 
@@ -550,18 +566,20 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># and the resultung indicators are passed to function weightedRatio</span>
 
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='no'>povmd</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fun(povertyRisk, pWeight, national.arg): unused argument (national.arg)</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
-#&gt;   1: 2010   261  122741.8   male    Burgenland        82.58548       3.2690518
-#&gt;   2: 2010   288  137822.2 female    Burgenland        78.56740       3.2269725
-#&gt;   3: 2010   359  182732.9   male    Vorarlberg        87.02674       2.3054104
-#&gt;   4: 2010   374  194622.1 female    Vorarlberg        80.11636       3.3381588
-#&gt;   5: 2010   440  253143.7   male      Salzburg        90.84304       0.7703249
+                        <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='no'>povmd</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>,
+                        <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
+#&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       3.2816388
+#&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       3.3221745
+#&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259       2.3303400
+#&gt;   4: 2010   374  194622.1 female    Vorarlberg       19.883637       3.4221804
+#&gt;   5: 2010   440  253143.7   male      Salzburg        9.156964       0.7433869
 #&gt;  ---                                                                          
-#&gt; 476: 2017  2804 1555709.0   &lt;NA&gt; Lower Austria        84.69059       0.8187684
-#&gt; 477: 2017  2805 1421620.0   &lt;NA&gt; Upper Austria        83.51169       0.9339446
-#&gt; 478: 2017  7267 3979571.7   male          &lt;NA&gt;        84.36093       0.2682385
-#&gt; 479: 2017  7560 4202650.3 female          &lt;NA&gt;        84.01711       0.4469988
-#&gt; 480: 2017 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        84.18433       0.2807620</div><div class='input'>
+#&gt; 416: 2017  2804 1555709.0   &lt;NA&gt; Lower Austria       15.309413       0.6725861
+#&gt; 417: 2017  2805 1421620.0   &lt;NA&gt; Upper Austria       16.488307       0.8777592
+#&gt; 418: 2017  7267 3979571.7   male          &lt;NA&gt;       15.639072       0.2926003
+#&gt; 419: 2017  7560 4202650.3 female          &lt;NA&gt;       15.982891       0.5071975
+#&gt; 420: 2017 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       15.815668       0.3182340</div><div class='input'>
 <span class='co'># why fun.adjust.var and adjust.var are needed (!!!):</span>
 <span class='co'># one could also use the following function</span>
 <span class='co'># and set fun.adjust.var=NULL,adjust.var=NULL</span>
@@ -578,7 +596,8 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># compared to using fun.adjust.var and adjust.var</span>
 
 <span class='no'>err.est.different</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>povmd2</span>,
-                                  <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+                                  <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+                                  <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est.different</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_eqIncome stE_eqIncome
 #&gt;   1: 2010   261  122741.8   male    Burgenland     18.61871    3.1310902
 #&gt;   2: 2010   288  137822.2 female    Burgenland     18.12804    3.9075838
@@ -594,11 +613,11 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'>## results are equal for yearly estimates</span>
 <span class='fu'>all.equal</span>(<span class='no'>err.est.different</span>$<span class='no'>Estimates</span>[<span class='fu'>is.na</span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'>is.na</span>(<span class='no'>region</span>)],
           <span class='no'>err.est</span>$<span class='no'>Estimates</span>[<span class='fu'>is.na</span>(<span class='no'>gender</span>)<span class='kw'>&amp;</span><span class='fu'>is.na</span>(<span class='no'>region</span>)],
-          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Different number of rows"</div><div class='input'>
+          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 <span class='co'>## but for subgroups (gender, region) results vary</span>
 <span class='fu'>all.equal</span>(<span class='no'>err.est.different</span>$<span class='no'>Estimates</span>[!(<span class='fu'>is.na</span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'>is.na</span>(<span class='no'>region</span>))],
           <span class='no'>err.est</span>$<span class='no'>Estimates</span>[!(<span class='fu'>is.na</span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'>is.na</span>(<span class='no'>region</span>))],
-          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Different number of rows"</div><div class='input'>
+          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Column 'val_eqIncome': Mean relative difference: 0.07190565"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
