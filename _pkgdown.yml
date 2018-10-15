@@ -6,7 +6,7 @@ reference:
   desc: >
     Functions to draw bootstrap samples and calibrate each sample accoring to population totals.
     The methods used in these function relate to a rescaled bootstrap as described in
-    `vignette("Methodology")`.
+    `vignette("methodology")`.
   contents:
     - matches('bootstrap')
     - '`generate.HHID`'
@@ -14,7 +14,7 @@ reference:
 - title: estimation of standard errors
   desc: >
     Apply estimators to each sample to generate standard errors as well as confidence intervals.
-    See `vignette("uncertainty_analysis")` for more details.
+    See `vignette("error_estimation")` for more details.
   contents:
     - '`PointEstimates`'
     - '`calc.stError`'

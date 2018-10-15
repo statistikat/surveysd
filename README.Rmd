@@ -48,6 +48,6 @@ please refer to the [getting started vignette](https://statistikat.github.io/sur
 More information can be found on the [github-pages site](https://statistikat.github.io/surveysd) for
 surveysd.
 
-* The methodology is covered in the [methodology vignette](https://statistikat.github.io/surveysd/articles/Methodology.html).
+* The methodology is covered in the [methodology vignette](https://statistikat.github.io/surveysd/articles/methodology.html).
 * A more comprehensive documentation of `calc.stError()` is available in the
-  [error estimation vignette](http://xlwt0012:3838/users/decill/ssddocs/articles/uncertainty_analysis.html).
+  [error estimation vignette](http://xlwt0012:3838/users/decill/ssddocs/articles/error_estimation.html).
