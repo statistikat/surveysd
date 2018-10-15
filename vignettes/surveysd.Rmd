@@ -1,0 +1,75 @@
+---
+title: "Introduction to surveysd"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pkgdown}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The goal of surveysd is to combine all necessary steps to use calibrated bootstrapping with
+custom estimation functions. This vignette will cover the usage of the most important functions.
+For insights in the theory used in this package, refer to `vignette("Methodology")`.
+
+### Load dummy data
+
+A test data set based on `data(eusilc, package = "laeken")` can be created with `demo.eusilc()`
+
+```{r}
+library(surveysd)
+
+set.seed(1234)
+eusilc <- demo.eusilc(n = 2, prettyNames = TRUE)
+
+eusilc[1:5, .(year, povertyRisk, gender, pWeight)]
+``` 
+
+### Draw bootstrap replicates
+
+Use stratified resampling without replacement to generate 10 samples. Those samples are
+consistent with respect to the reference periods.
+
+```{r}
+dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight", 
+                           strata = "region", period = "year")
+```
+   
+### Calibrate bootstrap replicates
+
+Calibrate each sample according to the distribution of `gender` (on a personal level) and `region` 
+(on a household level). 
+
+```{r}
+dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
+dat_boot_calib[1:5, .(year, povertyRisk, gender, pWeight, w1, w2, w3, w4)]
+```
+
+### Estimate with respect to a grouping variable
+
+Estimate relative amount of persons at risk of poverty per period and `gender`.
+
+```{r}
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+                        group = "gender", period.mean = NULL)
+err.est$Estimates
+```
+
+The output contains estimates (`val_povertyRisk`) as well as standard errors (`stE_povertyRisk`)
+measured in percent.
+
+### Estimate with respect to several variables
+
+Estimate relative amount of persons at risk of poverty per period for each `region`, 
+`gender`, and combination of both.
+
+```{r}
+group <- list("gender", "region", c("gender", "region"))
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+                        group = group, period.mean = NULL)
+head(err.est$Estimates)
+## skipping 54 more rows
+```
