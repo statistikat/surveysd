@@ -221,7 +221,7 @@ test_that("test para - period.diff, period.mean",{
                               group=c("rb090","db040"),period.diff = c("2015-2008","2016-2011")),"Removing 2015-2008 from period.diff - period(s) not present in column year",fixed=TRUE)
   
   expect_warning(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                              group=c("rb090","db040"),period.diff = c("2015-2010","2016-2011")),"Cannot calculate differences between periods 2015 and 2010 over 3 periods.")
+                              group=c("rb090","db040"),period.diff = c("2015-2010","2016-2011"),period.mean=3),"Cannot calculate differences between periods 2015 and 2010 over 3 periods.")
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
                             group=c("rb090","db040"),period.diff = c("2015-2011","2016-2012"),period.mean=3),NA)
