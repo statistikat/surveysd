@@ -207,8 +207,8 @@ dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv
 <h2 class="hasAnchor">
 <a href="#estimator-functions" class="anchor"></a>Estimator functions</h2>
 <p>The parameters <code>fun</code> and <code>var</code> in <code><a href="../reference/calc.stError.html">calc.stError()</a></code> define the estimator to be used in the error analysis. There are two built-in estimator functions <code><a href="../reference/PointEstimates.html">weightedSum()</a></code> and <code><a href="../reference/PointEstimates.html">weightedRatio()</a></code> which can be used as follows.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRate &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
-totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum, <span class="dt">period.mean =</span> <span class="ot">NULL</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRate &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio)
+totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)</code></pre></div>
 <p>Those functions calculate the ratio of persons at risk of povery (in percent) and the total income. By default, the results are calculated seperately for each reference period.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRate<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
@@ -363,8 +363,7 @@ myWeightedSum &lt;-<span class="st"> </span><span class="cf">function</span>(x, 
 }
 
 ## check if results are equal to the one using `suveysd::weightedSum()`
-totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum, 
-                                            <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
+totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)
 <span class="kw">all.equal</span>(totalIncome, totalIncome2)</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>The parameters <code>x</code> and <code>w</code> can be assumed to be vectors with equal length with <code>w</code> being numeric and <code>x</code> being the column defined in the <code>var</code> argument. It will be called once for each period (in this case <code>year</code>) and for each weight column (in this case <code>pWeight</code>, <code>w1</code>, <code>w2</code>, …, <code>w10</code>).</p>
@@ -373,8 +372,7 @@ totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </
 <h3 class="hasAnchor">
 <a href="#multiple-estimators" class="anchor"></a>Multiple estimators</h3>
 <p>In case an estimator should be applied to several columns of the dataset, <code>var</code> can be set to a vector containing all necessary columns.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multipleRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="kw">c</span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), <span class="dt">fun =</span> weightedRatio, 
-                              <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multipleRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="kw">c</span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), <span class="dt">fun =</span> weightedRatio)
 multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
 <table class="table">
@@ -474,8 +472,7 @@ multipleRates<span class="op">$</span>Estimates</code></pre></div>
 <span class="cf">for</span> (att  <span class="cf">in</span> <span class="kw">c</span>(<span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span>))
   <span class="kw">attr</span>(dat2, att) &lt;-<span class="st"> </span><span class="kw">attr</span>(dat_boot_calib, att)</code></pre></div>
 <p>To calculate the ratio of persons at risk of poverty for each federal state of austria, <code>group = "region"</code> can be used.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
-                             <span class="dt">group =</span> <span class="st">"region"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> <span class="st">"region"</span>)
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
 <table class="table">
@@ -582,7 +579,7 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <p>Calculate the point estimate and standard error for each region and each gender. The number of rows in the output is therefore</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.\]</span></p>
 <p>The last row is again the estimate for the whole period.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, 
                              <span class="dt">group =</span> <span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
@@ -715,7 +712,7 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 </h4>
 <p>Split the data by all cobinations of the two grouping variables. This will result in a larger output-table of the size</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, 
                              <span class="dt">group =</span> <span class="kw">list</span>(<span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
@@ -916,7 +913,7 @@ povertyRates<span class="op">$</span>Estimates</code></pre></div>
 </ul>
 <p>The number of rows in the output is therefore</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">period.mean =</span> <span class="ot">NULL</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, 
                              <span class="dt">group =</span> <span class="kw">list</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))
 povertyRates<span class="op">$</span>Estimates</code></pre></div>
 <div class="kable-table">
