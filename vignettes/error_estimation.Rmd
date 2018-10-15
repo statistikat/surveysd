@@ -1,11 +1,9 @@
 ---
-title: "Uncertainty analysis with surveysd"
+title: "Error estimation"
 pkgdown:
   as_is: true
 output:
-  html_document:
-    highlight: pygments
-    theme: united
+  rmarkdown::html_document:
     df_print: kable
     toc: true
     toc_depth: 3
@@ -54,7 +52,7 @@ totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum,
 ```
 
 Those functions calculate the ratio of persons at risk of povery (in percent) and the total income.
-By default, the results are calculated seperately for each reference period
+By default, the results are calculated seperately for each reference period.
 
 ```{r}
 povertyRate$Estimates
@@ -67,7 +65,7 @@ dataset, which is `pWeight` in case of the dataset used here.
 Columns with the `stE_` prefix denote standard errors calculated with bootstrap replicates. The
 replicates result in using `w1`, `w2`, ..., `w10` instead of `pWeight` when applying the estimator.
 
-`n` and denotes the number of observations for the year and `N` denotes the total weight of those
+`n` denotes the number of observations for the year and `N` denotes the total weight of those
 persons.
 
 ### Custom estimators
@@ -89,7 +87,7 @@ all.equal(totalIncome, totalIncome2)
 
 The parameters `x` and `w` can be assumed to be vectors with equal length with `w` being numeric and
 `x` being the column defined in the `var` argument. It will be called once for each period (in this
-case `year`) and for each weight column (in this case `pWeight`, `w1`, `w2`, ..., `w10`)
+case `year`) and for each weight column (in this case `pWeight`, `w1`, `w2`, ..., `w10`).
 
 ### Multiple estimators
 

@@ -1,5 +1,10 @@
 ---
 title: "Methodology"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{surveysd-methodology}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 bibliography: lib.bib
 ---
 
@@ -7,7 +12,9 @@ bibliography: lib.bib
 knitr::opts_chunk$set(eval = FALSE)
 ```
 
-In the following we present the used methodology that is applied on multiple consecutive years of EU-SILC data for one country. The methodology contains the following steps, in this order
+In the following we present the methodology in `surveysd` by applying the workflow described in
+`vignette("surveysd")` to multiple consecutive years of EU-SILC data for one country. The 
+methodology contains the following steps, in this order
 
 
 - Draw $B$ bootstrap replicates from EU-SILC data for each year $y_t$, $t=1,\ldots,n_y$ separately. Since EU-SILC has a rotating panel design the bootstrap replicate of a household is carried forward through the years. That is, the bootstrap replicate of a household in the follow-up years is set equal to the bootstrap replicate of the same household when it first enters EU-SILC.
