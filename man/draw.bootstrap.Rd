@@ -4,16 +4,19 @@
 \alias{draw.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-draw.bootstrap(dat, REP = 1000, hid, weights, period, strata = "DB040",
-  cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
-  boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE)
+draw.bootstrap(dat, REP = 1000, hid = NULL, weights, period,
+  strata = "DB040", cluster = NULL, totals = NULL,
+  single.PSU = c("merge", "mean"), boot.names = NULL, split = FALSE,
+  pid = NULL, new.method = FALSE)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data with rotating panel design.}
 
 \item{REP}{integer indicating the number of bootstrap replicates.}
 
-\item{hid}{character specifying the name of the column in \code{dat} containing the household ID.}
+\item{hid}{character specifying the name of the column in \code{dat} containing the household id. If
+\code{NULL} (the default), the household id is detected through the \code{cluster} argument.
+If \code{cluster} is also \code{NULL}, the bootstrap samples are drawn without clustering.}
 
 \item{weights}{character specifying the name of the column in \code{dat} containing the sample weights.}
 
