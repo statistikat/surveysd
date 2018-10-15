@@ -121,7 +121,7 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
                            cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
                            boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE){
 
-  occurence_first_period <- STRATA_VAR_HELP <- fpc <- NULL
+  occurence_first_period <- STRATA_VAR_HELP <- fpc <- ssd_hid <- ssd_period <- NULL
 
   ##########################################################
   # INPUT CHECKING
