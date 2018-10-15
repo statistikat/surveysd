@@ -7,9 +7,8 @@
 calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   "b.rep"), period = attr(dat, "period"), var, fun = weightedRatio,
   national = FALSE, group = NULL, fun.adjust.var = NULL,
-  adjust.var = NULL, period.diff = NULL, period.mean = 3,
-  bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL,
-  add.arg = NULL)
+  adjust.var = NULL, period.diff = NULL, period.mean = 3, bias = FALSE,
+  size.limit = 20, cv.limit = 10, p = NULL, add.arg = NULL)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \link{draw.bootstrap} and \link{recalib}.}
@@ -47,7 +46,7 @@ Warnings are returned if the number of observations in a subgroup falls below \c
 
 \item{p}{numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.}
 
-\item{add.arg}{additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the valued to column names in dat, see also examples.}
+\item{add.arg}{additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.}
 }
 \value{
 Returns a list containing:
@@ -185,7 +184,7 @@ err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = fun,
                         period.mean = 0, add.arg=add.arg)
 err.est$Estimates
 # compare with direkt computation
-compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c(attr(dat_boot_calib,"period"))]
+compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c("year")]
 all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
                         
 # use a function from an other package that has sampling weights as its second argument
