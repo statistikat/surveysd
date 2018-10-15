@@ -6,12 +6,17 @@
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
-#' @param hid character specifying the name of the column in `dat` containing the household ID.
+#' @param hid character specifying the name of the column in `dat` containing the household id. If
+#'            `NULL` (the default), the household structure is not regarded.
 #' @param weights character specifying the name of the column in `dat` containing the sample weights.
 #' @param period character specifying the name of the column in `dat` containing the sample periods.
-#' @param strata character vector specifying the name of the column in `dat` by which the population was stratified.
-#' If `strata` is a vector stratification will be assumed as the combination of column names contained in `strata`.
-#' Setting in addition `cluster` not NULL stratification will be assumed on multiple stages, where each additional entry in `strata` specifies the stratification variable for the next lower stage. see Details for more information.
+#'               If `NULL` (the default), it is assumed that all observations belong to the same
+#'               period.
+#' @param strata character vector specifying the name(s) of the column in `dat` by which the population
+#'        was stratified. If `strata` is a vector stratification will be assumed as the combination
+#'        of column names contained in `strata`. Setting in addition `cluster` not NULL stratification
+#'        will be assumed on multiple stages, where each additional entry in `strata` specifies the
+#'        stratification variable for the next lower stage. see Details for more information.
 #' @param cluster character vector specifying cluster in the data. If not already specified in `cluster` household ID is taken es the lowest level cluster.
 #' @param totals character specifying the name of the column in `dat` containing the the totals per strata and/or cluster. Is ONLY optional if `cluster` is `NULL` or equal `hid` and `strata` contains one columnname!
 #' Then the households per strata will be calcualted using the `weights` argument. If clusters and strata for multiple stages are specified `totals` needs to be a vector of `length(strata)` specifying the column on `dat`
@@ -28,26 +33,30 @@
 #'
 #' @details `draw.bootstrap` takes `dat` and draws `REP` bootstrap replicates from it.
 #' `dat` must be household data where household members correspond to multiple rows with the same household
-#' identifier. The data should at least containt the following columns:
+#' identifier. For most practical applications, the following columns should be available in the dataset
+#' and passed via the corresponding parameters:
 #'
-#' * Column indicating the sample period;
-#' * Column indicating the household ID;
-#' * Column containing the household sample weights;
-#' * Columns by which population was stratified during the sampling process.
+#' * Column indicating the sample period (parameter `period`).
+#' * Column indicating the household ID (parameter `hid`)
+#' * Column containing the household sample weights (parameter `weights`);
+#' * Columns by which population was stratified during the sampling process (parameter: `strata`).
 #'
 #' For single stage sampling design a column the argument `totals` is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
 #' For this case the number of PSUs is calculated and added to `dat` using `strata` and `weights`. By setting `cluster` to NULL single stage sampling design is always assumed and
-#' if `strata` contains of multiple column names the combination of all those column names will be used for stratification.\cr
-#' In the case of multi stage sampling design the argument `totals` needs to be specified and needs to have the same number of arguments as `strata`.\cr
+#' if `strata` contains of multiple column names the combination of all those column names will be used for stratification.
+#'
+#' In the case of multi stage sampling design the argument `totals` needs to be specified and needs to have the same number of arguments as `strata`.
 #'
 #' If `cluster` is `NULL` or does not contain `hid` at the last stage, `hid` will automatically be used as the final cluster. If, besides `hid`, clustering in additional stages is specified the number of column names in
-#' `strata` and `cluster` (including `hid`) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.\cr
+#' `strata` and `cluster` (including `hid`) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.
+#'
 #' For example `strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")` would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
-#' and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
+#' and at the 2nd stage housholds are drawn in each municipality without stratification.
 #'
 #' Bootstrap replicates are drawn for each survey period (`period`) using the function [rescaled.bootstrap].
-#' Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
-#' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
+#' Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.
+#'
+#' This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.
 #'
 #' If `split` ist set to `TRUE` and `pid` is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
 #' This takes into account the issue of a houshold splitting up.
@@ -66,12 +75,16 @@
 #' \dontrun{
 #' eusilc <- demo.eusilc(prettyNames = TRUE)
 #'
-#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
-#'                            strata = "region", period="year")
+#' ## draw sample without stratification or clustering
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, weights = "pWeight", period = "year")
 #'
+#' ## use stratification w.r.t. region and clustering w.r.t. households
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#'                            strata = "region", period = "year")
+#'
+#' ## use multi-level clustering
 #' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
 #'                            strata = c("region", "age"), period = "year")
-#'
 #'
 #'
 #' # create spit households
@@ -104,10 +117,11 @@
 #'
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluster=NULL,totals=NULL,
-                           single.PSU=c("merge","mean"),boot.names=NULL,split=FALSE,pid=NULL,new.method=FALSE){
+draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
+                           cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
+                           boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE){
 
-  occurence_first_period <- STRATA_VAR_HELP <- fpc <- NULL
+  occurence_first_period <- STRATA_VAR_HELP <- fpc <- ssd_hid <- ssd_period <- NULL
 
   ##########################################################
   # INPUT CHECKING
@@ -132,6 +146,11 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }
 
   # check hid
+  if (is.null(hid)) {
+    dat[, ssd_hid := 1:.N]
+    hid <- "ssd_hid"
+  }
+
   if(length(hid)!=1){
     stop("hid must have length 1")
   }
@@ -151,6 +170,11 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }
 
   # check period
+  if (is.null(period)) {
+    dat[, ssd_period := 1]
+    period <- "ssd_period"
+  }
+
   if(length(period)!=1){
     stop("period must have length 1")
   }

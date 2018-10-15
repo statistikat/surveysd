@@ -113,29 +113,25 @@
 #'
 #' # estimate weightedRatio for povertyRisk per period
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         period.mean = NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio)
 #' err.est$Estimates
 #'
 #' # calculate weightedRatio for povertyRisk and fraction of one-person households per period
 #'
 #' dat_boot_calib[, onePerson := .N == 1, by = .(year, hid)]
-#' err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio,
-#'                         period.mean = NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio)
 #' err.est$Estimates
 #'
 #' # estimate weightedRatio for povertyRisk per period and gender
 #'
 #' group <- "gender"
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, period.mean = NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
 #' err.est$Estimates
 #'
 #' # estimate weightedRatio for povertyRisk per period and gender, region and combination of both
 #'
 #' group <- list("gender", "region", c("gender", "region"))
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, period.mean = NULL)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
 #' err.est$Estimates
 #'
 #' # use average over 3 periods for standard error estimation
@@ -149,7 +145,7 @@
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         period.diff = period.diff, period.mean = 3)
 #' err.est$Estimates
-#' 
+#'
 #' # use add.arg-argument
 #' fun <- function(x,w,b){
 #'   sum(x*w*b)
@@ -162,7 +158,7 @@
 #' # compare with direkt computation
 #' compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c("year")]
 #' all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
-#'                         
+#'
 #' # use a function from an other package that has sampling weights as its second argument
 #' # for example gini() from laeken
 #'
@@ -196,7 +192,8 @@
 #' # and the resultung indicators are passed to function weightedRatio
 #'
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, fun.adjust.var = povmd, adjust.var = "eqIncome")
+#'                         group = group, fun.adjust.var = povmd, adjust.var = "eqIncome",
+#'                         period.mean = 3)
 #' err.est$Estimates
 #'
 #' # why fun.adjust.var and adjust.var are needed (!!!):
@@ -215,7 +212,8 @@
 #' # compared to using fun.adjust.var and adjust.var
 #'
 #' err.est.different <- calc.stError(dat_boot_calib, var = "eqIncome", fun = povmd2,
-#'                                   group = group, fun.adjust.var = NULL, adjust.var = NULL)
+#'                                   group = group, fun.adjust.var = NULL, adjust.var = NULL,
+#'                                   period.mean = 3)
 #' err.est.different$Estimates
 #'
 #' ## results are equal for yearly estimates
@@ -236,7 +234,7 @@
 # and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
 calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(dat, "b.rep"), period = attr(dat, "period"), var,
                          fun = weightedRatio, national = FALSE, group = NULL, fun.adjust.var = NULL,
-                         adjust.var = NULL, period.diff = NULL, period.mean = 3, bias = FALSE,
+                         adjust.var = NULL, period.diff = NULL, period.mean = NULL, bias = FALSE,
                          size.limit = 20, cv.limit = 10, p = NULL, add.arg=NULL){
 
   stE_high <- stE <- val <- as.formula <- est_type <- n_inc <- stE_roll <- n <- size <- NULL
@@ -296,30 +294,30 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
   # check fun and add.arg
   if (!is.function(fun))
     stop("fun can only be a function")
-  
+
   if (!is.null(add.arg)) {
     if (!is.list(add.arg)|!is.vector(add.arg))
       stop("add.arg needs to be a list or vector")
-    
+
     if (length(names(add.arg))==0)
       stop("add.arg needs to be a named list or vector, names(add.arg) <- ?")
-    
+
     if (any(!names(add.arg)%in%formalArgs(fun))) {
       notInFun <- !names(add.arg)%in%formalArgs(fun)
       stop(paste(names(add.arg)[notInFun],collapse=" ")," not argument(s) of supplied function.")
     }
-    
+
     if(any(!unlist(add.arg)%in%c.names)){
       notInData <- unlist(add.arg)
       notInData <- notInData[!notInData%in%c.names]
       stop(paste(notInData,collapse=" ")," not in column names of dat.")
     }
-    
+
     add.arg <- unlist(add.arg)
     add.arg <- paste0(",",paste(names(add.arg),add.arg,sep="=",collapse=","))
   }
 
-  
+
   test.val <- dt.eval("dat[,fun(", var[1], ",", weights, add.arg,")]")
   if (!is.numeric(test.val) & !is.integer(test.val))
     stop("Function in fun does not return integer or numeric value")
@@ -368,7 +366,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
 
     if (!is.numeric(period.mean))
       stop("period.mean must contain one numeric value")
-    
+
     if (period.mean%%1 != 0)
       stop("period.mean cannot have a decimal part")
 

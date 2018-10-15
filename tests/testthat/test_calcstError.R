@@ -221,7 +221,7 @@ test_that("test para - period.diff, period.mean",{
                               group=c("rb090","db040"),period.diff = c("2015-2008","2016-2011")),"Removing 2015-2008 from period.diff - period(s) not present in column year",fixed=TRUE)
   
   expect_warning(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
-                              group=c("rb090","db040"),period.diff = c("2015-2010","2016-2011")),"Cannot calculate differences between periods 2015 and 2010 over 3 periods.")
+                              group=c("rb090","db040"),period.diff = c("2015-2010","2016-2011"),period.mean=3),"Cannot calculate differences between periods 2015 and 2010 over 3 periods.")
   
   expect_error(calc.stError(eusilc,weights="db090",b.weights=paste0("w",1:10),period="year",var="povmd60",
                             group=c("rb090","db040"),period.diff = c("2015-2011","2016-2012"),period.mean=3),NA)
@@ -264,7 +264,6 @@ test_that("test return",{
   eusilc.comp <- rbindlist(list(eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=year],
                                 eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=list(year,rb090)],
                                 eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=list(year,db040)]),use.names=TRUE,fill=TRUE)
-  eusilc.comp[,year:=as.character(year)]
   eusilc.comp <- merge(eusilc.comp, eusilc.est$Estimates[,.(year,rb090,db040,N,val_povmd60)])
   expect_true(nrow(eusilc.comp[V1!=val_povmd60])==0)
   expect_true(nrow(eusilc.comp[N_true!=N])==0)
