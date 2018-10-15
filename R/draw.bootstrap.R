@@ -68,12 +68,16 @@
 #' \dontrun{
 #' eusilc <- demo.eusilc(prettyNames = TRUE)
 #'
-#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
-#'                            strata = "region", period="year")
+#' ## draw sample without stratification or clustering
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, weights = "pWeight", period = "year")
 #'
+#' ## use stratification w.r.t. region and clustering w.r.t. households
+#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#'                            strata = "region", period = "year")
+#'
+#' ## use multi-level clustering
 #' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
 #'                            strata = c("region", "age"), period = "year")
-#'
 #'
 #'
 #' # create spit households
@@ -106,7 +110,7 @@
 #'
 
 
-draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period, strata = "DB040",
+draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period, strata = NULL,
                            cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
                            boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE){
 
