@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 The goal of surveysd is to combine all necessary steps to use calibrated bootstrapping with
 custom estimation functions. This vignette will cover the usage of the most important functions.
-For insights in the theory used in this package, refer to `vignette("Methodology")`.
+For insights in the theory used in this package, refer to `vignette("methodology")`.
 
 ### Load dummy data
 
