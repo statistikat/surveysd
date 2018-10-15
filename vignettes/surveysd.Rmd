@@ -53,8 +53,7 @@ dat_boot_calib[1:5, .(year, povertyRisk, gender, pWeight, w1, w2, w3, w4)]
 Estimate relative amount of persons at risk of poverty per period and `gender`.
 
 ```{r}
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        group = "gender", period.mean = NULL)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = "gender")
 err.est$Estimates
 ```
 
@@ -68,8 +67,7 @@ Estimate relative amount of persons at risk of poverty per period for each `regi
 
 ```{r}
 group <- list("gender", "region", c("gender", "region"))
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        group = group, period.mean = NULL)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
 head(err.est$Estimates)
 ## skipping 54 more rows
 ```

@@ -47,8 +47,8 @@ be used as follows.
 
 
 ```{r}
-povertyRate <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, period.mean = NULL)
-totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum, period.mean = NULL)
+povertyRate <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio)
+totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum)
 ```
 
 Those functions calculate the ratio of persons at risk of povery (in percent) and the total income.
@@ -80,8 +80,7 @@ myWeightedSum <- function(x, w) {
 }
 
 ## check if results are equal to the one using `suveysd::weightedSum()`
-totalIncome2 <- totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum, 
-                                            period.mean = NULL)
+totalIncome2 <- totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum)
 all.equal(totalIncome, totalIncome2)
 ```
 
@@ -95,8 +94,7 @@ In case an estimator should be applied to several columns of the dataset, `var` 
 a vector containing all necessary columns.
 
 ```{r}
-multipleRates <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio, 
-                              period.mean = NULL)
+multipleRates <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio)
 multipleRates$Estimates
 ```
 Here we see the relative number of persons at risk of poverty and the relative number of one-person
@@ -119,8 +117,7 @@ To calculate the ratio of persons at risk of poverty for each federal state of a
 `group = "region"` can be used.
 
 ```{r}
-povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
-                             group = "region")
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, group = "region")
 povertyRates$Estimates
 ```
 
@@ -144,7 +141,7 @@ $$n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 
 The last row is again the estimate for the whole period.
 
 ```{r}
-povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = c("gender", "region"))
 povertyRates$Estimates
 
@@ -158,7 +155,7 @@ output-table of the size
 $$n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.$$
 
 ```{r}
-povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = list(c("gender", "region")))
 povertyRates$Estimates
 ```
@@ -176,7 +173,7 @@ The number of rows in the output is therefore
 $$n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.$$
 
 ```{r}
-povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, period.mean = NULL,
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = list("gender", "region", c("gender", "region")))
 povertyRates$Estimates
 ```
