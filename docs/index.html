@@ -45,6 +45,9 @@
   </a>
 </li>
 <li>
+  <a href="articles/surveysd.html">Get started</a>
+</li>
+<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -55,10 +58,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/Methodology.html">Methodology</a>
+      <a href="articles/error_estimation.html">Error estimation</a>
     </li>
     <li>
-      <a href="articles/uncertainty_analysis.html">Uncertainty analysis with surveysd</a>
+      <a href="articles/methodology.html">Methodology</a>
     </li>
   </ul>
 </li>
@@ -97,81 +100,36 @@
 <!--[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)-->
 <!--[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)-->
 <!--[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)-->
-<p>This is the development place for the R-package <code>surveysd</code>. This package can be used to estimate the standard deviation of estimates in complex surveys using bootstrap weights.</p>
+<p>This is the development place for the R-package <code>surveysd</code>. The package can be used to estimate the standard deviation of estimates in complex surveys using bootstrap weights.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>This package can be installed like any other R package on github via <code>install_github</code></p>
+<p>Like any other R package on github, this package can be installed via <code>install_github</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"statistikat/surveysd"</span>)</code></pre></div>
 </div>
-<div id="syntax-example" class="section level2">
+<div id="concept" class="section level2">
 <h2 class="hasAnchor">
-<a href="#syntax-example" class="anchor"></a>Syntax example</h2>
-<p>This example showcases the three most important functions in the surveysd package: <code>draw.boostrap</code>, <code>recalib</code> and <code>calc.stError</code>.</p>
-<div id="load-dummy-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#load-dummy-data" class="anchor"></a>Load dummy data</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(surveysd)
-
-<span class="kw">set.seed</span>(<span class="dv">1234</span>)
-eusilc &lt;-<span class="st"> </span><span class="kw"><a href="reference/demo.eusilc.html">demo.eusilc</a></span>(<span class="dt">n =</span> <span class="dv">2</span>, <span class="dt">prettyNames =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<a href="#concept" class="anchor"></a>Concept</h2>
+<p>Bootstrapping has long been around and used widely to estimate confidence intervals and standard errors of point estimates. This package aims to combine all necessary steps for applying a calibrated bootstrapping procedure with custom estimating functions.</p>
 </div>
-<div id="draw-bootstrap-replicates" class="section level3">
-<h3 class="hasAnchor">
-<a href="#draw-bootstrap-replicates" class="anchor"></a>Draw bootstrap replicates</h3>
-<p>Use stratified resampling without replacement to generate 10 samples. Those samples are consistent with respect to the reference periods.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat_boot &lt;-<span class="st"> </span><span class="kw"><a href="reference/draw.bootstrap.html">draw.bootstrap</a></span>(eusilc, <span class="dt">REP =</span> <span class="dv">10</span>, <span class="dt">hid =</span> <span class="st">"hid"</span>, <span class="dt">weights =</span> <span class="st">"pWeight"</span>, 
-                           <span class="dt">strata =</span> <span class="st">"region"</span>, <span class="dt">period =</span> <span class="st">"year"</span>)</code></pre></div>
+<div id="workflow" class="section level2">
+<h2 class="hasAnchor">
+<a href="#workflow" class="anchor"></a>Workflow</h2>
+<p>A typical workflow with this package consists of three steps. To see these concepts in practice, please refer to the <a href="https://statistikat.github.io/surveysd/articles/surveysd.html">getting started vignette</a>.</p>
+<ul>
+<li>Bootstrap samples are drawn with rescaled bootstrapping in the function <code><a href="reference/draw.bootstrap.html">draw.bootstrap()</a></code>.</li>
+<li>These samples can then be calibrated with an iterative proportional updating algorithm using <code><a href="reference/recalib.html">recalib()</a></code>.</li>
+<li>Finally, estimation functions can be applied over all bootstrap replicates with <code><a href="reference/calc.stError.html">calc.stError()</a></code>.</li>
+</ul>
 </div>
-<div id="calibrate-bootstrap-replicates" class="section level3">
-<h3 class="hasAnchor">
-<a href="#calibrate-bootstrap-replicates" class="anchor"></a>Calibrate bootstrap replicates</h3>
-<p>Calibrate each sample according to the distribution of <code>gender</code> (on a personal level) and <code>region</code> (on a household level).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat_boot_calib &lt;-<span class="st"> </span><span class="kw"><a href="reference/recalib.html">recalib</a></span>(dat_boot, <span class="dt">conP.var =</span> <span class="st">"gender"</span>, <span class="dt">conH.var =</span> <span class="st">"region"</span>)</code></pre></div>
-<pre><code>## Convergence reached in  1  steps 
-## Convergence reached in  2  steps 
-## Convergence reached in  1  steps 
-## Convergence reached in  2  steps 
-## Convergence reached in  2  steps 
-## Convergence reached in  1  steps 
-## Convergence reached in  3  steps 
-## Convergence reached in  2  steps 
-## Convergence reached in  2  steps 
-## Convergence reached in  2  steps</code></pre>
-</div>
-<div id="estimate-with-respect-to-a-grouping-variable" class="section level3">
-<h3 class="hasAnchor">
-<a href="#estimate-with-respect-to-a-grouping-variable" class="anchor"></a>Estimate with respect to a grouping variable</h3>
-<p>Estimate relative amount of persons at risk of poverty per period and <code>gender</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">err.est &lt;-<span class="st"> </span><span class="kw"><a href="reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio,
-                        <span class="dt">group =</span> <span class="st">"gender"</span>, <span class="dt">period.diff =</span> <span class="ot">NULL</span>, <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
-err.est<span class="op">$</span>Estimates</code></pre></div>
-<pre><code>##    year     n       N gender val_povertyRisk stE_povertyRisk
-## 1: 2010  7267 3979572   male        12.02660       0.4787568
-## 2: 2010  7560 4202650 female        16.73351       0.4804257
-## 3: 2010 14827 8182222   &lt;NA&gt;        14.44422       0.4280277
-## 4: 2011  7267 3979572   male        12.68746       0.4393305
-## 5: 2011  7560 4202650 female        16.41404       0.5715623
-## 6: 2011 14827 8182222   &lt;NA&gt;        14.60155       0.4325268</code></pre>
-<p>The output contains estimates (<code>val_povertyRisk</code>) as well as standard errors (<code>stE_povertyRisk</code>) measured in percent.</p>
-</div>
-<div id="estimate-with-respect-to-several-variables" class="section level3">
-<h3 class="hasAnchor">
-<a href="#estimate-with-respect-to-several-variables" class="anchor"></a>Estimate with respect to several variables</h3>
-<p>Estimate relative amount of persons at risk of poverty per period for each <code>region</code>, <code>gender</code>, and combination of both.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">group &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw">c</span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
-err.est &lt;-<span class="st"> </span><span class="kw"><a href="reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio,
-                        <span class="dt">group =</span> group, <span class="dt">period.diff =</span> <span class="ot">NULL</span>, <span class="dt">period.mean =</span> <span class="ot">NULL</span>)
-<span class="kw">head</span>(err.est<span class="op">$</span>Estimates)</code></pre></div>
-<pre><code>##    year   n        N gender     region val_povertyRisk stE_povertyRisk
-## 1: 2010 261 122741.8   male Burgenland       17.414524        3.996392
-## 2: 2010 288 137822.2 female Burgenland       21.432598        3.750117
-## 3: 2010 359 182732.9   male Vorarlberg       12.973259        3.790237
-## 4: 2010 374 194622.1 female Vorarlberg       19.883637        3.662933
-## 5: 2010 440 253143.7   male   Salzburg        9.156964        1.350321
-## 6: 2010 484 282307.3 female   Salzburg       17.939382        2.627855</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## skipping 54 more rows</code></pre></div>
-</div>
+<div id="further-reading" class="section level2">
+<h2 class="hasAnchor">
+<a href="#further-reading" class="anchor"></a>Further reading</h2>
+<p>More information can be found on the <a href="https://statistikat.github.io/surveysd">github-pages site</a> for surveysd.</p>
+<ul>
+<li>The methodology is covered in the <a href="https://statistikat.github.io/surveysd/articles/methodology.html">methodology vignette</a>.</li>
+<li>A more comprehensive documentation of <code><a href="reference/calc.stError.html">calc.stError()</a></code> is available in the <a href="http://xlwt0012:3838/users/decill/ssddocs/articles/error_estimation.html">error estimation vignette</a>.</li>
+</ul>
 </div>
 </div>
   </div>

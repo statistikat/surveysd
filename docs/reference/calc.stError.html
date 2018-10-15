@@ -80,6 +80,9 @@ In addition the standard error of an estimate can be calcualted using the survey
   </a>
 </li>
 <li>
+  <a href="../articles/surveysd.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -90,10 +93,10 @@ In addition the standard error of an estimate can be calcualted using the survey
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/Methodology.html">Methodology</a>
+      <a href="../articles/error_estimation.html">Error estimation</a>
     </li>
     <li>
-      <a href="../articles/uncertainty_analysis.html">Uncertainty analysis with surveysd</a>
+      <a href="../articles/methodology.html">Methodology</a>
     </li>
   </ul>
 </li>
@@ -326,7 +329,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 8: 2017 14827 8182222        15.81567       0.2807620</div><div class='input'>
 <span class='co'># calculate weightedRatio for povertyRisk and fraction of one-person households per period</span>
 
-<span class='no'>dat_boot_calib</span>[, <span class='no'>onePerson</span> <span class='kw'>:=</span> <span class='fu'>nrow</span>(<span class='no'>.SD</span>) <span class='kw'>==</span> <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>year</span>, <span class='no'>hid</span>)]</div><div class='output co'>#&gt;           hid hsize        region     pid       age gender   ecoStat
+<span class='no'>dat_boot_calib</span>[, <span class='no'>onePerson</span> <span class='kw'>:=</span> <span class='no'>.N</span> <span class='kw'>==</span> <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>year</span>, <span class='no'>hid</span>)]</div><div class='output co'>#&gt;           hid hsize        region     pid       age gender   ecoStat
 #&gt;      1:     1 (2,3]         Tyrol     101   (25,45] female part time
 #&gt;      2:     1 (2,3]         Tyrol     102   (25,45]   male full time
 #&gt;      3:     1 (2,3]         Tyrol     103 (-Inf,16]   male      &lt;NA&gt;
