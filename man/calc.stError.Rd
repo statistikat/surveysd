@@ -7,8 +7,9 @@
 calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   "b.rep"), period = attr(dat, "period"), var, fun = weightedRatio,
   national = FALSE, group = NULL, fun.adjust.var = NULL,
-  adjust.var = NULL, period.diff = NULL, period.mean = 3, bias = FALSE,
-  size.limit = 20, cv.limit = 10, p = NULL, ...)
+  adjust.var = NULL, period.diff = NULL, period.mean = 3,
+  bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL,
+  add.arg = NULL)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \link{draw.bootstrap} and \link{recalib}.}
@@ -46,7 +47,7 @@ Warnings are returned if the number of observations in a subgroup falls below \c
 
 \item{p}{numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.}
 
-\item{...}{additional arguments which will be passed to fun.}
+\item{add.arg}{additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the valued to column names in dat, see also examples.}
 }
 \value{
 Returns a list containing:
@@ -116,7 +117,7 @@ The periods set in \code{period.diff} are always used as starting periods from w
 \cr
 Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
 \cr
-If \code{fun} needs more arguments they can be supplied in \code{...}\cr
+If \code{fun} needs more arguments they can be supplied in \code{add.arg}. This can either be a named list or vector.\cr
 \cr
 The parameter \code{size.limit} indicates a lower bound of the sample size for subsets in \code{dat} created by \code{group}. If the sample size of a subset falls below \code{size.limit} a warning will be displayed.\cr
 In addition all subsets for which this is the case can be selected from the output of \code{calc.stError} with \code{$smallGroups}.\cr
@@ -174,6 +175,19 @@ err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio
                         period.diff = period.diff, period.mean = 3)
 err.est$Estimates
 
+# use add.arg-argument
+fun <- function(x,w,b){
+  sum(x*w*b)
+}
+add.arg = list(b="onePerson")
+
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = fun,
+                        period.mean = 0, add.arg=add.arg)
+err.est$Estimates
+# compare with direkt computation
+compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c(attr(dat_boot_calib,"period"))]
+all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
+                        
 # use a function from an other package that has sampling weights as its second argument
 # for example gini() from laeken
 

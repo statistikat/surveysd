@@ -6,8 +6,8 @@
 \usage{
 rescaled.bootstrap(dat, REP = 1000, strata = "DB050>1",
   cluster = "DB060>DB030", fpc = "N.cluster>N.households",
-  single.PSU = c("merge", "mean"), return.value = c("data", "replicates"),
-  check.input = TRUE, new.method = FALSE)
+  single.PSU = c("merge", "mean"), return.value = c("data",
+  "replicates"), check.input = TRUE, new.method = FALSE)
 }
 \arguments{
 \item{dat}{either data frame or data table containing the survey sample}
