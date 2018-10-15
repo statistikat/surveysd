@@ -338,15 +338,15 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
 
     if (!is.numeric(period.mean))
       stop("period.mean must contain one numeric value")
-
+    
     if (period.mean%%1 != 0)
       stop("period.mean cannot have a decimal part")
 
-    if (period.mean%%2 == 0) {
+    if (period.mean%%2 == 0 & period.mean>0) {
       warning("period.mean must be odd - mean over periods will not be calculated")
       period.mean <- NULL
     } else {
-      if (period.mean == 1)
+      if (period.mean <= 1)
         period.mean <- NULL
     }
   }
@@ -539,7 +539,7 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
     if(national){
       eval.fun <- paste0(res.names,"=fun(",paste(c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,sep=","),",...)")
     }else{
-      eval.fun <- paste0(res.names,"=fun(",c(t(outer(var,c(weights,b.weights), paste_c))),",...)")
+      eval.fun <- paste0(res.names,"=fun(",c(t(outer(var,c(weights,b.weights), paste_c))),")")
     }
 
   }
@@ -596,7 +596,11 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
       period.diff.mean <- NULL
     }
   }else{
-    period.diff.b <- FALSE
+    if(is.null(period.diff)){
+      period.diff.b <- FALSE
+    }else{
+      period.diff.b <- TRUE
+    }
     period.diff.mean <- NULL
     periodsList <- NULL
   }
