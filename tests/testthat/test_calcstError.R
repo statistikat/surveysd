@@ -264,7 +264,6 @@ test_that("test return",{
   eusilc.comp <- rbindlist(list(eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=year],
                                 eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=list(year,rb090)],
                                 eusilc[,.(V1=weightedRatio(povmd60,db090),N_true=sum(db090)),by=list(year,db040)]),use.names=TRUE,fill=TRUE)
-  eusilc.comp[,year:=as.character(year)]
   eusilc.comp <- merge(eusilc.comp, eusilc.est$Estimates[,.(year,rb090,db040,N,val_povmd60)])
   expect_true(nrow(eusilc.comp[V1!=val_povmd60])==0)
   expect_true(nrow(eusilc.comp[N_true!=N])==0)
