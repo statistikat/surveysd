@@ -7,7 +7,7 @@
 calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   "b.rep"), period = attr(dat, "period"), var, fun = weightedRatio,
   national = FALSE, group = NULL, fun.adjust.var = NULL,
-  adjust.var = NULL, period.diff = NULL, period.mean = 3,
+  adjust.var = NULL, period.diff = NULL, period.mean = NULL,
   bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL,
   add.arg = NULL)
 }
@@ -138,29 +138,25 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 
 # estimate weightedRatio for povertyRisk per period
 
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        period.mean = NULL)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio)
 err.est$Estimates
 
 # calculate weightedRatio for povertyRisk and fraction of one-person households per period
 
 dat_boot_calib[, onePerson := .N == 1, by = .(year, hid)]
-err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio,
-                        period.mean = NULL)
+err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio)
 err.est$Estimates
 
 # estimate weightedRatio for povertyRisk per period and gender
 
 group <- "gender"
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        group = group, period.mean = NULL)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
 err.est$Estimates
 
 # estimate weightedRatio for povertyRisk per period and gender, region and combination of both
 
 group <- list("gender", "region", c("gender", "region"))
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        group = group, period.mean = NULL)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
 err.est$Estimates
 
 # use average over 3 periods for standard error estimation
@@ -187,7 +183,7 @@ err.est$Estimates
 # compare with direkt computation
 compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c(attr(dat_boot_calib,"period"))]
 all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
-                        
+
 # use a function from an other package that has sampling weights as its second argument
 # for example gini() from laeken
 
@@ -221,7 +217,8 @@ povmd <- function(x, w){
 # and the resultung indicators are passed to function weightedRatio
 
 err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        group = group, fun.adjust.var = povmd, adjust.var = "eqIncome")
+                        group = group, fun.adjust.var = povmd, adjust.var = "eqIncome",
+                        period.mean = 3)
 err.est$Estimates
 
 # why fun.adjust.var and adjust.var are needed (!!!):
@@ -240,7 +237,8 @@ povmd2 <- function(x, w){
 # compared to using fun.adjust.var and adjust.var
 
 err.est.different <- calc.stError(dat_boot_calib, var = "eqIncome", fun = povmd2,
-                                  group = group, fun.adjust.var = NULL, adjust.var = NULL)
+                                  group = group, fun.adjust.var = NULL, adjust.var = NULL,
+                                  period.mean = 3)
 err.est.different$Estimates
 
 ## results are equal for yearly estimates
