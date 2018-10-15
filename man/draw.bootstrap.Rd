@@ -121,9 +121,6 @@ dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
 }
 
 }
-\seealso{
-\code{\link[data.table:data.table]{data.table}} for more information on data.table objects.
-}
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 }
