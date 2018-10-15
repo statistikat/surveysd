@@ -58,9 +58,6 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/Methodology.html">Methodology</a>
-    </li>
-    <li>
       <a href="../articles/error_estimation.html">Error estimation</a>
     </li>
     <li>
@@ -94,14 +91,14 @@
       <h1>Methodology</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/Methodology.Rmd"><code>vignettes/Methodology.Rmd</code></a></small>
-      <div class="hidden name"><code>Methodology.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/methodology.Rmd"><code>vignettes/methodology.Rmd</code></a></small>
+      <div class="hidden name"><code>methodology.Rmd</code></div>
 
     </div>
 
     
     
-<p>In the following we present the methodology from the <code>surveysd</code> package by estimating on multiple consecutive years of EU-SILC data for one country. The methodology contains the following steps, in this order</p>
+<p>In the following we present the methodology in <code>surveysd</code> by applying the workflow described in <code><a href="../articles/surveysd.html">vignette("surveysd")</a></code> to multiple consecutive years of EU-SILC data for one country. The methodology contains the following steps, in this order</p>
 <ul>
 <li>Draw <span class="math inline">\(B\)</span> bootstrap replicates from EU-SILC data for each year <span class="math inline">\(y_t\)</span>, <span class="math inline">\(t=1,\ldots,n_y\)</span> separately. Since EU-SILC has a rotating panel design the bootstrap replicate of a household is carried forward through the years. That is, the bootstrap replicate of a household in the follow-up years is set equal to the bootstrap replicate of the same household when it first enters EU-SILC.</li>
 <li>Multiply each set of bootstrap replicates by the sampling weights to obtain uncalibrated bootstrap weights and calibrate each of the uncalibrated bootstrap weights using iterative proportional fitting.</li>
