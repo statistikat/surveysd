@@ -6,7 +6,9 @@
 #'
 #' @param dat either data.frame or data.table containing the survey data with rotating panel design.
 #' @param REP integer indicating the number of bootstrap replicates.
-#' @param hid character specifying the name of the column in `dat` containing the household ID.
+#' @param hid character specifying the name of the column in `dat` containing the household id. If
+#'            `NULL` (the default), the household id is detected through the `cluster` argument.
+#'            If `cluster` is also `NULL`, the bootstrap samples are drawn without clustering.
 #' @param weights character specifying the name of the column in `dat` containing the sample weights.
 #' @param period character specifying the name of the column in `dat` containing the sample periods.
 #' @param strata character vector specifying the name of the column in `dat` by which the population was stratified.
@@ -104,8 +106,9 @@
 #'
 
 
-draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluster=NULL,totals=NULL,
-                           single.PSU=c("merge","mean"),boot.names=NULL,split=FALSE,pid=NULL,new.method=FALSE){
+draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period, strata = "DB040",
+                           cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
+                           boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE){
 
   occurence_first_period <- STRATA_VAR_HELP <- fpc <- NULL
 
@@ -132,6 +135,14 @@ draw.bootstrap <- function(dat,REP=1000,hid,weights,period,strata="DB040",cluste
   }
 
   # check hid
+  if (is.null(hid)) {
+    if (is.null(cluster)) {
+      dat[, ssd_hid := 1:.N]
+      hid <- "ssd_hid"
+    } else
+      hid <- cluster[length(cluster)]
+  }
+
   if(length(hid)!=1){
     stop("hid must have length 1")
   }
