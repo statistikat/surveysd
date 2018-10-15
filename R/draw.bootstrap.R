@@ -110,7 +110,7 @@
 #'
 
 
-draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period, strata = NULL,
+draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
                            cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
                            boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE){
 
@@ -166,6 +166,11 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period, strata 
   }
 
   # check period
+  if (is.null(period)) {
+    dat[, ssd_period := 1]
+    period <- "ssd_period"
+  }
+
   if(length(period)!=1){
     stop("period must have length 1")
   }
