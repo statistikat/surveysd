@@ -1,3 +1,10 @@
+# surveysd 0.2.2
+
+* Update some default parameters (#4, #5)
+* Split README into README + Get Started
+* Bugfixes
+* Update documentation titles, function categories and vignette titles
+
 # surveysd 0.2.1
 
 * Create vignette for error estimation
