@@ -15,16 +15,19 @@ draw.bootstrap(dat, REP = 1000, hid = NULL, weights, period = NULL,
 \item{REP}{integer indicating the number of bootstrap replicates.}
 
 \item{hid}{character specifying the name of the column in \code{dat} containing the household id. If
-\code{NULL} (the default), the household id is detected through the \code{cluster} argument.
-If \code{cluster} is also \code{NULL}, the bootstrap samples are drawn without clustering.}
+\code{NULL} (the default), the household structure is not regarded.}
 
 \item{weights}{character specifying the name of the column in \code{dat} containing the sample weights.}
 
-\item{period}{character specifying the name of the column in \code{dat} containing the sample periods.}
+\item{period}{character specifying the name of the column in \code{dat} containing the sample periods.
+If \code{NULL} (the default), it is assumed that all observations belong to the same
+period.}
 
-\item{strata}{character vector specifying the name of the column in \code{dat} by which the population was stratified.
-If \code{strata} is a vector stratification will be assumed as the combination of column names contained in \code{strata}.
-Setting in addition \code{cluster} not NULL stratification will be assumed on multiple stages, where each additional entry in \code{strata} specifies the stratification variable for the next lower stage. see Details for more information.}
+\item{strata}{character vector specifying the name(s) of the column in \code{dat} by which the population
+was stratified. If \code{strata} is a vector stratification will be assumed as the combination
+of column names contained in \code{strata}. Setting in addition \code{cluster} not NULL stratification
+will be assumed on multiple stages, where each additional entry in \code{strata} specifies the
+stratification variable for the next lower stage. see Details for more information.}
 
 \item{cluster}{character vector specifying cluster in the data. If not already specified in \code{cluster} household ID is taken es the lowest level cluster.}
 
@@ -58,27 +61,31 @@ Survey information, like ID, sample weights, strata and population totals per st
 \details{
 \code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
 \code{dat} must be household data where household members correspond to multiple rows with the same household
-identifier. The data should at least containt the following columns:
+identifier. For most practical applications, the following columns should be available in the dataset
+and passed via the corresponding parameters:
 \itemize{
-\item Column indicating the sample period;
-\item Column indicating the household ID;
-\item Column containing the household sample weights;
-\item Columns by which population was stratified during the sampling process.
+\item Column indicating the sample period (parameter \code{period}).
+\item Column indicating the household ID (parameter \code{hid})
+\item Column containing the household sample weights (parameter \code{weights});
+\item Columns by which population was stratified during the sampling process (parameter: \code{strata}).
 }
 
 For single stage sampling design a column the argument \code{totals} is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
 For this case the number of PSUs is calculated and added to \code{dat} using \code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling design is always assumed and
-if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.\cr
-In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.\cr
+if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.
+
+In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.
 
 If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stage, \code{hid} will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
-\code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.\cr
+\code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.
+
 For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
-and at the 2nd stage housholds are drawn in each municipality without stratification.\cr
+and at the 2nd stage housholds are drawn in each municipality without stratification.
 
 Bootstrap replicates are drawn for each survey period (\code{period}) using the function \link{rescaled.bootstrap}.
-Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.\cr
-This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.\cr
+Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.
+
+This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.
 
 If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
 This takes into account the issue of a houshold splitting up.
