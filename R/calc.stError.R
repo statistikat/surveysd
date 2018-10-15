@@ -24,7 +24,7 @@
 #' Warnings are returned if the number of observations in a subgroup falls below `size.limit`. In addition the concerned groups are available in the function output.
 #' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed `cv.limit`, for a point estimate, they are flagged and available in the function output.
 #' @param p numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of `var` are additionally estimated.
-#' @param ... additional arguments which will be passed to fun.
+#' @param add.arg additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the valued to column names in dat, see also examples.
 #'
 #' @details `calc.stError` takes survey data (`dat`) and returns point estimates as well as their standard Errors
 #' defined by `fun` and `var` for each sample period in `dat`.
@@ -75,7 +75,7 @@
 #' \cr
 #' Setting `bias` to `TRUE` returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled *_mean* at the end.\cr
 #' \cr
-#' If `fun` needs more arguments they can be supplied in `...`\cr
+#' If `fun` needs more arguments they can be supplied in `add.arg`. This can either be a named list or vector.\cr
 #' \cr
 #' The parameter `size.limit` indicates a lower bound of the sample size for subsets in `dat` created by `group`. If the sample size of a subset falls below `size.limit` a warning will be displayed.\cr
 #' In addition all subsets for which this is the case can be selected from the output of `calc.stError` with `$smallGroups`.\cr
@@ -149,7 +149,20 @@
 #' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
 #'                         period.diff = period.diff, period.mean = 3)
 #' err.est$Estimates
+#' 
+#' # use add.arg-argument
+#' fun <- function(x,w,b){
+#'   sum(x*w*b)
+#' }
+#' add.arg = list(b="onePerson")
 #'
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = fun,
+#'                         period.mean = 0, add.arg=add.arg)
+#' err.est$Estimates
+#' # compare with direkt computation
+#' compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c(attr(dat_boot_calib,"period"))]
+#' all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
+#'                         
 #' # use a function from an other package that has sampling weights as its second argument
 #' # for example gini() from laeken
 #'
@@ -224,7 +237,7 @@
 calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(dat, "b.rep"), period = attr(dat, "period"), var,
                          fun = weightedRatio, national = FALSE, group = NULL, fun.adjust.var = NULL,
                          adjust.var = NULL, period.diff = NULL, period.mean = 3, bias = FALSE,
-                         size.limit = 20, cv.limit = 10, p = NULL, ...){
+                         size.limit = 20, cv.limit = 10, p = NULL, add.arg=NULL){
 
   stE_high <- stE <- val <- as.formula <- est_type <- n_inc <- stE_roll <- n <- size <- NULL
 
@@ -280,17 +293,34 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
     stop("national can only be logical")
 
 
-  # check fun and ...
+  # check fun and add.arg
   if (!is.function(fun))
     stop("fun can only be a function")
-
-  if (!"..." %in% formalArgs(fun)) {
-    ellipsNames <- names(list(...))
-    if (any(!ellipsNames %in% formalArgs(fun)))
-      stop(ellipsNames[!ellipsNames %in% formalArgs(fun)], " not argument(s) of supplied function.")
+  
+  if (!is.null(add.arg)) {
+    if (!is.list(add.arg)|!is.vector(add.arg))
+      stop("add.arg needs to be a list or vector")
+    
+    if (length(names(add.arg))==0)
+      stop("add.arg needs to be a named list or vector, names(add.arg) <- ?")
+    
+    if (any(!names(add.arg)%in%formalArgs(fun))) {
+      notInFun <- !names(add.arg)%in%formalArgs(fun)
+      stop(paste(names(add.arg)[notInFun],collapse=" ")," not argument(s) of supplied function.")
+    }
+    
+    if(any(!unlist(add.arg)%in%c.names)){
+      notInData <- unlist(add.arg)
+      notInData <- notInData[!notInData%in%c.names]
+      stop(paste(notInData,collapse=" ")," not in column names of dat.")
+    }
+    
+    add.arg <- unlist(add.arg)
+    add.arg <- paste0(",",paste(names(add.arg),add.arg,sep="=",collapse=","))
   }
 
-  test.val <- dt.eval("dat[,fun(", var[1], ",", weights, ",...)]")
+  
+  test.val <- dt.eval("dat[,fun(", var[1], ",", weights, add.arg,")]")
   if (!is.numeric(test.val) & !is.integer(test.val))
     stop("Function in fun does not return integer or numeric value")
 
@@ -302,7 +332,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
     if (!is.function(fun.adjust.var))
       stop("fun.adjust.var can only be a function or NULL")
 
-    test.val <- dt.eval("dat[,fun.adjust.var(", var, ",", weights, ",...)]")
+    test.val <- dt.eval("dat[,fun.adjust.var(", var, ",", weights, add.arg,")]")
     if(!is.numeric(test.val) & !is.integer(test.val))
       stop("Function in fun.adjust.var does not return integer or numeric value")
   }
@@ -338,15 +368,15 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
 
     if (!is.numeric(period.mean))
       stop("period.mean must contain one numeric value")
-
+    
     if (period.mean%%1 != 0)
       stop("period.mean cannot have a decimal part")
 
-    if (period.mean%%2 == 0) {
+    if (period.mean%%2 == 0 & period.mean>0) {
       warning("period.mean must be odd - mean over periods will not be calculated")
       period.mean <- NULL
     } else {
-      if (period.mean == 1)
+      if (period.mean <= 1)
         period.mean <- NULL
     }
   }
@@ -435,7 +465,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
 
 	# calculate point estimates
   outx <- help.stError(dat=dat,period=period,var=var,weights=weights,b.weights=b.weights,fun=fun,national=national,group=group,
-                       fun.adjust.var=fun.adjust.var,adjust.var=adjust.var,period.diff=period.diff,period.mean=period.mean,bias=bias,no.na=no.na,size.limit=size.limit,p=p,...)
+                       fun.adjust.var=fun.adjust.var,adjust.var=adjust.var,period.diff=period.diff,period.mean=period.mean,bias=bias,no.na=no.na,size.limit=size.limit,p=p,add.arg=add.arg)
 
   outx.names <- colnames(outx)
   outx.names <- outx.names[!outx.names%in%c("val","est_type","stE","mean","size",p.names)]
@@ -485,7 +515,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
   setcolorder(outx,col.order)
 
   param <- list(number.bweights=length(b.weights),period=period,var=var,fun=fun,fun.adjust.var=fun.adjust.var,adjust.var=adjust.var,group=group,period.diff=period.diff,period.mean=period.mean,
-                bias=bias,size.limit=size.limit,cv.limit=cv.limit,...)
+                bias=bias,size.limit=size.limit,cv.limit=cv.limit,add.arg)
 
   output <- list(Estimates=outx,smallGroups=size_group,cvHigh=sd_bool,stEDecrease=samp_eff,param=param)
 
@@ -499,20 +529,20 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
 # function to apply fun to var using weights (~weights, b.weights)
 # and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
 help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun,national,group,
-                         fun.adjust.var,adjust.var,period.diff=NULL,period.mean=NULL,bias=FALSE,no.na,size.limit=20,p=NULL,...){
+                         fun.adjust.var,adjust.var,period.diff=NULL,period.mean=NULL,bias=FALSE,no.na,size.limit=20,p=NULL,add.arg){
 
   N <- variable <- est_type <- est <- V1 <- n <- ID <- sd <- . <- size <-
 
   # create point estimate for subnational result in relation to national level
   if(national){
-    add.arg <- c("Nat[1]")
-    dt.eval("dat[,Nat:=fun(",var,",",weights,"),by=list(",period,")]")
+    national.arg <- c("Nat[1]")
+    dt.eval("dat[,Nat:=fun(",var,",",weights,add.arg,"),by=list(",period,")]")
 
     # create new functions which divides by national level
     fun_original <- fun
-    fun <- function(x,w,additionalArgument,...){
-      fun_original(x,w,...)/additionalArgument*100
-    }
+    fun <- dt.eval("function(x,w",add.arg,",national.arg){
+      fun_original(x,w,add.arg)/national.arg*100
+    }")
   }
 
   # define names for estimates for each weight (normal weights and boostrap weights)
@@ -529,21 +559,20 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
     varnew <- c(var,paste0(var,".",2:(length(b.weights)+1)))
 
     if(national){
-      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),",",add.arg,",...)")
+      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),add.arg,",national.arg)")
     }else{
-      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),",...)")
+      eval.fun <- paste0(res.names,"=fun(",varnew,",",c(weights,b.weights),",national.arg)")
     }
   }else{
 
     res.names <- c(t(outer(var, 1:length(c(weights,b.weights)), paste_)))
     if(national){
-      eval.fun <- paste0(res.names,"=fun(",paste(c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,sep=","),",...)")
+      eval.fun <- paste0(res.names,"=fun(",paste(c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,sep=","),",national.arg)")
     }else{
-      eval.fun <- paste0(res.names,"=fun(",c(t(outer(var,c(weights,b.weights), paste_c))),",...)")
+      eval.fun <- paste0(res.names,"=fun(",c(t(outer(var,c(weights,b.weights), paste_c))),add.arg,")")
     }
 
   }
-
 
 
   eval.fun <- paste0(".(n=.N,N=sum(",weights,"),",paste(eval.fun,collapse=","),")")
@@ -596,7 +625,11 @@ help.stError <- function(dat,period,var,weights,b.weights=paste0("w",1:1000),fun
       period.diff.mean <- NULL
     }
   }else{
-    period.diff.b <- FALSE
+    if(is.null(period.diff)){
+      period.diff.b <- FALSE
+    }else{
+      period.diff.b <- TRUE
+    }
     period.diff.mean <- NULL
     periodsList <- NULL
   }
