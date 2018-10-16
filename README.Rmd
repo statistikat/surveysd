@@ -10,10 +10,12 @@ output: github_document
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd)
 
 
-<!--[![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master)-->
-<!--[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)-->
-<!--[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)-->
-<!--[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)-->
+<!--
+[![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master)
+[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)
+[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
+[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
+-->
 
 This is the development place for the R-package `surveysd`. The package can be used to estimate 
 the standard deviation of estimates in complex surveys using bootstrap weights.
@@ -35,7 +37,7 @@ bootstrapping procedure with custom estimating functions.
 ## Workflow
 
 A typical workflow with this package consists of three steps. To see these concepts in practice,
-please refer to the [getting started vignette](https://statistikat.github.io/surveysd/articles/surveysd.html).
+please refer to the [getting started vignette].
 
 * Bootstrap samples are drawn with rescaled bootstrapping in the function `draw.bootstrap()`.
 * These samples can then be calibrated with an iterative proportional updating algorithm using 
@@ -45,9 +47,12 @@ please refer to the [getting started vignette](https://statistikat.github.io/sur
 
 ## Further reading
 
-More information can be found on the [github-pages site](https://statistikat.github.io/surveysd) for
-surveysd.
+More information can be found on the [github-pages site] for surveysd.
 
-* The methodology is covered in the [methodology vignette](https://statistikat.github.io/surveysd/articles/methodology.html).
-* A more comprehensive documentation of `calc.stError()` is available in the
-  [error estimation vignette](http://xlwt0012:3838/users/decill/ssddocs/articles/error_estimation.html).
+* The methodology is covered in the [methodology vignette].
+* A more comprehensive documentation of `calc.stError()` is available in the [error estimation vignette].
+  
+[methodology vignette]:      https://statistikat.github.io/surveysd/articles/methodology.html
+[error estimation vignette]: https://statistikat.github.io/surveysd/articles/error_estimation.html
+[getting started vignette]:  https://statistikat.github.io/surveysd/articles/surveysd.html
+[github-pages site]:         https://statistikat.github.io/surveysd
