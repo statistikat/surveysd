@@ -22,7 +22,7 @@ the standard deviation of estimates in complex surveys using bootstrap weights.
 
 ## Installation
 
-Like any other R package on github, this package can be installed via `install_github`.
+Like any other R package on github, this package can be installed via `install_github()`.
 
 ```{r, eval = FALSE}
 devtools::install_github("statistikat/surveysd")

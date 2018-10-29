@@ -15,7 +15,7 @@ This is the development place for the R-package `surveysd`. The package can be u
 Installation
 ------------
 
-Like any other R package on github, this package can be installed via `install_github`.
+Like any other R package on github, this package can be installed via `install_github()`.
 
 ``` r
 devtools::install_github("statistikat/surveysd")
