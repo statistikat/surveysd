@@ -241,9 +241,9 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
 
   ##########################################################
   # INPUT CHECKING
-  if (class(dat)[1] == "data.frame") {
+  if (is.data.frame(dat)) {
     dat <- as.data.table(dat)
-  }else if (class(dat)[1] != "data.table") {
+  }else if (!is.data.table(dat)) {
     stop("dat must be a data.frame or data.table")
   }
 
@@ -336,7 +336,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
   }
   # check adjust.var
   if(!is.null(adjust.var)){
-    if (class(adjust.var) != "character")
+    if (!is.character(adjust.var))
       stop("adjust.var needs to be a character")
 
     if (length(adjust.var) > 1)
@@ -350,7 +350,7 @@ calc.stError <- function(dat, weights = attr(dat, "weights"), b.weights = attr(d
   if (is.null(group))
     group <- list(NULL)
 
-  if (class(group) != "list")
+  if (!is.list(group))
     group <- as.list(group)
 
   if (!any(unlist(lapply(group,is.null))))

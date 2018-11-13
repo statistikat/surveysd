@@ -66,9 +66,9 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 
   ##########################################################
   # INPUT CHECKING
-  if(class(dat)[1]=="data.frame"){
+  if (is.data.frame(dat)) {
     dat <- as.data.table(dat)
-  }else if(class(dat)[1]!="data.table"){
+  } else if (!is.data.table(dat)) {
     stop("dat must be a data.frame or data.table")
   }
   dat <- copy(dat)
