@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.2.2</span>
+        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.2.3</span>
       </span>
     </div>
 
@@ -241,20 +241,20 @@
   \overline{\tilde{\theta}^{(.,y_t)}}=\frac{1}{B}\sum\limits_{i=1}^B\tilde{\theta}^{(i,y_t)} \quad.
 \]</span></p>
 <p>Applying the filter over the time series of estimated <span class="math inline">\(\theta^{(i,y_t)}\)</span> leads to a reduction of variance for <span class="math inline">\(\theta\)</span> since the filter reduces the noise in <span class="math inline">\(\{\theta^{(i,y_{t-1})},\theta^{(i,y_t)},\theta^{(i,y_{t+1})}\}\)</span> and thus leading to a more narrow distribution for <span class="math inline">\(\tilde{\theta}^{(i,y_t)}\)</span>.</p>
-<p>It should also be noted that estimating indicators from a survey with rotating panel design is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error. <span class="citation">(Martin et al. 2013)</span> showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25<span class="math inline">\(\%\)</span>. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.</p>
+<p>It should also be noted that estimating indicators from a survey with rotating panel design is in general not straight forward because of the high correlation between consecutive years. However with our approach to use bootstrap weights, which are independent from each other, we can bypass the cumbersome calculation of various correlations, and apply them directly to estimate the standard error. <span class="citation">(Bauer et al. 2013)</span> showed that using the proposed method on EU-SILC data for Austria the reduction in resulting standard errors corresponds in a theoretical increase in sample size by about 25<span class="math inline">\(\%\)</span>. Furthermore this study compared this method to the use of small area estimation techniques and on average the use of bootstrap sample weights yielded more stable results.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-silcstudy">
+<p>Bauer, Martin, Matthias Till, Richard Heuberger, Marcel Bilgili, Thomas Glaser, Elisabeth Kafka, Johannes Klotz, et al. 2013. “Studie Zu Armut Und Sozialer Eingliederung in Den Bundesländern.” Statistik Austria [in German].</p>
+</div>
 <div id="ref-chipprest2007">
 <p>Chipperfield, James, and John Preston. 2007. “Efficient Bootstrap for Business Surveys” 33 (December): 167–72.</p>
 </div>
 <div id="ref-efron1979">
 <p>Efron, B. 1979. “Bootstrap Methods: Another Look at the Jackknife.” <em>Ann. Statist.</em> 7 (1). The Institute of Mathematical Statistics: 1–26. doi:<a href="https://doi.org/10.1214/aos/1176344552">10.1214/aos/1176344552</a>.</p>
-</div>
-<div id="ref-silcstudy">
-<p>Martin, Bauer, Till Matthias, Heuberger Richard, Bilgili Marcel, Glaser Thomas, Kafka Elisabeth, Klotz Johannes, et al. 2013. “Studie Zu Armut Und Sozialer Eingliederung in Den Bundesländern.” Statistik Austria [in German].</p>
 </div>
 <div id="ref-mekogu2016">
 <p>Meraner, Angelika, Daniela Gumprecht, and Alexander Kowarik. 2016. “Weighting Procedure of the Austrian Microcensus Using Administrative Data” 45 (June): 3.</p>
