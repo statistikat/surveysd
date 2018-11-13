@@ -1,3 +1,8 @@
+# surveysd 0.2.3
+
+* Fix citation
+* Resolve issue that occured when columns had multiple classes
+
 # surveysd 0.2.2
 
 * Update some default parameters (#4, #5)
