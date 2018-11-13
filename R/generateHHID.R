@@ -58,10 +58,10 @@ generate.HHID <- function(dat,period="RB010",pid="RB030",hid="DB030"){
   
   ID_new <- ID_orig <- ALL_NEW <- na.omit
   # check input
-  if(!any(class(dat)%in%c("data.frame","data.table"))){
+  if (!is.data.frame(dat) & !is.data.table(dat)) {
     stop("dat must be a data frame or data table")
   }
-  if(class(dat)[1]!="data.table"){
+  if (!is.data.table(dat)) {
     dat <- data.table(dat)
   }
   dat <- copy(dat)
@@ -77,7 +77,7 @@ generate.HHID <- function(dat,period="RB010",pid="RB030",hid="DB030"){
     if(!period%in%c.names){
       stop(period," is not a column of dat")
     }
-    if(!class(dat[[period]])%in%c("numeric","integer")){
+    if (!is.numeric(dat[[period]]) & !is.integer(dat[[period]])) {
       stop(period," must be an integer or numeric vector")
     }
   }

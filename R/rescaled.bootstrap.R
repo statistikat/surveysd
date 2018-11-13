@@ -74,7 +74,7 @@ rescaled.bootstrap <- function(dat,REP=1000,strata="DB050>1",cluster="DB060>DB03
   # check input
   if(check.input){
     # check input data
-    if(!any(class(dat)%in%c("data.table","data.frame"))){
+    if (!is.data.table(dat) & !is.data.frame(dat)) {
       stop("dat needs to be a data frame or data table")
     }else{
       dat <- data.table(dat)

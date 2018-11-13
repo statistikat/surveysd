@@ -125,9 +125,9 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
 
   ##########################################################
   # INPUT CHECKING
-  if(class(dat)[1]=="data.frame"){
+  if (is.data.frame(dat)) {
     dat <- as.data.table(dat)
-  }else if(class(dat)[1]!="data.table"){
+  }else if (!is.data.table(dat)) {
     stop("dat must be a data.frame or data.table")
   }
   dat <- copy(dat)
@@ -181,7 +181,7 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
   if(!period%in%c.names){
     stop(paste0(period," is not a column in dat"))
   }
-  if(!class(dat[[period]])%in%c("numeric","integer")){
+  if(!is.numeric(dat[[period]]) & !is.integer(dat[[period]])) {
     stop(paste0(period," is not an integer or numeric column"))
   }
 
