@@ -37,7 +37,7 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-eusilc <- demo.eusilc(prettyNames = TRUE)
+eusilc <- demo.eusilc(n = 4, prettyNames = TRUE)
 
 dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")

@@ -131,7 +131,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 # Import data and calibrate
 
 set.seed(1234)
-eusilc <- demo.eusilc(prettyNames = TRUE)
+eusilc <- demo.eusilc(n = 4,prettyNames = TRUE)
 dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
