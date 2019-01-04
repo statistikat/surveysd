@@ -24,7 +24,7 @@
 #'
 #' eusilc <- demo.eusilc(prettyNames = TRUE)
 #'
-#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
+#' dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
 #'                            strata = "region", period = "year")
 #'
 #' # calibrate weight for bootstrap replicates
