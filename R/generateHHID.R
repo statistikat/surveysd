@@ -15,14 +15,14 @@
 #' @export generate.HHID
 #'
 #' @examples
-#' 
+#'
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
 #'
-#' eusilc <- surveysd:::demo.eusilc()
-#' 
-#' # create spit households   
+#' eusilc <- surveysd:::demo.eusilc(n=4)
+#'
+#' # create spit households
 #' eusilc[,rb030split:=rb030]
 #' year <- eusilc[,unique(year)]
 #' year <- year[-1]
@@ -33,29 +33,29 @@
 #'   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,
 #'                              .(rb030=sample(rb030,20))]
 #'   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
-#'   
+#'
 #'   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
 #'   leaf_out <- c(leaf_out,
 #'                 eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
 #'                 unique(db030)])
-#' } 
-#' 
+#' }
+#'
 #' # pid which are in split households
 #' eusilc[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
-#' 
+#'
 #' eusilc.new <- generate.HHID(eusilc,period="year",pid="rb030split",hid="db030")
-#' 
+#'
 #' # no longer any split households in the data
 #' eusilc.new[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
-#' 
+#'
 #'
 
 
 generate.HHID <- function(dat,period="RB010",pid="RB030",hid="DB030"){
-  
+
   ID_new <- ID_orig <- ALL_NEW <- ID_new_help <- NULL
-  
-  
+
+
   ID_new <- ID_orig <- ALL_NEW <- na.omit
   # check input
   if (!is.data.frame(dat) & !is.data.table(dat)) {
@@ -66,7 +66,7 @@ generate.HHID <- function(dat,period="RB010",pid="RB030",hid="DB030"){
   }
   dat <- copy(dat)
   c.names <- colnames(dat)
-  
+
   #
   if(!is.character(period)){
     stop("period must be a string")
