@@ -1,3 +1,7 @@
+# surveysd 1.0.0
+
+* copy `simPop::ipu2()` and some related functions to surveysd. 
+
 # surveysd 0.2.3
 
 * Fix citation
