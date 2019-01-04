@@ -1,7 +1,7 @@
 Package: surveysd
 Type: Package
 Title: Survey Standard Error Estimation for Cumulated Estimates and their Differences in Complex Panel Designs
-Version: 0.2.3
+Version: 1.0.0
 Date: 2018-09-19
 Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
                      email = "Johannes.Gussenbauer@statistik.gv.at"),
@@ -18,10 +18,10 @@ Description: Calculate point estimates and their standard errors in complex hous
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.12),data.table,simPop(>= 1.1.0),matrixStats, ggplot2, laeken, methods, dplyr
+Imports: Rcpp (>= 0.12.12),data.table,matrixStats, ggplot2, laeken, methods, dplyr
 LinkingTo: Rcpp
 URL: https://github.com/statistikat/surveysd
 BugReports: https://github.com/statistikat/surveysd/issues
-RoxygenNote: 6.1.0.9000
-Suggests: testthat
+RoxygenNote: 6.1.1
+Suggests: testthat, simPop
 Roxygen: list(markdown = TRUE)
