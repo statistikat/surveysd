@@ -151,7 +151,7 @@ weightedSum <- function(x, w) {
 #'
 #' ## load data
 #' factors <- c("time", "sex", "smoker", "day")
-#' tips <- data.frame(sex=c("Female","Male","Male"),day=c("Sun","Mon","Tue"),
+#' tips <- data.frame(sex=c("Female","Male","Male"), day=c("Sun","Mon","Tue"),
 #' time=c("Dinner","Lunch","Lunch"), smoker=c("No","Yes","No"))
 #' tips <- tips[factors]
 #'
