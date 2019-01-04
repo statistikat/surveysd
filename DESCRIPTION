@@ -11,8 +11,7 @@ Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
                      email = "Gregor.deCillia@statistik.gv.at"),
               person("Matthias", "Till", role = "ctb",
                      email = "Matthias.Till@statistik.gv.at"))
-Author: Johannes Gussenbauer [aut, cre], Alexander Kowarik [aut], Matthias Till [ctb],
-  Gregor de Cillia [aut]
+Author: Johannes Gussenbauer [aut, cre], Alexander Kowarik [aut], Gregor de Cillia [aut], Matthias Till [ctb]
 Maintainer: Johannes Gussenbauer <Johannes.Gussenbauer@statistik.gv.at>
 Description: Calculate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstrapping considers survey design with a rotating panel.
 Encoding: UTF-8
