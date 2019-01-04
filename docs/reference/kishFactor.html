@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate multiple years of EU-SILC data — demo.eusilc • surveysd</title>
+<title>Kish Factor — kishFactor • surveysd</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,9 @@
 
 
 
-<meta property="og:title" content="Generate multiple years of EU-SILC data — demo.eusilc" />
+<meta property="og:title" content="Kish Factor — kishFactor" />
 
-<meta property="og:description" content="Create a dummy dataset to be used for demonstrating the functionalities of the surveysd package
-based on laeken::eusilc. Please refer to the documentation page of the original data for
-details about the variables." />
+<meta property="og:description" content="Compute the kish factor for a specific weight vector" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -124,88 +122,48 @@ details about the variables." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate multiple years of EU-SILC data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/statistikat/surveysd/blob/master/R/demo.eusilc.R'><code>R/demo.eusilc.R</code></a></small>
-    <div class="hidden name"><code>demo.eusilc.Rd</code></div>
+    <h1>Kish Factor</h1>
+    <small class="dont-index">Source: <a href='https://github.com/statistikat/surveysd/blob/master/R/ipf.r'><code>R/ipf.r</code></a></small>
+    <div class="hidden name"><code>kishFactor.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Create a dummy dataset to be used for demonstrating the functionalities of the <code>surveysd</code> package
-based on <a href='https://www.rdocumentation.org/packages/laeken/topics/eusilc'>laeken::eusilc</a>. Please refer to the documentation page of the original data for
-details about the variables.</p>
+    <p>Compute the kish factor for a specific weight vector</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>demo.eusilc</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>8</span>, <span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>kishFactor</span>(<span class='no'>w</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>n</th>
-      <td><p>Number of years to generate. Should be at least 1</p></td>
-    </tr>
-    <tr>
-      <th>prettyNames</th>
-      <td><p>Create easy-to-read names for certain variables. Recommended for demonstration
-purposes. Otherwise, use the original codes documented in <a href='https://www.rdocumentation.org/packages/laeken/topics/eusilc'>laeken::eusilc</a>.</p></td>
+      <th>w</th>
+      <td><p>a numeric vector with weights</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If <code>prettyNames</code> is <code>TRUE</code>, the following variables will be available in an easy-to-read manner.</p><ul>
-<li><p><code>hid</code> Household id. Consistent with respect to the reference period (<code>year</code>)</p></li>
-<li><p><code>hsize</code> Size of the household. derived from <code>hid</code> and <code>period</code></p></li>
-<li><p><code>region</code> Federal state of austria where the household is located</p></li>
-<li><p><code>pid</code> Personal id. Consistent with respect to the reference period (<code>year</code>)</p></li>
-<li><p><code>age</code> Age-class of the respondent</p></li>
-<li><p><code>gender</code> A persons gender (<code>"male"</code>, <code>"Female"</code>)</p></li>
-<li><p><code>ecoStat</code> Ecnomic status (<code>"part time"</code>, <code>"full time"</code>, <code>"unemployed"</code>, ...)</p></li>
-<li><p><code>citizenship</code> Citizenship (<code>"AT"</code>, <code>"EU"</code>, <code>"other"</code>)</p></li>
-<li><p><code>pWeight</code> Personal sample weight inside the reference period</p></li>
-<li><p><code>year</code>. Simulated reference period</p></li>
-<li><p><code>povertyRisk</code>. Logical variable determining whether a respondent is at risk of poverty</p></li>
-</ul>
+    <p>The function will return the the kish factor</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>demo.eusilc</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>8</span>, <span class='fl'>26</span>, <span class='fl'>28</span>:<span class='fl'>30</span>)]</div><div class='output co'>#&gt;         hid hsize        region    pid       age gender   ecoStat citizenship
-#&gt;     1:    1 (2,3]         Tyrol    101   (25,45] female part time          AT
-#&gt;     2:    1 (2,3]         Tyrol    102   (25,45]   male full time       Other
-#&gt;     3:    1 (2,3]         Tyrol    103 (-Inf,16]   male      &lt;NA&gt;        &lt;NA&gt;
-#&gt;     4:    2 (3,4]         Tyrol    201   (25,45] female  domestic          AT
-#&gt;     5:    2 (3,4]         Tyrol    202   (25,45]   male full time          AT
-#&gt;    ---                                                                       
-#&gt; 14823: 5997 (3,4] Lower Austria 599704 (-Inf,16] female education          AT
-#&gt; 14824: 5998 (0,1] Upper Austria 599801   (25,45] female full time          AT
-#&gt; 14825: 5999 (0,1]         Tyrol 599901   (25,45]   male full time          AT
-#&gt; 14826: 6000 (1,2]         Tyrol 600001   (45,65]   male full time          AT
-#&gt; 14827: 6000 (1,2]         Tyrol 600002   (45,65] female  disabled          AT
-#&gt;        eqIncome  pWeight year povertyRisk
-#&gt;     1: 16090.69 504.5696 2010       FALSE
-#&gt;     2: 16090.69 504.5696 2010       FALSE
-#&gt;     3: 16090.69 504.5696 2010       FALSE
-#&gt;     4: 27076.24 493.3824 2010       FALSE
-#&gt;     5: 27076.24 493.3824 2010       FALSE
-#&gt;    ---                                   
-#&gt; 14823: 26508.20 556.4260 2010       FALSE
-#&gt; 14824: 14387.41 643.2557 2010       FALSE
-#&gt; 14825: 14805.83 679.7288 2010       FALSE
-#&gt; 14826: 16288.30 567.1544 2010       FALSE
-#&gt; 14827: 16288.30 567.1544 2010       FALSE</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>kishFactor</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>,<span class='fl'>10</span>))</div><div class='output co'>#&gt; [1] 1</div><div class='input'><span class='fu'>kishFactor</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Lognormal'>rlnorm</a></span>(<span class='fl'>10</span>))</div><div class='output co'>#&gt; [1] 1.276921</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
 
+    <h2>Author</h2>
+    <p>Alexander Kowarik</p>
   </div>
 </div>
 

@@ -8,6 +8,7 @@ reference:
     The methods used in these function relate to a rescaled bootstrap as described in
     `vignette("methodology")`.
   contents:
+    - '`ipf`'
     - matches('bootstrap')
     - '`generate.HHID`'
     - '`recalib`'
@@ -19,6 +20,14 @@ reference:
     - '`PointEstimates`'
     - '`calc.stError`'
     - matches('surveysd')
+- title: utility functions
+  desc: >
+    Misc helper functions that are used in or related to `ipf()`.
+  contents:
+    - ipf_step
+    - kishFactor
+    - cpp_mean
+    - computeLinear
 
 development:
   mode: unreleased
