@@ -31,9 +31,9 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-eusilc <- surveysd:::demo.eusilc()
+eusilc <- surveysd:::demo.eusilc(n=4)
 
-# create spit households   
+# create spit households
 eusilc[,rb030split:=rb030]
 year <- eusilc[,unique(year)]
 year <- year[-1]
@@ -44,12 +44,12 @@ for(y in year){
   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030\%in\%leaf_out,
                              .(rb030=sample(rb030,20))]
   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
-  
+
   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
   leaf_out <- c(leaf_out,
                 eusilc[rb030\%in\%c(overwrite.person$rb030,overwrite.person$rb030split),
                 unique(db030)])
-} 
+}
 
 # pid which are in split households
 eusilc[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
