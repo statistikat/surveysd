@@ -2,10 +2,10 @@
 # Helper-Functions
 #
 #' @import ggplot2
-#' @import simPop data.table Rcpp
+#' @import data.table Rcpp
 #' @importFrom "graphics" "plot"
-#' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd"
-#' @importFrom "utils" "data" "find" "tail"
+#' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd" "xtabs" "formula"
+#' @importFrom "utils" "data" "find" "tail" "head"
 #' @importFrom "matrixStats" "rowProds"
 #' @importFrom "laeken" "weightedMedian"
 #' @importFrom "methods" "formalArgs"

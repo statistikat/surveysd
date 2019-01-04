@@ -23,7 +23,7 @@ recalib(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 
 \item{conH.var}{character vector containig household-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per \code{period} using \code{weights}.}
 
-\item{...}{additional arguments passed on to function \code{\link[simPop]{ipu2}} from the \code{simPop} package.}
+\item{...}{additional arguments passed on to function \code{\link[surveysd]{ipf}} from this package.}
 }
 \value{
 Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates. The original bootstrap replicates are overwritten by the calibrated weights.
@@ -45,7 +45,7 @@ replication according to population totals for person- or household-specific var
 }
 
 For each period and each variable in \code{conP.var} and/or \code{conH.var} contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
-Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using \code{\link[simPop]{ipu2}} to match the previously calcualted contingency tables.
+Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using \code{\link[surveysd]{ipf}} to match the previously calcualted contingency tables.
 In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 }
 \examples{
@@ -67,7 +67,7 @@ dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
 
 }
 \seealso{
-\code{\link[simPop]{ipu2}} for more information on iterative proportional fitting.
+\code{\link[surveysd]{ipf}} for more information on iterative proportional fitting.
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria

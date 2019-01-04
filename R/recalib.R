@@ -16,7 +16,7 @@
 #' * Columns indicating person- or household-specific variables for which sample weight should be adjusted.
 #'
 #' For each period and each variable in `conP.var` and/or `conH.var` contingency tables are estimated to get margin totals on personal- and/or household-specific variables in the population.\cr
-#' Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using `\link[simPop]{ipu2}` to match the previously calcualted contingency tables.
+#' Afterwards the bootstrap replicates are multiplied with the original sample weight and the resulting product ist then adjusted using `\link[surveysd]{ipf}` to match the previously calcualted contingency tables.
 #' In this process the columns of the bootstrap replicates are overwritten by the calibrated weights.\cr
 #'
 #'
@@ -27,14 +27,14 @@
 #' @param period character specifying the name of the column in `dat` containing the sample period.
 #' @param conP.var character vector containig person-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per `period` using `weights`.
 #' @param conH.var character vector containig household-specific variables to which weights should be calibrated. Contingency tables for the population are calculatet per `period` using `weights`.
-#' @param ... additional arguments passed on to function `\link[simPop]{ipu2}` from the `simPop` package.
+#' @param ... additional arguments passed on to function `\link[surveysd]{ipf}` from this package.
 #'
 #'
 #' @return Returns a data.table containing the survey data as well as the calibrated weights for the bootstrap replicates. The original bootstrap replicates are overwritten by the calibrated weights.
 #' If calibration of a bootstrap replicate does not converge the bootsrap weight is not returned and numeration of the returned bootstrap weights is reduced by one.
 #'
 #'
-#' @seealso `\link[simPop]{ipu2}` for more information on iterative proportional fitting.
+#' @seealso `\link[surveysd]{ipf}` for more information on iterative proportional fitting.
 #'
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
@@ -135,7 +135,7 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 
   ##########################################################
 
-	# define default values for ipu2
+	# define default values for ipf
   ellipsis <- list(...)
   ellipsis[["verbose"]] <- getEllipsis("verbose",TRUE,ellipsis)
   ellipsis[["epsP"]] <- getEllipsis("epsP",1e-2,ellipsis)
@@ -149,7 +149,7 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
   eval(parse(text=paste(names(ellipsis),unlist(lapply(ellipsis,as.character)),sep="<-")))
 
   # recode household and person variables to factor
-  # improves runtime for ipu2
+  # improves runtime for ipf
   #
 
   vars <- c(period,conP.var,conH.var)
@@ -214,7 +214,7 @@ recalib <- function(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
 	    calib.fail <- c(calib.fail,g)
 	    set(dat,j=g,value=NA_real_)
 	  }else{
-	    set(dat,j=g,value=ipu2(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
+	    set(dat,j=g,value=ipf(dat=copy(dat[,mget(c(g,select.var))]),conP=conP,
 	                           conH=conH,verbose=verbose,epsP=epsP,epsH=epsH,
 	                           w=g,bound=bound,maxIter=maxIter,meanHH=meanHH,hid="hidfactor", check_hh_vars = check_hh_vars
 	    )[,calibWeight])
