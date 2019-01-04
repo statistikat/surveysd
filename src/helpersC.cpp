@@ -73,12 +73,12 @@ NumericVector rollSumC(NumericVector x, int k, char type) {
 // function for weighted ratio
 //' @name PointEstimates
 //' @title Weighted Point Estimates
-//' 
-//' @description Predefined functions for weighted point estimates in package \code{surveysd}.
-//' 
-//' @param x numeric vector 
-//' @param w weight vector 
-//' 
+//'
+//' @description Predefined functions for weighted point estimates in package `surveysd`.
+//'
+//' @param x numeric vector
+//' @param w weight vector
+//'
 //' @details Predefined functions are weighted ratio and weighted sum.
 //'
 //' @return
