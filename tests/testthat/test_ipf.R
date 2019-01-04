@@ -2,6 +2,7 @@ context("ipf")
 library(surveysd)
 library(data.table)
 data(eusilcS,package = "simPop")
+setDT(eusilcS)
 eusilcS <- eusilcS[, list(db030,hsize,db040,age,rb090,netIncome,db090,rb050)]
 
 ## rename columns
