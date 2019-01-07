@@ -2,7 +2,7 @@ Package: surveysd
 Type: Package
 Title: Survey Standard Error Estimation for Cumulated Estimates and their Differences in Complex Panel Designs
 Version: 1.0.0
-Date: 2018-09-19
+Date: 2019-01-07
 Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
                      email = "Johannes.Gussenbauer@statistik.gv.at"),
               person("Alexander", "Kowarik", role = "aut",
