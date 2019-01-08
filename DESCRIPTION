@@ -6,7 +6,7 @@ Date: 2019-01-07
 Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
                      email = "Johannes.Gussenbauer@statistik.gv.at"),
               person("Alexander", "Kowarik", role = "aut",
-                     email = "Alexander.Kowarik@statistik.gv.at"),
+                     email = "Alexander.Kowarik@statistik.gv.at", comment=c(ORCID="0000-0001-8598-4130")),
               person("Gregor", "de Cillia", role = "aut",
                      email = "Gregor.deCillia@statistik.gv.at"),
               person("Matthias", "Till", role = "ctb",
