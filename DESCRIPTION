@@ -13,7 +13,7 @@ Authors@R: c(person("Johannes", "Gussenbauer", role = c("aut", "cre"),
                      email = "Matthias.Till@statistik.gv.at"))
 Author: Johannes Gussenbauer [aut, cre], Alexander Kowarik [aut], Gregor de Cillia [aut], Matthias Till [ctb]
 Maintainer: Johannes Gussenbauer <Johannes.Gussenbauer@statistik.gv.at>
-Description: Calculate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstrapping considers survey design with a rotating panel. A comprehensive description of the methodology can be found under https://statistikat.github.io/surveysd/articles/methodology.html.
+Description: Calculate point estimates and their standard errors in complex household surveys using bootstrap replicates. Bootstrapping considers survey design with a rotating panel. A comprehensive description of the methodology can be found under <https://statistikat.github.io/surveysd/articles/methodology.html>.
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)

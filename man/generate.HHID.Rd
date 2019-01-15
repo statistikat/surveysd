@@ -26,7 +26,7 @@ This leads to the creation of so called split households. Using a peronal ID (th
 a new houshold ID is assigned to the original and the split household.
 }
 \examples{
-
+\dontrun{
 library(surveysd)
 library(laeken)
 library(data.table)
@@ -58,6 +58,6 @@ eusilc.new <- generate.HHID(eusilc,period="year",pid="rb030split",hid="db030")
 
 # no longer any split households in the data
 eusilc.new[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
-
+}
 
 }

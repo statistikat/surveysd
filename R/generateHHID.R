@@ -15,7 +15,7 @@
 #' @export generate.HHID
 #'
 #' @examples
-#'
+#' \dontrun{
 #' library(surveysd)
 #' library(laeken)
 #' library(data.table)
@@ -47,7 +47,7 @@
 #'
 #' # no longer any split households in the data
 #' eusilc.new[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
-#'
+#' }
 #'
 
 
