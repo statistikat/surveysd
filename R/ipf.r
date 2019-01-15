@@ -376,6 +376,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original, m
 #' @export ipf
 #' @author Alexander Kowarik, Gregor de Cillia
 #' @examples
+#' \dontrun{
 #' data(eusilcS,package="simPop")
 #' library(data.table)
 #' setDT(eusilcS)
@@ -420,6 +421,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original, m
 #' epsH1["5+",] <- 0.2
 #'
 #' # without array epsH1
+#'
 #' calibweights1 <- ipf(eusilcS, hid = "household",
 #'                       conP = list(conP1, conP2, netIncome = conP3),
 #'                       conH = list(conH1),
@@ -439,7 +441,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original, m
 #' # show an adjusted version of conP and the original
 #' attr(calibweights2, "conP_adj")
 #' attr(calibweights2, "conP")
-#'
+#' }
 ipf <- function(dat,hid=NULL,conP=NULL,conH=NULL,epsP=1e-6,epsH=1e-2,verbose=FALSE,
                  w=NULL,bound=4,maxIter=200,meanHH=TRUE,allPthenH=TRUE,returnNA=TRUE,looseH=FALSE,
                  numericalWeighting=computeLinear, check_hh_vars = TRUE, conversion_messages = FALSE){
