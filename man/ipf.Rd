@@ -119,6 +119,7 @@ which can be monitored with the \code{conversion_messages} argument.
 Setting \code{check_hh_vars} to \code{FALSE} can also incease the performance of the scheme.
 }
 \examples{
+\dontrun{
 data(eusilcS,package="simPop")
 library(data.table)
 setDT(eusilcS)
@@ -163,6 +164,7 @@ epsH1[1:4,] <- 0.005
 epsH1["5+",] <- 0.2
 
 # without array epsH1
+
 calibweights1 <- ipf(eusilcS, hid = "household",
                       conP = list(conP1, conP2, netIncome = conP3),
                       conH = list(conH1),
@@ -182,7 +184,7 @@ calibweights2 <- ipf(eusilcS, hid = "household",
 # show an adjusted version of conP and the original
 attr(calibweights2, "conP_adj")
 attr(calibweights2, "conP")
-
+}
 }
 \seealso{
 \code{\link[simPop]{ipu}}
