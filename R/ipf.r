@@ -82,7 +82,7 @@ check_population_totals <- function(con, dat, type = "personal") {
   )
 
   # do not apply this check for constraints that only cover the population partially
-  ind <- which(vapply(ind, function(i) {
+  ind <- ind[vapply(ind, function(i) {
     constraint <- con[[i]]
     for (variable in names(dimnames(constraint))) {
       if (!(variable %in% names(dat)))
@@ -93,7 +93,7 @@ check_population_totals <- function(con, dat, type = "personal") {
       }
     }
     return(TRUE)
-  }, TRUE))
+  }, TRUE)]
 
   if (length(ind) == 0)
     return(NULL)
