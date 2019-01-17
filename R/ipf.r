@@ -229,7 +229,9 @@ getFormulas <- function(con, w = "calibWeight"){
   for(i in seq_along(con)){
     lhs <- names(con)[i]
     if(is.null(lhs) || lhs == ""){
-      lhs = w
+      lhs <- w
+    }else{
+      lhs <- paste(lhs,"*",w)
     }
     rhs <- paste(names(dimnames(con[[i]])), collapse = "+")
     formOut[[i]] <- formula(paste(lhs, "~", rhs), env = .GlobalEnv)
