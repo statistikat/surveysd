@@ -7,7 +7,7 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-eusilc <- surveysd:::demo.eusilc()
+eusilc <- surveysd:::demo.eusilc(n=5)
 eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=.(year,db040)]
 eusilc[!duplicated(db030),N.households.error:=sum(db090),by=.(year,db040)]
 eusilc[,N.households.all:=sum(db090[!duplicated(db030)]),by=.(year)]
@@ -59,11 +59,11 @@ test_that("test para - strata, cluster and totals",{
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata=NULL),NA)
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="I"),NA)
   expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="1"),NA)
-  
 })
 
 
-
+# these are some longer tests
+if(Sys.info()["user"]=="ussenbauer"){
   test_that("test para - bootnames, split and pid",{
     
     expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",split="FALSE"),
@@ -84,7 +84,7 @@ test_that("test para - strata, cluster and totals",{
       split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030%in%leaf_out,sample(rb030,20)]
       overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,.(rb030=sample(rb030,20))]
       overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
-
+      
       eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
       leaf_out <- c(leaf_out,eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),unique(db030)])
     }
@@ -96,7 +96,7 @@ test_that("test para - strata, cluster and totals",{
                  "boot.names must start with an alphabetic character")
     expect_error(draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040",boot.names="weight"),NA)
   })
-  
+}
 
 
 test_that("test para - single.PSU",{
@@ -108,15 +108,13 @@ test_that("test para - single.PSU",{
 test_that("test return",{
   dat.boot <- draw.bootstrap(eusilc,REP=10,hid="db030",weights="db090",period="year",strata="db040")
   expect_true(ncol(dat.boot)==(10+ncol(eusilc)))
-  dat.unique <- dat.boot[,lapply(.SD,uniqueN),by="db030",.SDcols=c(paste0("w",1:10))]
-  dat.unique[,db030:=NULL]
-  expect_true(all(dat.unique==1))
+  dat.unique <- unique(dat.boot[,mget(c("db030",paste0("w",1:10)))])
+  expect_true(nrow(dat.unique[,.N,by=db030][N>2])==0)
   expect_false(any(unlist(dat.boot[,
                                lapply(.SD,function(z){any(is.infinite(z))}),
                                .SDcols=c(paste0("w",1:10))])))
   expect_false(any(is.na(dat.boot[,.SD,.SDcols=c(paste0("w",1:10))])))
   expect_true(all(dat.boot[,.SD,.SDcols=c(paste0("w",1:10))]>0))
-  
 })
 
 
