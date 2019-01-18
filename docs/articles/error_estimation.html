@@ -95,6 +95,7 @@
     <div class="page-header toc-ignore">
       <h1>Error estimation</h1>
             
+            <h4 class="date">2019-01-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd"><code>vignettes/error_estimation.Rmd</code></a></small>
       <div class="hidden name"><code>error_estimation.Rmd</code></div>
@@ -134,232 +135,46 @@
 <a class="sourceLine" id="cb7-2" title="2"></a>
 <a class="sourceLine" id="cb7-3" title="3"><span class="co">## print part of the dataset</span></a>
 <a class="sourceLine" id="cb7-4" title="4">dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, eqIncome, onePerson, pWeight, w1, w2, w3, w4, w5)]</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="left">povertyRisk</th>
-<th align="right">eqIncome</th>
-<th align="left">onePerson</th>
-<th align="right">pWeight</th>
-<th align="right">w1</th>
-<th align="right">w2</th>
-<th align="right">w3</th>
-<th align="right">w4</th>
-<th align="right">w5</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="left">FALSE</td>
-<td align="right">16090.69</td>
-<td align="left">FALSE</td>
-<td align="right">504.5696</td>
-<td align="right">1008.633</td>
-<td align="right">1.199585</td>
-<td align="right">1001.005</td>
-<td align="right">1.17313</td>
-<td align="right">1.18297</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="left">FALSE</td>
-<td align="right">16090.69</td>
-<td align="left">FALSE</td>
-<td align="right">504.5696</td>
-<td align="right">1008.633</td>
-<td align="right">1.199585</td>
-<td align="right">1001.005</td>
-<td align="right">1.17313</td>
-<td align="right">1.18297</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="left">FALSE</td>
-<td align="right">16090.69</td>
-<td align="left">FALSE</td>
-<td align="right">504.5696</td>
-<td align="right">1008.633</td>
-<td align="right">1.199585</td>
-<td align="right">1001.005</td>
-<td align="right">1.17313</td>
-<td align="right">1.18297</td>
-</tr>
-<tr class="even">
-<td align="right">2011</td>
-<td align="left">FALSE</td>
-<td align="right">16090.69</td>
-<td align="left">FALSE</td>
-<td align="right">504.5696</td>
-<td align="right">1035.097</td>
-<td align="right">1.242683</td>
-<td align="right">1029.522</td>
-<td align="right">1.19953</td>
-<td align="right">1.17907</td>
-</tr>
-<tr class="odd">
-<td align="right">2011</td>
-<td align="left">FALSE</td>
-<td align="right">16090.69</td>
-<td align="left">FALSE</td>
-<td align="right">504.5696</td>
-<td align="right">1035.097</td>
-<td align="right">1.242683</td>
-<td align="right">1029.522</td>
-<td align="right">1.19953</td>
-<td align="right">1.17907</td>
-</tr>
-</tbody>
-</table>
-</div>
+<pre><code>##    year povertyRisk eqIncome onePerson  pWeight       w1       w2       w3
+## 1: 2010       FALSE 16090.69     FALSE 504.5696 1008.633 1.199585 1001.005
+## 2: 2010       FALSE 16090.69     FALSE 504.5696 1008.633 1.199585 1001.005
+## 3: 2010       FALSE 16090.69     FALSE 504.5696 1008.633 1.199585 1001.005
+## 4: 2011       FALSE 16090.69     FALSE 504.5696 1035.097 1.242683 1029.522
+## 5: 2011       FALSE 16090.69     FALSE 504.5696 1035.097 1.242683 1029.522
+##         w4      w5
+## 1: 1.17313 1.18297
+## 2: 1.17313 1.18297
+## 3: 1.17313 1.18297
+## 4: 1.19953 1.17907
+## 5: 1.19953 1.17907</code></pre>
 </div>
 <div id="estimator-functions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#estimator-functions" class="anchor"></a>Estimator functions</h2>
 <p>The parameters <code>fun</code> and <code>var</code> in <code><a href="../reference/calc.stError.html">calc.stError()</a></code> define the estimator to be used in the error analysis. There are two built-in estimator functions <code><a href="../reference/PointEstimates.html">weightedSum()</a></code> and <code><a href="../reference/PointEstimates.html">weightedRatio()</a></code> which can be used as follows.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">povertyRate &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio)</a>
-<a class="sourceLine" id="cb8-2" title="2">totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">povertyRate &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio)</a>
+<a class="sourceLine" id="cb9-2" title="2">totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)</a></code></pre></div>
 <p>Those functions calculate the ratio of persons at risk of povery (in percent) and the total income. By default, the results are calculated seperately for each reference period.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">povertyRate<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="right">val_povertyRisk</th>
-<th align="right">stE_povertyRisk</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">14.44422</td>
-<td align="right">0.4688685</td>
-</tr>
-<tr class="even">
-<td align="right">2011</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">14.60155</td>
-<td align="right">0.4024223</td>
-</tr>
-<tr class="odd">
-<td align="right">2012</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.24983</td>
-<td align="right">0.4220349</td>
-</tr>
-<tr class="even">
-<td align="right">2013</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.60219</td>
-<td align="right">0.4683628</td>
-</tr>
-<tr class="odd">
-<td align="right">2014</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.57112</td>
-<td align="right">0.4106918</td>
-</tr>
-<tr class="even">
-<td align="right">2015</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.59373</td>
-<td align="right">0.2814149</td>
-</tr>
-<tr class="odd">
-<td align="right">2016</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.69460</td>
-<td align="right">0.3654845</td>
-</tr>
-<tr class="even">
-<td align="right">2017</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.81567</td>
-<td align="right">0.2807620</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">totalIncome<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="right">val_eqIncome</th>
-<th align="right">stE_eqIncome</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">162750998071</td>
-<td align="right">1029103512</td>
-</tr>
-<tr class="even">
-<td align="right">2011</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">162666081825</td>
-<td align="right">961081325</td>
-</tr>
-<tr class="odd">
-<td align="right">2012</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">162660101233</td>
-<td align="right">786209364</td>
-</tr>
-<tr class="even">
-<td align="right">2013</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">163219300922</td>
-<td align="right">735151514</td>
-</tr>
-<tr class="odd">
-<td align="right">2014</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">162880189131</td>
-<td align="right">940438447</td>
-</tr>
-<tr class="even">
-<td align="right">2015</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">162944348190</td>
-<td align="right">721392480</td>
-</tr>
-<tr class="odd">
-<td align="right">2016</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">164427022796</td>
-<td align="right">1157406972</td>
-</tr>
-<tr class="even">
-<td align="right">2017</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">163913627246</td>
-<td align="right">1140647881</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">povertyRate<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##    year     n       N val_povertyRisk stE_povertyRisk
+## 1: 2010 14827 8182222        14.44422       0.4688685
+## 2: 2011 14827 8182222        14.60155       0.4024223
+## 3: 2012 14827 8182222        15.24983       0.4220349
+## 4: 2013 14827 8182222        15.60219       0.4683628
+## 5: 2014 14827 8182222        15.57112       0.4106918
+## 6: 2015 14827 8182222        15.59373       0.2814149
+## 7: 2016 14827 8182222        15.69460       0.3654845
+## 8: 2017 14827 8182222        15.81567       0.2807620</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">totalIncome<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##    year     n       N val_eqIncome stE_eqIncome
+## 1: 2010 14827 8182222 162750998071   1029103512
+## 2: 2011 14827 8182222 162666081825    961081325
+## 3: 2012 14827 8182222 162660101233    786209364
+## 4: 2013 14827 8182222 163219300922    735151514
+## 5: 2014 14827 8182222 162880189131    940438447
+## 6: 2015 14827 8182222 162944348190    721392480
+## 7: 2016 14827 8182222 164427022796   1157406972
+## 8: 2017 14827 8182222 163913627246   1140647881</code></pre>
 <p>Columns that use the <code>val_</code> prefix denote the point estimate belonging to the “main weight” of the dataset, which is <code>pWeight</code> in case of the dataset used here.</p>
 <p>Columns with the <code>stE_</code> prefix denote standard errors calculated with bootstrap replicates. The replicates result in using <code>w1</code>, <code>w2</code>, …, <code>w10</code> instead of <code>pWeight</code> when applying the estimator.</p>
 <p><code>n</code> denotes the number of observations for the year and <code>N</code> denotes the total weight of those persons.</p>
@@ -367,14 +182,14 @@
 <h3 class="hasAnchor">
 <a href="#custom-estimators" class="anchor"></a>Custom estimators</h3>
 <p>In order to define a custom estimator function to be used in <code>fun</code>, the function needs to have two arguments like the example below.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">## define custom estimator</span></a>
-<a class="sourceLine" id="cb11-2" title="2">myWeightedSum &lt;-<span class="st"> </span><span class="cf">function</span>(x, w) {</a>
-<a class="sourceLine" id="cb11-3" title="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(x<span class="op">*</span>w)</a>
-<a class="sourceLine" id="cb11-4" title="4">}</a>
-<a class="sourceLine" id="cb11-5" title="5"></a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="co">## check if results are equal to the one using `suveysd::weightedSum()`</span></a>
-<a class="sourceLine" id="cb11-7" title="7">totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)</a>
-<a class="sourceLine" id="cb11-8" title="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(totalIncome, totalIncome2)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">## define custom estimator</span></a>
+<a class="sourceLine" id="cb14-2" title="2">myWeightedSum &lt;-<span class="st"> </span><span class="cf">function</span>(x, w) {</a>
+<a class="sourceLine" id="cb14-3" title="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(x<span class="op">*</span>w)</a>
+<a class="sourceLine" id="cb14-4" title="4">}</a>
+<a class="sourceLine" id="cb14-5" title="5"></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="co">## check if results are equal to the one using `suveysd::weightedSum()`</span></a>
+<a class="sourceLine" id="cb14-7" title="7">totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)</a>
+<a class="sourceLine" id="cb14-8" title="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(totalIncome, totalIncome2)</a></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>The parameters <code>x</code> and <code>w</code> can be assumed to be vectors with equal length with <code>w</code> being numeric and <code>x</code> being the column defined in the <code>var</code> argument. It will be called once for each period (in this case <code>year</code>) and for each weight column (in this case <code>pWeight</code>, <code>w1</code>, <code>w2</code>, …, <code>w10</code>).</p>
 </div>
@@ -382,95 +197,26 @@
 <h3 class="hasAnchor">
 <a href="#multiple-estimators" class="anchor"></a>Multiple estimators</h3>
 <p>In case an estimator should be applied to several columns of the dataset, <code>var</code> can be set to a vector containing all necessary columns.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">multipleRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), <span class="dt">fun =</span> weightedRatio)</a>
-<a class="sourceLine" id="cb13-2" title="2">multipleRates<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="right">val_povertyRisk</th>
-<th align="right">stE_povertyRisk</th>
-<th align="right">val_onePerson</th>
-<th align="right">stE_onePerson</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">14.44422</td>
-<td align="right">0.4688685</td>
-<td align="right">14.85737</td>
-<td align="right">0.4608975</td>
-</tr>
-<tr class="even">
-<td align="right">2011</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">14.60155</td>
-<td align="right">0.4024223</td>
-<td align="right">14.85737</td>
-<td align="right">0.4204098</td>
-</tr>
-<tr class="odd">
-<td align="right">2012</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.24983</td>
-<td align="right">0.4220349</td>
-<td align="right">14.85737</td>
-<td align="right">0.4487607</td>
-</tr>
-<tr class="even">
-<td align="right">2013</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.60219</td>
-<td align="right">0.4683628</td>
-<td align="right">14.85737</td>
-<td align="right">0.3993618</td>
-</tr>
-<tr class="odd">
-<td align="right">2014</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.57112</td>
-<td align="right">0.4106918</td>
-<td align="right">14.85737</td>
-<td align="right">0.3364885</td>
-</tr>
-<tr class="even">
-<td align="right">2015</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.59373</td>
-<td align="right">0.2814149</td>
-<td align="right">14.85737</td>
-<td align="right">0.2616768</td>
-</tr>
-<tr class="odd">
-<td align="right">2016</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.69460</td>
-<td align="right">0.3654845</td>
-<td align="right">14.85737</td>
-<td align="right">0.1749362</td>
-</tr>
-<tr class="even">
-<td align="right">2017</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="right">15.81567</td>
-<td align="right">0.2807620</td>
-<td align="right">14.85737</td>
-<td align="right">0.2631210</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">multipleRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), <span class="dt">fun =</span> weightedRatio)</a>
+<a class="sourceLine" id="cb16-2" title="2">multipleRates<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
+## 1: 2010 14827 8182222        14.44422       0.4688685      14.85737
+## 2: 2011 14827 8182222        14.60155       0.4024223      14.85737
+## 3: 2012 14827 8182222        15.24983       0.4220349      14.85737
+## 4: 2013 14827 8182222        15.60219       0.4683628      14.85737
+## 5: 2014 14827 8182222        15.57112       0.4106918      14.85737
+## 6: 2015 14827 8182222        15.59373       0.2814149      14.85737
+## 7: 2016 14827 8182222        15.69460       0.3654845      14.85737
+## 8: 2017 14827 8182222        15.81567       0.2807620      14.85737
+##    stE_onePerson
+## 1:     0.4608975
+## 2:     0.4204098
+## 3:     0.4487607
+## 4:     0.3993618
+## 5:     0.3364885
+## 6:     0.2616768
+## 7:     0.1749362
+## 8:     0.2631210</code></pre>
 <p>Here we see the relative number of persons at risk of poverty and the relative number of one-person households.</p>
 </div>
 </div>
@@ -478,106 +224,23 @@
 <h2 class="hasAnchor">
 <a href="#grouping" class="anchor"></a>Grouping</h2>
 <p>The <code>groups</code> argument can be used to calculate estimators for different subsets of the data. This argument can take the grouping variable as a string that refers to a column name (usually a factor) in <code>dat</code>. If set, all estimators are not only split by the reference period but also by the grouping variable. For simplicity, only one reference period of the above data is used.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">dat2 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/subset">subset</a></span>(dat_boot_calib, year <span class="op">==</span><span class="st"> </span><span class="dv">2010</span>)</a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="cf">for</span> (att  <span class="cf">in</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span>))</a>
-<a class="sourceLine" id="cb14-3" title="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(dat2, att) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(dat_boot_calib, att)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">dat2 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/subset">subset</a></span>(dat_boot_calib, year <span class="op">==</span><span class="st"> </span><span class="dv">2010</span>)</a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="cf">for</span> (att  <span class="cf">in</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span>))</a>
+<a class="sourceLine" id="cb18-3" title="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(dat2, att) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(dat_boot_calib, att)</a></code></pre></div>
 <p>To calculate the ratio of persons at risk of poverty for each federal state of austria, <code>group = "region"</code> can be used.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> <span class="st">"region"</span>)</a>
-<a class="sourceLine" id="cb15-2" title="2">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="left">region</th>
-<th align="right">val_povertyRisk</th>
-<th align="right">stE_povertyRisk</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">549</td>
-<td align="right">260564</td>
-<td align="left">Burgenland</td>
-<td align="right">19.53984</td>
-<td align="right">3.0529974</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">733</td>
-<td align="right">377355</td>
-<td align="left">Vorarlberg</td>
-<td align="right">16.53731</td>
-<td align="right">2.6190864</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">924</td>
-<td align="right">535451</td>
-<td align="left">Salzburg</td>
-<td align="right">13.78734</td>
-<td align="right">0.8154710</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1078</td>
-<td align="right">563648</td>
-<td align="left">Carinthia</td>
-<td align="right">13.08627</td>
-<td align="right">0.8655090</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1317</td>
-<td align="right">701899</td>
-<td align="left">Tyrol</td>
-<td align="right">15.30819</td>
-<td align="right">1.5753152</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">2295</td>
-<td align="right">1167045</td>
-<td align="left">Styria</td>
-<td align="right">14.37464</td>
-<td align="right">0.7958432</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">2322</td>
-<td align="right">1598931</td>
-<td align="left">Vienna</td>
-<td align="right">17.23468</td>
-<td align="right">1.8651747</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">2804</td>
-<td align="right">1555709</td>
-<td align="left">Lower Austria</td>
-<td align="right">13.84362</td>
-<td align="right">0.7735313</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">2805</td>
-<td align="right">1421620</td>
-<td align="left">Upper Austria</td>
-<td align="right">10.88977</td>
-<td align="right">0.8575537</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="left">NA</td>
-<td align="right">14.44422</td>
-<td align="right">0.4688685</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> <span class="st">"region"</span>)</a>
+<a class="sourceLine" id="cb19-2" title="2">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##     year     n       N        region val_povertyRisk stE_povertyRisk
+##  1: 2010   549  260564    Burgenland        19.53984       3.0529974
+##  2: 2010   733  377355    Vorarlberg        16.53731       2.6190864
+##  3: 2010   924  535451      Salzburg        13.78734       0.8154710
+##  4: 2010  1078  563648     Carinthia        13.08627       0.8655090
+##  5: 2010  1317  701899         Tyrol        15.30819       1.5753152
+##  6: 2010  2295 1167045        Styria        14.37464       0.7958432
+##  7: 2010  2322 1598931        Vienna        17.23468       1.8651747
+##  8: 2010  2804 1555709 Lower Austria        13.84362       0.7735313
+##  9: 2010  2805 1421620 Upper Austria        10.88977       0.8575537
+## 10: 2010 14827 8182222          &lt;NA&gt;        14.44422       0.4688685</code></pre>
 <p>The last column with <code>region = NA</code> denotes the aggregate over all regions. Note that the columns <code>N</code> and <code>n</code> now show the weighted and unweighted number of persons in each region.</p>
 <div id="several-grouping-variables" class="section level3">
 <h3 class="hasAnchor">
@@ -589,132 +252,35 @@
 <p>Calculate the point estimate and standard error for each region and each gender. The number of rows in the output is therefore</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.\]</span></p>
 <p>The last row is again the estimate for the whole period.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
-<a class="sourceLine" id="cb16-2" title="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))</a>
-<a class="sourceLine" id="cb16-3" title="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="left">gender</th>
-<th align="left">region</th>
-<th align="right">val_povertyRisk</th>
-<th align="right">stE_povertyRisk</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">549</td>
-<td align="right">260564</td>
-<td align="left">NA</td>
-<td align="left">Burgenland</td>
-<td align="right">19.53984</td>
-<td align="right">3.0529974</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">733</td>
-<td align="right">377355</td>
-<td align="left">NA</td>
-<td align="left">Vorarlberg</td>
-<td align="right">16.53731</td>
-<td align="right">2.6190864</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">924</td>
-<td align="right">535451</td>
-<td align="left">NA</td>
-<td align="left">Salzburg</td>
-<td align="right">13.78734</td>
-<td align="right">0.8154710</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1078</td>
-<td align="right">563648</td>
-<td align="left">NA</td>
-<td align="left">Carinthia</td>
-<td align="right">13.08627</td>
-<td align="right">0.8655090</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1317</td>
-<td align="right">701899</td>
-<td align="left">NA</td>
-<td align="left">Tyrol</td>
-<td align="right">15.30819</td>
-<td align="right">1.5753152</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">2295</td>
-<td align="right">1167045</td>
-<td align="left">NA</td>
-<td align="left">Styria</td>
-<td align="right">14.37464</td>
-<td align="right">0.7958432</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">2322</td>
-<td align="right">1598931</td>
-<td align="left">NA</td>
-<td align="left">Vienna</td>
-<td align="right">17.23468</td>
-<td align="right">1.8651747</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">2804</td>
-<td align="right">1555709</td>
-<td align="left">NA</td>
-<td align="left">Lower Austria</td>
-<td align="right">13.84362</td>
-<td align="right">0.7735313</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">2805</td>
-<td align="right">1421620</td>
-<td align="left">NA</td>
-<td align="left">Upper Austria</td>
-<td align="right">10.88977</td>
-<td align="right">0.8575537</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">7267</td>
-<td align="right">3979572</td>
-<td align="left">male</td>
-<td align="left">NA</td>
-<td align="right">12.02660</td>
-<td align="right">0.5997306</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">7560</td>
-<td align="right">4202650</td>
-<td align="left">female</td>
-<td align="left">NA</td>
-<td align="right">16.73351</td>
-<td align="right">0.4032427</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">14.44422</td>
-<td align="right">0.4688685</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
+<a class="sourceLine" id="cb21-2" title="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))</a>
+<a class="sourceLine" id="cb21-3" title="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##     year     n       N gender        region val_povertyRisk
+##  1: 2010   549  260564   &lt;NA&gt;    Burgenland        19.53984
+##  2: 2010   733  377355   &lt;NA&gt;    Vorarlberg        16.53731
+##  3: 2010   924  535451   &lt;NA&gt;      Salzburg        13.78734
+##  4: 2010  1078  563648   &lt;NA&gt;     Carinthia        13.08627
+##  5: 2010  1317  701899   &lt;NA&gt;         Tyrol        15.30819
+##  6: 2010  2295 1167045   &lt;NA&gt;        Styria        14.37464
+##  7: 2010  2322 1598931   &lt;NA&gt;        Vienna        17.23468
+##  8: 2010  2804 1555709   &lt;NA&gt; Lower Austria        13.84362
+##  9: 2010  2805 1421620   &lt;NA&gt; Upper Austria        10.88977
+## 10: 2010  7267 3979572   male          &lt;NA&gt;        12.02660
+## 11: 2010  7560 4202650 female          &lt;NA&gt;        16.73351
+## 12: 2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        14.44422
+##     stE_povertyRisk
+##  1:       3.0529974
+##  2:       2.6190864
+##  3:       0.8154710
+##  4:       0.8655090
+##  5:       1.5753152
+##  6:       0.7958432
+##  7:       1.8651747
+##  8:       0.7735313
+##  9:       0.8575537
+## 10:       0.5997306
+## 11:       0.4032427
+## 12:       0.4688685</code></pre>
 </div>
 <div id="option-2-all-combinations-of-state-and-gender" class="section level4">
 <h4 class="hasAnchor">
@@ -722,195 +288,49 @@
 </h4>
 <p>Split the data by all cobinations of the two grouping variables. This will result in a larger output-table of the size</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.\]</span></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
-<a class="sourceLine" id="cb17-2" title="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))</a>
-<a class="sourceLine" id="cb17-3" title="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="left">gender</th>
-<th align="left">region</th>
-<th align="right">val_povertyRisk</th>
-<th align="right">stE_povertyRisk</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">261</td>
-<td align="right">122741.8</td>
-<td align="left">male</td>
-<td align="left">Burgenland</td>
-<td align="right">17.414524</td>
-<td align="right">3.2690518</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">288</td>
-<td align="right">137822.2</td>
-<td align="left">female</td>
-<td align="left">Burgenland</td>
-<td align="right">21.432598</td>
-<td align="right">3.2269725</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">359</td>
-<td align="right">182732.9</td>
-<td align="left">male</td>
-<td align="left">Vorarlberg</td>
-<td align="right">12.973259</td>
-<td align="right">2.3054104</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">374</td>
-<td align="right">194622.1</td>
-<td align="left">female</td>
-<td align="left">Vorarlberg</td>
-<td align="right">19.883637</td>
-<td align="right">3.3381588</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">440</td>
-<td align="right">253143.7</td>
-<td align="left">male</td>
-<td align="left">Salzburg</td>
-<td align="right">9.156964</td>
-<td align="right">0.7703249</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">484</td>
-<td align="right">282307.3</td>
-<td align="left">female</td>
-<td align="left">Salzburg</td>
-<td align="right">17.939382</td>
-<td align="right">1.0459533</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">517</td>
-<td align="right">268581.4</td>
-<td align="left">male</td>
-<td align="left">Carinthia</td>
-<td align="right">10.552148</td>
-<td align="right">1.2273479</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">561</td>
-<td align="right">295066.6</td>
-<td align="left">female</td>
-<td align="left">Carinthia</td>
-<td align="right">15.392924</td>
-<td align="right">1.1943011</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">650</td>
-<td align="right">339566.5</td>
-<td align="left">male</td>
-<td align="left">Tyrol</td>
-<td align="right">12.857542</td>
-<td align="right">1.6196821</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">667</td>
-<td align="right">362332.5</td>
-<td align="left">female</td>
-<td align="left">Tyrol</td>
-<td align="right">17.604861</td>
-<td align="right">2.0827838</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1128</td>
-<td align="right">571011.7</td>
-<td align="left">male</td>
-<td align="left">Styria</td>
-<td align="right">11.671247</td>
-<td align="right">1.1805175</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1132</td>
-<td align="right">774405.4</td>
-<td align="left">male</td>
-<td align="left">Vienna</td>
-<td align="right">15.590616</td>
-<td align="right">1.9620115</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1167</td>
-<td align="right">596033.3</td>
-<td align="left">female</td>
-<td align="left">Styria</td>
-<td align="right">16.964539</td>
-<td align="right">0.8158820</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1190</td>
-<td align="right">824525.6</td>
-<td align="left">female</td>
-<td align="left">Vienna</td>
-<td align="right">18.778813</td>
-<td align="right">2.0026863</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1363</td>
-<td align="right">684272.5</td>
-<td align="left">male</td>
-<td align="left">Upper Austria</td>
-<td align="right">9.074690</td>
-<td align="right">1.0035774</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1387</td>
-<td align="right">772593.2</td>
-<td align="left">female</td>
-<td align="left">Lower Austria</td>
-<td align="right">16.372949</td>
-<td align="right">0.9232083</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1417</td>
-<td align="right">783115.8</td>
-<td align="left">male</td>
-<td align="left">Lower Austria</td>
-<td align="right">11.348283</td>
-<td align="right">0.9225737</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1442</td>
-<td align="right">737347.5</td>
-<td align="left">female</td>
-<td align="left">Upper Austria</td>
-<td align="right">12.574205</td>
-<td align="right">0.7551254</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222.0</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">14.444218</td>
-<td align="right">0.4688685</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
+<a class="sourceLine" id="cb23-2" title="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))</a>
+<a class="sourceLine" id="cb23-3" title="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##     year     n         N gender        region val_povertyRisk
+##  1: 2010   261  122741.8   male    Burgenland       17.414524
+##  2: 2010   288  137822.2 female    Burgenland       21.432598
+##  3: 2010   359  182732.9   male    Vorarlberg       12.973259
+##  4: 2010   374  194622.1 female    Vorarlberg       19.883637
+##  5: 2010   440  253143.7   male      Salzburg        9.156964
+##  6: 2010   484  282307.3 female      Salzburg       17.939382
+##  7: 2010   517  268581.4   male     Carinthia       10.552149
+##  8: 2010   561  295066.6 female     Carinthia       15.392924
+##  9: 2010   650  339566.5   male         Tyrol       12.857542
+## 10: 2010   667  362332.5 female         Tyrol       17.604861
+## 11: 2010  1128  571011.7   male        Styria       11.671247
+## 12: 2010  1132  774405.4   male        Vienna       15.590616
+## 13: 2010  1167  596033.3 female        Styria       16.964539
+## 14: 2010  1190  824525.6 female        Vienna       18.778813
+## 15: 2010  1363  684272.5   male Upper Austria        9.074690
+## 16: 2010  1387  772593.2 female Lower Austria       16.372949
+## 17: 2010  1417  783115.8   male Lower Austria       11.348283
+## 18: 2010  1442  737347.5 female Upper Austria       12.574206
+## 19: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218
+##     stE_povertyRisk
+##  1:       3.2690518
+##  2:       3.2269725
+##  3:       2.3054104
+##  4:       3.3381588
+##  5:       0.7703249
+##  6:       1.0459533
+##  7:       1.2273479
+##  8:       1.1943011
+##  9:       1.6196821
+## 10:       2.0827838
+## 11:       1.1805175
+## 12:       1.9620115
+## 13:       0.8158820
+## 14:       2.0026863
+## 15:       1.0035774
+## 16:       0.9232083
+## 17:       0.9225737
+## 18:       0.7551254
+## 19:       0.4688685</code></pre>
 </div>
 <div id="option-3-cobination-of-option-1-and-option-2" class="section level4">
 <h4 class="hasAnchor">
@@ -923,294 +343,73 @@
 </ul>
 <p>The number of rows in the output is therefore</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.\]</span></p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
-<a class="sourceLine" id="cb18-2" title="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))</a>
-<a class="sourceLine" id="cb18-3" title="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<div class="kable-table">
-<table class="table">
-<thead><tr class="header">
-<th align="right">year</th>
-<th align="right">n</th>
-<th align="right">N</th>
-<th align="left">gender</th>
-<th align="left">region</th>
-<th align="right">val_povertyRisk</th>
-<th align="right">stE_povertyRisk</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">261</td>
-<td align="right">122741.8</td>
-<td align="left">male</td>
-<td align="left">Burgenland</td>
-<td align="right">17.414524</td>
-<td align="right">3.2690518</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">288</td>
-<td align="right">137822.2</td>
-<td align="left">female</td>
-<td align="left">Burgenland</td>
-<td align="right">21.432598</td>
-<td align="right">3.2269725</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">359</td>
-<td align="right">182732.9</td>
-<td align="left">male</td>
-<td align="left">Vorarlberg</td>
-<td align="right">12.973259</td>
-<td align="right">2.3054104</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">374</td>
-<td align="right">194622.1</td>
-<td align="left">female</td>
-<td align="left">Vorarlberg</td>
-<td align="right">19.883637</td>
-<td align="right">3.3381588</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">440</td>
-<td align="right">253143.7</td>
-<td align="left">male</td>
-<td align="left">Salzburg</td>
-<td align="right">9.156964</td>
-<td align="right">0.7703249</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">484</td>
-<td align="right">282307.3</td>
-<td align="left">female</td>
-<td align="left">Salzburg</td>
-<td align="right">17.939382</td>
-<td align="right">1.0459533</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">517</td>
-<td align="right">268581.4</td>
-<td align="left">male</td>
-<td align="left">Carinthia</td>
-<td align="right">10.552148</td>
-<td align="right">1.2273479</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">549</td>
-<td align="right">260564.0</td>
-<td align="left">NA</td>
-<td align="left">Burgenland</td>
-<td align="right">19.539836</td>
-<td align="right">3.0529974</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">561</td>
-<td align="right">295066.6</td>
-<td align="left">female</td>
-<td align="left">Carinthia</td>
-<td align="right">15.392924</td>
-<td align="right">1.1943011</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">650</td>
-<td align="right">339566.5</td>
-<td align="left">male</td>
-<td align="left">Tyrol</td>
-<td align="right">12.857542</td>
-<td align="right">1.6196821</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">667</td>
-<td align="right">362332.5</td>
-<td align="left">female</td>
-<td align="left">Tyrol</td>
-<td align="right">17.604861</td>
-<td align="right">2.0827838</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">733</td>
-<td align="right">377355.0</td>
-<td align="left">NA</td>
-<td align="left">Vorarlberg</td>
-<td align="right">16.537310</td>
-<td align="right">2.6190864</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">924</td>
-<td align="right">535451.0</td>
-<td align="left">NA</td>
-<td align="left">Salzburg</td>
-<td align="right">13.787343</td>
-<td align="right">0.8154710</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1078</td>
-<td align="right">563648.0</td>
-<td align="left">NA</td>
-<td align="left">Carinthia</td>
-<td align="right">13.086268</td>
-<td align="right">0.8655090</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1128</td>
-<td align="right">571011.7</td>
-<td align="left">male</td>
-<td align="left">Styria</td>
-<td align="right">11.671247</td>
-<td align="right">1.1805175</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1132</td>
-<td align="right">774405.4</td>
-<td align="left">male</td>
-<td align="left">Vienna</td>
-<td align="right">15.590616</td>
-<td align="right">1.9620115</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1167</td>
-<td align="right">596033.3</td>
-<td align="left">female</td>
-<td align="left">Styria</td>
-<td align="right">16.964539</td>
-<td align="right">0.8158820</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1190</td>
-<td align="right">824525.6</td>
-<td align="left">female</td>
-<td align="left">Vienna</td>
-<td align="right">18.778813</td>
-<td align="right">2.0026863</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1317</td>
-<td align="right">701899.0</td>
-<td align="left">NA</td>
-<td align="left">Tyrol</td>
-<td align="right">15.308191</td>
-<td align="right">1.5753152</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1363</td>
-<td align="right">684272.5</td>
-<td align="left">male</td>
-<td align="left">Upper Austria</td>
-<td align="right">9.074690</td>
-<td align="right">1.0035774</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1387</td>
-<td align="right">772593.2</td>
-<td align="left">female</td>
-<td align="left">Lower Austria</td>
-<td align="right">16.372949</td>
-<td align="right">0.9232083</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">1417</td>
-<td align="right">783115.8</td>
-<td align="left">male</td>
-<td align="left">Lower Austria</td>
-<td align="right">11.348283</td>
-<td align="right">0.9225737</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">1442</td>
-<td align="right">737347.5</td>
-<td align="left">female</td>
-<td align="left">Upper Austria</td>
-<td align="right">12.574205</td>
-<td align="right">0.7551254</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">2295</td>
-<td align="right">1167045.0</td>
-<td align="left">NA</td>
-<td align="left">Styria</td>
-<td align="right">14.374637</td>
-<td align="right">0.7958432</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">2322</td>
-<td align="right">1598931.0</td>
-<td align="left">NA</td>
-<td align="left">Vienna</td>
-<td align="right">17.234683</td>
-<td align="right">1.8651747</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">2804</td>
-<td align="right">1555709.0</td>
-<td align="left">NA</td>
-<td align="left">Lower Austria</td>
-<td align="right">13.843623</td>
-<td align="right">0.7735313</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">2805</td>
-<td align="right">1421620.0</td>
-<td align="left">NA</td>
-<td align="left">Upper Austria</td>
-<td align="right">10.889773</td>
-<td align="right">0.8575537</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">7267</td>
-<td align="right">3979571.7</td>
-<td align="left">male</td>
-<td align="left">NA</td>
-<td align="right">12.026600</td>
-<td align="right">0.5997306</td>
-</tr>
-<tr class="odd">
-<td align="right">2010</td>
-<td align="right">7560</td>
-<td align="right">4202650.3</td>
-<td align="left">female</td>
-<td align="left">NA</td>
-<td align="right">16.733508</td>
-<td align="right">0.4032427</td>
-</tr>
-<tr class="even">
-<td align="right">2010</td>
-<td align="right">14827</td>
-<td align="right">8182222.0</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">14.444218</td>
-<td align="right">0.4688685</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
+<a class="sourceLine" id="cb25-2" title="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))</a>
+<a class="sourceLine" id="cb25-3" title="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
+<pre><code>##     year     n         N gender        region val_povertyRisk
+##  1: 2010   261  122741.8   male    Burgenland       17.414524
+##  2: 2010   288  137822.2 female    Burgenland       21.432598
+##  3: 2010   359  182732.9   male    Vorarlberg       12.973259
+##  4: 2010   374  194622.1 female    Vorarlberg       19.883637
+##  5: 2010   440  253143.7   male      Salzburg        9.156964
+##  6: 2010   484  282307.3 female      Salzburg       17.939382
+##  7: 2010   517  268581.4   male     Carinthia       10.552149
+##  8: 2010   549  260564.0   &lt;NA&gt;    Burgenland       19.539837
+##  9: 2010   561  295066.6 female     Carinthia       15.392924
+## 10: 2010   650  339566.5   male         Tyrol       12.857542
+## 11: 2010   667  362332.5 female         Tyrol       17.604861
+## 12: 2010   733  377355.0   &lt;NA&gt;    Vorarlberg       16.537310
+## 13: 2010   924  535451.0   &lt;NA&gt;      Salzburg       13.787343
+## 14: 2010  1078  563648.0   &lt;NA&gt;     Carinthia       13.086268
+## 15: 2010  1128  571011.7   male        Styria       11.671247
+## 16: 2010  1132  774405.4   male        Vienna       15.590616
+## 17: 2010  1167  596033.3 female        Styria       16.964539
+## 18: 2010  1190  824525.6 female        Vienna       18.778813
+## 19: 2010  1317  701899.0   &lt;NA&gt;         Tyrol       15.308190
+## 20: 2010  1363  684272.5   male Upper Austria        9.074690
+## 21: 2010  1387  772593.2 female Lower Austria       16.372949
+## 22: 2010  1417  783115.8   male Lower Austria       11.348283
+## 23: 2010  1442  737347.5 female Upper Austria       12.574206
+## 24: 2010  2295 1167045.0   &lt;NA&gt;        Styria       14.374637
+## 25: 2010  2322 1598931.0   &lt;NA&gt;        Vienna       17.234683
+## 26: 2010  2804 1555709.0   &lt;NA&gt; Lower Austria       13.843623
+## 27: 2010  2805 1421620.0   &lt;NA&gt; Upper Austria       10.889773
+## 28: 2010  7267 3979571.7   male          &lt;NA&gt;       12.026600
+## 29: 2010  7560 4202650.3 female          &lt;NA&gt;       16.733508
+## 30: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218
+##     year     n         N gender        region val_povertyRisk
+##     stE_povertyRisk
+##  1:       3.2690518
+##  2:       3.2269725
+##  3:       2.3054104
+##  4:       3.3381588
+##  5:       0.7703249
+##  6:       1.0459533
+##  7:       1.2273479
+##  8:       3.0529974
+##  9:       1.1943011
+## 10:       1.6196821
+## 11:       2.0827838
+## 12:       2.6190864
+## 13:       0.8154710
+## 14:       0.8655090
+## 15:       1.1805175
+## 16:       1.9620115
+## 17:       0.8158820
+## 18:       2.0026863
+## 19:       1.5753152
+## 20:       1.0035774
+## 21:       0.9232083
+## 22:       0.9225737
+## 23:       0.7551254
+## 24:       0.7958432
+## 25:       1.8651747
+## 26:       0.7735313
+## 27:       0.8575537
+## 28:       0.5997306
+## 29:       0.4032427
+## 30:       0.4688685
+##     stE_povertyRisk</code></pre>
 </div>
 </div>
 </div>
@@ -1222,17 +421,8 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#prerequisites">Prerequisites</a></li>
-      <li>
-<a href="#estimator-functions">Estimator functions</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#custom-estimators">Custom estimators</a></li>
-      <li><a href="#multiple-estimators">Multiple estimators</a></li>
-      </ul>
-</li>
-      <li>
-<a href="#grouping">Grouping</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#several-grouping-variables">Several grouping variables</a></li>
-      </ul>
-</li>
+      <li><a href="#estimator-functions">Estimator functions</a></li>
+      <li><a href="#grouping">Grouping</a></li>
       </ul>
 </div>
       </div>

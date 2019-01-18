@@ -311,7 +311,8 @@ Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the pe
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>eusilcS</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"simPop"</span>)
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>eusilcS</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"simPop"</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>data.table</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/setDT'>setDT</a></span>(<span class='no'>eusilcS</span>)
 <span class='no'>eusilcS</span> <span class='kw'>&lt;-</span> <span class='no'>eusilcS</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>db030</span>,<span class='no'>hsize</span>,<span class='no'>db040</span>,<span class='no'>age</span>,<span class='no'>rb090</span>,<span class='no'>netIncome</span>,<span class='no'>db090</span>,<span class='no'>rb050</span>)]
@@ -324,196 +325,20 @@ Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the pe
 
 <span class='co'>## some recoding</span>
 <span class='co'># generate age groups</span>
-<span class='no'>eusilcS</span>[, <span class='no'>agegroup</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cut'>cut</a></span>(<span class='no'>age</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>10</span>*<span class='fl'>1</span>:<span class='fl'>9</span>, <span class='fl'>Inf</span>), <span class='kw'>right</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup
-#&gt;     1:  [70,80)
-#&gt;     2:  [60,70)
-#&gt;     3:  [50,60)
-#&gt;     4:  [60,70)
-#&gt;     5:  [70,80)
-#&gt;    ---         
-#&gt; 11721:  [60,70)
-#&gt; 11722:  [60,70)
-#&gt; 11723:  [50,60)
-#&gt; 11724:  [50,60)
-#&gt; 11725:  [50,60)</div><div class='input'><span class='co'># some recoding of netIncome for reasons of simplicity</span>
-<span class='no'>eusilcS</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>netIncome</span>), <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup
-#&gt;     1:  [70,80)
-#&gt;     2:  [60,70)
-#&gt;     3:  [50,60)
-#&gt;     4:  [60,70)
-#&gt;     5:  [70,80)
-#&gt;    ---         
-#&gt; 11721:  [60,70)
-#&gt; 11722:  [60,70)
-#&gt; 11723:  [50,60)
-#&gt; 11724:  [50,60)
-#&gt; 11725:  [50,60)</div><div class='input'><span class='no'>eusilcS</span>[<span class='no'>netIncome</span> <span class='kw'>&lt;</span> <span class='fl'>0</span>, <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup
-#&gt;     1:  [70,80)
-#&gt;     2:  [60,70)
-#&gt;     3:  [50,60)
-#&gt;     4:  [60,70)
-#&gt;     5:  [70,80)
-#&gt;    ---         
-#&gt; 11721:  [60,70)
-#&gt; 11722:  [60,70)
-#&gt; 11723:  [50,60)
-#&gt; 11724:  [50,60)
-#&gt; 11725:  [50,60)</div><div class='input'><span class='co'># set hsize to 1,...,5+</span>
-<span class='no'>eusilcS</span>[, <span class='no'>hsize</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cut'>cut</a></span>(<span class='no'>hsize</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0</span>:<span class='fl'>4</span>, <span class='fl'>Inf</span>), <span class='kw'>labels</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='st'>"5+"</span>))]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup
-#&gt;     1:  [70,80)
-#&gt;     2:  [60,70)
-#&gt;     3:  [50,60)
-#&gt;     4:  [60,70)
-#&gt;     5:  [70,80)
-#&gt;    ---         
-#&gt; 11721:  [60,70)
-#&gt; 11722:  [60,70)
-#&gt; 11723:  [50,60)
-#&gt; 11724:  [50,60)
-#&gt; 11725:  [50,60)</div><div class='input'><span class='co'># treat households as a factor variable</span>
-<span class='no'>eusilcS</span>[, <span class='no'>household</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>as.factor</a></span>(<span class='no'>household</span>)]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup
-#&gt;     1:  [70,80)
-#&gt;     2:  [60,70)
-#&gt;     3:  [50,60)
-#&gt;     4:  [60,70)
-#&gt;     5:  [70,80)
-#&gt;    ---         
-#&gt; 11721:  [60,70)
-#&gt; 11722:  [60,70)
-#&gt; 11723:  [50,60)
-#&gt; 11724:  [50,60)
-#&gt; 11725:  [50,60)</div><div class='input'>
+<span class='no'>eusilcS</span>[, <span class='no'>agegroup</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cut'>cut</a></span>(<span class='no'>age</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>10</span>*<span class='fl'>1</span>:<span class='fl'>9</span>, <span class='fl'>Inf</span>), <span class='kw'>right</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)]
+<span class='co'># some recoding of netIncome for reasons of simplicity</span>
+<span class='no'>eusilcS</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>netIncome</span>), <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]
+<span class='no'>eusilcS</span>[<span class='no'>netIncome</span> <span class='kw'>&lt;</span> <span class='fl'>0</span>, <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]
+<span class='co'># set hsize to 1,...,5+</span>
+<span class='no'>eusilcS</span>[, <span class='no'>hsize</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cut'>cut</a></span>(<span class='no'>hsize</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0</span>:<span class='fl'>4</span>, <span class='fl'>Inf</span>), <span class='kw'>labels</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='st'>"5+"</span>))]
+<span class='co'># treat households as a factor variable</span>
+<span class='no'>eusilcS</span>[, <span class='no'>household</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>as.factor</a></span>(<span class='no'>household</span>)]
+
 <span class='co'>## example for base weights assuming a simple random sample of households stratified per region</span>
-<span class='no'>eusilcS</span>[, <span class='no'>regSamp</span> <span class='kw'>:=</span> <span class='no'>.N</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup regSamp
-#&gt;     1:  [70,80)     779
-#&gt;     2:  [60,70)     779
-#&gt;     3:  [50,60)    2120
-#&gt;     4:  [60,70)    1859
-#&gt;     5:  [70,80)    2120
-#&gt;    ---                 
-#&gt; 11721:  [60,70)     927
-#&gt; 11722:  [60,70)     927
-#&gt; 11723:  [50,60)     927
-#&gt; 11724:  [50,60)    1789
-#&gt; 11725:  [50,60)    1789</div><div class='input'><span class='no'>eusilcS</span>[, <span class='no'>regPop</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>weight</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup regSamp    regPop
-#&gt;     1:  [70,80)     779  5344.346
-#&gt;     2:  [60,70)     779  5344.346
-#&gt;     3:  [50,60)    2120 14212.777
-#&gt;     4:  [60,70)    1859 11668.709
-#&gt;     5:  [70,80)    2120 14212.777
-#&gt;    ---                           
-#&gt; 11721:  [60,70)     927  5637.013
-#&gt; 11722:  [60,70)     927  5637.013
-#&gt; 11723:  [50,60)     927  5637.013
-#&gt; 11724:  [50,60)    1789 16006.860
-#&gt; 11725:  [50,60)    1789 16006.860</div><div class='input'><span class='no'>eusilcS</span>[, <span class='no'>baseWeight</span> <span class='kw'>:=</span> <span class='no'>regPop</span>/<span class='no'>regSamp</span>]</div><div class='output co'>#&gt;        household hsize         state age gender netIncome    db090   weight
-#&gt;     1:         1     2      Salzburg  72   male  22675.48 7.822929 7.822929
-#&gt;     2:         1     2      Salzburg  66 female  16999.29 7.822929 7.822929
-#&gt;     3:         2     1 Upper Austria  56 female  19274.21 8.788089 8.788089
-#&gt;     4:         3     1        Styria  67 female  13319.13 8.108452 8.108452
-#&gt;     5:         4     3 Upper Austria  70 female  14365.57 7.509383 7.509383
-#&gt;    ---                                                                     
-#&gt; 11721:      4639     2     Carinthia  60 female  11405.85 6.863162 6.863162
-#&gt; 11722:      4640     2     Carinthia  60   male  15476.11 6.863162 6.863162
-#&gt; 11723:      4640     2     Carinthia  55 female      0.00 6.863162 6.863162
-#&gt; 11724:      4641     2        Vienna  56   male  30367.92 8.772773 8.772773
-#&gt; 11725:      4641     2        Vienna  52 female   6368.93 8.772773 8.772773
-#&gt;        agegroup regSamp    regPop baseWeight
-#&gt;     1:  [70,80)     779  5344.346   6.860522
-#&gt;     2:  [60,70)     779  5344.346   6.860522
-#&gt;     3:  [50,60)    2120 14212.777   6.704140
-#&gt;     4:  [60,70)    1859 11668.709   6.276874
-#&gt;     5:  [70,80)    2120 14212.777   6.704140
-#&gt;    ---                                      
-#&gt; 11721:  [60,70)     927  5637.013   6.080920
-#&gt; 11722:  [60,70)     927  5637.013   6.080920
-#&gt; 11723:  [50,60)     927  5637.013   6.080920
-#&gt; 11724:  [50,60)    1789 16006.860   8.947379
-#&gt; 11725:  [50,60)    1789 16006.860   8.947379</div><div class='input'>
+<span class='no'>eusilcS</span>[, <span class='no'>regSamp</span> <span class='kw'>:=</span> <span class='no'>.N</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
+<span class='no'>eusilcS</span>[, <span class='no'>regPop</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>weight</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
+<span class='no'>eusilcS</span>[, <span class='no'>baseWeight</span> <span class='kw'>:=</span> <span class='no'>regPop</span>/<span class='no'>regSamp</span>]
+
 <span class='co'>## constraints on person level</span>
 <span class='co'># age</span>
 <span class='no'>conP1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>agegroup</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
@@ -531,12 +356,14 @@ Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the pe
 <span class='no'>epsH1</span>[<span class='st'>"5+"</span>,] <span class='kw'>&lt;-</span> <span class='fl'>0.2</span>
 
 <span class='co'># without array epsH1</span>
+
 <span class='no'>calibweights1</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf</span>(<span class='no'>eusilcS</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"household"</span>,
                       <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>, <span class='kw'>netIncome</span> <span class='kw'>=</span> <span class='no'>conP3</span>),
                       <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conH1</span>),
                       <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fl'>1e-06</span>, <span class='fl'>1e-06</span>, <span class='fl'>1e-03</span>),
                       <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
-                      <span class='kw'>bound</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,  <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>)</div><div class='output co'>#&gt; <span class='message'>10:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>10:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>10:Not yet converged for P-Constraint3</span></div><div class='output co'>#&gt; <span class='message'>20:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>20:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>30:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>30:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>40:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>40:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 43 steps </span></div><div class='input'>
+                      <span class='kw'>bound</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,  <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>)
+
 <span class='co'># with array epsH1, base weights and bound</span>
 <span class='no'>calibweights2</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf</span>(<span class='no'>eusilcS</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"household"</span>,
                       <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>),
@@ -544,42 +371,12 @@ Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the pe
                       <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>,
                       <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>epsH1</span>),
                       <span class='kw'>w</span> <span class='kw'>=</span> <span class='st'>"baseWeight"</span>,
-                      <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>)</div><div class='output co'>#&gt; <span class='message'>10:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>10:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>10:Not yet converged for H-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>20:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>20:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>30:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>30:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>40:Not yet converged for P-Constraint1</span></div><div class='output co'>#&gt; <span class='message'>40:Not yet converged for P-Constraint2</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 46 steps </span></div><div class='input'>
+                      <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>)
+
 <span class='co'># show an adjusted version of conP and the original</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP_adj"</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; agegroup
-#&gt;  [-Inf,10)    [10,20)    [20,30)    [30,40)    [40,50)    [50,60)    [60,70) 
-#&gt;  7990.8360  9830.0050  9901.6674 12100.3417 13978.4222 10999.9179  8597.5028 
-#&gt;    [70,80)    [80,90)  [90, Inf) 
-#&gt;  5311.5742  2796.6133   313.1196 
-#&gt; 
-#&gt; [[2]]
-#&gt;         state
-#&gt; gender   Burgenland Carinthia Lower Austria Salzburg   Styria    Tyrol
-#&gt;   male     1193.554  2793.544      7817.991 2645.441 5627.668 3389.482
-#&gt;   female   1407.260  2843.469      7752.320 2698.905 6041.041 3623.173
-#&gt;         state
-#&gt; gender   Upper Austria   Vienna Vorarlberg
-#&gt;   male        6994.741 7569.677   1850.917
-#&gt;   female      7218.038 8437.181   1915.598
-#&gt; </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP"</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; agegroup
-#&gt;  [-Inf,10)    [10,20)    [20,30)    [30,40)    [40,50)    [50,60)    [60,70) 
-#&gt;  7990.8432  9830.0105  9901.6665 12100.3345 13978.4171 10999.9180  8597.5030 
-#&gt;    [70,80)    [80,90)  [90, Inf) 
-#&gt;  5311.5743  2796.6133   313.1196 
-#&gt; 
-#&gt; [[2]]
-#&gt;         state
-#&gt; gender   Burgenland Carinthia Lower Austria Salzburg   Styria    Tyrol
-#&gt;   male     1193.555  2793.547      7817.994 2645.443 5627.671 3389.485
-#&gt;   female   1407.259  2843.466      7752.317 2698.904 6041.038 3623.170
-#&gt;         state
-#&gt; gender   Upper Austria   Vienna Vorarlberg
-#&gt;   male        6994.744 7569.680   1850.918
-#&gt;   female      7218.033 8437.181   1915.596
-#&gt; </div><div class='input'>
-</div></pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP_adj"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP"</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

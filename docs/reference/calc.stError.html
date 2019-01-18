@@ -464,7 +464,8 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># use a function from an other package that has sampling weights as its second argument</span>
 <span class='co'># for example gini() from laeken</span>
 
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>laeken</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: boot</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: MASS</span></div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>laeken</span>)
+
 <span class='co'>## set up help function that returns only the gini index</span>
 <span class='no'>help_gini</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>){
  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/function'>return</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/laeken/topics/gini'>gini</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)$<span class='no'>value</span>)
