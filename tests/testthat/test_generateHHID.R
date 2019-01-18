@@ -8,6 +8,9 @@ library(laeken)
 library(data.table)
 
 eusilc <- surveysd:::demo.eusilc()
+eusilc <- eusilc[!db040%in%c("Vienna","Lower Austria","Upper Austria")]
+
+
 eusilc[,rb030split:=rb030]
 # create spit households
 eusilc[,rb030split:=rb030]
@@ -20,7 +23,7 @@ for(y in year){
   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,
                              .(rb030=sample(rb030,20))]
   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
-  
+
   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
   leaf_out <- c(leaf_out,
                 eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
@@ -42,7 +45,7 @@ test_that("test para - hid, pid and period",{
                "rb030s is not a column of dat")
   expect_error(generate.HHID(eusilc,period="year",pid="rb030",hid="db030s"),
                "db030s is not a column of dat")
-  
+
   eusilc[,year.char:=as.character(year)]
   expect_error(generate.HHID(eusilc,period="year.char",pid="rb030",hid="db030"),
                "year.char must be an integer or numeric vector")
