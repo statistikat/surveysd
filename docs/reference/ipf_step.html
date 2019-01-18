@@ -193,32 +193,32 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
   <span class='kw'>household</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>classLabels</span>, <span class='no'>nobs</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 )
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  0.5205577         c
-#&gt; 2  2.6770281         a
-#&gt; 3  7.0644112         b
-#&gt; 4  3.4453868         b
-#&gt; 5  3.8267252         a
-#&gt; 6  0.8028524         b
-#&gt; 7  0.7911008         a
-#&gt; 8  6.2139009         a
-#&gt; 9  0.6293973         c
-#&gt; 10 1.2891310         b</div><div class='input'>
+#&gt; 1   2.185002         b
+#&gt; 2   1.147817         a
+#&gt; 3   1.529332         b
+#&gt; 4   1.545247         c
+#&gt; 5   1.055854         a
+#&gt; 6   4.878409         b
+#&gt; 7  10.265423         c
+#&gt; 8   3.566644         c
+#&gt; 9   2.616067         c
+#&gt; 10  1.283975         a</div><div class='input'>
 <span class='co'>## create targets (same lenght as classLabels!)</span>
 <span class='no'>targets</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>5</span>
 
 <span class='co'>## calculate weights</span>
 <span class='no'>new_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>new_weight</span>)</div><div class='output co'>#&gt;       weight household new_weight
-#&gt; 1  0.5205577         c  2.2633829
-#&gt; 2  2.6770281         a  0.5945096
-#&gt; 3  7.0644112         b  2.2423532
-#&gt; 4  3.4453868         b  1.0936190
-#&gt; 5  3.8267252         a  0.8498322
-#&gt; 6  0.8028524         b  0.2548378
-#&gt; 7  0.7911008         a  0.1756862
-#&gt; 8  6.2139009         a  1.3799719
-#&gt; 9  0.6293973         c  2.7366171
-#&gt; 10 1.2891310         b  0.4091901</div><div class='input'>
+#&gt; 1   2.185002         b  1.0171382
+#&gt; 2   1.147817         a  0.9873278
+#&gt; 3   1.529332         b  0.7119181
+#&gt; 4   1.545247         c  0.4293933
+#&gt; 5   1.055854         a  0.9082238
+#&gt; 6   4.878409         b  2.2709437
+#&gt; 7  10.265423         c  2.8525554
+#&gt; 8   3.566644         c  0.9910988
+#&gt; 9   2.616067         c  0.7269525
+#&gt; 10  1.283975         a  1.1044483</div><div class='input'>
 <span class='co'>## check solution</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>new_weight</span> ~ <span class='no'>dat</span>$<span class='no'>household</span>)</div><div class='output co'>#&gt; dat$household
 #&gt; a b c 
@@ -226,16 +226,16 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class='co'>## calculate weights "by reference"</span>
 <span class='fu'>ipf_step_ref</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  2.2633829         c
-#&gt; 2  0.5945096         a
-#&gt; 3  2.2423532         b
-#&gt; 4  1.0936190         b
-#&gt; 5  0.8498322         a
-#&gt; 6  0.2548378         b
-#&gt; 7  0.1756862         a
-#&gt; 8  1.3799719         a
-#&gt; 9  2.7366171         c
-#&gt; 10 0.4091901         b</div><div class='input'>
+#&gt; 1  1.0171382         b
+#&gt; 2  0.9873278         a
+#&gt; 3  0.7119181         b
+#&gt; 4  0.4293933         c
+#&gt; 5  0.9082238         a
+#&gt; 6  2.2709437         b
+#&gt; 7  2.8525554         c
+#&gt; 8  0.9910988         c
+#&gt; 9  0.7269525         c
+#&gt; 10 1.1044483         a</div><div class='input'>
 <span class='co'>############# multidimensional ipu ##############</span>
 
 <span class='co'>## load data</span>
@@ -248,16 +248,16 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class='no'>con</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(~<span class='no'>.</span>, <span class='no'>tips</span>)
 <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'>combine_factors</span>(<span class='no'>tips</span>, <span class='no'>con</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='no'>tips</span>, <span class='no'>cf</span>)[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>tips</span>), <span class='fl'>10</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),]</div><div class='output co'>#&gt;       time    sex smoker day cf
-#&gt; 3    Lunch   Male     No Tue 20
 #&gt; 2    Lunch   Male    Yes Mon  8
-#&gt; 2.1  Lunch   Male    Yes Mon  8
 #&gt; 1   Dinner Female     No Sun  9
-#&gt; 3.1  Lunch   Male     No Tue 20
+#&gt; 3    Lunch   Male     No Tue 20
 #&gt; 1.1 Dinner Female     No Sun  9
-#&gt; 3.2  Lunch   Male     No Tue 20
+#&gt; 2.1  Lunch   Male    Yes Mon  8
 #&gt; 2.2  Lunch   Male    Yes Mon  8
-#&gt; 3.3  Lunch   Male     No Tue 20
-#&gt; 3.4  Lunch   Male     No Tue 20</div><div class='input'>
+#&gt; 2.3  Lunch   Male    Yes Mon  8
+#&gt; 3.1  Lunch   Male     No Tue 20
+#&gt; 3.2  Lunch   Male     No Tue 20
+#&gt; 1.2 Dinner Female     No Sun  9</div><div class='input'>
 <span class='co'>## adjust weights</span>
 <span class='no'>weight</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>tips</span>)) + <span class='fl'>5</span>
 <span class='no'>adjusted_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>weight</span>, <span class='no'>cf</span>, <span class='no'>con</span>)
