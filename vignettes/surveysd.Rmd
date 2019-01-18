@@ -1,10 +1,13 @@
 ---
 title: "Introduction to surveysd"
-pkgdown:
-  as_is: true
+date: "`r Sys.Date()`"
 output: 
-  rmarkdown::html_document:
+  rmarkdown::html_vignette:
     df_print: kable
+vignette: >
+  %\VignetteIndexEntry{surveysd}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
