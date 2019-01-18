@@ -51,7 +51,7 @@
 #'
 
 
-generate.HHID <- function(dat,period="RB010",pid="RB030",hid="DB030"){
+generate.HHID <- function(dat, period = "RB010", pid = "RB030", hid = "DB030"){
 
   ID_new <- ID_orig <- ALL_NEW <- ID_new_help <- NULL
 
@@ -68,71 +68,77 @@ generate.HHID <- function(dat,period="RB010",pid="RB030",hid="DB030"){
   c.names <- colnames(dat)
 
   #
-  if(!is.character(period)){
+  if (!is.character(period)) {
     stop("period must be a string")
-  }else{
-    if(length(period)>1){
+  } else {
+    if (length(period) > 1) {
       stop("period must have length 1")
     }
-    if(!period%in%c.names){
-      stop(period," is not a column of dat")
+    if (!period %in% c.names) {
+      stop(period, " is not a column of dat")
     }
     if (!is.numeric(dat[[period]]) & !is.integer(dat[[period]])) {
-      stop(period," must be an integer or numeric vector")
+      stop(period, " must be an integer or numeric vector")
     }
   }
 
-  if(!is.character(pid)){
+  if (!is.character(pid)) {
     stop("pid must be a string")
   }else{
-    if(length(pid)>1){
+    if (length(pid) > 1) {
       stop("pid must have length 1")
     }
-    if(!pid%in%c.names){
-      stop(pid," is not a column of dat")
+    if (!pid %in% c.names) {
+      stop(pid, " is not a column of dat")
     }
   }
-  if(!is.character(hid)){
+  if (!is.character(hid)) {
     stop("hid must be a string")
-  }else{
-    if(length(hid)>1){
+  } else {
+    if (length(hid) > 1) {
       stop("hid must have length 1")
     }
-    if(!hid%in%c.names){
-      stop(hid," is not a column of dat")
+    if (!hid %in% c.names) {
+      stop(hid, " is not a column of dat")
     }
   }
 
   # create lookup table starting from first period
-  ID_lookup <- dt.eval("dat[",period,"==min(",period,"),.(",pid,",ID_orig=",hid,")]")
-  ID_lookup[,ID_new:=.GRP,by=ID_orig]
-  ID_lookup[,ID_orig:=NULL]
+  ID_lookup <- dt.eval("dat[", period, "==min(", period, "),.(", pid,
+                       ",ID_orig=", hid, ")]")
+  ID_lookup[, ID_new := .GRP, by = ID_orig]
+  ID_lookup[, ID_orig := NULL]
 
-  periods <- sort(dt.eval("dat[,unique(",period,")]"))
+  periods <- sort(dt.eval("dat[,unique(", period, ")]"))
 
-  for(i in periods[-1]){
+  for (i in periods[-1]) {
 
-    ID_lookup <- merge(ID_lookup,dt.eval("dat[",period,"==",i,",.(",pid,",ID_orig=",hid,")]"),by=pid,all=TRUE)
-    ID_lookup[!is.na(ID_orig),ALL_NEW:=all(is.na(ID_new)),by=ID_orig]
-    ID_lookup[ALL_NEW==FALSE,ID_new:=na.omit(ID_new)[1],by=ID_orig]
-    ID_next <- ID_lookup[,max(ID_new,na.rm=TRUE)]
-    ID_lookup[ALL_NEW==TRUE,ID_new:=.GRP+ID_next,by=ID_orig]
-    ID_lookup[,c("ID_orig","ALL_NEW"):=NULL]
+    ID_lookup <- merge(ID_lookup, dt.eval(
+      "dat[", period, "==", i, ",.(", pid, ",ID_orig=", hid, ")]"),
+      by = pid, all = TRUE)
+    ID_lookup[!is.na(ID_orig), ALL_NEW := all(is.na(ID_new)), by = ID_orig]
+    ID_lookup[ALL_NEW == FALSE, ID_new := na.omit(ID_new)[1], by = ID_orig]
+    ID_next <- ID_lookup[, max(ID_new, na.rm = TRUE)]
+    ID_lookup[ALL_NEW == TRUE, ID_new := .GRP + ID_next, by = ID_orig]
+    ID_lookup[, c("ID_orig", "ALL_NEW") := NULL]
   }
-  dat <- merge(dat,ID_lookup,by=pid)
+  dat <- merge(dat, ID_lookup, by = pid)
   # if ID not unique by hid and year
   # leave original grouping for this year
-  # this happens if household splits up and people move to already existing households
-  group_broke <- dt.eval("dat[,length(unique(ID_new)),by=list(",period,",",hid,")][V1>1,.(",period,",",hid,")]")
-  if(nrow(group_broke)>0){
-    setkeyv(dat,c(period,hid))
-    dt.eval("dat[group_broke,ID_new_help:=paste0(head(",hid,",1),'_1'),by=list(ID_new)]")
-    dat[is.na(ID_new_help),ID_new_help:=as.character(ID_new)]
-    dat[,ID_new:=.GRP,by=ID_new_help]
-    dat[,ID_new_help:=NULL]
+  # this happens if household splits up and people move to already existing
+  #   households
+  group_broke <- dt.eval("dat[,length(unique(ID_new)),by=list(", period, ",",
+                         hid, ")][V1>1,.(", period, ",", hid, ")]")
+  if (nrow(group_broke) > 0) {
+    setkeyv(dat, c(period, hid))
+    dt.eval("dat[group_broke,ID_new_help:=paste0(head(", hid,
+            ",1),'_1'),by=list(ID_new)]")
+    dat[is.na(ID_new_help), ID_new_help := as.character(ID_new)]
+    dat[, ID_new := .GRP, by = ID_new_help]
+    dat[, ID_new_help := NULL]
   }
 
-  setnames(dat,hid,paste0(hid,"_orig"))
-  setnames(dat,"ID_new",hid)
+  setnames(dat, hid, paste0(hid, "_orig"))
+  setnames(dat, "ID_new", hid)
   return(dat)
 }

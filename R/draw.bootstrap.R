@@ -117,11 +117,13 @@
 #'
 
 
-draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
-                           cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"),
-                           boot.names = NULL, split = FALSE, pid = NULL, new.method = FALSE){
+draw.bootstrap <- function(
+  dat, REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
+  cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
+    NULL, split = FALSE, pid = NULL, new.method = FALSE) {
 
-  occurence_first_period <- STRATA_VAR_HELP <- fpc <- ssd_hid <- ssd_period <- NULL
+  occurence_first_period <- STRATA_VAR_HELP <- fpc <- ssd_hid <-
+    ssd_period <- NULL
 
   ##########################################################
   # INPUT CHECKING
@@ -135,13 +137,13 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
   c.names <- colnames(dat)
 
   # check REP
-  if(length(REP)!=1){
+  if (length(REP) != 1) {
     stop("REP must have length 1")
   }
-  if(!is.numeric(REP)){
+  if (!is.numeric(REP)) {
     stop("REP must contain one numeric value")
   }
-  if(REP%%1!=0){
+  if (REP %% 1 != 0) {
     stop("REP cannot have a decimal part")
   }
 
@@ -151,22 +153,22 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
     hid <- "ssd_hid"
   }
 
-  if(length(hid)!=1){
+  if (length(hid) != 1) {
     stop("hid must have length 1")
   }
-  if(!hid%in%c.names){
-    stop(paste0(hid," is not a column in dat"))
+  if (!hid %in% c.names) {
+    stop(paste0(hid, " is not a column in dat"))
   }
 
   # check weights
-  if(length(weights)!=1){
+  if (length(weights) != 1) {
     stop("weights must have length 1")
   }
-  if(!weights%in%c.names){
-    stop(paste0(weights," is not a column in dat"))
+  if (!weights %in% c.names) {
+    stop(paste0(weights, " is not a column in dat"))
   }
-  if(!is.numeric(dt.eval("dat[,",weights,"]"))){
-    stop(paste0(weights," must be a numeric column"))
+  if (!is.numeric(dt.eval("dat[,", weights, "]"))) {
+    stop(paste0(weights, " must be a numeric column"))
   }
 
   # check period
@@ -175,142 +177,160 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
     period <- "ssd_period"
   }
 
-  if(length(period)!=1){
+  if (length(period) != 1) {
     stop("period must have length 1")
   }
-  if(!period%in%c.names){
-    stop(paste0(period," is not a column in dat"))
+  if (!period %in% c.names) {
+    stop(paste0(period, " is not a column in dat"))
   }
-  if(!is.numeric(dat[[period]]) & !is.integer(dat[[period]])) {
-    stop(paste0(period," is not an integer or numeric column"))
+  if (!is.numeric(dat[[period]]) & !is.integer(dat[[period]])) {
+    stop(paste0(period, " is not an integer or numeric column"))
   }
 
   # check design
-  if(is.null(strata)){
+  if (is.null(strata)) {
     strata <- "I"
   }
 
-  if(is.null(cluster)){
+  if (is.null(cluster)) {
     cluster <- hid
-  }else{
-    if(length(cluster)==1){
-      if(cluster%in%c("1","I")){
+  } else {
+    if (length(cluster) == 1) {
+      if (cluster %in% c("1", "I")) {
         cluster <- hid
       }
     }
-    if(!hid%in%cluster){
-      cluster <- c(cluster,hid)
+    if (!hid %in% cluster) {
+      cluster <- c(cluster, hid)
     }
   }
 
-  if(!all(strata[!strata%in%c("1","I")]%in%c.names)){
+  if (!all(strata[!strata %in% c("1", "I")] %in% c.names)) {
     stop("Not all elements in strata are column names in dat")
   }
-  if(any(!cluster[!cluster%in%c("1","I")]%in%c.names)){
+  if (any(!cluster[!cluster %in% c("1", "I")] %in% c.names)) {
     stop("Not all names in cluster are column names in dat")
   }
-  if(any(!totals%in%c.names)){
+  if (any(!totals %in% c.names)) {
     stop("Not all names in totals are column names in dat")
   }
 
   # check for missing values
-  spec.variables <- c(hid,weights,period,strata,cluster,totals,pid)
-  spec.variables <- spec.variables[!spec.variables%in%c("1","I")]
-  dat.na <- dat[,mget(spec.variables)]
-  dat.na <- sapply(dat.na,function(z){any(is.na(z))})
-  if(any(dat.na)){
-    stop("Missing values found in column(s): ", paste(names(dat.na[dat.na==TRUE]),collapse=", "))
+  spec.variables <- c(hid, weights, period, strata, cluster, totals, pid)
+  spec.variables <- spec.variables[!spec.variables %in% c("1", "I")]
+  dat.na <- dat[, mget(spec.variables)]
+  dat.na <- sapply(dat.na, function(z){
+    any(is.na(z))
+  })
+  if (any(dat.na)) {
+    stop("Missing values found in column(s): ",
+         paste(names(dat.na[dat.na == TRUE]), collapse = ", "))
   }
 
-  if(length(cluster)>1){
-    if(length(cluster)!=length(strata)){
-      stop("strata and cluster need to have the same number of stages!\n Please use either '1' or 'I' if there was no clustering or stratification in one of the stages.")
+  if (length(cluster) > 1) {
+    if (length(cluster) != length(strata)) {
+      stop("strata and cluster need to have the same number of stages!\n ",
+           "Please use either '1' or 'I' if there was no clustering or ",
+           "stratification in one of the stages.")
     }
   }else{
 
-    if(length(strata)>1){
-      if(any(c("1","I")%in%strata)){
-        stop("When defining multiple strata variables for single stage sampling design\n none of them can be '1' or 'I'.")
+    if (length(strata) > 1) {
+      if (any(c("1", "I") %in% strata)) {
+        stop("When defining multiple strata variables for single stage",
+             " sampling design\n none of them can be '1' or 'I'.")
       }
 
-      dt.eval("dat[,STRATA_VAR_HELP:=paste(",paste0(strata,collapse=","),",sep='-')]")
+      dt.eval("dat[,STRATA_VAR_HELP:=paste(", paste0(strata, collapse = ","),
+              ",sep='-')]")
       strata <- "STRATA_VAR_HELP"
     }
   }
 
   # check single.PSUs
   single.PSU <- single.PSU[1]
-  if(is.null(single.PSU)){
-    warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
-  }else{
-    if(!single.PSU%in%c("merge","mean")){
-      warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap replicates for single PSUs cases will be missing!")
+  if (is.null(single.PSU)) {
+    warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
+            " replicates for single PSUs cases will be missing!")
+  } else {
+    if (!single.PSU %in% c("merge", "mean")) {
+      warning("single.PSU was not set to either 'merge' or 'mean'!\n ",
+              "Bootstrap replicates for single PSUs cases will be missing!")
     }
   }
 
   # check boot.names
-  if(!is.null(boot.names)){
-    if(!grepl("^[[:alpha:]]",boot.names)){
+  if (!is.null(boot.names)) {
+    if (!grepl("^[[:alpha:]]", boot.names)) {
       stop("boot.names must start with an alphabetic character")
     }
   }
 
   # check split and pid
-  if(is.null(split)){
+  if (is.null(split)) {
     stop("split needs to be logical")
   }
-  if(!is.logical(split)){
+  if (!is.logical(split)) {
     stop("split needs to be logical")
   }
-  if(split){
-    if(!is.character(pid)){
+  if (split) {
+    if (!is.character(pid)) {
       stop("when split is TRUE pid needs to be a string")
-    }else{
-      if(length(pid)>1){
+    } else {
+      if (length(pid) > 1) {
         stop("pid can only have length 1")
-      }else{
-        if(!pid%in%c.names){
-          stop(pid,"is not a column of dat")
+      } else {
+        if (!pid %in% c.names) {
+          stop(pid, "is not a column of dat")
         }
       }
     }
     # check if pid is unique in each household and period
-    unique.pid <- dt.eval("dat[,uniqueN(",pid,")==.N,by=c(period,hid)][V1==FALSE]")
-    if(nrow(unique.pid)>0){
+    unique.pid <- dt.eval("dat[,uniqueN(", pid,
+                          ")==.N,by=c(period,hid)][V1==FALSE]")
+    if (nrow(unique.pid) > 0) {
       stop("pid is not unique in each household for each period")
     }
   }
 
   # check totals
-  # if clusters are specified the finite population correction factors must be user specified (at least for now)
+  # if clusters are specified the finite population correction factors must
+  #   be user specified (at least for now)
   # check input for totals
   # if no totals are specified then leave them NULL
-  if(is.null(totals)){
-    if(length(cluster)==1){
-      # if no clusters are specified calculate number of households in each strata
+  if (is.null(totals)) {
+    if (length(cluster) == 1) {
+      # if no clusters are specified calculate number of households in each
+      #   strata
       totals <- "fpc"
-      fpc.strata <- strata[!strata%in%c("I","1")]
-      dt.eval("dat[,fpc:=sum(",weights,"[!duplicated(",hid,")]),by=c(fpc.strata)]")
-    }else{
+      fpc.strata <- strata[!strata %in% c("I", "1")] # nolint
+      dt.eval("dat[,fpc:=sum(", weights, "[!duplicated(",
+              hid, ")]),by=c(fpc.strata)]")
+    } else {
       # else leave totals NULL
       # if(length(cluster)>1){
-      #   stop("If sample ist clusterd at multiple stages the number of Clusters at each stage must be specified!\n")
+      #   stop("If sample ist clusterd at multiple stages the number of
+      #         Clusters at each stage must be specified!\n")
       # }
       #
-      # warning("Number of Clusters is not specified and will therefor be roughly estimated.
-      #         \n Resulting bootstrap replicates might be biased. To avoid this define number of clusters in each strata through parameter 'totals'")
-      stop("For multistage sampling the number of PSUs at each level needs to be specified!")
+      # warning("Number of Clusters is not specified and will therefor be
+      #   roughly estimated.
+      #         \n Resulting bootstrap replicates might be biased. To avoid
+      #   this define number of clusters in each strata through parameter
+      #   'totals'")
+      stop("For multistage sampling the number of PSUs at each level needs to ",
+           "be specified!")
     }
     add.totals <- TRUE
-  }else{
+  } else {
 
-    if(length(totals)!=length(strata)){
+    if (length(totals) != length(strata)) {
       stop("totals must be specified for each stage")
     }
-    if(any(!totals%in%c.names)){
+    if (any(!totals %in% c.names)) {
       stop("Not all elements in totals are column names in dat")
     }
-    if(!any(unlist(dat[,lapply(.SD,is.numeric),.SDcols=c(totals)]))){
+    if (!any(unlist(dat[, lapply(.SD, is.numeric), .SDcols = c(totals)]))) {
       stop("Not all elements in totals are numeric columns in dat")
     }
 
@@ -320,46 +340,52 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
   ##########################################################
 
   # define sample design
-  strata <- paste(strata,collapse=">")
-  cluster <- paste(cluster,collapse=">")
-  totals <- paste(totals,collapse=">")
+  strata <- paste(strata, collapse = ">")
+  cluster <- paste(cluster, collapse = ">")
+  totals <- paste(totals, collapse = ">")
 
-  if(is.null(boot.names)){
-    w.names <- paste0("w",1:REP)
-  }else{
-    w.names <- paste0(boot.names,1:REP)
+  if (is.null(boot.names)) {
+    w.names <- paste0("w", 1:REP)
+  } else{
+    w.names <- paste0(boot.names, 1:REP)
   }
 
 
   # calculate bootstrap replicates
-  dat[,c(w.names):=rescaled.bootstrap(dat=copy(.SD),REP=REP,strata=strata,cluster=cluster,fpc=totals,single.PSU = single.PSU,return.value="replicates",check.input=FALSE,new.method=new.method),by=c(period)]
+  dat[, c(w.names) := rescaled.bootstrap(
+    dat = copy(.SD), REP = REP, strata = strata, cluster = cluster,
+    fpc = totals, single.PSU = single.PSU, return.value = "replicates",
+    check.input = FALSE, new.method = new.method), by = c(period)]
 
   # keep bootstrap replicates of first period for each household
-  if(split){
-    dat <- generate.HHID(dat,period=period,pid=pid,hid=hid)
+  if (split) {
+    dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
   }
 
-  dt.eval("dat[,occurence_first_period :=min(",period,"),by=c(hid)]")
-  select.first.occurence <- paste0(c(hid,w.names),collapse = ",")
-  dat.first.occurence <- unique(dt.eval("dat[",period,"==occurence_first_period,.(",select.first.occurence,")]"),by=hid)
-  dat[,c(w.names):=NULL]
-  dat <- merge(dat,dat.first.occurence,by=hid,all.x=TRUE)
-  dat[,occurence_first_period:=NULL]
+  dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid)]")
+  select.first.occurence <- paste0(c(hid, w.names), collapse = ",")
+  dat.first.occurence <- unique(
+    dt.eval("dat[", period, "==occurence_first_period,.(",
+            select.first.occurence, ")]"
+    ), by = hid)
+  dat[, c(w.names) := NULL]
+  dat <- merge(dat, dat.first.occurence, by = hid, all.x = TRUE)
+  dat[, occurence_first_period := NULL]
 
 
   # remove columns
-  if(split){
-    dt.eval("dat[,",hid,":=",paste0(hid,"_orig"),"]")
-    dat[,c(paste0(hid,"_orig")):=NULL]
+  if (split) {
+    dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
+    dat[, c(paste0(hid, "_orig")) := NULL]
   }
-  if(add.totals){
-    dt.eval("dat[,",totals,":=NULL]")
+  if (add.totals) {
+    dt.eval("dat[,", totals, ":=NULL]")
   }
-  if("STRATA_VAR_HELP"%in%colnames(dat)){
-    dat[,STRATA_VAR_HELP:=NULL]
+  if ("STRATA_VAR_HELP" %in% colnames(dat)) {
+    dat[, STRATA_VAR_HELP := NULL]
   }
-  if("fpc"%in%colnames(dat)){
-    dat[,fpc:=NULL]
+  if ("fpc" %in% colnames(dat)) {
+    dat[, fpc := NULL]
   }
 
   setattr(dat, "weights", weights)
@@ -369,5 +395,3 @@ draw.bootstrap <- function(dat, REP = 1000, hid = NULL, weights, period = NULL, 
 
   return(dat)
 }
-
-
