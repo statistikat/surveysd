@@ -36,6 +36,6 @@
 #'
 #' @aliases numericalWeighting
 #' @export computeFrac
-computeFrac <- function(curValue,target, x, w){
-  target/curValue
+computeFrac <- function(curValue, target, x, w){
+  target / curValue
 }

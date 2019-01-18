@@ -29,30 +29,33 @@
 #' @export
 demo.eusilc <- function(n = 8, prettyNames = FALSE) {
 
-  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <- . <-
-    povertyRisk <- ecoStat <- NULL
+  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <-
+    . <- povertyRisk <- ecoStat <- NULL
 
   data("eusilc", package = "laeken", envir = environment())
   setDT(eusilc)
   # generate yearly data for y years
   # 25% drop out from 1 year to the other
-  eusilc[,year := 2010]
+  eusilc[, year := 2010]
   eusilc.i <- copy(eusilc)
-  nsamp <- round(eusilc[, uniqueN(db030)]*.25)
+  nsamp <- round(eusilc[, uniqueN(db030)] * .25)
   hhincome <- eusilc[!duplicated(db030)][["eqIncome"]]
-  nextIDs <- (1:nsamp) + eusilc[ ,max(db030)]
+  nextIDs <- (1:nsamp) + eusilc[, max(db030)]
   if (n > 1)
-    for(i in 1:(n-1)) {
-      eusilc.i[db030%in%sample(unique(eusilc.i$db030), nsamp),
-               c("db030","eqIncome"):=.(nextIDs[.GRP], sample(hhincome, .N)),
+    for (i in 1:(n - 1)) {
+      eusilc.i[db030 %in% sample(unique(eusilc.i$db030), nsamp),
+               c("db030", "eqIncome") := .(nextIDs[.GRP], sample(hhincome, .N)),
                by = db030]
-      eusilc.i[,year := year + 1]
+      eusilc.i[, year := year + 1]
       eusilc <- rbind(eusilc, eusilc.i)
       nextIDs <- (1:nsamp) + eusilc[, max(db030)]
     }
 
-  eusilc[, rb030 := as.integer(paste0(db030, "0", 1:.N)), by = list(year, db030)]
-  eusilc[, povmd60 := as.numeric(eqIncome < .6 * laeken::weightedMedian(eqIncome, w = db090)), by = year]
+  eusilc[, rb030 := as.integer(paste0(db030, "0", 1:.N)),
+         by = list(year, db030)]
+  eusilc[, povmd60 := as.numeric(
+    eqIncome < .6 * laeken::weightedMedian(eqIncome, w = db090)
+  ), by = year]
   eusilc[, age := cut(age, c(-Inf, 16, 25, 45, 65, Inf))]
   eusilc[, hsize := cut(hsize, c(0:5, Inf))]
 
