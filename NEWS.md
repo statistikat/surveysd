@@ -1,6 +1,8 @@
 # surveysd 1.0.0
 
-* copy `simPop::ipu2()` and some related functions to surveysd. 
+* copy `simPop::ipu2()` and some related functions to surveysd.
+    * add bugfixes for ported functions
+* simplify tests
 * update references for the methodology vignette
 * fix sampling with full population in some strata
 
