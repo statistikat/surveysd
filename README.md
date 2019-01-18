@@ -2,7 +2,7 @@
 surveysd <img src="man/figures/logo.png" align="right" alt="" />
 ================================================================
 
-[![Build Status](https://travis-ci.org/statistikat/surveysd.svg?branch=master)](https://travis-ci.org/statistikat/surveysd) [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![GitHub last commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd/commits/master) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd)
+[![Build Status](https://travis-ci.org/statistikat/surveysd.svg?branch=master)](https://travis-ci.org/statistikat/surveysd) [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master) [![GitHub last commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd/commits/master) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg)](https://github.com/statistikat/surveysd)
 
 <!--
 [![Coverage Status](https://coveralls.io/repos/github/statistikat/surveysd/badge.svg?branch=master)](https://coveralls.io/github/statistikat/surveysd?branch=master)
