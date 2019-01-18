@@ -21,5 +21,10 @@ LinkingTo: Rcpp
 URL: https://github.com/statistikat/surveysd
 BugReports: https://github.com/statistikat/surveysd/issues
 RoxygenNote: 6.1.1
-Suggests: testthat, simPop
+Suggests: 
+    testthat,
+    simPop,
+    knitr,
+    rmarkdown
 Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr

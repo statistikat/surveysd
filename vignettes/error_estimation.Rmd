@@ -1,12 +1,15 @@
 ---
 title: "Error estimation"
-pkgdown:
-  as_is: true
-output:
-  rmarkdown::html_document:
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
     df_print: kable
     toc: true
     toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{error estimation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
