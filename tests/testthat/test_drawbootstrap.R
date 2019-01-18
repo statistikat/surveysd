@@ -63,7 +63,7 @@ test_that("test para - strata, cluster and totals",{
 
 
 # these are some longer tests
-if(Sys.info()["user"]=="ussenbauer"){
+if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
   test_that("test para - bootnames, split and pid",{
 
     expect_error(draw.bootstrap(eusilc,REP=2,hid="db030",weights="db090",period="year",strata="db040",split="FALSE"),
