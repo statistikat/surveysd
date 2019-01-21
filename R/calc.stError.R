@@ -450,7 +450,7 @@ calc.stError <- function(
 
   ##########################################################
   # setup parameters
-	# define columns in which NAs are present (will be discarded for
+  # define columns in which NAs are present (will be discarded for
   #   the evaluation)
 
 
@@ -559,7 +559,7 @@ calc.stError <- function(
 
   class(output) <- c("surveysd", class(output))
 
-	return(output)
+  return(output)
 }
 
 
@@ -572,17 +572,18 @@ help.stError <- function(
 
   N <- variable <- est_type <- est <- V1 <- n <- ID <- sd <- . <- size <-
 
-  # create point estimate for subnational result in relation to national level
-  if (national) {
-    national.arg <- c("Nat[1]")
-    dt.eval("dat[,Nat:=fun(", var, ",", weights, add.arg, "),by=list(",
-            period, ")]")
+    # create point estimate for subnational result in relation to national level
+    if (national) {
+      national.arg <- c("Nat[1]")
+      dt.eval("dat[,Nat:=fun(", var, ",", weights, add.arg, "),by=list(",
+              period, ")]")
 
-    # create new functions which divides by national level
-    fun_original <- fun # nolint
-    fun <- dt.eval("function(", paste0(formalArgs(fun), collapse = ","),
-                   ",national.arg){fun_original(x,w,add.arg)/national.arg*100}")
-  }
+      # create new functions which divides by national level
+      fun_original <- fun # nolint
+      fun <- dt.eval(
+        "function(", paste0(formalArgs(fun), collapse = ","),
+        ",national.arg){fun_original(x,w,add.arg)/national.arg*100}")
+    }
 
   # define names for estimates for each weight (normal weights and boostrap
   #  weights)
@@ -840,7 +841,7 @@ help.stError <- function(
         # calcualte N and n for groups and diff
         diff.roll.Nn <- lapply(period.diff.mean, function(y){
           y_cond <- paste(period, paste0("c(", paste(unlist(y), collapse = ","),
-                                        ")"), sep = "%in%")
+                                         ")"), sep = "%in%")
           diff.y <- dt.eval("var.est[ID==1&est==var[1]&", y_cond,
                             ",.(n=mean(n),N=mean(N)),by=list(", by.diff, ")]")
           diff.y[, c(period) := paste0(paste(y[[i.diff.mean]], collapse = "-"),
