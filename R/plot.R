@@ -393,9 +393,9 @@ define_type <- function(plot.x, x, variable = "HX080"){
   # merge data
   merge.on <- copy(colnames(x$smallGroups))
   x$smallGroups[, SMALLGROUP := TRUE]
-  plot.x <- x$smallGroups[plot.x,, on = c(merge.on)]
+  plot.x <- x$smallGroups[plot.x,, on = c(merge.on)] # nolint
   merge.on <- unique(c(x$param$period, unlist(x$param$group)))
-  plot.x <- x$cvHigh[plot.x,, on = c(merge.on)]
+  plot.x <- x$cvHigh[plot.x,, on = c(merge.on)] # nolint
 
   # define type
   plot.x[!is.na(SMALLGROUP) & get(variable) == FALSE, res_type := "SmallGroup"]
