@@ -13,11 +13,8 @@ eusilc <- eusilc[!db040 %in% c("Vienna", "Lower Austria", "Upper Austria")]
 
 eusilc <- draw.bootstrap(eusilc, REP = 2, hid = "db030", weights = "db090",
                          period = "year", strata = "db040")
-eusilc <- recalib(eusilc, hid = "db030", weights = "db090",
-                  b.rep = paste0("w", 1:2), period = "year",
-                  conP.var = "rb090", conH.var = "db040")
-res <- calc.stError(eusilc, weights = "db090", b.weights = paste0("w", 1:2),
-                    period = "year", var = "povmd60", group =
+eusilc <- recalib(eusilc, conP.var = "rb090", conH.var = "db040")
+res <- calc.stError(eusilc, var = "povmd60", group =
                       list("rb090", "db040", c("rb090", "db040"), "hsize"))
 
 # test input parameter

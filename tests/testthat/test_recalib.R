@@ -14,73 +14,51 @@ eusilc <- draw.bootstrap(eusilc, REP = 2, hid = "db030", weights = "db090",
 # test input parameter
 test_that("test para - data", {
   expect_error(
-    recalib(
-      as.matrix(eusilc), hid = "db030", weights = "db090",
-      b.rep = paste0("w", 1:2), period = "year",
-      conP.var = "rb090", conH.var = "db040"),
+    recalib(as.matrix(eusilc), conP.var = "rb090", conH.var = "db040"),
     "dat must be a data.frame or data.table")
   expect_error(recalib(
-    eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-    period = "year", conP.var = "rb090", conH.var = "db040"), NA)
+    eusilc, conP.var = "rb090", conH.var = "db040"), NA)
   expect_error(recalib(
-    eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-    period = "year", conP.var = c("rb090", "age"),
-    conH.var = c("db040", "hsize")), NA)
+    eusilc, conP.var = c("rb090", "age"), conH.var = c("db040", "hsize")), NA)
 })
 
 test_that("test para - REP", {
   expect_error(
-    recalib(
-      eusilc, hid = "db030", weights = "db090", b.rep = "a", period = "year",
-      conP.var = "rb090", conH.var = "db040"),
+    recalib(eusilc, b.rep = "a", conP.var = "rb090", conH.var = "db040"),
     "Not all elements in b.rep are column names in dat")
   expect_error(
-    recalib(
-      eusilc, hid = "db030", weights = "db090", b.rep = 1:2, period = "year",
-      conP.var = "rb090", conH.var = "db040"),
+    recalib(eusilc, b.rep = 1:2, conP.var = "rb090", conH.var = "db040"),
     "Not all elements in b.rep are column names in dat")
 })
 
 test_that("test para - hid, weights and period", {
   expect_error(
-    recalib(
-      eusilc, hid = "db030s", weights = "db090", b.rep = paste0("w", 1:2),
-      period = "year", conP.var = "rb090", conH.var = "db040"),
+    recalib(eusilc, hid = "db030s", conP.var = "rb090", conH.var = "db040"),
     "db030s is not a column in dat")
   expect_error(
-    recalib(
-      eusilc, hid = "db030", weights = "db090s", b.rep = paste0("w", 1:2),
-      period = "year", conP.var = "rb090", conH.var = "db040"),
+    recalib(eusilc, weights = "db090s", conP.var = "rb090", conH.var = "db040"),
     "db090s is not a column in dat")
   expect_error(
-    recalib(eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-            period = "years", conP.var = "rb090", conH.var = "db040"),
+    recalib(eusilc, period = "years", conP.var = "rb090", conH.var = "db040"),
     "years is not a column in dat")
 })
 
 test_that("test para - conP.var conH.var", {
 
   expect_error(
-    recalib(
-      eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-      period = "year", conP.var = "rb090s", conH.var = "db040"),
+    recalib(eusilc, conP.var = "rb090s", conH.var = "db040"),
     "Not all elements in conP.var are column names in dat")
   expect_error(
-    recalib(
-      eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-      period = "year", conP.var = "rb090", conH.var = "db040s"),
+    recalib(eusilc, conP.var = "rb090", conH.var = "db040s"),
     "Not all elements in conH.var are column names in dat")
 
   expect_error(recalib(
-    eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2), period =
-      "year", conP.var = NULL, conH.var = "db040"), NA)
+    eusilc, conP.var = NULL, conH.var = "db040"), NA)
   expect_error(recalib(
-    eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2), period =
-      "year", conP.var = "rb090", conH.var = NULL), NA)
+    eusilc, conP.var = "rb090", conH.var = NULL), NA)
   expect_error(
     recalib(
-      eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-      period = "year", conP.var = NULL, conH.var = NULL),
+      eusilc, conP.var = NULL, conH.var = NULL),
     "conH.var and conP.var cannot both be NULL")
 })
 
