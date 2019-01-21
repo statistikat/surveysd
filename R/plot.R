@@ -207,7 +207,7 @@ plot.surveysd <- function(
       ste_bool_mean2 <- paste0(ste_bool_mean, "2")
 
       dt.eval("plot.group1.periodmean[,", period, ":=tstrsplit(", period,
-              ",split='_',keep=", round( (x$param$period.mean + 1) / 2), ")]")
+              ",split='_',keep=", round((x$param$period.mean + 1) / 2), ")]")
 
       setnames(plot.group1.periodmean, c(ste_var, ste_bool),
                c(ste_var_mean, ste_bool_mean))
@@ -221,7 +221,7 @@ plot.surveysd <- function(
         all.x = TRUE)
 
       dt.eval("plot.group2.periodmean[,", period, ":=tstrsplit(", period,
-              ",split='_',keep=", round( (x$param$period.mean + 1) / 2), ")]")
+              ",split='_',keep=", round((x$param$period.mean + 1) / 2), ")]")
 
       setnames(plot.group2.periodmean, c(ste_var, ste_bool),
                c(ste_var_mean, ste_bool_mean))

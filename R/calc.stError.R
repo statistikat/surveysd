@@ -493,7 +493,7 @@ calc.stError <- function(
                                               "size", p.names)]
   # get meta data like stE_high - size - increase in effektive sample size
   # flag stE if values are especially high
-  outx[, stE_high := ( (stE / val) * 100) > cv.limit]
+  outx[, stE_high := ((stE / val) * 100) > cv.limit]
 
   # create bool matrix for stE_high
   sd_bool <- subset(
@@ -521,7 +521,7 @@ calc.stError <- function(
 
     samp_eff <- merge(samp_eff, outx[, mget(c("stE", "n", same_names))],
                       by = same_names)
-    samp_eff[, n_inc := ( (stE / stE_roll) ^ 2 - 1) * n]
+    samp_eff[, n_inc := ((stE / stE_roll) ^ 2 - 1) * n]
     samp_eff[, c(paste0(period, "_roll"), "stE_roll", "stE", "n") := NULL]
   } else {
     samp_eff <- NULL
@@ -644,7 +644,7 @@ help.stError <- function(
       periodsList <- unlist(lapply(
         periods[1:c(length(periods) - period.mean + 1)],
         function(z) {
-          if (!( (z + period.mean - 1) > max(periods))) {
+          if (!((z + period.mean - 1) > max(periods))) {
             paste(z:c(z + period.mean - 1), collapse = "_")
           }
         }

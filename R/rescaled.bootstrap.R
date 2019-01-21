@@ -354,7 +354,7 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
   }
 
   if (!is.null(sum_prev)) {
-    n_draw <- (sum_prev) ^ 2 / ( (1 - (n / N) ) * n_prev * f +
+    n_draw <- (sum_prev) ^ 2 / ((1 - (n / N)) * n_prev * f +
                                    (sum_prev) ^ 2) * n
     n_draw <- floor(n_draw)
   } else {
@@ -390,7 +390,7 @@ calc.replicate <- function(n, N, n_draw, delta) {
       rep_out <- 1 - lambda + lambda * n[, i] / n_draw[, i] * delta[, i, ]
     } else if (i == 2) {
       lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i] + 1)
-      lambda <- sqrt( (n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
+      lambda <- sqrt((n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
       rep_out <- rep_out + lambda *
         (sqrt(n[, i - 1] / n_draw[, i - 1]) * delta[, i - 1, ]) *
         (n[, i] / n_draw[, i] * delta[, i, ] - 1)
