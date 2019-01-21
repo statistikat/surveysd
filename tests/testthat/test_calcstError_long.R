@@ -5,8 +5,7 @@
 
 context("calc.stError() long")
 
-if (TRUE) {
-  #Sys.info()["user"]=="kowarik"){
+if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
   library(surveysd)
   library(laeken)
   library(data.table)
@@ -18,7 +17,7 @@ if (TRUE) {
     eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
     period = "year", conP.var = "rb090", conH.var = "db040")
 
-# these are some longer tests
+  # these are some longer tests
 
   test_that("test para -  var and fun", {
 
@@ -26,19 +25,16 @@ if (TRUE) {
 
     expect_error(
       calc.stError(
-        eusilc, weights = "db090", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60s", group = c("rb090", "db040")),
+        eusilc, var = "povmd60s", group = c("rb090", "db040")),
       "Not all elements in var are column names in dat")
 
     eusilc[sample(.N, 100), povmd60NA := NA]
     expect_error(calc.stError(
-      eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
-      var = "povmd60NA", group = c("rb090", "db040")), NA)
+      eusilc, var = "povmd60NA", group = c("rb090", "db040")), NA)
 
     expect_error(
       calc.stError(
-        eusilc, weights = "db090", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = myfun.undefined, group =
+        eusilc, var = "povmd60", fun = myfun.undefined, group =
           c("rb090", "db040")),
       "object 'myfun.undefined' not found")
 
@@ -53,24 +49,19 @@ if (TRUE) {
     }
 
     expect_error(calc.stError(
-      eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
-      var = "povmd60NA", fun = myfun, group = c("rb090", "db040")), NA)
+      eusilc, var = "povmd60NA", fun = myfun, group = c("rb090", "db040")), NA)
     expect_error(calc.stError(
-      eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
-      var = "povmd60", fun = myfun, group = c("rb090", "db040")), NA)
+      eusilc, var = "povmd60", fun = myfun, group = c("rb090", "db040")), NA)
 
     expect_error(
       calc.stError(
-        eusilc, weights = "db090", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = myfun.char, group =
+        eusilc, var = "povmd60", fun = myfun.char, group =
           c("rb090", "db040")),
       "Function in fun does not return integer or numeric value")
 
     expect_error(
-      calc.stError(
-        eusilc, weights = "db090", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = myfun.mulval, group =
-          c("rb090", "db040")),
+      calc.stError(eusilc, var = "povmd60", fun = myfun.mulval,
+                   group = c("rb090", "db040")),
       paste("Function in fun does return more than one value. Only functions",
             "which return a single value are allowed."))
 
@@ -78,8 +69,8 @@ if (TRUE) {
       laeken::gini(x, w)$value
     }
     expect_error(calc.stError(
-      eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
-      var = "eqIncome", fun = help_gini, group = c("rb090", "db040")), NA)
+      eusilc, var = "eqIncome", fun = help_gini, group = c("rb090", "db040")),
+      NA)
 
   })
 
@@ -121,8 +112,8 @@ if (TRUE) {
     }
 
     expect_error(calc.stError(
-      eusilc, weights = "rb050", b.weights = paste0("w", 1:2),
-      period = "year", var = "povmd60", fun = weightedRatio,
+      eusilc, weights = "rb050",
+      var = "povmd60", fun = weightedRatio,
       group = group, fun.adjust.var = povmd, adjust.var = "eqIncome"), NA)
 
     myfun.char <- function(x, w) {
@@ -130,36 +121,31 @@ if (TRUE) {
     }
     expect_error(
       calc.stError(
-        eusilc, weights = "rb050", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = weightedRatio, group = group,
-        fun.adjust.var = myfun.char, adjust.var = "eqIncome"),
+        eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
+          group, fun.adjust.var = myfun.char, adjust.var = "eqIncome"),
       "Function in fun.adjust.var does not return integer or numeric value")
 
     expect_error(
       calc.stError(
-        eusilc, weights = "rb050", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = weightedRatio, group = group,
-        fun.adjust.var = povmd, adjust.var = 1),
+        eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
+          group, fun.adjust.var = povmd, adjust.var = 1),
       "adjust.var needs to be a character")
     expect_error(
       calc.stError(
-        eusilc, weights = "rb050", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = weightedRatio, group = group,
-        fun.adjust.var = povmd, adjust.var = "1"),
+        eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
+          group, fun.adjust.var = povmd, adjust.var = "1"),
       "adjust.var must be a column name in dat")
     expect_error(
       calc.stError(
-        eusilc, weights = "rb050", b.weights = paste0("w", 1:2), period =
-          "year", var = "povmd60", fun = weightedRatio, group = group,
-        fun.adjust.var = povmd, adjust.var = c("eqIncome", "1")),
+        eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
+          group, fun.adjust.var = povmd, adjust.var = c("eqIncome", "1")),
       "adjust.var can only be a single variable name")
 
 
     # compare fun.adjust.var with results not using fun.adjust.var
     err.est <- calc.stError(
-      eusilc, weights = "rb050", b.weights = paste0("w", 1:2), period = "year",
-      var = "povmd60", fun = weightedRatio, group = group, fun.adjust.var =
-        povmd, adjust.var = "eqIncome")
+      eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
+        group, fun.adjust.var = povmd, adjust.var = "eqIncome")
     povmd2 <- function(x, w) {
       md <- laeken::weightedMedian(x, w) * 0.6
       pmd60 <- x < md
@@ -168,9 +154,8 @@ if (TRUE) {
     }
 
     err.est.different <- calc.stError(
-      eusilc, weights = "rb050", b.weights = paste0("w", 1:2), period = "year",
-      var = "eqIncome", fun = povmd2, group = group, fun.adjust.var = NULL,
-      adjust.var = NULL)
+      eusilc, weights = "rb050", var = "eqIncome", fun = povmd2, group = group,
+      fun.adjust.var = NULL, adjust.var = NULL)
 
     expect_true(all.equal(
       err.est.different$Estimates[is.na(rb090) & is.na(db040),
@@ -200,22 +185,20 @@ if (TRUE) {
     add.arg <- list(b = "onePerson", c = "randNumber")
     expect_error(
       calc.stError(
-        eusilc, weights = "db090", b.weights = paste0("w", 1:2), period =
-          "year", var = "eqIncome", fun = fun, group = c("rb090", "db040"),
+        eusilc,  var = "eqIncome", fun = fun, group = c("rb090", "db040"),
         add.arg = add.arg),
       "c not argument\\(s\\) of supplied function.")
 
     add.arg <- list(b = "onePerson", a = "abcde")
     expect_error(
       calc.stError(
-        eusilc, weights = "db090", b.weights = paste0("w", 1:2), period =
-          "year", var = "eqIncome", fun = fun, group = c("rb090", "db040"),
+        eusilc, var = "eqIncome", fun = fun, group = c("rb090", "db040"),
         add.arg = add.arg),
       "abcde not in column names of dat.")
 
     add.arg <- list(b = "onePerson", a = "randNumber")
     res_1 <- calc.stError(
-      eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
+      eusilc,
       var = "eqIncome", fun = fun, group = c("rb090", "db040"),
       add.arg = add.arg)
 
@@ -224,7 +207,7 @@ if (TRUE) {
     }
 
     res_2 <- calc.stError(
-      eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
+      eusilc,
       var = "eqIncome", fun = fun, group = list(c("rb090", "db040")),
       add.arg = add.arg)
     res_2 <- res_2$Estimates[
