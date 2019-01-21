@@ -189,7 +189,7 @@ if (TRUE) {
 
   test_that("test para -  add.arg", {
 
-    fun <- function (x, w, b, a) {
+    fun <- function(x, w, b, a) {
       sum(x * w * b)
     }
     add.arg <- list(b = "onePerson", c = "randNumber")

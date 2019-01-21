@@ -18,7 +18,7 @@ getMeanFun <- function(meanHH) {
     meanHH <- "arithmetic"
   if (identical(meanHH, FALSE))
     meanHH <- "none"
-  meanfun <- switch (meanHH,
+  meanfun <- switch(meanHH,
     arithmetic = arithmetic_mean,
     geometric = geometric_mean,
     none = function(x, w){
@@ -52,10 +52,10 @@ kishFactor <- function(w){
 boundsFak <- function(g1, g0, f, bound = 4){
   # Berechnet die neuen Gewichte (innerhalb 4, .25 Veraenderungsraten)
   g1 <- g1 * f
-  TF <- which( (g1 / g0) > bound)
+  TF <- which((g1 / g0) > bound)
   TF[is.na(TF)] <- FALSE
   g1[TF] <- bound * g0[TF]
-  TF <- which( (g1 / g0) < (1 / bound))
+  TF <- which((g1 / g0) < (1 / bound))
   TF[is.na(TF)] <- FALSE
   g1[TF] <- (1 / bound) * g0[TF]
   return(g1)
@@ -71,9 +71,9 @@ boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4){
   g1[pbo] <- g1[pbo] * o[pbo] / p[pbo]
   g1[psu] <- g1[psu] * u[psu] / p[psu]
 
-  TF <- which( (g1 / g0) > bound)
+  TF <- which((g1 / g0) > bound)
   g1[TF] <- bound * g0[TF]
-  TF <- which( (g1 / g0) < (1 / bound))
+  TF <- which((g1 / g0) < (1 / bound))
   g1[TF] <- (1 / bound) * g0[TF]
   return(g1)
 }
@@ -289,7 +289,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
   # add calibrated weights. Use setkey to make sure the indexes match
   setkey(dat, OriginalSortingVariable)
 
-  if ( (maxIter < calIter) & returnNA)
+  if ((maxIter < calIter) & returnNA)
     outTable[, calibWeight := NA]
   else
     outTable[, calibWeight := dat$calibWeight]
@@ -522,9 +522,9 @@ ipf <- function(
       w <- "baseWeight_safekeeping"
   }
   ### Treatment of HID, creating 0,1 var for being the first hh member
-  delVars <- c()
+  #delVars <- c()
   if (is.null(hid)) {
-    delVars <- c("hid")
+    #delVars <- c("hid")
     hid <- "hid"
     dat[, hid := 1:nrow(dat)]
     dat[, wvst := 1]
@@ -639,14 +639,14 @@ ipf <- function(
       if (is.array(epsP[[i]])) {
         combined_factors <- dat[[paste0("combined_factors_", i)]]
         tmp <- as.vector(epsP[[i]][combined_factors])
-        dat[, paste0("epsP_", i) := tmp ]
+        dat[, paste0("epsP_", i) := tmp]
       } else {
-        dat[, paste0("epsP_", i) := epsP[[i]] ]
+        dat[, paste0("epsP_", i) := epsP[[i]]]
       }
     }
   } else {
     for (i in seq_along(conP)) {
-      dat[, paste0("epsP_", i) := epsP ]
+      dat[, paste0("epsP_", i) := epsP]
     }
   }
   if (is.list(epsH)) {
@@ -654,14 +654,14 @@ ipf <- function(
       if (is.array(epsH[[i]])) {
         combined_factors <- dat[[paste0("combined_factors_h_", i)]]
         tmp <- as.vector(epsH[[i]][combined_factors])
-        dat[, paste0("epsH_", i) := tmp ]
+        dat[, paste0("epsH_", i) := tmp]
       } else {
-        dat[, paste0("epsH_", i) := epsH[[i]] ]
+        dat[, paste0("epsH_", i) := epsH[[i]]]
       }
     }
   } else {
     for (i in seq_along(conH)) {
-      dat[, paste0("epsH_", i) := epsH ]
+      dat[, paste0("epsH_", i) := epsH]
     }
   }
   ###Calib
