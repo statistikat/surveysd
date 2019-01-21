@@ -1,11 +1,17 @@
 language: r
-r:
-  - release
-  - devel
 cache: packages
 
-after_success:
-  - Rscript -e 'install.packages("covr");library(covr);coveralls()'
+matrix:
+  include:
+    - r: devel
+    - r: release
+      r_github_packages:
+      - r-lib/covr
+      - jimhester/lintr
+      after_success:
+      - R CMD INSTALL $PKG_TARBALL
+      - Rscript -e 'covr::coveralls()'
+      - Rscript -e 'lintr::lint_package()'
 
 notifications:
   email:

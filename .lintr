@@ -1,0 +1,4 @@
+linters: with_defaults(
+  object_name_linter = NULL,
+  commented_code_linter = NULL)
+exclusions: list("R/RcppExports.R")
