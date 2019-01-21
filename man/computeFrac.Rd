@@ -52,4 +52,6 @@ where \code{a} and \code{b} are chosen, so f satisfies the following two equatio
 \ifelse{html}{
   \out{<center>&sum; f<sub>i</sub> w<sub>i</sub> = &sum; w<sub>i</sub></center>}
 }{\deqn{\sum f_i * w_i = \sum w_i}}
+
+\code{computeLinearG1} calculates \code{f} in the same way as \code{computeLinear}, but if \code{f_i*w_i<1} \code{f_i} will be set to \code{1/w_i}.
 }
