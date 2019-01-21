@@ -25,6 +25,8 @@
 #' }{\deqn{\sum f_i * w_i = \sum w_i}}
 #'
 # \eqn{\sum}\out{f<sub>i</sub> w<sub>i</sub> x<sub>i</sub>} = `target`
+#' `computeLinearG1` calculates `f` in the same way as `computeLinear`, but if `f_i*w_i<1` `f_i` will be set to `1/w_i`.
+#'
 #' @md
 #' @param curValue Current summed up value. Same as `sum(x*w)`
 #' @param target Target value. An element of `conP` in [ipf]
