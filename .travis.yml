@@ -8,10 +8,15 @@ matrix:
       r_github_packages:
       - r-lib/covr
       - jimhester/lintr
+      - r-lib/pkgdown
       after_success:
       - R CMD INSTALL $PKG_TARBALL
       - Rscript -e 'covr::coveralls()'
       - Rscript -e 'lintr::lint_package()'
+      deploy:
+        provider: script
+        script: Rscript -e 'pkgdown::deploy_site_github()'
+        skip_cleanup: true
 
 notifications:
   email:
