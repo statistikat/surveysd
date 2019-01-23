@@ -1,6 +1,9 @@
 language: r
 cache: packages
 
+env:
+  - SURVEYSD_ADDITIONAL_TEST = FALSE
+
 matrix:
   include:
     - r: devel
