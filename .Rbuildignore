@@ -1,10 +1,8 @@
 ^Meta$
 ^doc$
-^docs$
-^pkgdown
-^_pkgdown\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .travis.yml
 README.Rmd
 LICENSE
+.lintr
