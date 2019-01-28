@@ -11,10 +11,10 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg?logo=github)]
 commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd/commits/master)
 [![GitHub code size in
 bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd)
+[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
+[![CRAN](https://img.shields.io/cran/v/surveysd.svg?colorB=green&logo=R&logoColor=blue&label=CRAN)](https://CRAN.R-project.org/package=surveysd)
 
 <!--
-[![CRAN](http://www.r-pkg.org/badges/version/surveysd)](https://CRAN.R-project.org/package=surveysd)
-[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
 [![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
 -->
 
