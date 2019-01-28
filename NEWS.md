@@ -1,3 +1,9 @@
+* automatize the gh-pages builds
+    * css updates
+* automated lin-checking
+* new badges (code coverage, cran)
+* update setup for vignettes
+
 # surveysd 1.0.0
 
 * copy `simPop::ipu2()` and some related functions to surveysd.
