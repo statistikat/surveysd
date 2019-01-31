@@ -24,10 +24,11 @@ surveys using bootstrap weights.
 
 ## Installation
 
-Like any other R package on github, this package can be installed via
-`install_github()`.
-
 ``` r
+# Install release version from CRAN
+install.packages("surveysd")
+
+# Install development version from GitHub
 devtools::install_github("statistikat/surveysd")
 ```
 
