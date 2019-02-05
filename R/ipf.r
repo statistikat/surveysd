@@ -128,7 +128,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
                    numericalWeighting, numericalWeightingVar) {
   epsPcur <- maxFac <- OriginalSortingVariable <- V1 <- baseWeight <-
     calibWeight <- epsvalue <- f <- NULL
-  temporary_hid <- temporary_hvar <- value <-
+  temporary_hvar <- value <-
     wValue <- wvst <- NULL
 
   combined_factors <- dat[[paste0("combined_factors_", i)]]
@@ -192,7 +192,7 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
                    looseH, numericalWeighting, numericalWeightingVar) {
   epsHcur <- OriginalSortingVariable <- V1 <- baseWeight <- calibWeight <-
     epsvalue <- f <- NULL
-  maxFac <- temporary_hid <- temporary_hvar <-
+  maxFac <- temporary_hvar <-
     value <- wValue <- wvst <- NULL
 
   setnames(dat, valueH[i], "value")
@@ -495,7 +495,7 @@ ipf <- function(
     stop("The provided dataset must not have a column called 'w'")
 
   OriginalSortingVariable <- V1 <- baseWeight <- calibWeight <- epsvalue <-
-    f <- temporary_hid <- temporary_hvar <-
+    f <- temporary_hvar <-
     value <- wValue <- wvst <- NULL
   dat_original <- dat
   dat <- copy(dat)
@@ -525,18 +525,14 @@ ipf <- function(
     dat[, hid := 1:nrow(dat)]
     dat[, wvst := 1]
   } else {
-    setnames(dat, hid, "temporary_hid")
-    dat[, wvst := as.numeric(!duplicated(temporary_hid))]
-    setnames(dat, "temporary_hid", hid)
+    dat[, wvst := as.numeric(!duplicated(get(hid)))]
   }
 
-  setnames(dat, hid, "temporary_hid")
-  if (!is.factor(dat$temporary_hid)) {
+  if (!is.factor(dat[[hid]])) {
     if (conversion_messages)
       message("convert household variable ", hid, " to factor")
-    dat[, temporary_hid := as.factor(temporary_hid)]
+    dat[, c(hid) := as.factor(get(hid))]
   }
-  setnames(dat, "temporary_hid", hid)
 
   ## Names of the calibration variables for Person and household dimension
   pColNames <- lapply(conP, function(x) names(dimnames(x)))
@@ -617,16 +613,14 @@ ipf <- function(
     ## Check for non-unqiue values inside of a household for variabels used
     ##   in Household constraints
     for (hh in hColNames){
-      setnames(dat, hid, "temporary_hid")
       for (h in hh) {
         setnames(dat, h, "temporary_hvar")
         if (dat[, length(unique(temporary_hvar)),
-               by = temporary_hid][, any(V1 != 1)]) {
+               by = c(hid)][, any(V1 != 1)]) {
           stop(paste(h, "has different values inside a household"))
         }
         setnames(dat, "temporary_hvar", h)
       }
-      setnames(dat, "temporary_hid", hid)
     }
   }
 
