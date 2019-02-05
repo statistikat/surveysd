@@ -8,7 +8,8 @@ ipf(dat, hid = NULL, conP = NULL, conH = NULL, epsP = 1e-06,
   epsH = 0.01, verbose = FALSE, w = NULL, bound = 4,
   maxIter = 200, meanHH = TRUE, allPthenH = TRUE, returnNA = TRUE,
   looseH = FALSE, numericalWeighting = computeLinear,
-  check_hh_vars = TRUE, conversion_messages = FALSE)
+  check_hh_vars = TRUE, conversion_messages = FALSE,
+  nameCalibWeight = "calibWeight")
 }
 \arguments{
 \item{dat}{a \code{data.table} containing household ids (optionally), base
@@ -81,6 +82,8 @@ household constraints}
 
 \item{conversion_messages}{show a message, if inputs need to be reformatted. This can be useful for speed
 optimizations if ipf is called several times with similar inputs (for example bootstrapping)}
+
+\item{nameCalibWeight}{character defining the name of the variable for the newly generated calibrated weight.}
 }
 \value{
 The function will return the input data \code{dat} with the
