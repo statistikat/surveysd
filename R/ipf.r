@@ -125,12 +125,12 @@ check_population_totals <- function(con, dat, type = "personal") {
 }
 
 calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
-                   numericalWeighting, numericalWeightingVar) {
-  epsPcur <- maxFac <- OriginalSortingVariable <- V1 <- baseWeight <-
+                   numericalWeighting, numericalWeightingVar, w) {
+  epsPcur <- maxFac <- OriginalSortingVariable <- V1 <-
     calibWeight <- epsvalue <- f <- NULL
   temporary_hvar <- value <-
     wValue <- wvst <- NULL
-
+  variableKeepingTheBaseWeight <- w
   combined_factors <- dat[[paste0("combined_factors_", i)]]
   setnames(dat, valueP[i], "value")
   setnames(dat, paste0("epsP_", i), "epsPcur")
@@ -174,7 +174,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
       }
     }
     if (!is.null(bound)) {
-      dat[!is.na(f), calibWeight := boundsFak(calibWeight, baseWeight, f,
+      dat[!is.na(f), calibWeight := boundsFak(calibWeight, get(variableKeepingTheBaseWeight), f,
                                               bound = bound)]
       #,by=eval(pColNames[[i]])]
     } else {
@@ -189,8 +189,9 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
 }
 
 calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
-                   looseH, numericalWeighting, numericalWeightingVar) {
-  epsHcur <- OriginalSortingVariable <- V1 <- baseWeight <- calibWeight <-
+                   looseH, numericalWeighting, numericalWeightingVar, w) {
+  variableKeepingTheBaseWeight <- w
+  epsHcur <- OriginalSortingVariable <- V1 <- calibWeight <-
     epsvalue <- f <- NULL
   maxFac <- temporary_hvar <-
     value <- wValue <- wvst <- NULL
@@ -240,10 +241,10 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
     }
     if (!is.null(bound)) {
       if (!looseH) {
-        dat[, calibWeight := boundsFak(g1 = calibWeight, g0 = baseWeight, f = f,
+        dat[, calibWeight := boundsFak(g1 = calibWeight, g0 = get(variableKeepingTheBaseWeight), f = f,
                                        bound = bound)]#,by=eval(hColNames[[i]])]
       }else{
-        dat[, calibWeight := boundsFakHH(g1 = calibWeight, g0 = baseWeight,
+        dat[, calibWeight := boundsFakHH(g1 = calibWeight, g0 = get(variableKeepingTheBaseWeight),
                                          eps = epsHcur, orig = value,
                                          p = wValue, bound = bound)]
       }
@@ -490,11 +491,11 @@ ipf <- function(
 
   check_population_totals(conP, dat, "personal")
   check_population_totals(conH, dat, "household")
+  variableKeepingTheBaseWeight <- w
+  if ("variableKeepingTheBaseWeight" %in% names(dat))
+    stop("The provided dataset must not have a column called 'variableKeepingTheBaseWeight'")
 
-  if ("w" %in% names(dat))
-    stop("The provided dataset must not have a column called 'w'")
-
-  OriginalSortingVariable <- V1 <- baseWeight <- calibWeight <- epsvalue <-
+  OriginalSortingVariable <- V1 <- calibWeight <- epsvalue <-
     f <- temporary_hvar <-
     value <- wValue <- wvst <- NULL
   dat_original <- dat
@@ -509,13 +510,11 @@ ipf <- function(
   ###fixed target value, should not be changed in iterations
   valueH <- paste0("valueH", seq_along(conH))
   ###Housekeeping of the varNames used
-  usedVarNames <- c(valueP, valueH, "value", "baseWeight", "wvst", "wValue")
+  usedVarNames <- c(valueP, valueH, "value", "wvst", "wValue")
 
   if (any(names(dat) %in% usedVarNames)) {
     renameVars <- names(dat)[names(dat) %in% usedVarNames]
     setnames(dat, renameVars, paste0(renameVars, "_safekeeping"))
-    if (isTRUE(w == "baseWeight"))
-      w <- "baseWeight_safekeeping"
   }
   ### Treatment of HID, creating 0,1 var for being the first hh member
   #delVars <- c()
@@ -593,14 +592,12 @@ ipf <- function(
     dat[, paste0("valueH", i) := tmp]
   }
 
-  if (is.null(w)) {
+  if (is.null(variableKeepingTheBaseWeight)) {
     if (!is.null(bound) && is.null(w))
       stop("Bounds are only reasonable if base weights are provided")
     dat[, calibWeight := 1]
-    #delVars <- c(delVars,"baseWeight")
   } else {
-    dat[, calibWeight := dat[, w, with = FALSE]]
-    setnames(dat, w, "baseWeight")
+    dat[, calibWeight := dat[, variableKeepingTheBaseWeight, with = FALSE]]
   }
 
   if (check_hh_vars) {
@@ -665,7 +662,8 @@ ipf <- function(
           i = i, dat = dat, error = error, valueP = valueP,
           pColNames = pColNames, bound = bound, verbose = verbose,
           calIter = calIter, numericalWeighting = numericalWeighting,
-          numericalWeightingVar = numericalWeightingTmp)
+          numericalWeightingVar = numericalWeightingTmp,
+          w = variableKeepingTheBaseWeight)
       }
 
       ## replace person weight with household average
@@ -683,7 +681,8 @@ ipf <- function(
           hColNames = hColNames, bound = bound, verbose = verbose,
           calIter = calIter, looseH = looseH,
           numericalWeighting = numericalWeighting,
-          numericalWeightingVar = numericalWeightingTmp)
+          numericalWeightingVar = numericalWeightingTmp,
+          w = variableKeepingTheBaseWeight)
       }
     } else {
       ### Person calib
@@ -696,7 +695,8 @@ ipf <- function(
           i = i, dat = dat, error = error, valueP = valueP,
           pColNames = pColNames, bound = bound, verbose = verbose,
           calIter = calIter, numericalWeighting = numericalWeighting,
-          numericalWeightingVar = numericalWeightingTmp)
+          numericalWeightingVar = numericalWeightingTmp,
+          w = variableKeepingTheBaseWeight)
 
         ## replace person weight with household average
         dh <- dat[[hid]]
@@ -712,7 +712,8 @@ ipf <- function(
             i = i, dat = dat, error = error, valueH = valueH,
             hColNames = hColNames, bound = bound, verbose = verbose,
             calIter = calIter, numericalWeighting = numericalWeighting,
-            numericalWeightingVar = numericalWeightingTmp, looseH = looseH)
+            numericalWeightingVar = numericalWeightingTmp, looseH = looseH,
+            w = variableKeepingTheBaseWeight)
         }
       }
     }
