@@ -128,7 +128,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
                    numericalWeighting, numericalWeightingVar) {
   epsPcur <- maxFac <- OriginalSortingVariable <- V1 <- baseWeight <-
     calibWeight <- epsvalue <- f <- NULL
-  temporary_hid <- temporary_hvar <- tmpVarForMultiplication <- value <-
+  temporary_hid <- temporary_hvar <- value <-
     wValue <- wvst <- NULL
 
   combined_factors <- dat[[paste0("combined_factors_", i)]]
@@ -143,19 +143,17 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
   if (!is.null(numericalWeightingVar)) {
     ## numerical variable to be calibrated
     ## use name of conP list element to define numerical variable
-    setnames(dat, numericalWeightingVar, "tmpVarForMultiplication")
 
-    dat[, f := ipf_step_f(calibWeight * tmpVarForMultiplication,
+    dat[, f := ipf_step_f(calibWeight * get(numericalWeightingVar),
                           combined_factors, con_current)]
     dat[, wValue := value / f]
 
     # try to divide the weight between units with larger/smaller value in the
     #   numerical variable linear
     dat[, f := numericalWeighting(head(wValue, 1), head(value, 1),
-                                 tmpVarForMultiplication, calibWeight),
+                                 get(numericalWeightingVar), calibWeight),
         by = eval(paste0("combined_factors_", i))]
 
-    setnames(dat, "tmpVarForMultiplication", numericalWeightingVar)
 
   } else {
     # categorical variable to be calibrated
@@ -194,7 +192,7 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
                    looseH, numericalWeighting, numericalWeightingVar) {
   epsHcur <- OriginalSortingVariable <- V1 <- baseWeight <- calibWeight <-
     epsvalue <- f <- NULL
-  maxFac <- temporary_hid <- temporary_hvar <- tmpVarForMultiplication <-
+  maxFac <- temporary_hid <- temporary_hvar <-
     value <- wValue <- wvst <- NULL
 
   setnames(dat, valueH[i], "value")
@@ -209,19 +207,17 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
   if (!is.null(numericalWeightingVar)) {
     ## numerical variable to be calibrated
     ## use name of conH list element to define numerical variable
-    setnames(dat, numericalWeightingVar, "tmpVarForMultiplication")
 
-    dat[, f := ipf_step_f(calibWeight * wvst * tmpVarForMultiplication,
+    dat[, f := ipf_step_f(calibWeight * wvst * get(numericalWeightingVar),
                           combined_factors, con_current)]
     dat[, wValue := value / f]
 
     # try to divide the weight between units with larger/smaller value in the
     #   numerical variable linear
     dat[, f := numericalWeighting(head(wValue, 1), head(value, 1),
-                                  tmpVarForMultiplication, calibWeight),
+                                  get(numericalWeightingVar), calibWeight),
         by = eval(paste0("combined_factors_h_", i))]
 
-    setnames(dat, "tmpVarForMultiplication", numericalWeightingVar)
   } else {
     # categorical variable to be calibrated
     dat[, f := ipf_step_f(calibWeight * wvst, combined_factors, con_current)]
@@ -499,7 +495,7 @@ ipf <- function(
     stop("The provided dataset must not have a column called 'w'")
 
   OriginalSortingVariable <- V1 <- baseWeight <- calibWeight <- epsvalue <-
-    f <- temporary_hid <- temporary_hvar <- tmpVarForMultiplication <-
+    f <- temporary_hid <- temporary_hvar <-
     value <- wValue <- wvst <- NULL
   dat_original <- dat
   dat <- copy(dat)
