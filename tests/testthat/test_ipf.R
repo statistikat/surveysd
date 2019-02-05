@@ -146,3 +146,19 @@ test_that("ipf works as expected", {
                   subset = !duplicated(household)) - conH1) / conH1)))
   expect_true(err < .01)
 })
+
+test_that("ipf works as expected calibWeight renamed", {
+  # with array epsP1, base weights and bound
+  calibweights2 <- ipf(
+    eusilcS, hid = "household", conP = list(conP1, conP2), conH = list(conH1),
+    epsP = 1e-06, epsH = list(epsH1), w = "baseWeight", bound = 4,
+    verbose = FALSE, maxIter = 200, nameCalibWeight = "calibWeightNew")
+  err <- max(c(
+    max(abs(xtabs(calibWeightNew ~ agegroup, data = calibweights2) - conP1) /
+          conP1),
+    max(abs(xtabs(calibWeightNew ~ gender + state, data = calibweights2) - conP2) /
+          conP2),
+    max(abs(xtabs(calibWeightNew ~ hsize + state, data = calibweights2,
+                  subset = !duplicated(household)) - conH1) / conH1)))
+  expect_true(err < .01)
+})
