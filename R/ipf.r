@@ -528,12 +528,6 @@ ipf <- function(
     dat[, wvst := as.numeric(!duplicated(get(hid)))]
   }
 
-  if (!is.factor(dat[[hid]])) {
-    if (conversion_messages)
-      message("convert household variable ", hid, " to factor")
-    dat[, c(hid) := as.factor(get(hid))]
-  }
-
   ## Names of the calibration variables for Person and household dimension
   pColNames <- lapply(conP, function(x) names(dimnames(x)))
   hColNames <- lapply(conH, function(x) names(dimnames(x)))
