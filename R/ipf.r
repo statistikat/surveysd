@@ -127,9 +127,9 @@ check_population_totals <- function(con, dat, type = "personal") {
 calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
                    numericalWeighting, numericalWeightingVar, w, cw) {
   epsPcur <- maxFac <- OriginalSortingVariable <- V1 <-
-    epsvalue <- f <- NULL
+    epsvalue <- fVariableForCalibrationIPF <- NULL
   temporary_hvar <- value <-
-    wValue <- wvst <- NULL
+    wValue <- representativeHouseholdForCalibration <- NULL
   variableKeepingTheBaseWeight <- w
   variableKeepingTheCalibWeight <- cw
   combined_factors <- dat[[paste0("combined_factors_", i)]]
@@ -144,29 +144,29 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
   if (!is.null(numericalWeightingVar)) {
     ## numerical variable to be calibrated
     ## use name of conP list element to define numerical variable
-    set(dat, j = "f", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]] * dat[[numericalWeightingVar]],
-                                         combined_factors, con_current))
-    set(dat, j = "wValue", value = dat[["value"]]/dat[["f"]])
+    set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]] *
+        dat[[numericalWeightingVar]], combined_factors, con_current))
+    set(dat, j = "wValue", value = dat[["value"]]/dat[["fVariableForCalibrationIPF"]])
 
     # try to divide the weight between units with larger/smaller value in the
     #   numerical variable linear
-    dat[, f := numericalWeighting(head(wValue, 1), head(value, 1),
+    dat[, fVariableForCalibrationIPF := numericalWeighting(head(wValue, 1), head(value, 1),
                                   get(numericalWeightingVar), get(variableKeepingTheCalibWeight)),
         by = eval(paste0("combined_factors_", i))]
 
 
   } else {
     # categorical variable to be calibrated
-    set(dat, j = "f", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]], combined_factors, con_current))
+    set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]], combined_factors, con_current))
   }
-  if (dat[!is.na(f), any(abs(1 / f - 1) > epsPcur)]) {
+  if (dat[!is.na(fVariableForCalibrationIPF), any(abs(1 / fVariableForCalibrationIPF - 1) > epsPcur)]) {
     ## sicherheitshalber abs(epsPcur)? Aber es wird schon niemand negative eps
     ##   Werte uebergeben??
     if (verbose && calIter %% 10 == 0) {
       message(calIter, ":Not yet converged for P-Constraint", i, "\n")
       if (calIter %% 100 == 0) {
-        tmp <- dat[!is.na(f) & (abs(1 / f - 1) > epsPcur),
-                   list(maxFac = max(abs(1 / f - 1)), .N, head(epsPcur, 1),
+        tmp <- dat[!is.na(fVariableForCalibrationIPF) & (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur),
+                   list(maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N, head(epsPcur, 1),
                         sumCalib = sum(get(variableKeepingTheCalibWeight)), head(value, 1)),
                    by = eval(pColNames[[i]])]
         print(tmp[order(maxFac, decreasing = TRUE), ])
@@ -174,11 +174,12 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
       }
     }
     if (!is.null(bound)) {
-      dat[!is.na(f), c(variableKeepingTheCalibWeight) := boundsFak(get(variableKeepingTheCalibWeight), get(variableKeepingTheBaseWeight), f,
-                                                                   bound = bound)]
+      dat[!is.na(fVariableForCalibrationIPF), c(variableKeepingTheCalibWeight) := boundsFak(get(variableKeepingTheCalibWeight),
+          get(variableKeepingTheBaseWeight), fVariableForCalibrationIPF, bound = bound)]
       #,by=eval(pColNames[[i]])]
     } else {
-      dat[!is.na(f), c(variableKeepingTheCalibWeight) := f * get(variableKeepingTheCalibWeight),
+      dat[!is.na(fVariableForCalibrationIPF), c(variableKeepingTheCalibWeight) := fVariableForCalibrationIPF *
+            get(variableKeepingTheCalibWeight),
           by = eval(paste0("combined_factors_", i))]
     }
     error <- TRUE
@@ -193,9 +194,9 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
   variableKeepingTheBaseWeight <- w
   variableKeepingTheCalibWeight <- cw
   epsHcur <- OriginalSortingVariable <- V1 <-
-    epsvalue <- f <- NULL
+    epsvalue <- fVariableForCalibrationIPF <- NULL
   maxFac <- temporary_hvar <-
-    value <- wValue <- wvst <- NULL
+    value <- wValue <- representativeHouseholdForCalibration <- NULL
 
   setnames(dat, valueH[i], "value")
   setnames(dat, paste0("epsH_", i), "epsHcur")
@@ -209,30 +210,31 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
   if (!is.null(numericalWeightingVar)) {
     ## numerical variable to be calibrated
     ## use name of conH list element to define numerical variable
-    set(dat, j = "f", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]] * dat[["wvst"]] * dat[[numericalWeightingVar]],
-                                         combined_factors, con_current))
-    set(dat, j = "wValue", value = dat[["value"]] / dat[["f"]])
+    set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]] * dat[["representativeHouseholdForCalibration"]] *
+      dat[[numericalWeightingVar]], combined_factors, con_current))
+    set(dat, j = "wValue", value = dat[["value"]] / dat[["fVariableForCalibrationIPF"]])
 
     # try to divide the weight between units with larger/smaller value in the
     #   numerical variable linear
-    dat[, f := numericalWeighting(head(wValue, 1), head(value, 1),
+    dat[, fVariableForCalibrationIPF := numericalWeighting(head(wValue, 1), head(value, 1),
                                   get(numericalWeightingVar), get(variableKeepingTheCalibWeight)),
         by = eval(paste0("combined_factors_h_", i))]
 
   } else {
     # categorical variable to be calibrated
-    set(dat, j = "f", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]] * dat[["wvst"]], combined_factors, con_current))
+    set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(dat[[variableKeepingTheCalibWeight]] * dat[["representativeHouseholdForCalibration"]],
+        combined_factors, con_current))
   }
 
-  set(dat, j = "wValue", value = dat[["value"]]/dat[["f"]])
+  set(dat, j = "wValue", value = dat[["value"]]/dat[["fVariableForCalibrationIPF"]])
 
-  if (dat[!is.na(f), any(abs(1 / f - 1) > epsHcur)]) {
+  if (dat[!is.na(fVariableForCalibrationIPF), any(abs(1 / fVariableForCalibrationIPF - 1) > epsHcur)]) {
     if (verbose && calIter %% 10 == 0) {
       message(calIter, ":Not yet converged for H-Constraint", i, "\n")
       if (calIter %% 100 == 0) {
-        tmp <- dat[!is.na(f) & (abs(1 / f - 1) > epsHcur),
-                   list(maxFac = max(abs(1 / f - 1)), .N, head(epsHcur, 1),
-                        sumCalibWeight = sum(get(variableKeepingTheCalibWeight) * wvst),
+        tmp <- dat[!is.na(fVariableForCalibrationIPF) & (abs(1 / fVariableForCalibrationIPF - 1) > epsHcur),
+                   list(maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N, head(epsHcur, 1),
+                        sumCalibWeight = sum(get(variableKeepingTheCalibWeight) * representativeHouseholdForCalibration),
                         head(value, 1)), by = eval(hColNames[[i]])]
         print(tmp[order(maxFac, decreasing = TRUE), ])
 
@@ -242,7 +244,8 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
     if (!is.null(bound)) {
       if (!looseH) {
         set(dat, j = variableKeepingTheCalibWeight, value =
-              boundsFak(g1 = dat[[variableKeepingTheCalibWeight]], g0 = dat[[variableKeepingTheBaseWeight]], f = dat[["f"]],
+              boundsFak(g1 = dat[[variableKeepingTheCalibWeight]], g0 = dat[[variableKeepingTheBaseWeight]],
+                        f = dat[["fVariableForCalibrationIPF"]],
                         bound = bound))
       }else{
         set(dat, j = variableKeepingTheCalibWeight, value =
@@ -252,8 +255,8 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
         )
       }
     } else {
-      dat[, c(variableKeepingTheCalibWeight) := f * get(variableKeepingTheCalibWeight), by = eval(
-        paste0("combined_factors_h_", i))]
+      dat[, c(variableKeepingTheCalibWeight) := fVariableForCalibrationIPF * get(variableKeepingTheCalibWeight),
+          by = eval(paste0("combined_factors_h_", i))]
     }
     error <- TRUE
   }
@@ -284,7 +287,7 @@ getFormulas <- function(con, w) {
 addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
                                     maxIter, calIter, returnNA, cw) {
   variableKeepingTheCalibWeight <- cw
-  wvst <- OriginalSortingVariable <-
+  representativeHouseholdForCalibration <- OriginalSortingVariable <-
     outTable <- copy(dat_original)
 
   # add calibrated weights. Use setkey to make sure the indexes match
@@ -311,7 +314,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 
   # adjusted constraints (conP, conH according to the calibrated weights)
   setattr(outTable, "conP_adj", lapply(formP, xtabs, dat))
-  setattr(outTable, "conH_adj", lapply(formH, xtabs, dat[wvst == 1]))
+  setattr(outTable, "conH_adj", lapply(formH, xtabs, dat[representativeHouseholdForCalibration == 1]))
 
   # tolerances
   setattr(outTable, "epsP", epsP)
@@ -506,7 +509,7 @@ ipf <- function(
 
   OriginalSortingVariable <- V1 <- epsvalue <-
     f <- temporary_hvar <-
-    value <- wValue <- wvst <- NULL
+    value <- wValue <- representativeHouseholdForCalibration <- NULL
   dat_original <- dat
   dat <- copy(dat)
   ## originalsorting is fucked up without this
@@ -519,7 +522,7 @@ ipf <- function(
   ###fixed target value, should not be changed in iterations
   valueH <- paste0("valueH", seq_along(conH))
   ###Housekeeping of the varNames used
-  usedVarNames <- c(valueP, valueH, "value", "wvst", "wValue")
+  usedVarNames <- c(valueP, valueH, "value", "representativeHouseholdForCalibration", "wValue")
 
   if (any(names(dat) %in% usedVarNames)) {
     renameVars <- names(dat)[names(dat) %in% usedVarNames]
@@ -531,9 +534,9 @@ ipf <- function(
     #delVars <- c("hid")
     hid <- "hid"
     dat[, hid := 1:nrow(dat)]
-    dat[, wvst := 1]
+    dat[, representativeHouseholdForCalibration := 1]
   } else {
-    dat[, wvst := as.numeric(!duplicated(get(hid)))]
+    dat[, representativeHouseholdForCalibration := as.numeric(!duplicated(get(hid)))]
   }
 
   ## Names of the calibration variables for Person and household dimension
@@ -731,7 +734,8 @@ ipf <- function(
     }
     calIter <- calIter + 1
   }
-
+  # Remove Help Variables
+  dat[,fVariableForCalibrationIPF:=NULL]
   addWeightsAndAttributes(dat, conP, conH, epsP, epsH, dat_original, maxIter,
                           calIter, returnNA, variableKeepingTheCalibWeight)
 }
