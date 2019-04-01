@@ -1,35 +1,71 @@
-#' @title Calcualte point estimates and their standard errors using bootstrap weights.
+#' @title Calcualte point estimates and their standard errors using bootstrap
+#'   weights.
 #'
 #' @description
-#' Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see [draw.bootstrap] and [recalib]).
-#' In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error.
+#' Calculate point estimates as well as standard errors of variables in surveys.
+#' Standard errors are estimated using bootstrap weights (see [draw.bootstrap]
+#' and [recalib]). In addition the standard error of an estimate can be
+#' calcualted using the survey data for 3 or more consecutive periods, which
+#' results in a reduction of the standard error.
 #'
-#'
-#' @param dat either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using [draw.bootstrap] and [recalib].
-#' @param weights character specifying the name of the column in `dat` containing the original sample weights. Used to calculate point estimates.
-#' @param b.weights character vector specifying the names of the columns in `dat` containing bootstrap weights. Used to calculate standard errors.
-#' @param period character specifying the name of the column in `dat` containing the sample periods.
-#' @param var character vector containing variable names in `dat` on which `fun` shall be applied for each sample period.
+#' @param dat either data.frame or data.table containing the survey data.
+#'   Surveys can be a panel survey or rotating panel survey, but does not need
+#'   to be. For rotating panel survey bootstrap weights can be created using
+#'   [draw.bootstrap] and [recalib].
+#' @param weights character specifying the name of the column in `dat`
+#'   containing the original sample weights. Used to calculate point estimates.
+#' @param b.weights character vector specifying the names of the columns in
+#'   `dat` containing bootstrap weights. Used to calculate standard errors.
+#' @param period character specifying the name of the column in `dat`
+#'   containing the sample periods.
+#' @param var character vector containing variable names in `dat` on which `fun`
+#'   shall be applied for each sample period.
 #' @param fun function which will be applied on `var` for each sample period.
-#' Predefined functions are [weightedRatio], [weightedSum], but can also take any other function which returns a double or integer and uses weights as its second argument.
-#' @param national boolean, if TRUE point estimates resulting from fun will be divided by the point estimate at the national level.
-#' @param group character vectors or list of character vectors containig variables in `dat`. For each list entry `dat` will be split in subgroups according to the containing variables as well as `period`.
-#' The pointestimates are then estimated for each subgroup seperately. If `group=NULL` the data will split into sample periods by default.
-#' @param fun.adjust.var can be either `NULL` or a function. This argument can be used to apply a function for each `period` and bootstrap weight to the data. The resulting estimates will be passed down to `fun`. See details for more explanations.
-#' @param adjust.var can be either `NULL` or a character specifying the first argument in `fun.adjust.var`.
-#' @param period.diff character vectors, defining periods for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of `"period1 - period2"`. Can be NULL
-#' @param period.mean odd integer, defining the range of periods over which the sample mean of point estimates is additionally calcualted.
-#' @param bias boolean, if `TRUE` the sample mean over the point estimates of the bootstrap weights is returned.
-#' @param size.limit integer defining a lower bound on the number of observations on `dat` in each group defined by `period` and the entries in `group`.
-#' Warnings are returned if the number of observations in a subgroup falls below `size.limit`. In addition the concerned groups are available in the function output.
-#' @param cv.limit non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed `cv.limit`, for a point estimate, they are flagged and available in the function output.
-#' @param p numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of `var` are additionally estimated.
-#' @param add.arg additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.
+#'   Predefined functions are [weightedRatio], [weightedSum], but can also take
+#'   any other function which returns a double or integer and uses weights as
+#'   its second argument.
+#' @param national boolean, if TRUE point estimates resulting from fun will be
+#'   divided by the point estimate at the national level.
+#' @param group character vectors or list of character vectors containig
+#'   variables in `dat`. For each list entry `dat` will be split in subgroups
+#'   according to the containing variables as well as `period`. The
+#'   pointestimates are then estimated for each subgroup seperately. If
+#'   `group=NULL` the data will split into sample periods by default.
+#' @param fun.adjust.var can be either `NULL` or a function. This argument can
+#'   be used to apply a function for each `period` and bootstrap weight to the
+#'   data. The resulting estimates will be passed down to `fun`. See details for
+#'   more explanations.
+#' @param adjust.var can be either `NULL` or a character specifying the first
+#'   argument in `fun.adjust.var`.
+#' @param period.diff character vectors, defining periods for which the
+#'   differences in the point estimate as well it's standard error is
+#'   calculated. Each entry must have the form of `"period1 - period2"`. Can be
+#'   NULL
+#' @param period.mean odd integer, defining the range of periods over which the
+#'   sample mean of point estimates is additionally calcualted.
+#' @param bias boolean, if `TRUE` the sample mean over the point estimates of
+#'   the bootstrap weights is returned.
+#' @param size.limit integer defining a lower bound on the number of
+#'   observations on `dat` in each group defined by `period` and the entries in
+#'   `group`. Warnings are returned if the number of observations in a subgroup
+#'   falls below `size.limit`. In addition the concerned groups are available in
+#'   the function output.
+#' @param cv.limit non-negativ value defining a upper bound for the standard
+#'   error in relation to the point estimate. If this relation exceed
+#'   `cv.limit`, for a point estimate, they are flagged and available in the
+#'   function output.
+#' @param p numeric vector containing values between 0 and 1. Defines which
+#'   quantiles for the distribution of `var` are additionally estimated.
+#' @param add.arg additional arguments which will be passed to fun. Can be
+#'   either a named list or vector. The names of the object correspond to the
+#'   function arguments and the values to column names in dat, see also
+#'   examples.
 #'
-#' @details `calc.stError` takes survey data (`dat`) and returns point estimates as well as their standard Errors
-#' defined by `fun` and `var` for each sample period in `dat`.
-#' `dat` must be household data where household members correspond to multiple rows with the same household identifier.
-#' The data should at least containt the following columns:
+#' @details `calc.stError` takes survey data (`dat`) and returns point estimates
+#' as well as their standard Errors defined by `fun` and `var` for each sample
+#' period in `dat`. `dat` must be household data where household members
+#' correspond to multiple rows with the same household identifier. The data
+#' should at least contain the following columns:
 #'
 #'   * Column indicating the sample period;
 #'   * Column indicating the household ID;
@@ -37,65 +73,122 @@
 #'   * Columns which contain the bootstrap weights (see output of [recalib]);
 #'   * Columns listed in `var` as well as in `group`
 #'
-#' For each variable in `var` as well as sample period the function `fun` is applied using the original as well as the bootstrap sample weights.\cr
-#' The point estimate is then selected as the result of `fun` when using the original sample weights and it's standard error is estimated with the result of `fun` using the bootstrap sample weights. \cr
+#' For each variable in `var` as well as sample period the function `fun` is
+#' applied using the original as well as the bootstrap sample weights.\cr
+#' The point estimate is then selected as the result of `fun` when using the
+#' original sample weights and it's standard error is estimated with the result
+#' of `fun` using the bootstrap sample weights. \cr
 #' \cr
-#' `fun` can be any function which returns a double or integer and uses sample weights as it's second argument. The predifined options are `weightedRatio` and `weightedSum`.\cr
+#' `fun` can be any function which returns a double or integer and uses sample
+#' weights as it's second argument. The predifined options are `weightedRatio`
+#' and `weightedSum`.\cr
 #' \cr
-#' For the option `weightedRatio` a weighted ratio (in \%) of `var` is calculated for `var` equal to 1, e.g `sum(weight[var==1])/sum(weight[!is.na(var)])*100`.\cr
-#' Additionally using the option `national=TRUE` the weighted ratio (in \%) is divided by the weighted ratio at the national level for each `period`.
+#' For the option `weightedRatio` a weighted ratio (in \%) of `var` is
+#' calculated for `var` equal to 1, e.g
+#' `sum(weight[var==1])/sum(weight[!is.na(var)])*100`.\cr
+#' Additionally using the option `national=TRUE` the weighted ratio (in \%) is
+#' divided by the weighted ratio at the national level for each `period`.
 #' \cr
-#' If `group` is not `NULL` but a vector of variables from `dat` then `fun` is applied on each subset of `dat` defined by all combinations of values in `group`.\cr
-#' For instance if `group = "sex"` with "sex" having the values "Male" and "Female" in `dat` the point estimate and standard error is calculated on the subsets of `dat` with only "Male" or "Female" value for "sex". This is done for each value of `period`.
-#' For variables in `group` which have `NA`s in `dat` the rows containing the missings will be discarded. \cr
-#' When `group` is a list of character vectors, subsets of `dat` and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
+#' If `group` is not `NULL` but a vector of variables from `dat` then `fun` is
+#' applied on each subset of `dat` defined by all combinations of values in
+#' `group`.\cr
+#' For instance if `group = "sex"` with "sex" having the values "Male" and
+#' "Female" in `dat` the point estimate and standard error is calculated on the
+#' subsets of `dat` with only "Male" or "Female" value for "sex". This is done
+#' for each value of `period`. For variables in `group` which have `NA`s in
+#' `dat` the rows containing the missings will be discarded. \cr
+#' When `group` is a list of character vectors, subsets of `dat` and the
+#' following estimation of the point estimate, including the estimate for the
+#' standard error, are calculated for each list entry.\cr
 #' \cr
-#' The optional parameters `fun.adjust.var` and `adjust.var` can be used if the values in `var` are dependent on the `weights`. As is for instance the case for the poverty thershhold calculated from EU-SILC.
-#' In such a case an additional function can be supplied using `fun.adjust.var` as well as its first argument `adjust.var`, which needs to be part of the data set `dat`. Then, before applying `fun` on variable `var`
-#' for all `period` and groups, the function `fun.adjust.var` is applied to `adjust.var` using each of the bootstrap weights seperately (NOTE: weight is used as the second argument of `fun.adjust.var`).
+#' The optional parameters `fun.adjust.var` and `adjust.var` can be used if the
+#' values in `var` are dependent on the `weights`. As is for instance the case
+#' for the poverty thershhold calculated from EU-SILC.
+#' In such a case an additional function can be supplied using `fun.adjust.var`
+#' as well as its first argument `adjust.var`, which needs to be part of the
+#' data set `dat`. Then, before applying `fun` on variable `var`
+#' for all `period` and groups, the function `fun.adjust.var` is applied to
+#' `adjust.var` using each of the bootstrap weights seperately (NOTE: weight is
+#' used as the second argument of `fun.adjust.var`).
 #' Thus creating i=1,...,`length(b.weights)` additional variables.
-#' For applying `fun` on `var` the estimates for the bootstrap replicate will now use each of the corresponding new additional variables. So instead of
+#' For applying `fun` on `var` the estimates for the bootstrap replicate will
+#' now use each of the corresponding new additional variables. So instead of
 #' \deqn{fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...}
 #' the function `fun` will be applied in the way
 #' \deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...}
 #'
-#' where `var.1`, `var.2`, `...` correspond to the estimates resulting from `fun.adjust.var` and `adjust.var`.
-#' NOTE: This procedure is especially usefull if the `var` is dependent on `weights` and `fun` is applied on subgroups of the data set. Then it is not possible to capture this
-#' procedure with `fun` and `var`, see examples for a more hands on explanation.
+#' where `var.1`, `var.2`, `...` correspond to the estimates resulting from
+#' `fun.adjust.var` and `adjust.var`.
+#' NOTE: This procedure is especially usefull if the `var` is dependent on
+#' `weights` and `fun` is applied on subgroups of the data set. Then it is not
+#' possible to capture this procedure with `fun` and `var`, see examples for a
+#' more hands on explanation.
 #' \cr
-#' When defining `period.diff` the difference of point estimates between periods as well their standard errors are calculated.\cr
-#' The entries in `period.diff` must have the form of `"period1 - period2"` which means that the results of the point estimates for `period2` will be substracted from the results of the point estimates for `period1`.\cr
+#' When defining `period.diff` the difference of point estimates between periods
+#' as well their standard errors are calculated.\cr
+#' The entries in `period.diff` must have the form of `"period1 - period2"`
+#' which means that the results of the point estimates for `period2` will be
+#' substracted from the results of the point estimates for `period1`.\cr
 #' \cr
-#' Specifying `period.mean` leads to an improvement in standard error by averaging the results for the point estimates, using the bootstrap weights, over `period.mean` periods.
-#' Setting, for instance, `period.mean = 3` the results in averaging these results over each consecutive set of 3 periods.\cr
-#' Estimating the standard error over these averages gives an improved estimate of the standard error for the central period, which was used for averaging.\cr
-#' The averaging of the results is also applied in differences of point estimates. For instance defining `period.diff = "2015-2009"` and `period.mean = 3`
-#' the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as 2017 and 2011 are calcualated and finally the average over these 3 differences is calculated.
-#' The periods set in `period.diff` are always used as starting periods from which `period.mean-1` consecutive periods are used to build the average.
+#' Specifying `period.mean` leads to an improvement in standard error by
+#' averaging the results for the point estimates, using the bootstrap weights,
+#' over `period.mean` periods.
+#' Setting, for instance, `period.mean = 3` the results in averaging these
+#' results over each consecutive set of 3 periods.\cr
+#' Estimating the standard error over these averages gives an improved estimate
+#' of the standard error for the central period, which was used for
+#' averaging.\cr
+#' The averaging of the results is also applied in differences of point
+#' estimates. For instance defining `period.diff = "2015-2009"` and
+#' `period.mean = 3`
+#' the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as
+#' 2017 and 2011 are calcualated and finally the average over these 3
+#' differences is calculated.
+#' The periods set in `period.diff` are always used as starting periods from
+#' which `period.mean-1` consecutive periods are used to build the average.
 #' \cr
-#' Setting `bias` to `TRUE` returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled *_mean* at the end.\cr
+#' Setting `bias` to `TRUE` returns the calculation of a mean over the results
+#' from the bootstrap replicates. In  the output the corresponding columns is
+#' labeled *_mean* at the end.\cr
 #' \cr
-#' If `fun` needs more arguments they can be supplied in `add.arg`. This can either be a named list or vector.\cr
+#' If `fun` needs more arguments they can be supplied in `add.arg`. This can
+#' either be a named list or vector.\cr
 #' \cr
-#' The parameter `size.limit` indicates a lower bound of the sample size for subsets in `dat` created by `group`. If the sample size of a subset falls below `size.limit` a warning will be displayed.\cr
-#' In addition all subsets for which this is the case can be selected from the output of `calc.stError` with `$smallGroups`.\cr
-#' With the parameter `cv.limit` one can set an upper bound on the coefficient of variantion. Estimates which exceed this bound are flagged with `TRUE` and are available in the function output with `$cvHigh`.
-#' `cv.limit` must be a positive integer and is treated internally as \%, e.g. for `cv.limit=1` the estimate will be flagged if the coefficient of variantion exceeds 1\%.\cr
+#' The parameter `size.limit` indicates a lower bound of the sample size for
+#' subsets in `dat` created by `group`. If the sample size of a subset falls
+#' below `size.limit` a warning will be displayed.\cr
+#' In addition all subsets for which this is the case can be selected from the
+#' output of `calc.stError` with `$smallGroups`.\cr
+#' With the parameter `cv.limit` one can set an upper bound on the coefficient
+#' of variantion. Estimates which exceed this bound are flagged with `TRUE` and
+#' are available in the function output with `$cvHigh`.
+#' `cv.limit` must be a positive integer and is treated internally as \%, e.g.
+#' for `cv.limit=1` the estimate will be flagged if the coefficient of
+#' variantion exceeds 1\%.\cr
 #' \cr
-#' When specifying `period.mean`, the decrease in standard error for choosing this method is internally calcualted and a rough estimate for an implied increase in sample size is available in the output with `$stEDecrease`.
-#' The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error of most point estimates converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
+#' When specifying `period.mean`, the decrease in standard error for choosing
+#' this method is internally calcualted and a rough estimate for an implied
+#' increase in sample size is available in the output with `$stEDecrease`.
+#' The rough estimate for the increase in sample size uses the fact that for a
+#' sample of size \eqn{n} the sample estimate for the standard error of most
+#' point estimates converges with a factor \eqn{1/\sqrt{n}} against the true
+#' standard error \eqn{\sigma}.
 #'
 #'
 #' @return Returns a list containing:
 #'
-#' * `Estimates`: data.table containing period differences and/or k period averages for estimates of
-#'   `fun` applied to `var` as well as the corresponding standard errors, which are calculated using the bootstrap weights.
-#'   In addition the sample size, `n`, and poplutaion size for each group is added to the output.
-#' * `smallGroups`: data.table containing groups for which the number of observation falls below `size.limit`.
-#' * `cvHigh`: data.table containing a boolean variable which indicates for each estimate if the
-#'   estimated standard error exceeds `cv.limit`.
-#' * `stEDecrease`: data.table indicating for each estimate the theoretical increase in sample size which is
-#'   gained when averaging over k periods. Only returned if `period.mean` is not `NULL`.
+#' * `Estimates`: data.table containing period differences and/or k period
+#'   averages for estimates of
+#'   `fun` applied to `var` as well as the corresponding standard errors, which
+#'   are calculated using the bootstrap weights. In addition the sample size,
+#'   `n`, and poplutaion size for each group is added to the output.
+#' * `smallGroups`: data.table containing groups for which the number of
+#'   observation falls below `size.limit`.
+#' * `cvHigh`: data.table containing a boolean variable which indicates for each
+#'   estimate if the estimated standard error exceeds `cv.limit`.
+#' * `stEDecrease`: data.table indicating for each estimate the theoretical
+#'   increase in sample size which is gained when averaging over k periods. Only
+#'   returned if `period.mean` is not `NULL`.
 #'
 #' @seealso [draw.bootstrap] \cr
 #' [recalib]
@@ -113,37 +206,45 @@
 #'
 #' # estimate weightedRatio for povertyRisk per period
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+#'                         fun = weightedRatio)
 #' err.est$Estimates
 #'
-#' # calculate weightedRatio for povertyRisk and fraction of one-person households per period
+#' # calculate weightedRatio for povertyRisk and fraction of one-person
+#' # households per period
 #'
 #' dat_boot_calib[, onePerson := .N == 1, by = .(year, hid)]
-#' err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio)
+#' err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"),
+#'                         fun = weightedRatio)
 #' err.est$Estimates
 #'
 #' # estimate weightedRatio for povertyRisk per period and gender
 #'
 #' group <- "gender"
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+#'                         fun = weightedRatio, group = group)
 #' err.est$Estimates
 #'
-#' # estimate weightedRatio for povertyRisk per period and gender, region and combination of both
+#' # estimate weightedRatio for povertyRisk per period and gender, region and
+#' # combination of both
 #'
 #' group <- list("gender", "region", c("gender", "region"))
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+#'                         fun = weightedRatio, group = group)
 #' err.est$Estimates
 #'
 #' # use average over 3 periods for standard error estimation
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, period.mean = 3)
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+#'                         fun = weightedRatio, period.mean = 3)
 #' err.est$Estimates
 #'
 #' # get estimate for difference of period 2016 and 2013
 #'
 #' period.diff <- c("2015-2011")
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         period.diff = period.diff, period.mean = 3)
+#' err.est <- calc.stError(
+#'   dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+#'   period.diff = period.diff, period.mean = 3)
 #' err.est$Estimates
 #'
 #' # use add.arg-argument
@@ -156,10 +257,12 @@
 #'                         period.mean = 0, add.arg=add.arg)
 #' err.est$Estimates
 #' # compare with direkt computation
-#' compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c("year")]
+#' compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),
+#'                                  by=c("year")]
 #' all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
 #'
-#' # use a function from an other package that has sampling weights as its second argument
+#' # use a function from an other package that has sampling weights as its
+#' # second argument
 #' # for example gini() from laeken
 #'
 #' library(laeken)
@@ -169,15 +272,18 @@
 #'  return(gini(x, w)$value)
 #' }
 #'
-#' ## make sure povertyRisk get coerced to a numeric in order to work with the external functions
+#' ## make sure povertyRisk get coerced to a numeric in order to work with the
+#' ## external functions
 #' invisible(dat_boot_calib[, povertyRisk := as.numeric(povertyRisk)])
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = help_gini, group = group,
-#'                         period.diff = period.diff, period.mean = 3)
+#' err.est <- calc.stError(
+#'   dat_boot_calib, var = "povertyRisk", fun = help_gini, group = group,
+#'   period.diff = period.diff, period.mean = 3)
 #' err.est$Estimates
 #'
 #' # using fun.adjust.var and adjust.var to estimate povmd60 indicator
-#' # for each period and bootstrap weight before applying the weightedRatio point estimate
+#' # for each period and bootstrap weight before applying the weightedRatio
+#' # point estimate
 #'
 #' # this function estimates the povmd60 indicator with x as income vector
 #' # and w as weight vector
@@ -191,9 +297,9 @@
 #' # the povmd60 indicator for each bootstrap weight
 #' # and the resultung indicators are passed to function weightedRatio
 #'
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-#'                         group = group, fun.adjust.var = povmd, adjust.var = "eqIncome",
-#'                         period.mean = 3)
+#' err.est <- calc.stError(
+#'   dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group,
+#'   fun.adjust.var = povmd, adjust.var = "eqIncome", period.mean = 3)
 #' err.est$Estimates
 #'
 #' # why fun.adjust.var and adjust.var are needed (!!!):
@@ -211,9 +317,9 @@
 #' # but this results in different results in subgroups
 #' # compared to using fun.adjust.var and adjust.var
 #'
-#' err.est.different <- calc.stError(dat_boot_calib, var = "eqIncome", fun = povmd2,
-#'                                   group = group, fun.adjust.var = NULL, adjust.var = NULL,
-#'                                   period.mean = 3)
+#' err.est.different <- calc.stError(
+#'   dat_boot_calib, var = "eqIncome", fun = povmd2, group = group,
+#'   fun.adjust.var = NULL, adjust.var = NULL, period.mean = 3)
 #' err.est.different$Estimates
 #'
 #' ## results are equal for yearly estimates
@@ -231,7 +337,8 @@
 
 
 # wrapper-function to apply fun to var using weights (~weights, b.weights)
-# and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
+# and calculating standard devation (using the bootstrap replicates) per period
+# and for k-period rolling means
 calc.stError <- function(
   dat, weights = attr(dat, "weights"), b.weights = attr(dat, "b.rep"),
   period = attr(dat, "period"), var, fun = weightedRatio, national = FALSE,
@@ -564,7 +671,8 @@ calc.stError <- function(
 
 
 # function to apply fun to var using weights (~weights, b.weights)
-# and calculating standard devation (using the bootstrap replicates) per period and for k-period rolling means
+# and calculating standard devation (using the bootstrap replicates) per period
+# and for k-period rolling means
 help.stError <- function(
   dat, period, var, weights, b.weights = paste0("w", 1:1000), fun, national,
   group, fun.adjust.var, adjust.var, period.diff = NULL, period.mean =

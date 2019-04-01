@@ -1,33 +1,65 @@
 #' @title Draw bootstrap replicates
 #'
-#' @description Draw bootstrap replicates from survey data using the rescaled bootstrap for stratified multistage sampling, presented by Preston, J. (2009).
-#'
+#' @description Draw bootstrap replicates from survey data using the rescaled
+#'   bootstrap for stratified multistage sampling, presented by Preston, J.
+#'   (2009).
 #'
 #' @param dat either data frame or data table containing the survey sample
 #' @param REP integer indicating the number of bootstraps to be drawn
-#' @param strata string specifying the column name in `dat` that is used for stratification. For multistage sampling multiple column names can be specified by `strata=c("strata1>strata2>strata3")`.
+#' @param strata string specifying the column name in `dat` that is used for
+#'   stratification. For multistage sampling multiple column names can be
+#'   specified by `strata=c("strata1>strata2>strata3")`. See Details for more
+#'   information.
+#' @param cluster string specifying the column name in `dat` that is used for
+#'   clustering. For multistage sampling multiple column names can be specified
+#'   by `cluster=c("cluster1>cluster2>cluster3")`.
 #' See Details for more information.
-#' @param cluster string specifying the column name in `dat` that is used for clustering. For multistage sampling multiple column names can be specified by `cluster=c("cluster1>cluster2>cluster3")`.
-#' See Details for more information.
-#' @param fpc string specifying the column name in `dat` that contains the number of PSUs at the first stage. For multistage sampling the number of PSUs at each stage must be specified by `strata=c("fpc1>fpc2>fpc3")`.
-#' @param single.PSU either "merge" or "mean" defining how single PSUs need to be dealt with.
-#' For `single.PSU="merge"` single PSUs at each stage are merged with the strata or cluster with the next least number of PSUs. If multiple of those exist one will be select via random draw
-#' For `single.PSU="mean"` single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.
-#' @param return.value either "data" or "replicates" specifying the return value of the function. For "data" the survey data is returned as class `data.table`, for "replicates" only the bootstrap replicates are returned as `data.table`.
-#' @param check.input logical, if TRUE the input will be checked before applying the bootstrap procedure
-#' @param new.method logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample!
+#' @param fpc string specifying the column name in `dat` that contains the
+#'   number of PSUs at the first stage. For multistage sampling the number of
+#'   PSUs at each stage must be specified by `strata=c("fpc1>fpc2>fpc3")`.
+#' @param single.PSU either "merge" or "mean" defining how single PSUs need to
+#'   be dealt with. For `single.PSU="merge"` single PSUs at each stage are
+#'   merged with the strata or cluster with the next least number of PSUs. If
+#'   multiple of those exist one will be select via random draw. For
+#'   `single.PSU="mean"` single PSUs will get the mean over all bootstrap
+#'   replicates at the stage which did not contain single PSUs.
+#' @param return.value either "data" or "replicates" specifying the return value
+#'   of the function. For "data" the survey data is returned as class
+#'   `data.table`, for "replicates" only the bootstrap replicates are returned
+#'   as `data.table`.
+#' @param check.input logical, if TRUE the input will be checked before applying
+#'   the bootstrap procedure
+#' @param new.method logical, if TRUE bootstrap replicates will never be
+#'   negative even if in some strata the whole population is in the sample.
+#'   WARNING: This is still experimental and resulting standard errors might be
+#'   underestimated! Use this if for some strata the whole population is in the
+#'   sample!
 #'
-#' @details For specifying multistage sampling designs the column names in `strata`,`cluster` and `fpc` need to seperated by ">".\cr
-#' For multistage sampling the strings are read from left to right meaning that the column name before the first ">" is taken as the column for stratification/clustering/number of PSUs at the first and the column after the last ">" is taken as the column for stratification/clustering/number of PSUs at the last stage.
-#' If for some stages the sample was not stratified or clustered one must specify this by "1" or "I", e.g. `strata=c("strata1>I>strata3")` if there was no stratification at the second stage or `cluster=c("cluster1>cluster2>I")` if there were no clusters at the last stage.\cr
-#' The number of PSUs at each stage is not calculated internally and must be specified for any sampling design.
-#' For single stage sampling using stratification this can usually be done by adding over all sample weights of each PSU by each strata-code.\cr
-#' Spaces in each of the strings will be removed, so if column names contain spaces they should be renamed before calling this procedure!
+#' @details For specifying multistage sampling designs the column names in
+#' `strata`,`cluster` and `fpc` need to seperated by ">".\cr
+#' For multistage sampling the strings are read from left to right meaning that
+#' the column name before the first ">" is taken as the column for
+#' stratification/clustering/number of PSUs at the first and the column after
+#' the last ">" is taken as the column for stratification/clustering/number of
+#' PSUs at the last stage.
+#' If for some stages the sample was not stratified or clustered one must
+#' specify this by "1" or "I", e.g. `strata=c("strata1>I>strata3")` if there was
+#' no stratification at the second stage or `cluster=c("cluster1>cluster2>I")`
+#' if there were no clusters at the last stage.\cr
+#' The number of PSUs at each stage is not calculated internally and must be
+#' specified for any sampling design.
+#' For single stage sampling using stratification this can usually be done by
+#' adding over all sample weights of each PSU by each strata-code.\cr
+#' Spaces in each of the strings will be removed, so if column names contain
+#' spaces they should be renamed before calling this procedure!
 #'
-#' @return returns the complete data set including the bootstrap replicates or just the bootstrap replicates, depending on `return.value="data"` or `return.value="replicates"` respectively.
+#' @return returns the complete data set including the bootstrap replicates or
+#'   just the bootstrap replicates, depending on `return.value="data"` or
+#'   `return.value="replicates"` respectively.
 #' @export rescaled.bootstrap
 #'
-#' @references Preston, J. (2009). Rescaled bootstrap for stratified multistage sampling. Survey Methodology. 35. 227-234.
+#' @references Preston, J. (2009). Rescaled bootstrap for stratified multistage
+#'   sampling. Survey Methodology. 35. 227-234.
 #'
 #' @author Johannes Gussenbauer, Statistics Austria
 #'

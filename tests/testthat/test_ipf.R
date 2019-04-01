@@ -24,7 +24,8 @@ eusilcS[, hsize := cut(hsize, c(0:4, Inf), labels = c(1:4, "5+"))]
 # treat households as a factor variable
 eusilcS[, household := as.factor(household)]
 
-## example for base weights assuming a simple random sample of households stratified per region
+## example for base weights assuming a simple random sample of households
+## stratified per region
 eusilcS[, regSamp := .N, by = state]
 eusilcS[, regPop := sum(weight), by = state]
 eusilcS[, baseWeight := regPop / regSamp]

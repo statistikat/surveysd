@@ -3,17 +3,28 @@
 #' Plot results of `calc.stError()`
 #'
 #' @param x object of class 'surveysd' output of function [calc.stError]
-#' @param variable Name of the variable for which standard errors have been calcualated in `dat`
-#' @param type can bei either 'summary' or 'grouping', default value is 'summary'.
-#' For 'summary' a barplot is created giving an overview of the number of estimates having the flag `smallGroup`, `cvHigh`, both or none of them.
-#' For 'grouping' results for point estimate and standard error are plotted for pre defined groups.
-#' @param groups If `type='grouping'` variables must be defined by which the data is grouped. Only 2 levels are supported as of right now.
-#' If only one group is defined the higher group will be the estimate over the whole period.
-#' Results are plotted for the first argument in `groups` as well as for the combination of `groups[1]` and `groups[2]`.
-#' @param sd.type can bei either `'ribbon'` or `'dot'` and is only used if `type='grouping'`. Default is `"dot"`
-#' For `sd.type='dot'` point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value `cv.limit` (see [calc.stError]).
-#' For `sd.type='ribbon'` the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
-#' The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~`groups[1]`) are coloured grey.
+#' @param variable Name of the variable for which standard errors have been
+#'   calcualated in `dat`
+#' @param type can bei either `"summary"` or `"grouping"`, default value is
+#'   `"summary"`. For `"summary"` a barplot is created giving an overview of the
+#'   number of estimates having the flag `smallGroup`, `cvHigh`, both or none
+#'   of them. For 'grouping' results for point estimate and standard error are
+#'   plotted for pre defined groups.
+#' @param groups If `type='grouping'` variables must be defined by which the
+#'   data is grouped. Only 2 levels are supported as of right now. If only one
+#'   group is defined the higher group will be the estimate over the whole
+#'   period. Results are plotted for the first argument in `groups` as well as
+#'   for the combination of `groups[1]` and `groups[2]`.
+#' @param sd.type can bei either `'ribbon'` or `'dot'` and is only used if
+#'   `type='grouping'`. Default is `"dot"`
+#' For `sd.type='dot'` point estimates are plotted and flagged if the
+#' corresponding standard error and/or the standard error using the mean over
+#' k-periods exceeded the value `cv.limit` (see [calc.stError]).
+#' For `sd.type='ribbon'` the point estimates including ribbons, defined by
+#' point estimate +- estimated standard error are plotted.
+#' The calculated standard errors using the mean over k periods are plotted
+#' using less transparency. Results for the higher level (~`groups[1]`) are
+#' coloured grey.
 #' @param ... additional arguments supplied to plot.
 #'
 #' @examples
@@ -32,7 +43,8 @@
 #'
 #' # estimate weightedRatio for povmd60 per period
 #' group <- list("gender", "region", c("gender", "region"))
-#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+#' err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+#'                         fun = weightedRatio,
 #'                         group = group , period.mean = NULL)
 #'
 #'
