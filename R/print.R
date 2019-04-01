@@ -1,7 +1,8 @@
 #' @title Print function for surveysd objects
 #'
 #' @description
-#' Prints the results of a call to [calc.stError]. Shows used variables and function, number of point estiamtes
+#' Prints the results of a call to [calc.stError]. Shows used variables and
+#' function, number of point estiamtes
 #' as well as properties of the results.
 #'
 #' @param x an object of class `'surveysd'`

@@ -11,20 +11,31 @@
 \arguments{
 \item{x}{object of class 'surveysd' output of function \link{calc.stError}}
 
-\item{variable}{Name of the variable for which standard errors have been calcualated in \code{dat}}
+\item{variable}{Name of the variable for which standard errors have been
+calcualated in \code{dat}}
 
-\item{type}{can bei either 'summary' or 'grouping', default value is 'summary'.
-For 'summary' a barplot is created giving an overview of the number of estimates having the flag \code{smallGroup}, \code{cvHigh}, both or none of them.
-For 'grouping' results for point estimate and standard error are plotted for pre defined groups.}
+\item{type}{can bei either \code{"summary"} or \code{"grouping"}, default value is
+\code{"summary"}. For \code{"summary"} a barplot is created giving an overview of the
+number of estimates having the flag \code{smallGroup}, \code{cvHigh}, both or none
+of them. For 'grouping' results for point estimate and standard error are
+plotted for pre defined groups.}
 
-\item{groups}{If \code{type='grouping'} variables must be defined by which the data is grouped. Only 2 levels are supported as of right now.
-If only one group is defined the higher group will be the estimate over the whole period.
-Results are plotted for the first argument in \code{groups} as well as for the combination of \code{groups[1]} and \code{groups[2]}.}
+\item{groups}{If \code{type='grouping'} variables must be defined by which the
+data is grouped. Only 2 levels are supported as of right now. If only one
+group is defined the higher group will be the estimate over the whole
+period. Results are plotted for the first argument in \code{groups} as well as
+for the combination of \code{groups[1]} and \code{groups[2]}.}
 
-\item{sd.type}{can bei either \code{'ribbon'} or \code{'dot'} and is only used if \code{type='grouping'}. Default is \code{"dot"}
-For \code{sd.type='dot'} point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value \code{cv.limit} (see \link{calc.stError}).
-For \code{sd.type='ribbon'} the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
-The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~\code{groups[1]}) are coloured grey.}
+\item{sd.type}{can bei either \code{'ribbon'} or \code{'dot'} and is only used if
+\code{type='grouping'}. Default is \code{"dot"}
+For \code{sd.type='dot'} point estimates are plotted and flagged if the
+corresponding standard error and/or the standard error using the mean over
+k-periods exceeded the value \code{cv.limit} (see \link{calc.stError}).
+For \code{sd.type='ribbon'} the point estimates including ribbons, defined by
+point estimate +- estimated standard error are plotted.
+The calculated standard errors using the mean over k periods are plotted
+using less transparency. Results for the higher level (~\code{groups[1]}) are
+coloured grey.}
 
 \item{...}{additional arguments supplied to plot.}
 }
@@ -47,7 +58,8 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 
 # estimate weightedRatio for povmd60 per period
 group <- list("gender", "region", c("gender", "region"))
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+                        fun = weightedRatio,
                         group = group , period.mean = NULL)
 
 

@@ -371,89 +371,101 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #' This function implements the weighting procedure described
 #' [here](http://www.ajs.or.at/index.php/ajs/article/viewFile/doi10.17713ajs.v45i3.120/512).
 #'
-#' `conP` and `conH` are contingency tables, which can be created with `xtabs`. The `dimnames` of those
-#' tables should match the names and levels of the corresponding columns in `dat`.
+#' `conP` and `conH` are contingency tables, which can be created with `xtabs`.
+#' The `dimnames` of those tables should match the names and levels of the
+#' corresponding columns in `dat`.
 #'
-#' `maxIter`, `epsP` and `epsH` are the stopping criteria. `epsP` and `epsH` describe relative tolerances
-#' in the sense that
+#' `maxIter`, `epsP` and `epsH` are the stopping criteria. `epsP` and `epsH`
+#' describe relative tolerances in the sense that
 #' \out{\deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP} }
-#' will be used as convergence criterium. Here i is the iteration step and wi is the weight of a
-#' specific person at step i.
+#' will be used as convergence criterium. Here i is the iteration step and wi is
+#' the weight of a specific person at step i.
 #'
 #' The algorithm
-#' performs best if all varables occuring in the constraints (`conP` and `conH`) as well as the
-#' household variable are coded as `factor`-columns in `dat`. Otherwise, conversions will be necessary
-#' which can be monitored with the `conversion_messages` argument.
-#' Setting `check_hh_vars` to `FALSE` can also incease the performance of the scheme.
+#' performs best if all varables occuring in the constraints (`conP` and `conH`)
+#' as well as the household variable are coded as `factor`-columns in `dat`.
+#' Otherwise, conversions will be necessary which can be monitored with the
+#' `conversion_messages` argument. Setting `check_hh_vars` to `FALSE` can also
+#' incease the performance of the scheme.
 #'
 #' @name ipf
 #' @md
 #' @aliases ipf
 #' @param dat a `data.table` containing household ids (optionally), base
-#' weights (optionally), household and/or personal level variables (numerical
-#' or categorical) that should be fitted.
-#' @param hid name of the column containing the household-ids
-#' within `dat` or NULL if such a variable does not exist.
-#' @param w name if the column containing the base
-#' weights within `dat` or NULL if such a variable does not exist. In the
-#' latter case, every observation in `dat` is assigned a starting weight
-#' of 1.
+#'   weights (optionally), household and/or personal level variables (numerical
+#'   or categorical) that should be fitted.
+#' @param hid name of the column containing the household-ids within `dat` or
+#'   NULL if such a variable does not exist.
+#' @param w name if the column containing the base weights within `dat` or NULL
+#'   if such a variable does not exist. In the latter case, every observation
+#'   in `dat` is assigned a starting weight of 1.
 #' @param conP list or (partly) named list defining the constraints on person
-#' level.  The list elements are contingency tables in array representation
-#' with dimnames corresponding to the names of the relevant calibration
-#' variables in `dat`. If a numerical variable is to be calibrated, the
-#' respective list element has to be named with the name of that numerical
-#' variable. Otherwise the list element shoud NOT be named.
+#'   level.  The list elements are contingency tables in array representation
+#'   with dimnames corresponding to the names of the relevant calibration
+#'   variables in `dat`. If a numerical variable is to be calibrated, the
+#'   respective list element has to be named with the name of that numerical
+#'   variable. Otherwise the list element shoud NOT be named.
 #' @param conH list or (partly) named list defining the constraints on
-#' household level.  The list elements are contingency tables in array
-#' representation with dimnames corresponding to the names of the relevant
-#' calibration variables in `dat`. If a numerical variable is to be
-#' calibrated, the respective list element has to be named with the name of
-#' that numerical variable. Otherwise the list element shoud NOT be named.
+#'   household level.  The list elements are contingency tables in array
+#'   representation with dimnames corresponding to the names of the relevant
+#'   calibration variables in `dat`. If a numerical variable is to be
+#'   calibrated, the respective list element has to be named with the name of
+#'   that numerical variable. Otherwise the list element shoud NOT be named.
 #' @param epsP numeric value or list (of numeric values and/or arrays)
-#' specifying the convergence limit(s) for `conP`. The list can contain
-#' numeric values and/or arrays which must appear in the same order as the
-#' corresponding constraints in `conP`. Also, an array must have the same
-#' dimensions and dimnames as the corresponding constraint in `conP`.
+#'   specifying the convergence limit(s) for `conP`. The list can contain
+#'   numeric values and/or arrays which must appear in the same order as the
+#'   corresponding constraints in `conP`. Also, an array must have the same
+#'   dimensions and dimnames as the corresponding constraint in `conP`.
 #' @param epsH numeric value or list (of numeric values and/or arrays)
-#' specifying the convergence limit(s) for `conH`. The list can contain
-#' numeric values and/or arrays which must appear in the same order as the
-#' corresponding constraints in `conH`. Also, an array must have the same
-#' dimensions and dimnames as the corresponding constraint in `conH`.
+#'   specifying the convergence limit(s) for `conH`. The list can contain
+#'   numeric values and/or arrays which must appear in the same order as the
+#'   corresponding constraints in `conH`. Also, an array must have the same
+#'   dimensions and dimnames as the corresponding constraint in `conH`.
 #' @param verbose if TRUE, some progress information will be printed.
 #' @param bound numeric value specifying the multiplier for determining the
-#' weight trimming boundary if the change of the base weights should be
-#' restricted, i.e. if the weights should stay between 1/`bound`*`w`
-#' and `bound`*\code{w}.
+#'   weight trimming boundary if the change of the base weights should be
+#'   restricted, i.e. if the weights should stay between 1/`bound`*`w`
+#'   and `bound`*\code{w}.
 #' @param maxIter numeric value specifying the maximum number of iterations
 #' that should be performed.
 #' @param meanHH if TRUE, every person in a household is assigned the mean of
-#' the person weights corresponding to the household. If `"geometric"`, the geometric mean
-#' is used rather than the arithmetic mean.
-#' @param allPthenH if TRUE, all the person level calibration steps are performed before the houshold level calibration steps (and `meanHH`, if specified).
-#' If FALSE, the houshold level calibration steps (and `meanHH`, if specified) are performed after everey person level calibration step.
-#' This can lead to better convergence properties in certain cases but also means that the total number of calibration steps is increased.
-#' @param returnNA if TRUE, the calibrated weight will be set to NA in case of no convergence.
-#' @param looseH if FALSE, the actual constraints `conH` are used for calibrating all the hh weights.
-#' If TRUE, only the weights for which the lower and upper thresholds defined by `conH` and `epsH` are exceeded
-#' are calibrated. They are however not calibrated against the actual constraints `conH` but against
-#' these lower and upper thresholds, i.e. `conH`-`conH`*`epsH` and `conH`+`conH`*\code{epsH}.
+#'   the person weights corresponding to the household. If `"geometric"`, the
+#'   geometric mean is used rather than the arithmetic mean.
+#' @param allPthenH if TRUE, all the person level calibration steps are
+#'   performed before the houshold level calibration steps (and `meanHH`, if
+#'   specified). If FALSE, the houshold level calibration steps (and `meanHH`,
+#'   if specified) are performed after everey person level calibration step.
+#'   This can lead to better convergence properties in certain cases but also
+#'   means that the total number of calibration steps is increased.
+#' @param returnNA if TRUE, the calibrated weight will be set to NA in case of
+#'   no convergence.
+#' @param looseH if FALSE, the actual constraints `conH` are used for
+#'   calibrating all the hh weights. If TRUE, only the weights for which the
+#'   lower and upper thresholds defined by `conH` and `epsH` are exceeded are
+#'   calibrated. They are however not calibrated against the actual constraints
+#'   `conH` but against these lower and upper thresholds, i.e.
+#'   `conH`-`conH`*`epsH` and `conH`+`conH`*\code{epsH}.
 #' @param numericalWeighting See [numericalWeighting]
-#' @param check_hh_vars If `TRUE` check for non-unique values inside of a household for variables in
-#'                      household constraints
-#' @param conversion_messages show a message, if inputs need to be reformatted. This can be useful for speed
-#'        optimizations if ipf is called several times with similar inputs (for example bootstrapping)
-#' @param nameCalibWeight character defining the name of the variable for the newly generated calibrated weight.
-#' @return The function will return the input data `dat` with the
-#' calibrated weights `calibWeight` as an additional column as well as attributes. If no convergence has been reached in `maxIter`
-#' steps, and `returnNA` is `TRUE` (the default), the column `calibWeights` will only consist of `NA`s. The attributes of the table are
-#' attributes derived from the `data.table` class as well as the following.
+#' @param check_hh_vars If `TRUE` check for non-unique values inside of a
+#'   household for variables in household constraints
+#' @param conversion_messages show a message, if inputs need to be reformatted.
+#'   This can be useful for speed optimizations if ipf is called several times
+#'   with similar inputs (for example bootstrapping)
+#' @param nameCalibWeight character defining the name of the variable for the
+#'   newly generated calibrated weight.
+#' @return The function will return the input data `dat` with the calibrated
+#'   weights `calibWeight` as an additional column as well as attributes. If no
+#'   convergence has been reached in `maxIter` steps, and `returnNA` is `TRUE`
+#'   (the default), the column `calibWeights` will only consist of `NA`s. The
+#'   attributes of the table are attributes derived from the `data.table` class
+#'   as well as the following.
 #' \tabular{ll}{
 #'   `converged` \tab Did the algorithm converge in `maxIter` steps? \cr
 #'   `iterations` \tab The number of iterations performed. \cr
 #'   `conP`, `conH`, `epsP`, `epsH` \tab See Arguments. \cr
 #'   `conP_adj`, `conH_adj` \tab Adjusted versions of `conP` and `conH` \cr
-#'   `formP`, `formH` \tab Formulas that were used to calculate `conP_adj` and `conH_adj` based on the output table.
+#'   `formP`, `formH` \tab Formulas that were used to calculate `conP_adj` and
+#'   `conH_adj` based on the output table.
 #' }
 #' @seealso `\link[simPop]{ipu}`
 #' @export ipf
@@ -482,7 +494,8 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #' # treat households as a factor variable
 #' eusilcS[, household := as.factor(household)]
 #'
-#' ## example for base weights assuming a simple random sample of households stratified per region
+#' ## example for base weights assuming a simple random sample of households
+#' ## stratified per region
 #' eusilcS[, regSamp := .N, by = state]
 #' eusilcS[, regPop := sum(weight), by = state]
 #' eusilcS[, baseWeight := regPop/regSamp]
@@ -496,7 +509,8 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #' conP3 <- xtabs(weight*netIncome ~ gender, data = eusilcS)
 #'
 #' ## constraints on household level
-#' conH1 <- xtabs(weight ~ hsize + state, data = eusilcS, subset = !duplicated(household))
+#' conH1 <- xtabs(weight ~ hsize + state, data = eusilcS,
+#'                subset = !duplicated(household))
 #'
 #' # array of convergence limits for conH1
 #' epsH1 <- conH1

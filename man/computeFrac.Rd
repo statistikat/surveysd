@@ -22,23 +22,24 @@ computeFrac(curValue, target, x, w)
 
 \item{w}{Vector of weights}
 
-\item{boundLinear}{The output \code{f} will satisfy \code{1/boundLinear <= f <= boundLinear}. See \code{bound} in \link{ipf}}
+\item{boundLinear}{The output \code{f} will satisfy
+\code{1/boundLinear <= f <= boundLinear}. See \code{bound} in \link{ipf}}
 }
 \value{
 A weight multiplier \code{f}
 }
 \description{
-Customize weight-updating within factor levels in case of numerical calibration. The
-functions described here serve as inputs for \link{ipf}.
+Customize weight-updating within factor levels in case of numerical
+calibration. The functions described here serve as inputs for \link{ipf}.
 }
 \details{
 \code{computeFrac} provides the "standard" IPU updating scheme given as
 
 \deqn{f = target/curValue}
 
-which means that each weight inside the level will be multtiplied by the same factor when
-doing the actual update step (\code{w := f*w}). \code{computeLinear} on the other hand
-calculates \code{f} as
+which means that each weight inside the level will be multtiplied by the same
+factor when doing the actual update step (\code{w := f*w}). \code{computeLinear} on the
+other hand calculates \code{f} as
 
 \ifelse{html}{
   \out{<center> f<sub>i</sub> = a  &middot; x<sub>i</sub> + b </center>}
@@ -53,5 +54,6 @@ where \code{a} and \code{b} are chosen, so f satisfies the following two equatio
   \out{<center>&sum; f<sub>i</sub> w<sub>i</sub> = &sum; w<sub>i</sub></center>}
 }{\deqn{\sum f_i * w_i = \sum w_i}}
 
-\code{computeLinearG1} calculates \code{f} in the same way as \code{computeLinear}, but if \code{f_i*w_i<1} \code{f_i} will be set to \code{1/w_i}.
+\code{computeLinearG1} calculates \code{f} in the same way as \code{computeLinear}, but if
+\code{f_i*w_i<1} \code{f_i} will be set to \code{1/w_i}.
 }
