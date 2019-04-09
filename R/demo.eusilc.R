@@ -44,7 +44,7 @@ demo.eusilc <- function(n = 8, prettyNames = FALSE) {
   if (n > 1)
     for (i in 1:(n - 1)) {
       eusilc.i[db030 %in% sample(unique(eusilc.i$db030), nsamp),
-               c("db030", "eqIncome") := .(nextIDs[.GRP], sample(hhincome, .N)),
+               c("db030", "eqIncome") := .(nextIDs[.GRP], sample(hhincome, 1L)),
                by = db030]
       eusilc.i[, year := year + 1]
       eusilc <- rbind(eusilc, eusilc.i)
