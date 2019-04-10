@@ -295,7 +295,7 @@ draw.bootstrap <- function(
 
   # check totals
   # if clusters are specified the finite population correction factors must
-  #   be user specified (at least for now)
+  #   be user specified
   # check input for totals
   # if no totals are specified then leave them NULL
   if (is.null(totals)) {
@@ -305,19 +305,9 @@ draw.bootstrap <- function(
       totals <- "fpc"
       fpc.strata <- strata[!strata %in% c("I", "1")] # nolint
       dt.eval("dat[,fpc:=sum(", weights, "[!duplicated(",
-              hid, ")]),by=c(fpc.strata)]")
+              hid, ")]),by=c(fpc.strata,period)]")
     } else {
-      # else leave totals NULL
-      # if(length(cluster)>1){
-      #   stop("If sample ist clusterd at multiple stages the number of
-      #         Clusters at each stage must be specified!\n")
-      # }
-      #
-      # warning("Number of Clusters is not specified and will therefor be
-      #   roughly estimated.
-      #         \n Resulting bootstrap replicates might be biased. To avoid
-      #   this define number of clusters in each strata through parameter
-      #   'totals'")
+
       stop("For multistage sampling the number of PSUs at each level needs to ",
            "be specified!")
     }
