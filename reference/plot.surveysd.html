@@ -23,7 +23,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -82,7 +83,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -115,7 +116,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/statistikat/surveysd">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -196,7 +197,7 @@ The calculated standard errors using the mean over k periods are plotted using l
                            <span class='kw'>strata</span> <span class='kw'>=</span> <span class='st'>"region"</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
 
 <span class='co'># calibrate weight for bootstrap replicates</span>
-<span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 2 steps </span></div><div class='input'>
+<span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povmd60 per period</span>
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='calc.stError.html'>calc.stError</a></span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,

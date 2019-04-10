@@ -23,7 +23,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -83,7 +84,7 @@ In addition the standard error of an estimate can be calcualted using the survey
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -116,7 +117,7 @@ In addition the standard error of an estimate can be calcualted using the survey
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/statistikat/surveysd">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -313,15 +314,15 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>4</span>,<span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='draw.bootstrap.html'>draw.bootstrap</a></span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
                            <span class='kw'>strata</span> <span class='kw'>=</span> <span class='st'>"region"</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
-<span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='input'>
+<span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 2 steps </span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period</span>
 
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
-#&gt; 1: 2010 14827 8182222        14.44422       0.1593646
-#&gt; 2: 2011 14827 8182222        14.60155       0.2711741
-#&gt; 3: 2012 14827 8182222        15.24983       0.4327542
-#&gt; 4: 2013 14827 8182222        15.60219       0.6942629</div><div class='input'>
+#&gt; 1: 2010 14827 8182222        14.44422       0.6378260
+#&gt; 2: 2011 14827 8182222        14.70912       0.5830094
+#&gt; 3: 2012 14827 8182222        15.19636       0.3285917
+#&gt; 4: 2013 14827 8182222        15.00887       0.5208043</div><div class='input'>
 <span class='co'># calculate weightedRatio for povertyRisk and fraction of one-person households per period</span>
 
 <span class='no'>dat_boot_calib</span>[, <span class='no'>onePerson</span> <span class='kw'>:=</span> <span class='no'>.N</span> <span class='kw'>==</span> <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>year</span>, <span class='no'>hid</span>)]</div><div class='output co'>#&gt;          hid hsize        region     pid       age gender   ecoStat citizenship
@@ -331,123 +332,111 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt;     4:     1 (2,3]         Tyrol     101   (25,45] female part time          AT
 #&gt;     5:     1 (2,3]         Tyrol     102   (25,45]   male full time       Other
 #&gt;    ---                                                                         
-#&gt; 59304: 10497 (0,1]         Tyrol 1049701 (65, Inf] female   retired          AT
-#&gt; 59305: 10498 (0,1]        Vienna 1049801   (45,65]   male full time          AT
-#&gt; 59306: 10499 (1,2] Lower Austria 1049901 (65, Inf] female   retired          AT
-#&gt; 59307: 10499 (1,2] Lower Austria 1049902 (65, Inf]   male   retired          AT
-#&gt; 59308: 10500 (0,1]         Tyrol 1050001   (25,45]   male full time          AT
-#&gt;          py010n py050n py090n   py100n py110n py120n py130n py140n hy040n
-#&gt;     1:  9756.25      0      0     0.00      0      0      0      0 4273.9
-#&gt;     2: 12471.60      0      0     0.00      0      0      0      0 4273.9
-#&gt;     3:       NA     NA     NA       NA     NA     NA     NA     NA 4273.9
-#&gt;     4:  9756.25      0      0     0.00      0      0      0      0 4273.9
-#&gt;     5: 12471.60      0      0     0.00      0      0      0      0 4273.9
-#&gt;    ---                                                                   
-#&gt; 59304:     0.00      0      0 16860.76      0      0      0      0    0.0
-#&gt; 59305: 29329.52      0      0     0.00      0      0      0      0    0.0
-#&gt; 59306:     0.00      0      0  5115.81      0      0      0      0    0.0
-#&gt; 59307:     0.00      0      0  7393.48      0      0      0      0    0.0
-#&gt; 59308: 14685.18      0      0     0.00      0      0      0      0    0.0
-#&gt;         hy050n hy070n hy080n hy090n hy110n hy130n  hy145n eqSS  eqIncome
-#&gt;     1: 2428.11      0      0  33.39      0      0    0.00  1.8 16090.694
-#&gt;     2: 2428.11      0      0  33.39      0      0    0.00  1.8 16090.694
-#&gt;     3: 2428.11      0      0  33.39      0      0    0.00  1.8 16090.694
-#&gt;     4: 2428.11      0      0  33.39      0      0    0.00  1.8 16090.694
-#&gt;     5: 2428.11      0      0  33.39      0      0    0.00  1.8 16090.694
-#&gt;    ---                                                                  
-#&gt; 59304:    0.00      0      0  30.24      0      0    0.00  1.0 18984.400
-#&gt; 59305: 2937.70      0      0 403.97      0      0 4362.91  1.0  7250.405
-#&gt; 59306:    0.00      0      0   0.00      0      0    0.00  1.5 23539.573
-#&gt; 59307:    0.00      0      0   0.00      0      0    0.00  1.5 24037.360
-#&gt; 59308:    0.00      0      0 120.65      0      0    0.00  1.0 18897.867
-#&gt;           db090  pWeight year povertyRisk          w1          w2          w3
-#&gt;     1: 504.5696 504.5696 2010       FALSE    1.259194 1002.861118 1005.927046
-#&gt;     2: 504.5696 504.5696 2010       FALSE    1.259194 1002.861118 1005.927046
-#&gt;     3: 504.5696 504.5696 2010       FALSE    1.259194 1002.861118 1005.927046
-#&gt;     4: 504.5696 504.5696 2011       FALSE    1.249270 1019.451194 1007.928167
-#&gt;     5: 504.5696 504.5696 2011       FALSE    1.249270 1019.451194 1007.928167
-#&gt;    ---                                                                       
-#&gt; 59304: 679.7288 679.7288 2013       FALSE    1.612425    1.738321    1.877846
-#&gt; 59305: 868.2204 868.2204 2013        TRUE    1.848362    1.817606 1743.686440
-#&gt; 59306: 515.1014 515.1014 2013       FALSE    1.154394    1.177891 1012.134411
-#&gt; 59307: 515.1014 515.1014 2013       FALSE    1.154394    1.177891 1012.134411
-#&gt; 59308: 679.7288 679.7288 2013       FALSE 1287.237248 1314.407112    1.870185
-#&gt;        onePerson
-#&gt;     1:     FALSE
-#&gt;     2:     FALSE
-#&gt;     3:     FALSE
-#&gt;     4:     FALSE
-#&gt;     5:     FALSE
-#&gt;    ---          
-#&gt; 59304:      TRUE
-#&gt; 59305:      TRUE
-#&gt; 59306:     FALSE
-#&gt; 59307:     FALSE
-#&gt; 59308:      TRUE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
+#&gt; 59304: 10499 (1,2]    Burgenland 1049902   (45,65] female  domestic          AT
+#&gt; 59305: 10500 (3,4] Lower Austria 1050001   (25,45] female full time          AT
+#&gt; 59306: 10500 (3,4] Lower Austria 1050002   (45,65]   male full time          AT
+#&gt; 59307: 10500 (3,4] Lower Austria 1050003   (16,25]   male full time          AT
+#&gt; 59308: 10500 (3,4] Lower Austria 1050004 (-Inf,16] female education          AT
+#&gt;          py010n py050n py090n py100n py110n py120n py130n py140n hy040n  hy050n
+#&gt;     1:  9756.25      0      0      0      0      0      0      0 4273.9 2428.11
+#&gt;     2: 12471.60      0      0      0      0      0      0      0 4273.9 2428.11
+#&gt;     3:       NA     NA     NA     NA     NA     NA     NA     NA 4273.9 2428.11
+#&gt;     4:  9756.25      0      0      0      0      0      0      0 4273.9 2428.11
+#&gt;     5: 12471.60      0      0      0      0      0      0      0 4273.9 2428.11
+#&gt;    ---                                                                         
+#&gt; 59304:     0.00      0      0      0      0      0      0      0    0.0    0.00
+#&gt; 59305: 10884.59      0      0      0      0      0      0      0    0.0 1955.19
+#&gt; 59306: 25796.56      0      0      0      0      0      0      0    0.0 1955.19
+#&gt; 59307: 27634.15      0      0      0      0      0      0      0    0.0 1955.19
+#&gt; 59308:     0.00      0      0      0      0      0      0      0    0.0 1955.19
+#&gt;        hy070n hy080n hy090n hy110n hy130n hy145n eqSS eqIncome    db090
+#&gt;     1:      0      0  33.39      0      0      0  1.8 16090.69 504.5696
+#&gt;     2:      0      0  33.39      0      0      0  1.8 16090.69 504.5696
+#&gt;     3:      0      0  33.39      0      0      0  1.8 16090.69 504.5696
+#&gt;     4:      0      0  33.39      0      0      0  1.8 16090.69 504.5696
+#&gt;     5:      0      0  33.39      0      0      0  1.8 16090.69 504.5696
+#&gt;    ---                                                                 
+#&gt; 59304:      0      0 358.56      0      0      0  1.5 42774.87 480.9878
+#&gt; 59305:      0      0   0.00      0      0      0  2.5 15975.90 556.4260
+#&gt; 59306:      0      0   0.00      0      0      0  2.5 15975.90 556.4260
+#&gt; 59307:      0      0   0.00      0      0      0  2.5 15975.90 556.4260
+#&gt; 59308:      0      0   0.00      0      0      0  2.5 15975.90 556.4260
+#&gt;         pWeight year povertyRisk          w1          w2          w3 onePerson
+#&gt;     1: 504.5696 2010       FALSE 1006.860058 1016.065970    1.457151     FALSE
+#&gt;     2: 504.5696 2010       FALSE 1006.860058 1016.065970    1.457151     FALSE
+#&gt;     3: 504.5696 2010       FALSE 1006.860058 1016.065970    1.457151     FALSE
+#&gt;     4: 504.5696 2011       FALSE  979.365061 1018.762836    1.455805     FALSE
+#&gt;     5: 504.5696 2011       FALSE  979.365061 1018.762836    1.455805     FALSE
+#&gt;    ---                                                                        
+#&gt; 59304: 480.9878 2013       FALSE    2.625863  954.875006    2.602691     FALSE
+#&gt; 59305: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE
+#&gt; 59306: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE
+#&gt; 59307: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE
+#&gt; 59308: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
-#&gt; 1: 2010 14827 8182222        14.44422       0.1593646      14.85737
-#&gt; 2: 2011 14827 8182222        14.60155       0.2711741      14.85737
-#&gt; 3: 2012 14827 8182222        15.24983       0.4327542      14.85737
-#&gt; 4: 2013 14827 8182222        15.60219       0.6942629      14.85737
+#&gt; 1: 2010 14827 8182222        14.44422       0.6378260      14.85737
+#&gt; 2: 2011 14827 8182222        14.70912       0.5830094      14.85737
+#&gt; 3: 2012 14827 8182222        15.19636       0.3285917      14.85737
+#&gt; 4: 2013 14827 8182222        15.00887       0.5208043      14.85737
 #&gt;    stE_onePerson
-#&gt; 1:     0.2095107
-#&gt; 2:     0.1503156
-#&gt; 3:     0.2358907
-#&gt; 4:     0.1715979</div><div class='input'>
+#&gt; 1:     0.2789410
+#&gt; 2:     0.1554972
+#&gt; 3:     0.1934085
+#&gt; 4:     0.3947624</div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='st'>"gender"</span>
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;     year     n       N gender val_povertyRisk stE_povertyRisk
-#&gt;  1: 2010  7267 3979572   male        12.02660       0.2851213
-#&gt;  2: 2010  7560 4202650 female        16.73351       0.4637152
-#&gt;  3: 2010 14827 8182222   &lt;NA&gt;        14.44422       0.1593646
-#&gt;  4: 2011  7267 3979572   male        12.68746       0.5724967
-#&gt;  5: 2011  7560 4202650 female        16.41404       0.3444851
-#&gt;  6: 2011 14827 8182222   &lt;NA&gt;        14.60155       0.2711741
-#&gt;  7: 2012  7267 3979572   male        13.97794       0.8590955
-#&gt;  8: 2012  7560 4202650 female        16.45421       0.3717487
-#&gt;  9: 2012 14827 8182222   &lt;NA&gt;        15.24983       0.4327542
-#&gt; 10: 2013  7267 3979572   male        14.74218       0.7553482
-#&gt; 11: 2013  7560 4202650 female        16.41655       0.6851339
-#&gt; 12: 2013 14827 8182222   &lt;NA&gt;        15.60219       0.6942629</div><div class='input'>
+#&gt;  1: 2010  7267 3979572   male        12.02660       0.5820076
+#&gt;  2: 2010  7560 4202650 female        16.73351       0.8174841
+#&gt;  3: 2010 14827 8182222   &lt;NA&gt;        14.44422       0.6378260
+#&gt;  4: 2011  7267 3979572   male        12.78831       0.7595946
+#&gt;  5: 2011  7560 4202650 female        16.52796       0.4837816
+#&gt;  6: 2011 14827 8182222   &lt;NA&gt;        14.70912       0.5830094
+#&gt;  7: 2012  7267 3979572   male        13.97633       0.4866759
+#&gt;  8: 2012  7560 4202650 female        16.35163       0.1991761
+#&gt;  9: 2012 14827 8182222   &lt;NA&gt;        15.19636       0.3285917
+#&gt; 10: 2013  7267 3979572   male        14.22760       0.8541415
+#&gt; 11: 2013  7560 4202650 female        15.74868       0.2615612
+#&gt; 12: 2013 14827 8182222   &lt;NA&gt;        15.00887       0.5208043</div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender, region and combination of both</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
-#&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       2.4596359
-#&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       2.4056694
-#&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259       0.9179864
-#&gt;   4: 2010   374  194622.1 female    Vorarlberg       19.883637       2.6093968
-#&gt;   5: 2010   440  253143.7   male      Salzburg        9.156964       1.2076852
+#&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       4.6032779
+#&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       2.8594933
+#&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259       2.0815933
+#&gt;   4: 2010   374  194622.1 female    Vorarlberg       19.883637       1.3716850
+#&gt;   5: 2010   440  253143.7   male      Salzburg        9.156964       1.0946675
 #&gt;  ---                                                                          
-#&gt; 116: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria       14.987779       0.3479337
-#&gt; 117: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria       13.530787       0.8881654
-#&gt; 118: 2013  7267 3979571.7   male          &lt;NA&gt;       14.742184       0.7553482
-#&gt; 119: 2013  7560 4202650.3 female          &lt;NA&gt;       16.416554       0.6851339
-#&gt; 120: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       15.602194       0.6942629</div><div class='input'>
+#&gt; 116: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria       16.129431       1.0293922
+#&gt; 117: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria       13.231396       0.4909479
+#&gt; 118: 2013  7267 3979571.7   male          &lt;NA&gt;       14.227596       0.8541415
+#&gt; 119: 2013  7560 4202650.3 female          &lt;NA&gt;       15.748677       0.2615612
+#&gt; 120: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       15.008872       0.5208043</div><div class='input'>
 <span class='co'># use average over 3 periods for standard error estimation</span>
 
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
-#&gt; 1:           2010 14827 8182222        14.44422       0.1593646
-#&gt; 2: 2010_2011_2012 14827 8182222        14.76520       0.1823040
-#&gt; 3:           2011 14827 8182222        14.60155       0.2711741
-#&gt; 4: 2011_2012_2013 14827 8182222        15.15119       0.4356736
-#&gt; 5:           2012 14827 8182222        15.24983       0.4327542
-#&gt; 6:           2013 14827 8182222        15.60219       0.6942629</div><div class='input'>
+#&gt; 1:           2010 14827 8182222        14.44422       0.6378260
+#&gt; 2: 2010_2011_2012 14827 8182222        14.78323       0.4397136
+#&gt; 3:           2011 14827 8182222        14.70912       0.5830094
+#&gt; 4: 2011_2012_2013 14827 8182222        14.97145       0.4492787
+#&gt; 5:           2012 14827 8182222        15.19636       0.3285917
+#&gt; 6:           2013 14827 8182222        15.00887       0.5208043</div><div class='input'>
 <span class='co'># get estimate for difference of period 2016 and 2013</span>
 
 <span class='no'>period.diff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"2015-2011"</span>)
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
                         <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
-#&gt; 1:           2010 14827 8182222        14.44422       0.1593646
-#&gt; 2: 2010_2011_2012 14827 8182222        14.76520       0.1823040
-#&gt; 3:           2011 14827 8182222        14.60155       0.2711741
-#&gt; 4: 2011_2012_2013 14827 8182222        15.15119       0.4356736
-#&gt; 5:           2012 14827 8182222        15.24983       0.4327542
-#&gt; 6:           2013 14827 8182222        15.60219       0.6942629</div><div class='input'>
+#&gt; 1:           2010 14827 8182222        14.44422       0.6378260
+#&gt; 2: 2010_2011_2012 14827 8182222        14.78323       0.4397136
+#&gt; 3:           2011 14827 8182222        14.70912       0.5830094
+#&gt; 4: 2011_2012_2013 14827 8182222        14.97145       0.4492787
+#&gt; 5:           2012 14827 8182222        15.19636       0.3285917
+#&gt; 6:           2013 14827 8182222        15.00887       0.5208043</div><div class='input'>
 <span class='co'># use add.arg-argument</span>
 <span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>,<span class='no'>w</span>,<span class='no'>b</span>){
   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>x</span>*<span class='no'>w</span>*<span class='no'>b</span>)
@@ -457,10 +446,10 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>fun</span>,
                         <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>add.arg</span><span class='kw'>=</span><span class='no'>add.arg</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
-#&gt; 1: 2010 14827 8182222        273683.9       15304.091
-#&gt; 2: 2011 14827 8182222        243440.0       10068.841
-#&gt; 3: 2012 14827 8182222        232158.1        2667.659
-#&gt; 4: 2013 14827 8182222        237365.3       12472.781</div><div class='input'><span class='co'># compare with direkt computation</span>
+#&gt; 1: 2010 14827 8182222        273683.9        7453.417
+#&gt; 2: 2011 14827 8182222        252359.9       17548.062
+#&gt; 3: 2012 14827 8182222        236113.7       15389.347
+#&gt; 4: 2013 14827 8182222        228660.6       19668.001</div><div class='input'><span class='co'># compare with direkt computation</span>
 <span class='no'>compare.value</span> <span class='kw'>&lt;-</span> <span class='no'>dat_boot_calib</span>[,<span class='fu'>fun</span>(<span class='no'>povertyRisk</span>,<span class='no'>pWeight</span>,<span class='kw'>b</span><span class='kw'>=</span><span class='no'>onePerson</span>),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"year"</span>)]
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/all'>all</a></span>((<span class='no'>compare.value</span>$<span class='no'>V1</span>-<span class='no'>err.est</span>$<span class='no'>Estimates</span>$<span class='no'>val_povertyRisk</span>)<span class='kw'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 <span class='co'># use a function from an other package that has sampling weights as its second argument</span>
@@ -478,17 +467,17 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>help_gini</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
                         <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
-#&gt;   1: 2010   261  122741.8   male    Burgenland        82.58548       2.4596359
-#&gt;   2: 2010   288  137822.2 female    Burgenland        78.56740       2.4056694
-#&gt;   3: 2010   359  182732.9   male    Vorarlberg        87.02674       0.9179864
-#&gt;   4: 2010   374  194622.1 female    Vorarlberg        80.11636       2.6093968
-#&gt;   5: 2010   440  253143.7   male      Salzburg        90.84304       1.2076852
+#&gt;   1: 2010   261  122741.8   male    Burgenland        82.58548       4.6032779
+#&gt;   2: 2010   288  137822.2 female    Burgenland        78.56740       2.8594933
+#&gt;   3: 2010   359  182732.9   male    Vorarlberg        87.02674       2.0815933
+#&gt;   4: 2010   374  194622.1 female    Vorarlberg        80.11636       1.3716850
+#&gt;   5: 2010   440  253143.7   male      Salzburg        90.84304       1.0946675
 #&gt;  ---                                                                          
-#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria        85.01222       0.3479337
-#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria        86.46921       0.8881654
-#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;        85.25782       0.7553482
-#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;        83.58345       0.6851339
-#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        84.39781       0.6942629</div><div class='input'>
+#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria        83.87057       1.0293922
+#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria        86.76860       0.4909479
+#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;        85.77240       0.8541415
+#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;        84.25132       0.2615612
+#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        84.99113       0.5208043</div><div class='input'>
 <span class='co'># using fun.adjust.var and adjust.var to estimate povmd60 indicator</span>
 <span class='co'># for each period and bootstrap weight before applying the weightedRatio point estimate</span>
 
@@ -508,17 +497,17 @@ The rough estimate for the increase in sample size uses the fact that for a samp
                         <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='no'>povmd</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>,
                         <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
-#&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       2.0652579
-#&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       2.5189248
-#&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259       0.4520871
-#&gt;   4: 2010   374  194622.1 female    Vorarlberg       19.883637       2.6962190
-#&gt;   5: 2010   440  253143.7   male      Salzburg        9.156964       1.7030197
+#&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       4.3276277
+#&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       3.0348585
+#&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259       1.9891979
+#&gt;   4: 2010   374  194622.1 female    Vorarlberg       19.883637       0.5921494
+#&gt;   5: 2010   440  253143.7   male      Salzburg        9.156964       1.0957437
 #&gt;  ---                                                                          
-#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria       14.987779       0.3406768
-#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria       13.530787       0.7225268
-#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;       14.742184       0.5891365
-#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;       16.416554       0.4756500
-#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       15.602194       0.4764829</div><div class='input'>
+#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria       16.129431       1.0934317
+#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria       13.231396       0.6076299
+#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;       14.227596       0.6839119
+#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;       15.748677       0.2310397
+#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       15.008872       0.3658815</div><div class='input'>
 <span class='co'># why fun.adjust.var and adjust.var are needed (!!!):</span>
 <span class='co'># one could also use the following function</span>
 <span class='co'># and set fun.adjust.var=NULL,adjust.var=NULL</span>
@@ -538,17 +527,17 @@ The rough estimate for the increase in sample size uses the fact that for a samp
                                   <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
                                   <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est.different</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_eqIncome stE_eqIncome
-#&gt;   1: 2010   261  122741.8   male    Burgenland     18.61871    1.3000085
-#&gt;   2: 2010   288  137822.2 female    Burgenland     18.12804    1.7993408
-#&gt;   3: 2010   359  182732.9   male    Vorarlberg     14.10553    2.7283759
-#&gt;   4: 2010   374  194622.1 female    Vorarlberg     19.34374    3.1262570
-#&gt;   5: 2010   440  253143.7   male      Salzburg     11.71768    1.3837915
+#&gt;   1: 2010   261  122741.8   male    Burgenland     18.61871    4.6032779
+#&gt;   2: 2010   288  137822.2 female    Burgenland     18.12804    5.8946751
+#&gt;   3: 2010   359  182732.9   male    Vorarlberg     14.10553    1.0199061
+#&gt;   4: 2010   374  194622.1 female    Vorarlberg     19.34374    2.7142588
+#&gt;   5: 2010   440  253143.7   male      Salzburg     11.71768    0.3439090
 #&gt;  ---                                                                    
-#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria     15.72089    0.4451096
-#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria     13.28348    0.6017526
-#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;     15.71970    0.7898874
-#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;     15.59466    0.5284168
-#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;     15.60219    0.4764829</div><div class='input'>
+#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria     15.95646    0.4179216
+#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria     13.09272    0.5427377
+#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;     15.08364    0.4749933
+#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;     15.06028    0.2328094
+#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;     15.00887    0.3658815</div><div class='input'>
 <span class='co'>## results are equal for yearly estimates</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/all.equal'>all.equal</a></span>(<span class='no'>err.est.different</span>$<span class='no'>Estimates</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>region</span>)],
           <span class='no'>err.est</span>$<span class='no'>Estimates</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>gender</span>)<span class='kw'>&amp;</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>region</span>)],
@@ -556,7 +545,7 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'>## but for subgroups (gender, region) results vary</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/all.equal'>all.equal</a></span>(<span class='no'>err.est.different</span>$<span class='no'>Estimates</span>[!(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>region</span>))],
           <span class='no'>err.est</span>$<span class='no'>Estimates</span>[!(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>region</span>))],
-          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Column 'val_eqIncome': Mean relative difference: 0.09363416"</div><div class='input'>
+          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Column 'val_eqIncome': Mean relative difference: 0.1019645"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

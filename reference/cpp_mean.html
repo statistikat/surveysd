@@ -23,7 +23,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -85,7 +86,7 @@ overwritten by the updated weights. See examples." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -118,7 +119,7 @@ overwritten by the updated weights. See examples." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/statistikat/surveysd">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -178,55 +179,55 @@ overwritten by the updated weights. See examples.</p>
   <span class='kw'>household</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>classLabels</span>, <span class='no'>nobs</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 )
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  0.5742379         b
-#&gt; 2  0.7740763         b
-#&gt; 3  1.1713674         c
-#&gt; 4  2.4380862         c
-#&gt; 5  0.7676065         b
-#&gt; 6  0.3811474         c
-#&gt; 7  0.3532502         c
-#&gt; 8  1.9870001         a
-#&gt; 9  0.1038353         c
-#&gt; 10 1.3444889         b</div><div class='input'>
+#&gt; 1  1.1072129         a
+#&gt; 2  2.9055671         a
+#&gt; 3  0.1410044         a
+#&gt; 4  3.6331214         c
+#&gt; 5  0.9807786         a
+#&gt; 6  1.3982519         c
+#&gt; 7  1.0308706         b
+#&gt; 8  2.7867623         a
+#&gt; 9  1.6400554         c
+#&gt; 10 1.7247282         a</div><div class='input'>
 <span class='co'>## calculate weights with geometric_mean</span>
 <span class='no'>geom_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>geometric_mean</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>geom_weight</span>)</div><div class='output co'>#&gt;       weight household geom_weight
-#&gt; 1  0.5742379         b   0.8229868
-#&gt; 2  0.7740763         b   0.8229868
-#&gt; 3  1.1713674         c   0.5251127
-#&gt; 4  2.4380862         c   0.5251127
-#&gt; 5  0.7676065         b   0.8229868
-#&gt; 6  0.3811474         c   0.5251127
-#&gt; 7  0.3532502         c   0.5251127
-#&gt; 8  1.9870001         a   1.9870001
-#&gt; 9  0.1038353         c   0.5251127
-#&gt; 10 1.3444889         b   0.8229868</div><div class='input'>
+#&gt; 1  1.1072129         a    1.135048
+#&gt; 2  2.9055671         a    1.135048
+#&gt; 3  0.1410044         a    1.135048
+#&gt; 4  3.6331214         c    2.027253
+#&gt; 5  0.9807786         a    1.135048
+#&gt; 6  1.3982519         c    2.027253
+#&gt; 7  1.0308706         b    1.030871
+#&gt; 8  2.7867623         a    1.135048
+#&gt; 9  1.6400554         c    2.027253
+#&gt; 10 1.7247282         a    1.135048</div><div class='input'>
 <span class='co'>## calculate weights with arithmetic_mean</span>
 <span class='no'>arith_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>arithmetic_mean</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>arith_weight</span>)</div><div class='output co'>#&gt;       weight household arith_weight
-#&gt; 1  0.5742379         b    0.8651024
-#&gt; 2  0.7740763         b    0.8651024
-#&gt; 3  1.1713674         c    0.8895373
-#&gt; 4  2.4380862         c    0.8895373
-#&gt; 5  0.7676065         b    0.8651024
-#&gt; 6  0.3811474         c    0.8895373
-#&gt; 7  0.3532502         c    0.8895373
-#&gt; 8  1.9870001         a    1.9870001
-#&gt; 9  0.1038353         c    0.8895373
-#&gt; 10 1.3444889         b    0.8651024</div><div class='input'>
+#&gt; 1  1.1072129         a     1.607676
+#&gt; 2  2.9055671         a     1.607676
+#&gt; 3  0.1410044         a     1.607676
+#&gt; 4  3.6331214         c     2.223810
+#&gt; 5  0.9807786         a     1.607676
+#&gt; 6  1.3982519         c     2.223810
+#&gt; 7  1.0308706         b     1.030871
+#&gt; 8  2.7867623         a     1.607676
+#&gt; 9  1.6400554         c     2.223810
+#&gt; 10 1.7247282         a     1.607676</div><div class='input'>
 <span class='co'>## calculate weights "by reference"</span>
 <span class='fu'>geometric_mean_reference</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>)
-<span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  0.8229868         b
-#&gt; 2  0.8229868         b
-#&gt; 3  0.5251127         c
-#&gt; 4  0.5251127         c
-#&gt; 5  0.8229868         b
-#&gt; 6  0.5251127         c
-#&gt; 7  0.5251127         c
-#&gt; 8  1.9870001         a
-#&gt; 9  0.5251127         c
-#&gt; 10 0.8229868         b</div><div class='input'>
+<span class='no'>dat</span></div><div class='output co'>#&gt;      weight household
+#&gt; 1  1.135048         a
+#&gt; 2  1.135048         a
+#&gt; 3  1.135048         a
+#&gt; 4  2.027253         c
+#&gt; 5  1.135048         a
+#&gt; 6  2.027253         c
+#&gt; 7  1.030871         b
+#&gt; 8  1.135048         a
+#&gt; 9  2.027253         c
+#&gt; 10 1.135048         a</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
