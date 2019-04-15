@@ -42,8 +42,10 @@
   
 <meta property="og:title" content="Draw bootstrap replicates — draw.bootstrap" />
 
-<meta property="og:description" content="Draw bootstrap replicates from survey data with rotating panel design.
-Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping." />
+<meta property="og:description" content="Draw bootstrap replicates from survey data with rotating panel
+design. Survey information, like ID, sample weights, strata and population
+totals per strata, should be specified to ensure meaningfull survey
+bootstraping." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -140,8 +142,10 @@ Survey information, like ID, sample weights, strata and population totals per st
 
     <div class="ref-description">
     
-    <p>Draw bootstrap replicates from survey data with rotating panel design.
-Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.</p>
+    <p>Draw bootstrap replicates from survey data with rotating panel
+design. Survey information, like ID, sample weights, strata and population
+totals per strata, should be specified to ensure meaningfull survey
+bootstraping.</p>
     
     </div>
 
@@ -155,7 +159,8 @@ Survey information, like ID, sample weights, strata and population totals per st
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dat</th>
-      <td><p>either data.frame or data.table containing the survey data with rotating panel design.</p></td>
+      <td><p>either data.frame or data.table containing the survey data with
+rotating panel design.</p></td>
     </tr>
     <tr>
       <th>REP</th>
@@ -163,98 +168,153 @@ Survey information, like ID, sample weights, strata and population totals per st
     </tr>
     <tr>
       <th>hid</th>
-      <td><p>character specifying the name of the column in <code>dat</code> containing the household id. If
-<code>NULL</code> (the default), the household structure is not regarded.</p></td>
+      <td><p>character specifying the name of the column in <code>dat</code> containing
+the household id. If <code>NULL</code> (the default), the household structure is not
+regarded.</p></td>
     </tr>
     <tr>
       <th>weights</th>
-      <td><p>character specifying the name of the column in <code>dat</code> containing the sample weights.</p></td>
+      <td><p>character specifying the name of the column in <code>dat</code>
+containing the sample weights.</p></td>
     </tr>
     <tr>
       <th>period</th>
-      <td><p>character specifying the name of the column in <code>dat</code> containing the sample periods.
-If <code>NULL</code> (the default), it is assumed that all observations belong to the same
-period.</p></td>
+      <td><p>character specifying the name of the column in <code>dat</code> containing
+the sample periods. If <code>NULL</code> (the default), it is assumed that all
+observations belong to the same period.</p></td>
     </tr>
     <tr>
       <th>strata</th>
-      <td><p>character vector specifying the name(s) of the column in <code>dat</code> by which the population
-was stratified. If <code>strata</code> is a vector stratification will be assumed as the combination
-of column names contained in <code>strata</code>. Setting in addition <code>cluster</code> not NULL stratification
-will be assumed on multiple stages, where each additional entry in <code>strata</code> specifies the
-stratification variable for the next lower stage. see Details for more information.</p></td>
+      <td><p>character vector specifying the name(s) of the column in <code>dat</code>
+by which the population was stratified. If <code>strata</code> is a vector
+stratification will be assumed as the combination of column names contained
+in <code>strata</code>. Setting in addition <code>cluster</code> not NULL stratification will be
+assumed on multiple stages, where each additional entry in <code>strata</code>
+specifies the stratification variable for the next lower stage. see Details
+for more information.</p></td>
     </tr>
     <tr>
       <th>cluster</th>
-      <td><p>character vector specifying cluster in the data. If not already specified in <code>cluster</code> household ID is taken es the lowest level cluster.</p></td>
+      <td><p>character vector specifying cluster in the data. If not
+already specified in <code>cluster</code> household ID is taken es the lowest level
+cluster.</p></td>
     </tr>
     <tr>
       <th>totals</th>
-      <td><p>character specifying the name of the column in <code>dat</code> containing the the totals per strata and/or cluster. Is ONLY optional if <code>cluster</code> is <code>NULL</code> or equal <code>hid</code> and <code>strata</code> contains one columnname!
-Then the households per strata will be calcualted using the <code>weights</code> argument. If clusters and strata for multiple stages are specified <code>totals</code> needs to be a vector of <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(strata)</a></code> specifying the column on <code>dat</code>
-that contain the total number of PSUs at each stage. <code>totals</code> is interpreted from left the right, meaning that the first argument corresponds to the number of PSUs at the first and the last argument to the number of PSUs at the last stage.</p></td>
+      <td><p>character specifying the name of the column in <code>dat</code> containing
+the the totals per strata and/or cluster. Is ONLY optional if <code>cluster</code> is
+<code>NULL</code> or equal <code>hid</code> and <code>strata</code> contains one columnname! Then the
+households per strata will be calcualted using the <code>weights</code> argument. If
+clusters and strata for multiple stages are specified <code>totals</code> needs to be
+a vector of <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(strata)</a></code> specifying the column on <code>dat</code> that contain
+the total number of PSUs at each stage. <code>totals</code> is interpreted from left
+the right, meaning that the first argument corresponds to the number of
+PSUs at the first and the last argument to the number of PSUs at the last
+stage.</p></td>
     </tr>
     <tr>
       <th>single.PSU</th>
-      <td><p>either "merge" or "mean" defining how single PSUs need to be dealt with.
-For <code>single.PSU="merge"</code> single PSUs at each stage are merged with the strata or cluster with the next least number of PSUs. If multiple of those exist one will be select via random draw
-For <code>single.PSU="mean"</code> single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.</p></td>
+      <td><p>either "merge" or "mean" defining how single PSUs need to
+be dealt with. For <code>single.PSU="merge"</code> single PSUs at each stage are
+merged with the strata or cluster with the next least number of PSUs. If
+multiple of those exist one will be select via random draw. For
+<code>single.PSU="mean"</code> single PSUs will get the mean over all bootstrap
+replicates at the stage which did not contain single PSUs.</p></td>
     </tr>
     <tr>
       <th>boot.names</th>
-      <td><p>character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".</p></td>
+      <td><p>character indicating the leading string of the column names
+for each bootstrap replica. If NULL defaults to "w".</p></td>
     </tr>
     <tr>
       <th>split</th>
-      <td><p>logical, if TRUE split households are considered using <code>pid</code>, for more information see Details.</p></td>
+      <td><p>logical, if TRUE split households are considered using <code>pid</code>,
+for more information see Details.</p></td>
     </tr>
     <tr>
       <th>pid</th>
-      <td><p>column in <code>dat</code> specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.</p></td>
+      <td><p>column in <code>dat</code> specifying the personal identifier. This
+identifier needs to be unique for each person throught the whole data set.</p></td>
     </tr>
     <tr>
       <th>new.method</th>
-      <td><p>logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample!</p></td>
+      <td><p>logical, if TRUE bootstrap replicates will never be
+negative even if in some strata the whole population is in the sample.
+WARNING: This is still experimental and resulting standard errors might be
+underestimated! Use this if for some strata the whole population is in the
+sample!</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the survey data with the number of REP bootstrap replicates added as columns.</p>
-<p>Returns a data.table containing the original data as well as the number of <code>REP</code> columns containing the bootstrap replicates for each repetition.<br />
-The columns of the bootstrap replicates are by default labeled "w<em>Number</em>" where <em>Number</em> goes from 1 to <code>REP</code>.
-If the column names of the bootstrap replicates should start with a different character or string the parameter <code>boot.names</code> can be used.</p>
+    <p>the survey data with the number of REP bootstrap replicates added as
+columns.</p>
+<p>Returns a data.table containing the original data as well as the
+number of <code>REP</code> columns containing the bootstrap replicates for each
+repetition.<br />
+The columns of the bootstrap replicates are by default labeled "w<em>Number</em>"
+where <em>Number</em> goes from 1 to <code>REP</code>. If the column names of the bootstrap
+replicates should start with a different character or string the parameter
+<code>boot.names</code> can be used.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>draw.bootstrap</code> takes <code>dat</code> and draws <code>REP</code> bootstrap replicates from it.
-<code>dat</code> must be household data where household members correspond to multiple rows with the same household
-identifier. For most practical applications, the following columns should be available in the dataset
+    <p><code>draw.bootstrap</code> takes <code>dat</code> and draws <code>REP</code> bootstrap replicates
+from it.
+<code>dat</code> must be household data where household members correspond to multiple
+rows with the same household
+identifier. For most practical applications, the following columns should be
+available in the dataset
 and passed via the corresponding parameters:</p><ul>
 <li><p>Column indicating the sample period (parameter <code>period</code>).</p></li>
 <li><p>Column indicating the household ID (parameter <code>hid</code>)</p></li>
 <li><p>Column containing the household sample weights (parameter <code>weights</code>);</p></li>
-<li><p>Columns by which population was stratified during the sampling process (parameter: <code>strata</code>).</p></li>
+<li><p>Columns by which population was stratified during the sampling process
+(parameter: <code>strata</code>).</p></li>
 </ul>
-    <p>For single stage sampling design a column the argument <code>totals</code> is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
-For this case the number of PSUs is calculated and added to <code>dat</code> using <code>strata</code> and <code>weights</code>. By setting <code>cluster</code> to NULL single stage sampling design is always assumed and
-if <code>strata</code> contains of multiple column names the combination of all those column names will be used for stratification.</p>
-<p>In the case of multi stage sampling design the argument <code>totals</code> needs to be specified and needs to have the same number of arguments as <code>strata</code>.</p>
-<p>If <code>cluster</code> is <code>NULL</code> or does not contain <code>hid</code> at the last stage, <code>hid</code> will automatically be used as the final cluster. If, besides <code>hid</code>, clustering in additional stages is specified the number of column names in
-<code>strata</code> and <code>cluster</code> (including <code>hid</code>) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.</p>
-<p>For example <code>strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")</code> would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
-and at the 2nd stage housholds are drawn in each municipality without stratification.</p>
-<p>Bootstrap replicates are drawn for each survey period (<code>period</code>) using the function <a href='rescaled.bootstrap.html'>rescaled.bootstrap</a>.
-Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.</p>
-<p>This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.</p>
-<p>If <code>split</code> ist set to <code>TRUE</code> and <code>pid</code> is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
+    <p>For single stage sampling design a column the argument <code>totals</code> is optional,
+meaning that a column of the number of PSUs at the first stage does not need
+to be supplied.
+For this case the number of PSUs is calculated and added to <code>dat</code> using
+<code>strata</code> and <code>weights</code>. By setting <code>cluster</code> to NULL single stage sampling
+design is always assumed and
+if <code>strata</code> contains of multiple column names the combination of all those
+column names will be used for stratification.</p>
+<p>In the case of multi stage sampling design the argument <code>totals</code> needs to be
+specified and needs to have the same number of arguments as <code>strata</code>.</p>
+<p>If <code>cluster</code> is <code>NULL</code> or does not contain <code>hid</code> at the last stage, <code>hid</code>
+will automatically be used as the final cluster. If, besides <code>hid</code>,
+clustering in additional stages is specified the number of column names in
+<code>strata</code> and <code>cluster</code> (including <code>hid</code>) must be the same. If for any stage
+there was no clustering or stratification one can set "1" or "I" for this
+stage.</p>
+<p>For example <code>strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")</code> would
+speficy a 2 stage sampling design where at the first stage the municipalities
+where drawn stratified by regions
+and at the 2nd stage housholds are drawn in each municipality without
+stratification.</p>
+<p>Bootstrap replicates are drawn for each survey period (<code>period</code>) using the
+function <a href='rescaled.bootstrap.html'>rescaled.bootstrap</a>.
+Afterwards the bootstrap replicates for each household are carried forward
+from the first period the household enters the survey to all the censecutive
+periods it stays in the survey.</p>
+<p>This ensures that the bootstrap replicates follow the same logic as the
+sampled households, making the bootstrap replicates more comparable to the
+actual sample units.</p>
+<p>If <code>split</code> ist set to <code>TRUE</code> and <code>pid</code> is specified, the bootstrap replicates
+are carried forward using the personal identifiers instead of the houshold
+identifier.
 This takes into account the issue of a houshold splitting up.
-Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
-People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous periods.</p>
+Any person in this new split household will get the same bootstrap replicate
+as the person that has come from an other household in the survey.
+People who enter already existing households will also get the same bootstrap
+replicate as the other households members had in the previous periods.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a></code> for more information on data.table objects.</p></div>
+    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a></code> for more information on
+data.table objects.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -262,15 +322,18 @@ People who enter already existing households will also get the same bootstrap re
 <span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'>## draw sample without stratification or clustering</span>
-<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
+<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
+                           <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
 
 <span class='co'>## use stratification w.r.t. region and clustering w.r.t. households</span>
-<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
-                           <span class='kw'>strata</span> <span class='kw'>=</span> <span class='st'>"region"</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
+<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
+  <span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
+  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='st'>"region"</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
 
 <span class='co'>## use multi-level clustering</span>
-<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
-                           <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
+<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
+  <span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
+  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
 
 
 <span class='co'># create spit households</span>
@@ -279,21 +342,28 @@ People who enter already existing households will also get the same bootstrap re
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
 <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>()
 <span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>){
-  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>-<span class='fl'>1</span>) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
-                         <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>)]
-  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[(<span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>)) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
-                             <span class='fu'>.</span>(<span class='kw'>pid</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>))]
+  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[
+    <span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>-<span class='fl'>1</span>) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
+    <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>)
+  ]
+  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[
+    (<span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>)) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
+    <span class='fu'>.</span>(<span class='kw'>pid</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>))
+  ]
   <span class='no'>overwrite.person</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"pidsplit"</span>, <span class='st'>"year_curr"</span>) <span class='kw'>:=</span> <span class='fu'>.</span>(<span class='no'>split.person</span>, <span class='no'>y</span>)]
 
-  <span class='no'>eusilc</span>[<span class='no'>overwrite.person</span>, <span class='no'>pidsplit</span> <span class='kw'>:=</span> <span class='no'>i.pidsplit</span>, <span class='kw'>on</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>pid</span>, <span class='no'>year</span> <span class='kw'>&gt;=</span> <span class='no'>year_curr</span>)]
+  <span class='no'>eusilc</span>[<span class='no'>overwrite.person</span>, <span class='no'>pidsplit</span> <span class='kw'>:=</span> <span class='no'>i.pidsplit</span>,
+         <span class='kw'>on</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>pid</span>, <span class='no'>year</span> <span class='kw'>&gt;=</span> <span class='no'>year_curr</span>)]
   <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>leaf_out</span>,
-                <span class='no'>eusilc</span>[<span class='no'>pid</span> <span class='kw'>%in%</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>pid</span>, <span class='no'>overwrite.person</span>$<span class='no'>pidsplit</span>),
+                <span class='no'>eusilc</span>[<span class='no'>pid</span> <span class='kw'>%in%</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>pid</span>,
+                                  <span class='no'>overwrite.person</span>$<span class='no'>pidsplit</span>),
                 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unique'>unique</a></span>(<span class='no'>hid</span>)])
 }
 
-<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
-                           <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                           <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"pidsplit"</span>)
+<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
+  <span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
+  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"pidsplit"</span>)
 <span class='co'># split households were considered e.g. household and</span>
 <span class='co'># split household were both selected or not selected</span>
 <span class='no'>dat_boot</span>[, <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>uniqueN</a></span>(<span class='no'>w1</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>pidsplit</span>][<span class='no'>V1</span> <span class='kw'>&gt;</span> <span class='fl'>1</span>]

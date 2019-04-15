@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calcualte point estimates and their standard errors using bootstrap weights. — calc.stError • surveysd</title>
+<title>Calcualte point estimates and their standard errors using bootstrap
+weights. — calc.stError • surveysd</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -40,10 +41,14 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Calcualte point estimates and their standard errors using bootstrap weights. — calc.stError" />
+<meta property="og:title" content="Calcualte point estimates and their standard errors using bootstrap
+weights. — calc.stError" />
 
-<meta property="og:description" content="Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see draw.bootstrap and recalib).
-In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error." />
+<meta property="og:description" content="Calculate point estimates as well as standard errors of variables in surveys.
+Standard errors are estimated using bootstrap weights (see draw.bootstrap
+and recalib). In addition the standard error of an estimate can be
+calcualted using the survey data for 3 or more consecutive periods, which
+results in a reduction of the standard error." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -133,15 +138,19 @@ In addition the standard error of an estimate can be calcualted using the survey
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calcualte point estimates and their standard errors using bootstrap weights.</h1>
+    <h1>Calcualte point estimates and their standard errors using bootstrap
+weights.</h1>
     <small class="dont-index">Source: <a href='https://github.com/statistikat/surveysd/blob/master/R/calc.stError.R'><code>R/calc.stError.R</code></a></small>
     <div class="hidden name"><code>calc.stError.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see <a href='draw.bootstrap.html'>draw.bootstrap</a> and <a href='recalib.html'>recalib</a>).
-In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error.</p>
+    <p>Calculate point estimates as well as standard errors of variables in surveys.
+Standard errors are estimated using bootstrap weights (see <a href='draw.bootstrap.html'>draw.bootstrap</a>
+and <a href='recalib.html'>recalib</a>). In addition the standard error of an estimate can be
+calcualted using the survey data for 3 or more consecutive periods, which
+results in a reduction of the standard error.</p>
     
     </div>
 
@@ -157,149 +166,239 @@ In addition the standard error of an estimate can be calcualted using the survey
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dat</th>
-      <td><p>either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using <a href='draw.bootstrap.html'>draw.bootstrap</a> and <a href='recalib.html'>recalib</a>.</p></td>
+      <td><p>either data.frame or data.table containing the survey data.
+Surveys can be a panel survey or rotating panel survey, but does not need
+to be. For rotating panel survey bootstrap weights can be created using
+<a href='draw.bootstrap.html'>draw.bootstrap</a> and <a href='recalib.html'>recalib</a>.</p></td>
     </tr>
     <tr>
       <th>weights</th>
-      <td><p>character specifying the name of the column in <code>dat</code> containing the original sample weights. Used to calculate point estimates.</p></td>
+      <td><p>character specifying the name of the column in <code>dat</code>
+containing the original sample weights. Used to calculate point estimates.</p></td>
     </tr>
     <tr>
       <th>b.weights</th>
-      <td><p>character vector specifying the names of the columns in <code>dat</code> containing bootstrap weights. Used to calculate standard errors.</p></td>
+      <td><p>character vector specifying the names of the columns in
+<code>dat</code> containing bootstrap weights. Used to calculate standard errors.</p></td>
     </tr>
     <tr>
       <th>period</th>
-      <td><p>character specifying the name of the column in <code>dat</code> containing the sample periods.</p></td>
+      <td><p>character specifying the name of the column in <code>dat</code>
+containing the sample periods.</p></td>
     </tr>
     <tr>
       <th>var</th>
-      <td><p>character vector containing variable names in <code>dat</code> on which <code>fun</code> shall be applied for each sample period.</p></td>
+      <td><p>character vector containing variable names in <code>dat</code> on which <code>fun</code>
+shall be applied for each sample period.</p></td>
     </tr>
     <tr>
       <th>fun</th>
       <td><p>function which will be applied on <code>var</code> for each sample period.
-Predefined functions are <a href='PointEstimates.html'>weightedRatio</a>, <a href='PointEstimates.html'>weightedSum</a>, but can also take any other function which returns a double or integer and uses weights as its second argument.</p></td>
+Predefined functions are <a href='PointEstimates.html'>weightedRatio</a>, <a href='PointEstimates.html'>weightedSum</a>, but can also take
+any other function which returns a double or integer and uses weights as
+its second argument.</p></td>
     </tr>
     <tr>
       <th>national</th>
-      <td><p>boolean, if TRUE point estimates resulting from fun will be divided by the point estimate at the national level.</p></td>
+      <td><p>boolean, if TRUE point estimates resulting from fun will be
+divided by the point estimate at the national level.</p></td>
     </tr>
     <tr>
       <th>group</th>
-      <td><p>character vectors or list of character vectors containig variables in <code>dat</code>. For each list entry <code>dat</code> will be split in subgroups according to the containing variables as well as <code>period</code>.
-The pointestimates are then estimated for each subgroup seperately. If <code>group=NULL</code> the data will split into sample periods by default.</p></td>
+      <td><p>character vectors or list of character vectors containig
+variables in <code>dat</code>. For each list entry <code>dat</code> will be split in subgroups
+according to the containing variables as well as <code>period</code>. The
+pointestimates are then estimated for each subgroup seperately. If
+<code>group=NULL</code> the data will split into sample periods by default.</p></td>
     </tr>
     <tr>
       <th>fun.adjust.var</th>
-      <td><p>can be either <code>NULL</code> or a function. This argument can be used to apply a function for each <code>period</code> and bootstrap weight to the data. The resulting estimates will be passed down to <code>fun</code>. See details for more explanations.</p></td>
+      <td><p>can be either <code>NULL</code> or a function. This argument can
+be used to apply a function for each <code>period</code> and bootstrap weight to the
+data. The resulting estimates will be passed down to <code>fun</code>. See details for
+more explanations.</p></td>
     </tr>
     <tr>
       <th>adjust.var</th>
-      <td><p>can be either <code>NULL</code> or a character specifying the first argument in <code>fun.adjust.var</code>.</p></td>
+      <td><p>can be either <code>NULL</code> or a character specifying the first
+argument in <code>fun.adjust.var</code>.</p></td>
     </tr>
     <tr>
       <th>period.diff</th>
-      <td><p>character vectors, defining periods for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of <code>"period1 - period2"</code>. Can be NULL</p></td>
+      <td><p>character vectors, defining periods for which the
+differences in the point estimate as well it's standard error is
+calculated. Each entry must have the form of <code>"period1 - period2"</code>. Can be
+NULL</p></td>
     </tr>
     <tr>
       <th>period.mean</th>
-      <td><p>odd integer, defining the range of periods over which the sample mean of point estimates is additionally calcualted.</p></td>
+      <td><p>odd integer, defining the range of periods over which the
+sample mean of point estimates is additionally calcualted.</p></td>
     </tr>
     <tr>
       <th>bias</th>
-      <td><p>boolean, if <code>TRUE</code> the sample mean over the point estimates of the bootstrap weights is returned.</p></td>
+      <td><p>boolean, if <code>TRUE</code> the sample mean over the point estimates of
+the bootstrap weights is returned.</p></td>
     </tr>
     <tr>
       <th>size.limit</th>
-      <td><p>integer defining a lower bound on the number of observations on <code>dat</code> in each group defined by <code>period</code> and the entries in <code>group</code>.
-Warnings are returned if the number of observations in a subgroup falls below <code>size.limit</code>. In addition the concerned groups are available in the function output.</p></td>
+      <td><p>integer defining a lower bound on the number of
+observations on <code>dat</code> in each group defined by <code>period</code> and the entries in
+<code>group</code>. Warnings are returned if the number of observations in a subgroup
+falls below <code>size.limit</code>. In addition the concerned groups are available in
+the function output.</p></td>
     </tr>
     <tr>
       <th>cv.limit</th>
-      <td><p>non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed <code>cv.limit</code>, for a point estimate, they are flagged and available in the function output.</p></td>
+      <td><p>non-negativ value defining a upper bound for the standard
+error in relation to the point estimate. If this relation exceed
+<code>cv.limit</code>, for a point estimate, they are flagged and available in the
+function output.</p></td>
     </tr>
     <tr>
       <th>p</th>
-      <td><p>numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of <code>var</code> are additionally estimated.</p></td>
+      <td><p>numeric vector containing values between 0 and 1. Defines which
+quantiles for the distribution of <code>var</code> are additionally estimated.</p></td>
     </tr>
     <tr>
       <th>add.arg</th>
-      <td><p>additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.</p></td>
+      <td><p>additional arguments which will be passed to fun. Can be
+either a named list or vector. The names of the object correspond to the
+function arguments and the values to column names in dat, see also
+examples.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Returns a list containing:</p><ul>
-<li><p><code>Estimates</code>: data.table containing period differences and/or k period averages for estimates of
-<code>fun</code> applied to <code>var</code> as well as the corresponding standard errors, which are calculated using the bootstrap weights.
-In addition the sample size, <code>n</code>, and poplutaion size for each group is added to the output.</p></li>
-<li><p><code>smallGroups</code>: data.table containing groups for which the number of observation falls below <code>size.limit</code>.</p></li>
-<li><p><code>cvHigh</code>: data.table containing a boolean variable which indicates for each estimate if the
-estimated standard error exceeds <code>cv.limit</code>.</p></li>
-<li><p><code>stEDecrease</code>: data.table indicating for each estimate the theoretical increase in sample size which is
-gained when averaging over k periods. Only returned if <code>period.mean</code> is not <code>NULL</code>.</p></li>
+<li><p><code>Estimates</code>: data.table containing period differences and/or k period
+averages for estimates of
+<code>fun</code> applied to <code>var</code> as well as the corresponding standard errors, which
+are calculated using the bootstrap weights. In addition the sample size,
+<code>n</code>, and poplutaion size for each group is added to the output.</p></li>
+<li><p><code>smallGroups</code>: data.table containing groups for which the number of
+observation falls below <code>size.limit</code>.</p></li>
+<li><p><code>cvHigh</code>: data.table containing a boolean variable which indicates for each
+estimate if the estimated standard error exceeds <code>cv.limit</code>.</p></li>
+<li><p><code>stEDecrease</code>: data.table indicating for each estimate the theoretical
+increase in sample size which is gained when averaging over k periods. Only
+returned if <code>period.mean</code> is not <code>NULL</code>.</p></li>
 </ul>
 
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>calc.stError</code> takes survey data (<code>dat</code>) and returns point estimates as well as their standard Errors
-defined by <code>fun</code> and <code>var</code> for each sample period in <code>dat</code>.
-<code>dat</code> must be household data where household members correspond to multiple rows with the same household identifier.
-The data should at least containt the following columns:</p><ul>
+    <p><code>calc.stError</code> takes survey data (<code>dat</code>) and returns point estimates
+as well as their standard Errors defined by <code>fun</code> and <code>var</code> for each sample
+period in <code>dat</code>. <code>dat</code> must be household data where household members
+correspond to multiple rows with the same household identifier. The data
+should at least contain the following columns:</p><ul>
 <li><p>Column indicating the sample period;</p></li>
 <li><p>Column indicating the household ID;</p></li>
 <li><p>Column containing the household sample weights;</p></li>
 <li><p>Columns which contain the bootstrap weights (see output of <a href='recalib.html'>recalib</a>);</p></li>
 <li><p>Columns listed in <code>var</code> as well as in <code>group</code></p></li>
 </ul>
-    <p>For each variable in <code>var</code> as well as sample period the function <code>fun</code> is applied using the original as well as the bootstrap sample weights.<br />
-The point estimate is then selected as the result of <code>fun</code> when using the original sample weights and it's standard error is estimated with the result of <code>fun</code> using the bootstrap sample weights. <br />
+    <p>For each variable in <code>var</code> as well as sample period the function <code>fun</code> is
+applied using the original as well as the bootstrap sample weights.<br />
+The point estimate is then selected as the result of <code>fun</code> when using the
+original sample weights and it's standard error is estimated with the result
+of <code>fun</code> using the bootstrap sample weights. <br />
 <br />
-<code>fun</code> can be any function which returns a double or integer and uses sample weights as it's second argument. The predifined options are <code>weightedRatio</code> and <code>weightedSum</code>.<br />
+<code>fun</code> can be any function which returns a double or integer and uses sample
+weights as it's second argument. The predifined options are <code>weightedRatio</code>
+and <code>weightedSum</code>.<br />
 <br />
-For the option <code>weightedRatio</code> a weighted ratio (in %) of <code>var</code> is calculated for <code>var</code> equal to 1, e.g <code>sum(weight[var==1])/sum(weight[!is.na(var)])*100</code>.<br />
-Additionally using the option <code>national=TRUE</code> the weighted ratio (in %) is divided by the weighted ratio at the national level for each <code>period</code>.
+For the option <code>weightedRatio</code> a weighted ratio (in %) of <code>var</code> is
+calculated for <code>var</code> equal to 1, e.g
+<code>sum(weight[var==1])/sum(weight[!is.na(var)])*100</code>.<br />
+Additionally using the option <code>national=TRUE</code> the weighted ratio (in %) is
+divided by the weighted ratio at the national level for each <code>period</code>.
 <br />
-If <code>group</code> is not <code>NULL</code> but a vector of variables from <code>dat</code> then <code>fun</code> is applied on each subset of <code>dat</code> defined by all combinations of values in <code>group</code>.<br />
-For instance if <code>group = "sex"</code> with "sex" having the values "Male" and "Female" in <code>dat</code> the point estimate and standard error is calculated on the subsets of <code>dat</code> with only "Male" or "Female" value for "sex". This is done for each value of <code>period</code>.
-For variables in <code>group</code> which have <code>NA</code>s in <code>dat</code> the rows containing the missings will be discarded. <br />
-When <code>group</code> is a list of character vectors, subsets of <code>dat</code> and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.<br />
+If <code>group</code> is not <code>NULL</code> but a vector of variables from <code>dat</code> then <code>fun</code> is
+applied on each subset of <code>dat</code> defined by all combinations of values in
+<code>group</code>.<br />
+For instance if <code>group = "sex"</code> with "sex" having the values "Male" and
+"Female" in <code>dat</code> the point estimate and standard error is calculated on the
+subsets of <code>dat</code> with only "Male" or "Female" value for "sex". This is done
+for each value of <code>period</code>. For variables in <code>group</code> which have <code>NA</code>s in
+<code>dat</code> the rows containing the missings will be discarded. <br />
+When <code>group</code> is a list of character vectors, subsets of <code>dat</code> and the
+following estimation of the point estimate, including the estimate for the
+standard error, are calculated for each list entry.<br />
 <br />
-The optional parameters <code>fun.adjust.var</code> and <code>adjust.var</code> can be used if the values in <code>var</code> are dependent on the <code>weights</code>. As is for instance the case for the poverty thershhold calculated from EU-SILC.
-In such a case an additional function can be supplied using <code>fun.adjust.var</code> as well as its first argument <code>adjust.var</code>, which needs to be part of the data set <code>dat</code>. Then, before applying <code>fun</code> on variable <code>var</code>
-for all <code>period</code> and groups, the function <code>fun.adjust.var</code> is applied to <code>adjust.var</code> using each of the bootstrap weights seperately (NOTE: weight is used as the second argument of <code>fun.adjust.var</code>).
+The optional parameters <code>fun.adjust.var</code> and <code>adjust.var</code> can be used if the
+values in <code>var</code> are dependent on the <code>weights</code>. As is for instance the case
+for the poverty thershhold calculated from EU-SILC.
+In such a case an additional function can be supplied using <code>fun.adjust.var</code>
+as well as its first argument <code>adjust.var</code>, which needs to be part of the
+data set <code>dat</code>. Then, before applying <code>fun</code> on variable <code>var</code>
+for all <code>period</code> and groups, the function <code>fun.adjust.var</code> is applied to
+<code>adjust.var</code> using each of the bootstrap weights seperately (NOTE: weight is
+used as the second argument of <code>fun.adjust.var</code>).
 Thus creating i=1,...,<code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(b.weights)</a></code> additional variables.
-For applying <code>fun</code> on <code>var</code> the estimates for the bootstrap replicate will now use each of the corresponding new additional variables. So instead of
+For applying <code>fun</code> on <code>var</code> the estimates for the bootstrap replicate will
+now use each of the corresponding new additional variables. So instead of
 $$fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...$$
 the function <code>fun</code> will be applied in the way
 $$fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...$$</p>
-<p>where <code>var.1</code>, <code>var.2</code>, <code>...</code> correspond to the estimates resulting from <code>fun.adjust.var</code> and <code>adjust.var</code>.
-NOTE: This procedure is especially usefull if the <code>var</code> is dependent on <code>weights</code> and <code>fun</code> is applied on subgroups of the data set. Then it is not possible to capture this
-procedure with <code>fun</code> and <code>var</code>, see examples for a more hands on explanation.
+<p>where <code>var.1</code>, <code>var.2</code>, <code>...</code> correspond to the estimates resulting from
+<code>fun.adjust.var</code> and <code>adjust.var</code>.
+NOTE: This procedure is especially usefull if the <code>var</code> is dependent on
+<code>weights</code> and <code>fun</code> is applied on subgroups of the data set. Then it is not
+possible to capture this procedure with <code>fun</code> and <code>var</code>, see examples for a
+more hands on explanation.
 <br />
-When defining <code>period.diff</code> the difference of point estimates between periods as well their standard errors are calculated.<br />
-The entries in <code>period.diff</code> must have the form of <code>"period1 - period2"</code> which means that the results of the point estimates for <code>period2</code> will be substracted from the results of the point estimates for <code>period1</code>.<br />
+When defining <code>period.diff</code> the difference of point estimates between periods
+as well their standard errors are calculated.<br />
+The entries in <code>period.diff</code> must have the form of <code>"period1 - period2"</code>
+which means that the results of the point estimates for <code>period2</code> will be
+substracted from the results of the point estimates for <code>period1</code>.<br />
 <br />
-Specifying <code>period.mean</code> leads to an improvement in standard error by averaging the results for the point estimates, using the bootstrap weights, over <code>period.mean</code> periods.
-Setting, for instance, <code>period.mean = 3</code> the results in averaging these results over each consecutive set of 3 periods.<br />
-Estimating the standard error over these averages gives an improved estimate of the standard error for the central period, which was used for averaging.<br />
-The averaging of the results is also applied in differences of point estimates. For instance defining <code>period.diff = "2015-2009"</code> and <code>period.mean = 3</code>
-the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as 2017 and 2011 are calcualated and finally the average over these 3 differences is calculated.
-The periods set in <code>period.diff</code> are always used as starting periods from which <code>period.mean-1</code> consecutive periods are used to build the average.
+Specifying <code>period.mean</code> leads to an improvement in standard error by
+averaging the results for the point estimates, using the bootstrap weights,
+over <code>period.mean</code> periods.
+Setting, for instance, <code>period.mean = 3</code> the results in averaging these
+results over each consecutive set of 3 periods.<br />
+Estimating the standard error over these averages gives an improved estimate
+of the standard error for the central period, which was used for
+averaging.<br />
+The averaging of the results is also applied in differences of point
+estimates. For instance defining <code>period.diff = "2015-2009"</code> and
+<code>period.mean = 3</code>
+the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as
+2017 and 2011 are calcualated and finally the average over these 3
+differences is calculated.
+The periods set in <code>period.diff</code> are always used as starting periods from
+which <code>period.mean-1</code> consecutive periods are used to build the average.
 <br />
-Setting <code>bias</code> to <code>TRUE</code> returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled <em>_mean</em> at the end.<br />
+Setting <code>bias</code> to <code>TRUE</code> returns the calculation of a mean over the results
+from the bootstrap replicates. In  the output the corresponding columns is
+labeled <em>_mean</em> at the end.<br />
 <br />
-If <code>fun</code> needs more arguments they can be supplied in <code>add.arg</code>. This can either be a named list or vector.<br />
+If <code>fun</code> needs more arguments they can be supplied in <code>add.arg</code>. This can
+either be a named list or vector.<br />
 <br />
-The parameter <code>size.limit</code> indicates a lower bound of the sample size for subsets in <code>dat</code> created by <code>group</code>. If the sample size of a subset falls below <code>size.limit</code> a warning will be displayed.<br />
-In addition all subsets for which this is the case can be selected from the output of <code>calc.stError</code> with <code>$smallGroups</code>.<br />
-With the parameter <code>cv.limit</code> one can set an upper bound on the coefficient of variantion. Estimates which exceed this bound are flagged with <code>TRUE</code> and are available in the function output with <code>$cvHigh</code>.
-<code>cv.limit</code> must be a positive integer and is treated internally as %, e.g. for <code>cv.limit=1</code> the estimate will be flagged if the coefficient of variantion exceeds 1%.<br />
+The parameter <code>size.limit</code> indicates a lower bound of the sample size for
+subsets in <code>dat</code> created by <code>group</code>. If the sample size of a subset falls
+below <code>size.limit</code> a warning will be displayed.<br />
+In addition all subsets for which this is the case can be selected from the
+output of <code>calc.stError</code> with <code>$smallGroups</code>.<br />
+With the parameter <code>cv.limit</code> one can set an upper bound on the coefficient
+of variantion. Estimates which exceed this bound are flagged with <code>TRUE</code> and
+are available in the function output with <code>$cvHigh</code>.
+<code>cv.limit</code> must be a positive integer and is treated internally as %, e.g.
+for <code>cv.limit=1</code> the estimate will be flagged if the coefficient of
+variantion exceeds 1%.<br />
 <br />
-When specifying <code>period.mean</code>, the decrease in standard error for choosing this method is internally calcualted and a rough estimate for an implied increase in sample size is available in the output with <code>$stEDecrease</code>.
-The rough estimate for the increase in sample size uses the fact that for a sample of size \(n\) the sample estimate for the standard error of most point estimates converges with a factor \(1/\sqrt{n}\) against the true standard error \(\sigma\).</p>
+When specifying <code>period.mean</code>, the decrease in standard error for choosing
+this method is internally calcualted and a rough estimate for an implied
+increase in sample size is available in the output with <code>$stEDecrease</code>.
+The rough estimate for the increase in sample size uses the fact that for a
+sample of size \(n\) the sample estimate for the standard error of most
+point estimates converges with a factor \(1/\sqrt{n}\) against the true
+standard error \(\sigma\).</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -317,13 +416,15 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 2 steps </span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
+                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1: 2010 14827 8182222        14.44422       0.6378260
 #&gt; 2: 2011 14827 8182222        14.70912       0.5830094
 #&gt; 3: 2012 14827 8182222        15.19636       0.3285917
 #&gt; 4: 2013 14827 8182222        15.00887       0.5208043</div><div class='input'>
-<span class='co'># calculate weightedRatio for povertyRisk and fraction of one-person households per period</span>
+<span class='co'># calculate weightedRatio for povertyRisk and fraction of one-person</span>
+<span class='co'># households per period</span>
 
 <span class='no'>dat_boot_calib</span>[, <span class='no'>onePerson</span> <span class='kw'>:=</span> <span class='no'>.N</span> <span class='kw'>==</span> <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>year</span>, <span class='no'>hid</span>)]</div><div class='output co'>#&gt;          hid hsize        region     pid       age gender   ecoStat citizenship
 #&gt;     1:     1 (2,3]         Tyrol     101   (25,45] female part time          AT
@@ -372,7 +473,8 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 59305: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE
 #&gt; 59306: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE
 #&gt; 59307: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE
-#&gt; 59308: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>), <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
+#&gt; 59308: 556.4260 2013       FALSE    1.477322    1.451892 1110.537717     FALSE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>),
+                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
 #&gt; 1: 2010 14827 8182222        14.44422       0.6378260      14.85737
 #&gt; 2: 2011 14827 8182222        14.70912       0.5830094      14.85737
@@ -386,7 +488,8 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='st'>"gender"</span>
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
+                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;     year     n       N gender val_povertyRisk stE_povertyRisk
 #&gt;  1: 2010  7267 3979572   male        12.02660       0.5820076
 #&gt;  2: 2010  7560 4202650 female        16.73351       0.8174841
@@ -400,10 +503,12 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 10: 2013  7267 3979572   male        14.22760       0.8541415
 #&gt; 11: 2013  7560 4202650 female        15.74868       0.2615612
 #&gt; 12: 2013 14827 8182222   &lt;NA&gt;        15.00887       0.5208043</div><div class='input'>
-<span class='co'># estimate weightedRatio for povertyRisk per period and gender, region and combination of both</span>
+<span class='co'># estimate weightedRatio for povertyRisk per period and gender, region and</span>
+<span class='co'># combination of both</span>
 
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
+                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       4.6032779
 #&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       2.8594933
@@ -418,7 +523,8 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 120: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       15.008872       0.5208043</div><div class='input'>
 <span class='co'># use average over 3 periods for standard error estimation</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
+                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1:           2010 14827 8182222        14.44422       0.6378260
 #&gt; 2: 2010_2011_2012 14827 8182222        14.78323       0.4397136
@@ -429,8 +535,9 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># get estimate for difference of period 2016 and 2013</span>
 
 <span class='no'>period.diff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"2015-2011"</span>)
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
+  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1:           2010 14827 8182222        14.44422       0.6378260
 #&gt; 2: 2010_2011_2012 14827 8182222        14.78323       0.4397136
 #&gt; 3:           2011 14827 8182222        14.70912       0.5830094
@@ -450,9 +557,11 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 2: 2011 14827 8182222        252359.9       17548.062
 #&gt; 3: 2012 14827 8182222        236113.7       15389.347
 #&gt; 4: 2013 14827 8182222        228660.6       19668.001</div><div class='input'><span class='co'># compare with direkt computation</span>
-<span class='no'>compare.value</span> <span class='kw'>&lt;-</span> <span class='no'>dat_boot_calib</span>[,<span class='fu'>fun</span>(<span class='no'>povertyRisk</span>,<span class='no'>pWeight</span>,<span class='kw'>b</span><span class='kw'>=</span><span class='no'>onePerson</span>),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"year"</span>)]
+<span class='no'>compare.value</span> <span class='kw'>&lt;-</span> <span class='no'>dat_boot_calib</span>[,<span class='fu'>fun</span>(<span class='no'>povertyRisk</span>,<span class='no'>pWeight</span>,<span class='kw'>b</span><span class='kw'>=</span><span class='no'>onePerson</span>),
+                                 <span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"year"</span>)]
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/all'>all</a></span>((<span class='no'>compare.value</span>$<span class='no'>V1</span>-<span class='no'>err.est</span>$<span class='no'>Estimates</span>$<span class='no'>val_povertyRisk</span>)<span class='kw'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
-<span class='co'># use a function from an other package that has sampling weights as its second argument</span>
+<span class='co'># use a function from an other package that has sampling weights as its</span>
+<span class='co'># second argument</span>
 <span class='co'># for example gini() from laeken</span>
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>laeken</span>)
@@ -462,11 +571,13 @@ The rough estimate for the increase in sample size uses the fact that for a samp
  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/function'>return</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/laeken/topics/gini'>gini</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)$<span class='no'>value</span>)
 }
 
-<span class='co'>## make sure povertyRisk get coerced to a numeric in order to work with the external functions</span>
+<span class='co'>## make sure povertyRisk get coerced to a numeric in order to work with the</span>
+<span class='co'>## external functions</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/invisible'>invisible</a></span>(<span class='no'>dat_boot_calib</span>[, <span class='no'>povertyRisk</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/numeric'>as.numeric</a></span>(<span class='no'>povertyRisk</span>)])
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>help_gini</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
-                        <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>help_gini</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
+  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland        82.58548       4.6032779
 #&gt;   2: 2010   288  137822.2 female    Burgenland        78.56740       2.8594933
 #&gt;   3: 2010   359  182732.9   male    Vorarlberg        87.02674       2.0815933
@@ -479,7 +590,8 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 #&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;        84.25132       0.2615612
 #&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        84.99113       0.5208043</div><div class='input'>
 <span class='co'># using fun.adjust.var and adjust.var to estimate povmd60 indicator</span>
-<span class='co'># for each period and bootstrap weight before applying the weightedRatio point estimate</span>
+<span class='co'># for each period and bootstrap weight before applying the weightedRatio</span>
+<span class='co'># point estimate</span>
 
 <span class='co'># this function estimates the povmd60 indicator with x as income vector</span>
 <span class='co'># and w as weight vector</span>
@@ -493,9 +605,9 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># the povmd60 indicator for each bootstrap weight</span>
 <span class='co'># and the resultung indicators are passed to function weightedRatio</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-                        <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='no'>povmd</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>,
-                        <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
+  <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='no'>povmd</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       4.3276277
 #&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       3.0348585
@@ -523,9 +635,9 @@ The rough estimate for the increase in sample size uses the fact that for a samp
 <span class='co'># but this results in different results in subgroups</span>
 <span class='co'># compared to using fun.adjust.var and adjust.var</span>
 
-<span class='no'>err.est.different</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>povmd2</span>,
-                                  <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-                                  <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>err.est.different</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>povmd2</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
+  <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>err.est.different</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_eqIncome stE_eqIncome
 #&gt;   1: 2010   261  122741.8   male    Burgenland     18.61871    4.6032779
 #&gt;   2: 2010   288  137822.2 female    Burgenland     18.12804    5.8946751

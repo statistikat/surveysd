@@ -42,7 +42,9 @@
   
 <meta property="og:title" content="Draw bootstrap replicates — rescaled.bootstrap" />
 
-<meta property="og:description" content="Draw bootstrap replicates from survey data using the rescaled bootstrap for stratified multistage sampling, presented by Preston, J. (2009)." />
+<meta property="og:description" content="Draw bootstrap replicates from survey data using the rescaled
+bootstrap for stratified multistage sampling, presented by Preston, J.
+(2009)." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -139,7 +141,9 @@
 
     <div class="ref-description">
     
-    <p>Draw bootstrap replicates from survey data using the rescaled bootstrap for stratified multistage sampling, presented by Preston, J. (2009).</p>
+    <p>Draw bootstrap replicates from survey data using the rescaled
+bootstrap for stratified multistage sampling, presented by Preston, J.
+(2009).</p>
     
     </div>
 
@@ -161,54 +165,85 @@
     </tr>
     <tr>
       <th>strata</th>
-      <td><p>string specifying the column name in <code>dat</code> that is used for stratification. For multistage sampling multiple column names can be specified by <code>strata=c("strata1&gt;strata2&gt;strata3")</code>.
-See Details for more information.</p></td>
+      <td><p>string specifying the column name in <code>dat</code> that is used for
+stratification. For multistage sampling multiple column names can be
+specified by <code>strata=c("strata1&gt;strata2&gt;strata3")</code>. See Details for more
+information.</p></td>
     </tr>
     <tr>
       <th>cluster</th>
-      <td><p>string specifying the column name in <code>dat</code> that is used for clustering. For multistage sampling multiple column names can be specified by <code>cluster=c("cluster1&gt;cluster2&gt;cluster3")</code>.
+      <td><p>string specifying the column name in <code>dat</code> that is used for
+clustering. For multistage sampling multiple column names can be specified
+by <code>cluster=c("cluster1&gt;cluster2&gt;cluster3")</code>.
 See Details for more information.</p></td>
     </tr>
     <tr>
       <th>fpc</th>
-      <td><p>string specifying the column name in <code>dat</code> that contains the number of PSUs at the first stage. For multistage sampling the number of PSUs at each stage must be specified by <code>strata=c("fpc1&gt;fpc2&gt;fpc3")</code>.</p></td>
+      <td><p>string specifying the column name in <code>dat</code> that contains the
+number of PSUs at the first stage. For multistage sampling the number of
+PSUs at each stage must be specified by <code>strata=c("fpc1&gt;fpc2&gt;fpc3")</code>.</p></td>
     </tr>
     <tr>
       <th>single.PSU</th>
-      <td><p>either "merge" or "mean" defining how single PSUs need to be dealt with.
-For <code>single.PSU="merge"</code> single PSUs at each stage are merged with the strata or cluster with the next least number of PSUs. If multiple of those exist one will be select via random draw
-For <code>single.PSU="mean"</code> single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.</p></td>
+      <td><p>either "merge" or "mean" defining how single PSUs need to
+be dealt with. For <code>single.PSU="merge"</code> single PSUs at each stage are
+merged with the strata or cluster with the next least number of PSUs. If
+multiple of those exist one will be select via random draw. For
+<code>single.PSU="mean"</code> single PSUs will get the mean over all bootstrap
+replicates at the stage which did not contain single PSUs.</p></td>
     </tr>
     <tr>
       <th>return.value</th>
-      <td><p>either "data" or "replicates" specifying the return value of the function. For "data" the survey data is returned as class <code>data.table</code>, for "replicates" only the bootstrap replicates are returned as <code>data.table</code>.</p></td>
+      <td><p>either "data" or "replicates" specifying the return value
+of the function. For "data" the survey data is returned as class
+<code>data.table</code>, for "replicates" only the bootstrap replicates are returned
+as <code>data.table</code>.</p></td>
     </tr>
     <tr>
       <th>check.input</th>
-      <td><p>logical, if TRUE the input will be checked before applying the bootstrap procedure</p></td>
+      <td><p>logical, if TRUE the input will be checked before applying
+the bootstrap procedure</p></td>
     </tr>
     <tr>
       <th>new.method</th>
-      <td><p>logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample!</p></td>
+      <td><p>logical, if TRUE bootstrap replicates will never be
+negative even if in some strata the whole population is in the sample.
+WARNING: This is still experimental and resulting standard errors might be
+underestimated! Use this if for some strata the whole population is in the
+sample!</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>returns the complete data set including the bootstrap replicates or just the bootstrap replicates, depending on <code>return.value="data"</code> or <code>return.value="replicates"</code> respectively.</p>
+    <p>returns the complete data set including the bootstrap replicates or
+just the bootstrap replicates, depending on <code>return.value="data"</code> or
+<code>return.value="replicates"</code> respectively.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>For specifying multistage sampling designs the column names in <code>strata</code>,<code>cluster</code> and <code>fpc</code> need to seperated by "&gt;".<br />
-For multistage sampling the strings are read from left to right meaning that the column name before the first "&gt;" is taken as the column for stratification/clustering/number of PSUs at the first and the column after the last "&gt;" is taken as the column for stratification/clustering/number of PSUs at the last stage.
-If for some stages the sample was not stratified or clustered one must specify this by "1" or "I", e.g. <code>strata=c("strata1&gt;I&gt;strata3")</code> if there was no stratification at the second stage or <code>cluster=c("cluster1&gt;cluster2&gt;I")</code> if there were no clusters at the last stage.<br />
-The number of PSUs at each stage is not calculated internally and must be specified for any sampling design.
-For single stage sampling using stratification this can usually be done by adding over all sample weights of each PSU by each strata-code.<br />
-Spaces in each of the strings will be removed, so if column names contain spaces they should be renamed before calling this procedure!</p>
+    <p>For specifying multistage sampling designs the column names in
+<code>strata</code>,<code>cluster</code> and <code>fpc</code> need to seperated by "&gt;".<br />
+For multistage sampling the strings are read from left to right meaning that
+the column name before the first "&gt;" is taken as the column for
+stratification/clustering/number of PSUs at the first and the column after
+the last "&gt;" is taken as the column for stratification/clustering/number of
+PSUs at the last stage.
+If for some stages the sample was not stratified or clustered one must
+specify this by "1" or "I", e.g. <code>strata=c("strata1&gt;I&gt;strata3")</code> if there was
+no stratification at the second stage or <code>cluster=c("cluster1&gt;cluster2&gt;I")</code>
+if there were no clusters at the last stage.<br />
+The number of PSUs at each stage is not calculated internally and must be
+specified for any sampling design.
+For single stage sampling using stratification this can usually be done by
+adding over all sample weights of each PSU by each strata-code.<br />
+Spaces in each of the strings will be removed, so if column names contain
+spaces they should be renamed before calling this procedure!</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Preston, J. (2009). Rescaled bootstrap for stratified multistage sampling. Survey Methodology. 35. 227-234.</p>
+    <p>Preston, J. (2009). Rescaled bootstrap for stratified multistage
+sampling. Survey Methodology. 35. 227-234.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

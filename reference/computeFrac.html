@@ -42,8 +42,8 @@
   
 <meta property="og:title" content="Numerical weighting functions — computeLinear" />
 
-<meta property="og:description" content="Customize weight-updating within factor levels in case of numerical calibration. The
-functions described here serve as inputs for ipf." />
+<meta property="og:description" content="Customize weight-updating within factor levels in case of numerical
+calibration. The functions described here serve as inputs for ipf." />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -140,8 +140,8 @@ functions described here serve as inputs for ipf." />
 
     <div class="ref-description">
     
-    <p>Customize weight-updating within factor levels in case of numerical calibration. The
-functions described here serve as inputs for <a href='ipf.html'>ipf</a>.</p>
+    <p>Customize weight-updating within factor levels in case of numerical
+calibration. The functions described here serve as inputs for <a href='ipf.html'>ipf</a>.</p>
     
     </div>
 
@@ -172,7 +172,8 @@ functions described here serve as inputs for <a href='ipf.html'>ipf</a>.</p>
     </tr>
     <tr>
       <th>boundLinear</th>
-      <td><p>The output <code>f</code> will satisfy <code>1/boundLinear &lt;= f &lt;= boundLinear</code>. See <code>bound</code> in <a href='ipf.html'>ipf</a></p></td>
+      <td><p>The output <code>f</code> will satisfy
+<code>1/boundLinear &lt;= f &lt;= boundLinear</code>. See <code>bound</code> in <a href='ipf.html'>ipf</a></p></td>
     </tr>
     </table>
     
@@ -184,14 +185,15 @@ functions described here serve as inputs for <a href='ipf.html'>ipf</a>.</p>
 
     <p><code>computeFrac</code> provides the "standard" IPU updating scheme given as</p>
 <p>$$f = target/curValue$$</p>
-<p>which means that each weight inside the level will be multtiplied by the same factor when
-doing the actual update step (<code>w := f*w</code>). <code>computeLinear</code> on the other hand
-calculates <code>f</code> as</p>
+<p>which means that each weight inside the level will be multtiplied by the same
+factor when doing the actual update step (<code>w := f*w</code>). <code>computeLinear</code> on the
+other hand calculates <code>f</code> as</p>
 <p><center> f<sub>i</sub> = a  &middot; x<sub>i</sub> + b </center></p>
 <p>where <code>a</code> and <code>b</code> are chosen, so f satisfies the following two equations.</p>
 <p><center>&sum; f<sub>i</sub> w<sub>i</sub> x<sub>i</sub> = target</center>
     <center>&sum; f<sub>i</sub> w<sub>i</sub> = &sum; w<sub>i</sub></center></p>
-<p><code>computeLinearG1</code> calculates <code>f</code> in the same way as <code>computeLinear</code>, but if <code>f_i*w_i&lt;1</code> <code>f_i</code> will be set to <code>1/w_i</code>.</p>
+<p><code>computeLinearG1</code> calculates <code>f</code> in the same way as <code>computeLinear</code>, but if
+<code>f_i*w_i&lt;1</code> <code>f_i</code> will be set to <code>1/w_i</code>.</p>
     
 
   </div>

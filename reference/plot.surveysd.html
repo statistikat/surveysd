@@ -157,26 +157,37 @@
     </tr>
     <tr>
       <th>variable</th>
-      <td><p>Name of the variable for which standard errors have been calcualated in <code>dat</code></p></td>
+      <td><p>Name of the variable for which standard errors have been
+calcualated in <code>dat</code></p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>can bei either 'summary' or 'grouping', default value is 'summary'.
-For 'summary' a barplot is created giving an overview of the number of estimates having the flag <code>smallGroup</code>, <code>cvHigh</code>, both or none of them.
-For 'grouping' results for point estimate and standard error are plotted for pre defined groups.</p></td>
+      <td><p>can bei either <code>"summary"</code> or <code>"grouping"</code>, default value is
+<code>"summary"</code>. For <code>"summary"</code> a barplot is created giving an overview of the
+number of estimates having the flag <code>smallGroup</code>, <code>cvHigh</code>, both or none
+of them. For 'grouping' results for point estimate and standard error are
+plotted for pre defined groups.</p></td>
     </tr>
     <tr>
       <th>groups</th>
-      <td><p>If <code>type='grouping'</code> variables must be defined by which the data is grouped. Only 2 levels are supported as of right now.
-If only one group is defined the higher group will be the estimate over the whole period.
-Results are plotted for the first argument in <code>groups</code> as well as for the combination of <code>groups[1]</code> and <code>groups[2]</code>.</p></td>
+      <td><p>If <code>type='grouping'</code> variables must be defined by which the
+data is grouped. Only 2 levels are supported as of right now. If only one
+group is defined the higher group will be the estimate over the whole
+period. Results are plotted for the first argument in <code>groups</code> as well as
+for the combination of <code>groups[1]</code> and <code>groups[2]</code>.</p></td>
     </tr>
     <tr>
       <th>sd.type</th>
-      <td><p>can bei either <code>'ribbon'</code> or <code>'dot'</code> and is only used if <code>type='grouping'</code>. Default is <code>"dot"</code>
-For <code>sd.type='dot'</code> point estimates are plotted and flagged if the corresponding standard error and/or the standard error using the mean over k-periods exceeded the value <code>cv.limit</code> (see <a href='calc.stError.html'>calc.stError</a>).
-For <code>sd.type='ribbon'</code> the point estimates including ribbons, defined by point estimate +- estimated standard error are plotted.
-The calculated standard errors using the mean over k periods are plotted using less transparency. Results for the higher level (~<code>groups[1]</code>) are coloured grey.</p></td>
+      <td><p>can bei either <code>'ribbon'</code> or <code>'dot'</code> and is only used if
+<code>type='grouping'</code>. Default is <code>"dot"</code>
+For <code>sd.type='dot'</code> point estimates are plotted and flagged if the
+corresponding standard error and/or the standard error using the mean over
+k-periods exceeded the value <code>cv.limit</code> (see <a href='calc.stError.html'>calc.stError</a>).
+For <code>sd.type='ribbon'</code> the point estimates including ribbons, defined by
+point estimate +- estimated standard error are plotted.
+The calculated standard errors using the mean over k periods are plotted
+using less transparency. Results for the higher level (~<code>groups[1]</code>) are
+coloured grey.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -200,7 +211,8 @@ The calculated standard errors using the mean over k periods are plotted using l
 <span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='output co'>#&gt; <span class='message'>Convergence reached in 3 steps </span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povmd60 per period</span>
 <span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='calc.stError.html'>calc.stError</a></span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
+<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='calc.stError.html'>calc.stError</a></span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
+                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
                         <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span> , <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 

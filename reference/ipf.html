@@ -149,7 +149,8 @@ individual level constraints.</p>
   <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>w</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>,
   <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>, <span class='kw'>meanHH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>allPthenH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>returnNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>looseH</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>numericalWeighting</span> <span class='kw'>=</span> <span class='no'>computeLinear</span>,
-  <span class='kw'>check_hh_vars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>conversion_messages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>check_hh_vars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>conversion_messages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>nameCalibWeight</span> <span class='kw'>=</span> <span class='st'>"calibWeight"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,8 +163,8 @@ or categorical) that should be fitted.</p></td>
     </tr>
     <tr>
       <th>hid</th>
-      <td><p>name of the column containing the household-ids
-within <code>dat</code> or NULL if such a variable does not exist.</p></td>
+      <td><p>name of the column containing the household-ids within <code>dat</code> or
+NULL if such a variable does not exist.</p></td>
     </tr>
     <tr>
       <th>conP</th>
@@ -205,10 +206,9 @@ dimensions and dimnames as the corresponding constraint in <code>conH</code>.</p
     </tr>
     <tr>
       <th>w</th>
-      <td><p>name if the column containing the base
-weights within <code>dat</code> or NULL if such a variable does not exist. In the
-latter case, every observation in <code>dat</code> is assigned a starting weight
-of 1.</p></td>
+      <td><p>name if the column containing the base weights within <code>dat</code> or NULL
+if such a variable does not exist. In the latter case, every observation
+in <code>dat</code> is assigned a starting weight of 1.</p></td>
     </tr>
     <tr>
       <th>bound</th>
@@ -225,25 +225,31 @@ that should be performed.</p></td>
     <tr>
       <th>meanHH</th>
       <td><p>if TRUE, every person in a household is assigned the mean of
-the person weights corresponding to the household. If <code>"geometric"</code>, the geometric mean
-is used rather than the arithmetic mean.</p></td>
+the person weights corresponding to the household. If <code>"geometric"</code>, the
+geometric mean is used rather than the arithmetic mean.</p></td>
     </tr>
     <tr>
       <th>allPthenH</th>
-      <td><p>if TRUE, all the person level calibration steps are performed before the houshold level calibration steps (and <code>meanHH</code>, if specified).
-If FALSE, the houshold level calibration steps (and <code>meanHH</code>, if specified) are performed after everey person level calibration step.
-This can lead to better convergence properties in certain cases but also means that the total number of calibration steps is increased.</p></td>
+      <td><p>if TRUE, all the person level calibration steps are
+performed before the houshold level calibration steps (and <code>meanHH</code>, if
+specified). If FALSE, the houshold level calibration steps (and <code>meanHH</code>,
+if specified) are performed after everey person level calibration step.
+This can lead to better convergence properties in certain cases but also
+means that the total number of calibration steps is increased.</p></td>
     </tr>
     <tr>
       <th>returnNA</th>
-      <td><p>if TRUE, the calibrated weight will be set to NA in case of no convergence.</p></td>
+      <td><p>if TRUE, the calibrated weight will be set to NA in case of
+no convergence.</p></td>
     </tr>
     <tr>
       <th>looseH</th>
-      <td><p>if FALSE, the actual constraints <code>conH</code> are used for calibrating all the hh weights.
-If TRUE, only the weights for which the lower and upper thresholds defined by <code>conH</code> and <code>epsH</code> are exceeded
-are calibrated. They are however not calibrated against the actual constraints <code>conH</code> but against
-these lower and upper thresholds, i.e. <code>conH</code>-<code>conH</code>*<code>epsH</code> and <code>conH</code>+<code>conH</code>*<code>epsH</code>.</p></td>
+      <td><p>if FALSE, the actual constraints <code>conH</code> are used for
+calibrating all the hh weights. If TRUE, only the weights for which the
+lower and upper thresholds defined by <code>conH</code> and <code>epsH</code> are exceeded are
+calibrated. They are however not calibrated against the actual constraints
+<code>conH</code> but against these lower and upper thresholds, i.e.
+<code>conH</code>-<code>conH</code>*<code>epsH</code> and <code>conH</code>+<code>conH</code>*<code>epsH</code>.</p></td>
     </tr>
     <tr>
       <th>numericalWeighting</th>
@@ -251,27 +257,36 @@ these lower and upper thresholds, i.e. <code>conH</code>-<code>conH</code>*<code
     </tr>
     <tr>
       <th>check_hh_vars</th>
-      <td><p>If <code>TRUE</code> check for non-unique values inside of a household for variables in
-household constraints</p></td>
+      <td><p>If <code>TRUE</code> check for non-unique values inside of a
+household for variables in household constraints</p></td>
     </tr>
     <tr>
       <th>conversion_messages</th>
-      <td><p>show a message, if inputs need to be reformatted. This can be useful for speed
-optimizations if ipf is called several times with similar inputs (for example bootstrapping)</p></td>
+      <td><p>show a message, if inputs need to be reformatted.
+This can be useful for speed optimizations if ipf is called several times
+with similar inputs (for example bootstrapping)</p></td>
+    </tr>
+    <tr>
+      <th>nameCalibWeight</th>
+      <td><p>character defining the name of the variable for the
+newly generated calibrated weight.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The function will return the input data <code>dat</code> with the
-calibrated weights <code>calibWeight</code> as an additional column as well as attributes. If no convergence has been reached in <code>maxIter</code>
-steps, and <code>returnNA</code> is <code>TRUE</code> (the default), the column <code>calibWeights</code> will only consist of <code>NA</code>s. The attributes of the table are
-attributes derived from the <code>data.table</code> class as well as the following.</p><table class='table'>
+    <p>The function will return the input data <code>dat</code> with the calibrated
+weights <code>calibWeight</code> as an additional column as well as attributes. If no
+convergence has been reached in <code>maxIter</code> steps, and <code>returnNA</code> is <code>TRUE</code>
+(the default), the column <code>calibWeights</code> will only consist of <code>NA</code>s. The
+attributes of the table are attributes derived from the <code>data.table</code> class
+as well as the following.</p><table class='table'>
 <tr><td><code>converged</code></td><td>Did the algorithm converge in <code>maxIter</code> steps?</td></tr>
 <tr><td><code>iterations</code></td><td>The number of iterations performed.</td></tr>
 <tr><td><code>conP</code>, <code>conH</code>, <code>epsP</code>, <code>epsH</code></td><td>See Arguments.</td></tr>
 <tr><td><code>conP_adj</code>, <code>conH_adj</code></td><td>Adjusted versions of <code>conP</code> and <code>conH</code></td></tr>
-<tr><td><code>formP</code>, <code>formH</code></td><td>Formulas that were used to calculate <code>conP_adj</code> and <code>conH_adj</code> based on the output table.</td></tr>
+<tr><td><code>formP</code>, <code>formH</code></td><td>Formulas that were used to calculate <code>conP_adj</code> and
+<code>conH_adj</code> based on the output table.</td></tr>
 </table>
 
 
@@ -280,18 +295,20 @@ attributes derived from the <code>data.table</code> class as well as the followi
 
     <p>This function implements the weighting procedure described
 <a href='http://www.ajs.or.at/index.php/ajs/article/viewFile/doi10.17713ajs.v45i3.120/512'>here</a>.</p>
-<p><code>conP</code> and <code>conH</code> are contingency tables, which can be created with <code>xtabs</code>. The <code>dimnames</code> of those
-tables should match the names and levels of the corresponding columns in <code>dat</code>.</p>
-<p><code>maxIter</code>, <code>epsP</code> and <code>epsH</code> are the stopping criteria. <code>epsP</code> and <code>epsH</code> describe relative tolerances
-in the sense that
+<p><code>conP</code> and <code>conH</code> are contingency tables, which can be created with <code>xtabs</code>.
+The <code>dimnames</code> of those tables should match the names and levels of the
+corresponding columns in <code>dat</code>.</p>
+<p><code>maxIter</code>, <code>epsP</code> and <code>epsH</code> are the stopping criteria. <code>epsP</code> and <code>epsH</code>
+describe relative tolerances in the sense that
 \deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP} 
-will be used as convergence criterium. Here i is the iteration step and wi is the weight of a
-specific person at step i.</p>
+will be used as convergence criterium. Here i is the iteration step and wi is
+the weight of a specific person at step i.</p>
 <p>The algorithm
-performs best if all varables occuring in the constraints (<code>conP</code> and <code>conH</code>) as well as the
-household variable are coded as <code>factor</code>-columns in <code>dat</code>. Otherwise, conversions will be necessary
-which can be monitored with the <code>conversion_messages</code> argument.
-Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the performance of the scheme.</p>
+performs best if all varables occuring in the constraints (<code>conP</code> and <code>conH</code>)
+as well as the household variable are coded as <code>factor</code>-columns in <code>dat</code>.
+Otherwise, conversions will be necessary which can be monitored with the
+<code>conversion_messages</code> argument. Setting <code>check_hh_vars</code> to <code>FALSE</code> can also
+incease the performance of the scheme.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -322,7 +339,8 @@ Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the pe
 <span class='co'># treat households as a factor variable</span>
 <span class='no'>eusilcS</span>[, <span class='no'>household</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>as.factor</a></span>(<span class='no'>household</span>)]
 
-<span class='co'>## example for base weights assuming a simple random sample of households stratified per region</span>
+<span class='co'>## example for base weights assuming a simple random sample of households</span>
+<span class='co'>## stratified per region</span>
 <span class='no'>eusilcS</span>[, <span class='no'>regSamp</span> <span class='kw'>:=</span> <span class='no'>.N</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
 <span class='no'>eusilcS</span>[, <span class='no'>regPop</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>weight</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
 <span class='no'>eusilcS</span>[, <span class='no'>baseWeight</span> <span class='kw'>:=</span> <span class='no'>regPop</span>/<span class='no'>regSamp</span>]
@@ -336,7 +354,8 @@ Setting <code>check_hh_vars</code> to <code>FALSE</code> can also incease the pe
 <span class='no'>conP3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span>*<span class='no'>netIncome</span> ~ <span class='no'>gender</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
 
 <span class='co'>## constraints on household level</span>
-<span class='no'>conH1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>hsize</span> + <span class='no'>state</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>, <span class='kw'>subset</span> <span class='kw'>=</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>duplicated</a></span>(<span class='no'>household</span>))
+<span class='no'>conH1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>hsize</span> + <span class='no'>state</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>,
+               <span class='kw'>subset</span> <span class='kw'>=</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>duplicated</a></span>(<span class='no'>household</span>))
 
 <span class='co'># array of convergence limits for conH1</span>
 <span class='no'>epsH1</span> <span class='kw'>&lt;-</span> <span class='no'>conH1</span>
