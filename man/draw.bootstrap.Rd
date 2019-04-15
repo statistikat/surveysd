@@ -10,102 +10,162 @@ draw.bootstrap(dat, REP = 1000, hid = NULL, weights, period = NULL,
   pid = NULL, new.method = FALSE)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the survey data with rotating panel design.}
+\item{dat}{either data.frame or data.table containing the survey data with
+rotating panel design.}
 
 \item{REP}{integer indicating the number of bootstrap replicates.}
 
-\item{hid}{character specifying the name of the column in \code{dat} containing the household id. If
-\code{NULL} (the default), the household structure is not regarded.}
+\item{hid}{character specifying the name of the column in \code{dat} containing
+the household id. If \code{NULL} (the default), the household structure is not
+regarded.}
 
-\item{weights}{character specifying the name of the column in \code{dat} containing the sample weights.}
+\item{weights}{character specifying the name of the column in \code{dat}
+containing the sample weights.}
 
-\item{period}{character specifying the name of the column in \code{dat} containing the sample periods.
-If \code{NULL} (the default), it is assumed that all observations belong to the same
-period.}
+\item{period}{character specifying the name of the column in \code{dat} containing
+the sample periods. If \code{NULL} (the default), it is assumed that all
+observations belong to the same period.}
 
-\item{strata}{character vector specifying the name(s) of the column in \code{dat} by which the population
-was stratified. If \code{strata} is a vector stratification will be assumed as the combination
-of column names contained in \code{strata}. Setting in addition \code{cluster} not NULL stratification
-will be assumed on multiple stages, where each additional entry in \code{strata} specifies the
-stratification variable for the next lower stage. see Details for more information.}
+\item{strata}{character vector specifying the name(s) of the column in \code{dat}
+by which the population was stratified. If \code{strata} is a vector
+stratification will be assumed as the combination of column names contained
+in \code{strata}. Setting in addition \code{cluster} not NULL stratification will be
+assumed on multiple stages, where each additional entry in \code{strata}
+specifies the stratification variable for the next lower stage. see Details
+for more information.}
 
-\item{cluster}{character vector specifying cluster in the data. If not already specified in \code{cluster} household ID is taken es the lowest level cluster.}
+\item{cluster}{character vector specifying cluster in the data. If not
+already specified in \code{cluster} household ID is taken es the lowest level
+cluster.}
 
-\item{totals}{character specifying the name of the column in \code{dat} containing the the totals per strata and/or cluster. Is ONLY optional if \code{cluster} is \code{NULL} or equal \code{hid} and \code{strata} contains one columnname!
-Then the households per strata will be calcualted using the \code{weights} argument. If clusters and strata for multiple stages are specified \code{totals} needs to be a vector of \code{length(strata)} specifying the column on \code{dat}
-that contain the total number of PSUs at each stage. \code{totals} is interpreted from left the right, meaning that the first argument corresponds to the number of PSUs at the first and the last argument to the number of PSUs at the last stage.}
+\item{totals}{character specifying the name of the column in \code{dat} containing
+the the totals per strata and/or cluster. Is ONLY optional if \code{cluster} is
+\code{NULL} or equal \code{hid} and \code{strata} contains one columnname! Then the
+households per strata will be calcualted using the \code{weights} argument. If
+clusters and strata for multiple stages are specified \code{totals} needs to be
+a vector of \code{length(strata)} specifying the column on \code{dat} that contain
+the total number of PSUs at each stage. \code{totals} is interpreted from left
+the right, meaning that the first argument corresponds to the number of
+PSUs at the first and the last argument to the number of PSUs at the last
+stage.}
 
-\item{single.PSU}{either "merge" or "mean" defining how single PSUs need to be dealt with.
-For \code{single.PSU="merge"} single PSUs at each stage are merged with the strata or cluster with the next least number of PSUs. If multiple of those exist one will be select via random draw
-For \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap replicates at the stage which did not contain single PSUs.}
+\item{single.PSU}{either "merge" or "mean" defining how single PSUs need to
+be dealt with. For \code{single.PSU="merge"} single PSUs at each stage are
+merged with the strata or cluster with the next least number of PSUs. If
+multiple of those exist one will be select via random draw. For
+\code{single.PSU="mean"} single PSUs will get the mean over all bootstrap
+replicates at the stage which did not contain single PSUs.}
 
-\item{boot.names}{character indicating the leading string of the column names for each bootstrap replica. If NULL defaults to "w".}
+\item{boot.names}{character indicating the leading string of the column names
+for each bootstrap replica. If NULL defaults to "w".}
 
-\item{split}{logical, if TRUE split households are considered using \code{pid}, for more information see Details.}
+\item{split}{logical, if TRUE split households are considered using \code{pid},
+for more information see Details.}
 
-\item{pid}{column in \code{dat} specifying the personal identifier. This identifier needs to be unique for each person throught the whole data set.}
+\item{pid}{column in \code{dat} specifying the personal identifier. This
+identifier needs to be unique for each person throught the whole data set.}
 
-\item{new.method}{logical, if TRUE bootstrap replicates will never be negative even if in some strata the whole population is in the sample. WARNING: This is still experimental and resulting standard errors might be underestimated! Use this if for some strata the whole population is in the sample!}
+\item{new.method}{logical, if TRUE bootstrap replicates will never be
+negative even if in some strata the whole population is in the sample.
+WARNING: This is still experimental and resulting standard errors might be
+underestimated! Use this if for some strata the whole population is in the
+sample!}
 }
 \value{
-the survey data with the number of REP bootstrap replicates added as columns.
+the survey data with the number of REP bootstrap replicates added as
+columns.
 
-Returns a data.table containing the original data as well as the number of \code{REP} columns containing the bootstrap replicates for each repetition.\cr
-The columns of the bootstrap replicates are by default labeled "w\emph{Number}" where \emph{Number} goes from 1 to \code{REP}.
-If the column names of the bootstrap replicates should start with a different character or string the parameter \code{boot.names} can be used.
+Returns a data.table containing the original data as well as the
+number of \code{REP} columns containing the bootstrap replicates for each
+repetition.\cr
+The columns of the bootstrap replicates are by default labeled "w\emph{Number}"
+where \emph{Number} goes from 1 to \code{REP}. If the column names of the bootstrap
+replicates should start with a different character or string the parameter
+\code{boot.names} can be used.
 }
 \description{
-Draw bootstrap replicates from survey data with rotating panel design.
-Survey information, like ID, sample weights, strata and population totals per strata, should be specified to ensure meaningfull survey bootstraping.
+Draw bootstrap replicates from survey data with rotating panel
+design. Survey information, like ID, sample weights, strata and population
+totals per strata, should be specified to ensure meaningfull survey
+bootstraping.
 }
 \details{
-\code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates from it.
-\code{dat} must be household data where household members correspond to multiple rows with the same household
-identifier. For most practical applications, the following columns should be available in the dataset
+\code{draw.bootstrap} takes \code{dat} and draws \code{REP} bootstrap replicates
+from it.
+\code{dat} must be household data where household members correspond to multiple
+rows with the same household
+identifier. For most practical applications, the following columns should be
+available in the dataset
 and passed via the corresponding parameters:
 \itemize{
 \item Column indicating the sample period (parameter \code{period}).
 \item Column indicating the household ID (parameter \code{hid})
 \item Column containing the household sample weights (parameter \code{weights});
-\item Columns by which population was stratified during the sampling process (parameter: \code{strata}).
+\item Columns by which population was stratified during the sampling process
+(parameter: \code{strata}).
 }
 
-For single stage sampling design a column the argument \code{totals} is optional, meaning that a column of the number of PSUs at the first stage does not need to be supplied.
-For this case the number of PSUs is calculated and added to \code{dat} using \code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling design is always assumed and
-if \code{strata} contains of multiple column names the combination of all those column names will be used for stratification.
+For single stage sampling design a column the argument \code{totals} is optional,
+meaning that a column of the number of PSUs at the first stage does not need
+to be supplied.
+For this case the number of PSUs is calculated and added to \code{dat} using
+\code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling
+design is always assumed and
+if \code{strata} contains of multiple column names the combination of all those
+column names will be used for stratification.
 
-In the case of multi stage sampling design the argument \code{totals} needs to be specified and needs to have the same number of arguments as \code{strata}.
+In the case of multi stage sampling design the argument \code{totals} needs to be
+specified and needs to have the same number of arguments as \code{strata}.
 
-If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stage, \code{hid} will automatically be used as the final cluster. If, besides \code{hid}, clustering in additional stages is specified the number of column names in
-\code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage there was no clustering or stratification one can set "1" or "I" for this stage.
+If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stage, \code{hid}
+will automatically be used as the final cluster. If, besides \code{hid},
+clustering in additional stages is specified the number of column names in
+\code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage
+there was no clustering or stratification one can set "1" or "I" for this
+stage.
 
-For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would speficy a 2 stage sampling design where at the first stage the municipalities where drawn stratified by regions
-and at the 2nd stage housholds are drawn in each municipality without stratification.
+For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would
+speficy a 2 stage sampling design where at the first stage the municipalities
+where drawn stratified by regions
+and at the 2nd stage housholds are drawn in each municipality without
+stratification.
 
-Bootstrap replicates are drawn for each survey period (\code{period}) using the function \link{rescaled.bootstrap}.
-Afterwards the bootstrap replicates for each household are carried forward from the first period the household enters the survey to all the censecutive periods it stays in the survey.
+Bootstrap replicates are drawn for each survey period (\code{period}) using the
+function \link{rescaled.bootstrap}.
+Afterwards the bootstrap replicates for each household are carried forward
+from the first period the household enters the survey to all the censecutive
+periods it stays in the survey.
 
-This ensures that the bootstrap replicates follow the same logic as the sampled households, making the bootstrap replicates more comparable to the actual sample units.
+This ensures that the bootstrap replicates follow the same logic as the
+sampled households, making the bootstrap replicates more comparable to the
+actual sample units.
 
-If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates are carried forward using the personal identifiers instead of the houshold identifier.
+If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates
+are carried forward using the personal identifiers instead of the houshold
+identifier.
 This takes into account the issue of a houshold splitting up.
-Any person in this new split household will get the same bootstrap replicate as the person that has come from an other household in the survey.
-People who enter already existing households will also get the same bootstrap replicate as the other households members had in the previous periods.
+Any person in this new split household will get the same bootstrap replicate
+as the person that has come from an other household in the survey.
+People who enter already existing households will also get the same bootstrap
+replicate as the other households members had in the previous periods.
 }
 \examples{
 \dontrun{
 eusilc <- demo.eusilc(prettyNames = TRUE)
 
 ## draw sample without stratification or clustering
-dat_boot <- draw.bootstrap(eusilc, REP = 10, weights = "pWeight", period = "year")
+dat_boot <- draw.bootstrap(eusilc, REP = 10, weights = "pWeight",
+                           period = "year")
 
 ## use stratification w.r.t. region and clustering w.r.t. households
-dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
-                           strata = "region", period = "year")
+dat_boot <- draw.bootstrap(
+  eusilc, REP = 10, hid = "hid", weights = "pWeight",
+  strata = "region", period = "year")
 
 ## use multi-level clustering
-dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
-                           strata = c("region", "age"), period = "year")
+dat_boot <- draw.bootstrap(
+  eusilc, REP = 10, hid = "hid", weights = "pWeight",
+  strata = c("region", "age"), period = "year")
 
 
 # create spit households
@@ -114,21 +174,28 @@ year <- eusilc[, unique(year)]
 year <- year[-1]
 leaf_out <- c()
 for(y in year){
-  split.person <- eusilc[year == (y-1) & !duplicated(hid) & !(hid \%in\% leaf_out),
-                         sample(pid, 20)]
-  overwrite.person <- eusilc[(year == (y)) & !duplicated(hid) & !(hid \%in\% leaf_out),
-                             .(pid = sample(pid, 20))]
+  split.person <- eusilc[
+    year == (y-1) & !duplicated(hid) & !(hid \%in\% leaf_out),
+    sample(pid, 20)
+  ]
+  overwrite.person <- eusilc[
+    (year == (y)) & !duplicated(hid) & !(hid \%in\% leaf_out),
+    .(pid = sample(pid, 20))
+  ]
   overwrite.person[, c("pidsplit", "year_curr") := .(split.person, y)]
 
-  eusilc[overwrite.person, pidsplit := i.pidsplit, on = .(pid, year >= year_curr)]
+  eusilc[overwrite.person, pidsplit := i.pidsplit,
+         on = .(pid, year >= year_curr)]
   leaf_out <- c(leaf_out,
-                eusilc[pid \%in\% c(overwrite.person$pid, overwrite.person$pidsplit),
+                eusilc[pid \%in\% c(overwrite.person$pid,
+                                  overwrite.person$pidsplit),
                 unique(hid)])
 }
 
-dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
-                           strata = c("region", "age"), period = "year", split = TRUE,
-                           pid = "pidsplit")
+dat_boot <- draw.bootstrap(
+  eusilc, REP = 10, hid = "hid", weights = "pWeight",
+  strata = c("region", "age"), period = "year", split = TRUE,
+  pid = "pidsplit")
 # split households were considered e.g. household and
 # split household were both selected or not selected
 dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
@@ -136,7 +203,8 @@ dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
 
 }
 \seealso{
-\code{\link[data.table:data.table]{data.table}} for more information on data.table objects.
+\code{\link[data.table:data.table]{data.table}} for more information on
+data.table objects.
 }
 \author{
 Johannes Gussenbauer, Alexander Kowarik, Statistics Austria

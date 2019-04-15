@@ -9,28 +9,33 @@ demo.eusilc(n = 8, prettyNames = FALSE)
 \arguments{
 \item{n}{Number of years to generate. Should be at least 1}
 
-\item{prettyNames}{Create easy-to-read names for certain variables. Recommended for demonstration
-purposes. Otherwise, use the original codes documented in \link[laeken:eusilc]{laeken::eusilc}.}
+\item{prettyNames}{Create easy-to-read names for certain variables.
+Recommended for demonstration purposes. Otherwise, use the original codes
+documented in \link[laeken:eusilc]{laeken::eusilc}.}
 }
 \description{
-Create a dummy dataset to be used for demonstrating the functionalities of the \code{surveysd} package
-based on \link[laeken:eusilc]{laeken::eusilc}. Please refer to the documentation page of the original data for
-details about the variables.
+Create a dummy dataset to be used for demonstrating the functionalities of
+the \code{surveysd} package based on \link[laeken:eusilc]{laeken::eusilc}. Please refer to the
+documentation page of the original data for details about the variables.
 }
 \details{
-If \code{prettyNames} is \code{TRUE}, the following variables will be available in an easy-to-read manner.
+If \code{prettyNames} is \code{TRUE}, the following variables will be available in an
+easy-to-read manner.
 \itemize{
-\item \code{hid} Household id. Consistent with respect to the reference period (\code{year})
+\item \code{hid} Household id. Consistent with respect to the reference period
+(\code{year})
 \item \code{hsize} Size of the household. derived from \code{hid} and \code{period}
 \item \code{region} Federal state of austria where the household is located
 \item \code{pid} Personal id. Consistent with respect to the reference period (\code{year})
 \item \code{age} Age-class of the respondent
 \item \code{gender} A persons gender (\code{"male"}, \code{"Female"})
-\item \code{ecoStat} Ecnomic status (\code{"part time"}, \code{"full time"}, \code{"unemployed"}, ...)
+\item \code{ecoStat} Ecnomic status
+(\code{"part time"}, \code{"full time"}, \code{"unemployed"}, ...)
 \item \code{citizenship} Citizenship (\code{"AT"}, \code{"EU"}, \code{"other"})
 \item \code{pWeight} Personal sample weight inside the reference period
 \item \code{year}. Simulated reference period
-\item \code{povertyRisk}. Logical variable determining whether a respondent is at risk of poverty
+\item \code{povertyRisk}. Logical variable determining whether a respondent is at risk
+of poverty
 }
 }
 \examples{
