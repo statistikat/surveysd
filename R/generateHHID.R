@@ -1,17 +1,27 @@
-#' Generate new houshold ID for survey data with rotating panel design taking into account split households
+#' Generate new houshold ID for survey data with rotating panel design taking
+#' into account split households
 #'
-#' Generating a new houshold ID for survey data using a houshold ID and a personal ID.
-#' For surveys with rotating panel design containing housholds, houshold members can move from an existing household to a new one, that was not originally in the sample.
-#' This leads to the creation of so called split households. Using a peronal ID (that stays fixed over the whole survey), an indicator for different time steps and a houshold ID,
-#' a new houshold ID is assigned to the original and the split household.
+#' Generating a new houshold ID for survey data using a houshold ID and a
+#' personal ID.
+#' For surveys with rotating panel design containing housholds, houshold members
+#' can move from an existing household to a new one, that was not originally in
+#' the sample. This leads to the creation of so called split households. Using a
+#' peronal ID (that stays fixed over the whole survey), an indicator for
+#' different time steps and a houshold ID, a new houshold ID is assigned to the
+#' original and the split household.
 #'
 #' @param dat data table of data frame containing the survey data
-#' @param period column name of \code{dat} containing an indicator for the rotations, e.g years, quarters, months, ect...
-#' @param pid column name of \code{dat} containing the personal identifier. This needs to be fixed for an indiviual throught the whole survey
-#' @param hid column name of \code{dat} containing the household id. This needs to for a household throught the whole survey
+#' @param period column name of \code{dat} containing an indicator for the
+#'   rotations, e.g years, quarters, months, ect...
+#' @param pid column name of \code{dat} containing the personal identifier. This
+#'   needs to be fixed for an indiviual throught the whole survey
+#' @param hid column name of \code{dat} containing the household id. This needs
+#'   to for a household throught the whole survey
 #'
-#' @return the survey data \code{dat} as data.table object containing a new and an old household ID. The new household ID which considers the split households is now named \code{hid} and the original household ID
-#' has a trailing "_orig".
+#' @return the survey data \code{dat} as data.table object containing a new and
+#'   an old household ID. The new household ID which considers the split
+#'   households is now named \code{hid} and the original household ID has a
+#'   trailing "_orig".
 #' @export generate.HHID
 #'
 #' @examples
@@ -34,16 +44,19 @@
 #'                              .(rb030=sample(rb030,20))]
 #'   overwrite.person[,c("rb030split","year_curr"):=.(split.person,y)]
 #'
-#'   eusilc[overwrite.person,rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
-#'   leaf_out <- c(leaf_out,
-#'                 eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
-#'                 unique(db030)])
+#'   eusilc[overwrite.person,
+#'          rb030split:=i.rb030split,on=.(rb030,year>=year_curr)]
+#'   leaf_out <- c(
+#'     leaf_out,
+#'     eusilc[rb030%in%c(overwrite.person$rb030,overwrite.person$rb030split),
+#'     unique(db030)])
 #' }
 #'
 #' # pid which are in split households
 #' eusilc[,.(uniqueN(db030)),by=list(rb030split)][V1>1]
 #'
-#' eusilc.new <- generate.HHID(eusilc,period="year",pid="rb030split",hid="db030")
+#' eusilc.new <- generate.HHID(eusilc, period = "year", pid = "rb030split",
+#'                             hid = "db030")
 #'
 #' # no longer any split households in the data
 #' eusilc.new[,.(uniqueN(db030)),by=list(rb030split)][V1>1]

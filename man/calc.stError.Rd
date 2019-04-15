@@ -2,7 +2,8 @@
 % Please edit documentation in R/calc.stError.R
 \name{calc.stError}
 \alias{calc.stError}
-\title{Calcualte point estimates and their standard errors using bootstrap weights.}
+\title{Calcualte point estimates and their standard errors using bootstrap
+weights.}
 \usage{
 calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   "b.rep"), period = attr(dat, "period"), var, fun = weightedRatio,
@@ -12,65 +13,105 @@ calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
   add.arg = NULL)
 }
 \arguments{
-\item{dat}{either data.frame or data.table containing the survey data. Surveys can be a panel survey or rotating panel survey, but does not need to be. For rotating panel survey bootstrap weights can be created using \link{draw.bootstrap} and \link{recalib}.}
+\item{dat}{either data.frame or data.table containing the survey data.
+Surveys can be a panel survey or rotating panel survey, but does not need
+to be. For rotating panel survey bootstrap weights can be created using
+\link{draw.bootstrap} and \link{recalib}.}
 
-\item{weights}{character specifying the name of the column in \code{dat} containing the original sample weights. Used to calculate point estimates.}
+\item{weights}{character specifying the name of the column in \code{dat}
+containing the original sample weights. Used to calculate point estimates.}
 
-\item{b.weights}{character vector specifying the names of the columns in \code{dat} containing bootstrap weights. Used to calculate standard errors.}
+\item{b.weights}{character vector specifying the names of the columns in
+\code{dat} containing bootstrap weights. Used to calculate standard errors.}
 
-\item{period}{character specifying the name of the column in \code{dat} containing the sample periods.}
+\item{period}{character specifying the name of the column in \code{dat}
+containing the sample periods.}
 
-\item{var}{character vector containing variable names in \code{dat} on which \code{fun} shall be applied for each sample period.}
+\item{var}{character vector containing variable names in \code{dat} on which \code{fun}
+shall be applied for each sample period.}
 
 \item{fun}{function which will be applied on \code{var} for each sample period.
-Predefined functions are \link{weightedRatio}, \link{weightedSum}, but can also take any other function which returns a double or integer and uses weights as its second argument.}
+Predefined functions are \link{weightedRatio}, \link{weightedSum}, but can also take
+any other function which returns a double or integer and uses weights as
+its second argument.}
 
-\item{national}{boolean, if TRUE point estimates resulting from fun will be divided by the point estimate at the national level.}
+\item{national}{boolean, if TRUE point estimates resulting from fun will be
+divided by the point estimate at the national level.}
 
-\item{group}{character vectors or list of character vectors containig variables in \code{dat}. For each list entry \code{dat} will be split in subgroups according to the containing variables as well as \code{period}.
-The pointestimates are then estimated for each subgroup seperately. If \code{group=NULL} the data will split into sample periods by default.}
+\item{group}{character vectors or list of character vectors containig
+variables in \code{dat}. For each list entry \code{dat} will be split in subgroups
+according to the containing variables as well as \code{period}. The
+pointestimates are then estimated for each subgroup seperately. If
+\code{group=NULL} the data will split into sample periods by default.}
 
-\item{fun.adjust.var}{can be either \code{NULL} or a function. This argument can be used to apply a function for each \code{period} and bootstrap weight to the data. The resulting estimates will be passed down to \code{fun}. See details for more explanations.}
+\item{fun.adjust.var}{can be either \code{NULL} or a function. This argument can
+be used to apply a function for each \code{period} and bootstrap weight to the
+data. The resulting estimates will be passed down to \code{fun}. See details for
+more explanations.}
 
-\item{adjust.var}{can be either \code{NULL} or a character specifying the first argument in \code{fun.adjust.var}.}
+\item{adjust.var}{can be either \code{NULL} or a character specifying the first
+argument in \code{fun.adjust.var}.}
 
-\item{period.diff}{character vectors, defining periods for which the differences in the point estimate as well it's standard error is calculated. Each entry must have the form of \code{"period1 - period2"}. Can be NULL}
+\item{period.diff}{character vectors, defining periods for which the
+differences in the point estimate as well it's standard error is
+calculated. Each entry must have the form of \code{"period1 - period2"}. Can be
+NULL}
 
-\item{period.mean}{odd integer, defining the range of periods over which the sample mean of point estimates is additionally calcualted.}
+\item{period.mean}{odd integer, defining the range of periods over which the
+sample mean of point estimates is additionally calcualted.}
 
-\item{bias}{boolean, if \code{TRUE} the sample mean over the point estimates of the bootstrap weights is returned.}
+\item{bias}{boolean, if \code{TRUE} the sample mean over the point estimates of
+the bootstrap weights is returned.}
 
-\item{size.limit}{integer defining a lower bound on the number of observations on \code{dat} in each group defined by \code{period} and the entries in \code{group}.
-Warnings are returned if the number of observations in a subgroup falls below \code{size.limit}. In addition the concerned groups are available in the function output.}
+\item{size.limit}{integer defining a lower bound on the number of
+observations on \code{dat} in each group defined by \code{period} and the entries in
+\code{group}. Warnings are returned if the number of observations in a subgroup
+falls below \code{size.limit}. In addition the concerned groups are available in
+the function output.}
 
-\item{cv.limit}{non-negativ value defining a upper bound for the standard error in relation to the point estimate. If this relation exceed \code{cv.limit}, for a point estimate, they are flagged and available in the function output.}
+\item{cv.limit}{non-negativ value defining a upper bound for the standard
+error in relation to the point estimate. If this relation exceed
+\code{cv.limit}, for a point estimate, they are flagged and available in the
+function output.}
 
-\item{p}{numeric vector containing values between 0 and 1. Defines which quantiles for the distribution of \code{var} are additionally estimated.}
+\item{p}{numeric vector containing values between 0 and 1. Defines which
+quantiles for the distribution of \code{var} are additionally estimated.}
 
-\item{add.arg}{additional arguments which will be passed to fun. Can be either a named list or vector. The names of the object correspond to the function arguments and the values to column names in dat, see also examples.}
+\item{add.arg}{additional arguments which will be passed to fun. Can be
+either a named list or vector. The names of the object correspond to the
+function arguments and the values to column names in dat, see also
+examples.}
 }
 \value{
 Returns a list containing:
 \itemize{
-\item \code{Estimates}: data.table containing period differences and/or k period averages for estimates of
-\code{fun} applied to \code{var} as well as the corresponding standard errors, which are calculated using the bootstrap weights.
-In addition the sample size, \code{n}, and poplutaion size for each group is added to the output.
-\item \code{smallGroups}: data.table containing groups for which the number of observation falls below \code{size.limit}.
-\item \code{cvHigh}: data.table containing a boolean variable which indicates for each estimate if the
-estimated standard error exceeds \code{cv.limit}.
-\item \code{stEDecrease}: data.table indicating for each estimate the theoretical increase in sample size which is
-gained when averaging over k periods. Only returned if \code{period.mean} is not \code{NULL}.
+\item \code{Estimates}: data.table containing period differences and/or k period
+averages for estimates of
+\code{fun} applied to \code{var} as well as the corresponding standard errors, which
+are calculated using the bootstrap weights. In addition the sample size,
+\code{n}, and poplutaion size for each group is added to the output.
+\item \code{smallGroups}: data.table containing groups for which the number of
+observation falls below \code{size.limit}.
+\item \code{cvHigh}: data.table containing a boolean variable which indicates for each
+estimate if the estimated standard error exceeds \code{cv.limit}.
+\item \code{stEDecrease}: data.table indicating for each estimate the theoretical
+increase in sample size which is gained when averaging over k periods. Only
+returned if \code{period.mean} is not \code{NULL}.
 }
 }
 \description{
-Calculate point estimates as well as standard errors of variables in surveys. Standard errors are estimated using bootstrap weights (see \link{draw.bootstrap} and \link{recalib}).
-In addition the standard error of an estimate can be calcualted using the survey data for 3 or more consecutive periods, which results in a reduction of the standard error.
+Calculate point estimates as well as standard errors of variables in surveys.
+Standard errors are estimated using bootstrap weights (see \link{draw.bootstrap}
+and \link{recalib}). In addition the standard error of an estimate can be
+calcualted using the survey data for 3 or more consecutive periods, which
+results in a reduction of the standard error.
 }
 \details{
-\code{calc.stError} takes survey data (\code{dat}) and returns point estimates as well as their standard Errors
-defined by \code{fun} and \code{var} for each sample period in \code{dat}.
-\code{dat} must be household data where household members correspond to multiple rows with the same household identifier.
-The data should at least containt the following columns:
+\code{calc.stError} takes survey data (\code{dat}) and returns point estimates
+as well as their standard Errors defined by \code{fun} and \code{var} for each sample
+period in \code{dat}. \code{dat} must be household data where household members
+correspond to multiple rows with the same household identifier. The data
+should at least contain the following columns:
 \itemize{
 \item Column indicating the sample period;
 \item Column indicating the household ID;
@@ -79,53 +120,106 @@ The data should at least containt the following columns:
 \item Columns listed in \code{var} as well as in \code{group}
 }
 
-For each variable in \code{var} as well as sample period the function \code{fun} is applied using the original as well as the bootstrap sample weights.\cr
-The point estimate is then selected as the result of \code{fun} when using the original sample weights and it's standard error is estimated with the result of \code{fun} using the bootstrap sample weights. \cr
+For each variable in \code{var} as well as sample period the function \code{fun} is
+applied using the original as well as the bootstrap sample weights.\cr
+The point estimate is then selected as the result of \code{fun} when using the
+original sample weights and it's standard error is estimated with the result
+of \code{fun} using the bootstrap sample weights. \cr
 \cr
-\code{fun} can be any function which returns a double or integer and uses sample weights as it's second argument. The predifined options are \code{weightedRatio} and \code{weightedSum}.\cr
+\code{fun} can be any function which returns a double or integer and uses sample
+weights as it's second argument. The predifined options are \code{weightedRatio}
+and \code{weightedSum}.\cr
 \cr
-For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is calculated for \code{var} equal to 1, e.g \code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
-Additionally using the option \code{national=TRUE} the weighted ratio (in \%) is divided by the weighted ratio at the national level for each \code{period}.
+For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is
+calculated for \code{var} equal to 1, e.g
+\code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
+Additionally using the option \code{national=TRUE} the weighted ratio (in \%) is
+divided by the weighted ratio at the national level for each \code{period}.
 \cr
-If \code{group} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is applied on each subset of \code{dat} defined by all combinations of values in \code{group}.\cr
-For instance if \code{group = "sex"} with "sex" having the values "Male" and "Female" in \code{dat} the point estimate and standard error is calculated on the subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done for each value of \code{period}.
-For variables in \code{group} which have \code{NA}s in \code{dat} the rows containing the missings will be discarded. \cr
-When \code{group} is a list of character vectors, subsets of \code{dat} and the following estimation of the point estimate, including the estimate for the standard error, are calculated for each list entry.\cr
+If \code{group} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is
+applied on each subset of \code{dat} defined by all combinations of values in
+\code{group}.\cr
+For instance if \code{group = "sex"} with "sex" having the values "Male" and
+"Female" in \code{dat} the point estimate and standard error is calculated on the
+subsets of \code{dat} with only "Male" or "Female" value for "sex". This is done
+for each value of \code{period}. For variables in \code{group} which have \code{NA}s in
+\code{dat} the rows containing the missings will be discarded. \cr
+When \code{group} is a list of character vectors, subsets of \code{dat} and the
+following estimation of the point estimate, including the estimate for the
+standard error, are calculated for each list entry.\cr
 \cr
-The optional parameters \code{fun.adjust.var} and \code{adjust.var} can be used if the values in \code{var} are dependent on the \code{weights}. As is for instance the case for the poverty thershhold calculated from EU-SILC.
-In such a case an additional function can be supplied using \code{fun.adjust.var} as well as its first argument \code{adjust.var}, which needs to be part of the data set \code{dat}. Then, before applying \code{fun} on variable \code{var}
-for all \code{period} and groups, the function \code{fun.adjust.var} is applied to \code{adjust.var} using each of the bootstrap weights seperately (NOTE: weight is used as the second argument of \code{fun.adjust.var}).
+The optional parameters \code{fun.adjust.var} and \code{adjust.var} can be used if the
+values in \code{var} are dependent on the \code{weights}. As is for instance the case
+for the poverty thershhold calculated from EU-SILC.
+In such a case an additional function can be supplied using \code{fun.adjust.var}
+as well as its first argument \code{adjust.var}, which needs to be part of the
+data set \code{dat}. Then, before applying \code{fun} on variable \code{var}
+for all \code{period} and groups, the function \code{fun.adjust.var} is applied to
+\code{adjust.var} using each of the bootstrap weights seperately (NOTE: weight is
+used as the second argument of \code{fun.adjust.var}).
 Thus creating i=1,...,\code{length(b.weights)} additional variables.
-For applying \code{fun} on \code{var} the estimates for the bootstrap replicate will now use each of the corresponding new additional variables. So instead of
+For applying \code{fun} on \code{var} the estimates for the bootstrap replicate will
+now use each of the corresponding new additional variables. So instead of
 \deqn{fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...}
 the function \code{fun} will be applied in the way
 \deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...}
 
-where \code{var.1}, \code{var.2}, \code{...} correspond to the estimates resulting from \code{fun.adjust.var} and \code{adjust.var}.
-NOTE: This procedure is especially usefull if the \code{var} is dependent on \code{weights} and \code{fun} is applied on subgroups of the data set. Then it is not possible to capture this
-procedure with \code{fun} and \code{var}, see examples for a more hands on explanation.
+where \code{var.1}, \code{var.2}, \code{...} correspond to the estimates resulting from
+\code{fun.adjust.var} and \code{adjust.var}.
+NOTE: This procedure is especially usefull if the \code{var} is dependent on
+\code{weights} and \code{fun} is applied on subgroups of the data set. Then it is not
+possible to capture this procedure with \code{fun} and \code{var}, see examples for a
+more hands on explanation.
 \cr
-When defining \code{period.diff} the difference of point estimates between periods as well their standard errors are calculated.\cr
-The entries in \code{period.diff} must have the form of \code{"period1 - period2"} which means that the results of the point estimates for \code{period2} will be substracted from the results of the point estimates for \code{period1}.\cr
+When defining \code{period.diff} the difference of point estimates between periods
+as well their standard errors are calculated.\cr
+The entries in \code{period.diff} must have the form of \code{"period1 - period2"}
+which means that the results of the point estimates for \code{period2} will be
+substracted from the results of the point estimates for \code{period1}.\cr
 \cr
-Specifying \code{period.mean} leads to an improvement in standard error by averaging the results for the point estimates, using the bootstrap weights, over \code{period.mean} periods.
-Setting, for instance, \code{period.mean = 3} the results in averaging these results over each consecutive set of 3 periods.\cr
-Estimating the standard error over these averages gives an improved estimate of the standard error for the central period, which was used for averaging.\cr
-The averaging of the results is also applied in differences of point estimates. For instance defining \code{period.diff = "2015-2009"} and \code{period.mean = 3}
-the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as 2017 and 2011 are calcualated and finally the average over these 3 differences is calculated.
-The periods set in \code{period.diff} are always used as starting periods from which \code{period.mean-1} consecutive periods are used to build the average.
+Specifying \code{period.mean} leads to an improvement in standard error by
+averaging the results for the point estimates, using the bootstrap weights,
+over \code{period.mean} periods.
+Setting, for instance, \code{period.mean = 3} the results in averaging these
+results over each consecutive set of 3 periods.\cr
+Estimating the standard error over these averages gives an improved estimate
+of the standard error for the central period, which was used for
+averaging.\cr
+The averaging of the results is also applied in differences of point
+estimates. For instance defining \code{period.diff = "2015-2009"} and
+\code{period.mean = 3}
+the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as
+2017 and 2011 are calcualated and finally the average over these 3
+differences is calculated.
+The periods set in \code{period.diff} are always used as starting periods from
+which \code{period.mean-1} consecutive periods are used to build the average.
 \cr
-Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results from the bootstrap replicates. In  the output the corresponding columns is labeled \emph{_mean} at the end.\cr
+Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results
+from the bootstrap replicates. In  the output the corresponding columns is
+labeled \emph{_mean} at the end.\cr
 \cr
-If \code{fun} needs more arguments they can be supplied in \code{add.arg}. This can either be a named list or vector.\cr
+If \code{fun} needs more arguments they can be supplied in \code{add.arg}. This can
+either be a named list or vector.\cr
 \cr
-The parameter \code{size.limit} indicates a lower bound of the sample size for subsets in \code{dat} created by \code{group}. If the sample size of a subset falls below \code{size.limit} a warning will be displayed.\cr
-In addition all subsets for which this is the case can be selected from the output of \code{calc.stError} with \code{$smallGroups}.\cr
-With the parameter \code{cv.limit} one can set an upper bound on the coefficient of variantion. Estimates which exceed this bound are flagged with \code{TRUE} and are available in the function output with \code{$cvHigh}.
-\code{cv.limit} must be a positive integer and is treated internally as \%, e.g. for \code{cv.limit=1} the estimate will be flagged if the coefficient of variantion exceeds 1\%.\cr
+The parameter \code{size.limit} indicates a lower bound of the sample size for
+subsets in \code{dat} created by \code{group}. If the sample size of a subset falls
+below \code{size.limit} a warning will be displayed.\cr
+In addition all subsets for which this is the case can be selected from the
+output of \code{calc.stError} with \code{$smallGroups}.\cr
+With the parameter \code{cv.limit} one can set an upper bound on the coefficient
+of variantion. Estimates which exceed this bound are flagged with \code{TRUE} and
+are available in the function output with \code{$cvHigh}.
+\code{cv.limit} must be a positive integer and is treated internally as \%, e.g.
+for \code{cv.limit=1} the estimate will be flagged if the coefficient of
+variantion exceeds 1\%.\cr
 \cr
-When specifying \code{period.mean}, the decrease in standard error for choosing this method is internally calcualted and a rough estimate for an implied increase in sample size is available in the output with \code{$stEDecrease}.
-The rough estimate for the increase in sample size uses the fact that for a sample of size \eqn{n} the sample estimate for the standard error of most point estimates converges with a factor \eqn{1/\sqrt{n}} against the true standard error \eqn{\sigma}.
+When specifying \code{period.mean}, the decrease in standard error for choosing
+this method is internally calcualted and a rough estimate for an implied
+increase in sample size is available in the output with \code{$stEDecrease}.
+The rough estimate for the increase in sample size uses the fact that for a
+sample of size \eqn{n} the sample estimate for the standard error of most
+point estimates converges with a factor \eqn{1/\sqrt{n}} against the true
+standard error \eqn{\sigma}.
 }
 \examples{
 # Import data and calibrate
@@ -138,37 +232,45 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 
 # estimate weightedRatio for povertyRisk per period
 
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+                        fun = weightedRatio)
 err.est$Estimates
 
-# calculate weightedRatio for povertyRisk and fraction of one-person households per period
+# calculate weightedRatio for povertyRisk and fraction of one-person
+# households per period
 
 dat_boot_calib[, onePerson := .N == 1, by = .(year, hid)]
-err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio)
+err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"),
+                        fun = weightedRatio)
 err.est$Estimates
 
 # estimate weightedRatio for povertyRisk per period and gender
 
 group <- "gender"
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+                        fun = weightedRatio, group = group)
 err.est$Estimates
 
-# estimate weightedRatio for povertyRisk per period and gender, region and combination of both
+# estimate weightedRatio for povertyRisk per period and gender, region and
+# combination of both
 
 group <- list("gender", "region", c("gender", "region"))
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+                        fun = weightedRatio, group = group)
 err.est$Estimates
 
 # use average over 3 periods for standard error estimation
 
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, period.mean = 3)
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+                        fun = weightedRatio, period.mean = 3)
 err.est$Estimates
 
 # get estimate for difference of period 2016 and 2013
 
 period.diff <- c("2015-2011")
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        period.diff = period.diff, period.mean = 3)
+err.est <- calc.stError(
+  dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+  period.diff = period.diff, period.mean = 3)
 err.est$Estimates
 
 # use add.arg-argument
@@ -181,10 +283,12 @@ err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = fun,
                         period.mean = 0, add.arg=add.arg)
 err.est$Estimates
 # compare with direkt computation
-compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),by=c("year")]
+compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),
+                                 by=c("year")]
 all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
 
-# use a function from an other package that has sampling weights as its second argument
+# use a function from an other package that has sampling weights as its
+# second argument
 # for example gini() from laeken
 
 library(laeken)
@@ -194,15 +298,18 @@ help_gini <- function(x, w){
  return(gini(x, w)$value)
 }
 
-## make sure povertyRisk get coerced to a numeric in order to work with the external functions
+## make sure povertyRisk get coerced to a numeric in order to work with the
+## external functions
 invisible(dat_boot_calib[, povertyRisk := as.numeric(povertyRisk)])
 
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = help_gini, group = group,
-                        period.diff = period.diff, period.mean = 3)
+err.est <- calc.stError(
+  dat_boot_calib, var = "povertyRisk", fun = help_gini, group = group,
+  period.diff = period.diff, period.mean = 3)
 err.est$Estimates
 
 # using fun.adjust.var and adjust.var to estimate povmd60 indicator
-# for each period and bootstrap weight before applying the weightedRatio point estimate
+# for each period and bootstrap weight before applying the weightedRatio
+# point estimate
 
 # this function estimates the povmd60 indicator with x as income vector
 # and w as weight vector
@@ -216,9 +323,9 @@ povmd <- function(x, w){
 # the povmd60 indicator for each bootstrap weight
 # and the resultung indicators are passed to function weightedRatio
 
-err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
-                        group = group, fun.adjust.var = povmd, adjust.var = "eqIncome",
-                        period.mean = 3)
+err.est <- calc.stError(
+  dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group,
+  fun.adjust.var = povmd, adjust.var = "eqIncome", period.mean = 3)
 err.est$Estimates
 
 # why fun.adjust.var and adjust.var are needed (!!!):
@@ -236,9 +343,9 @@ povmd2 <- function(x, w){
 # but this results in different results in subgroups
 # compared to using fun.adjust.var and adjust.var
 
-err.est.different <- calc.stError(dat_boot_calib, var = "eqIncome", fun = povmd2,
-                                  group = group, fun.adjust.var = NULL, adjust.var = NULL,
-                                  period.mean = 3)
+err.est.different <- calc.stError(
+  dat_boot_calib, var = "eqIncome", fun = povmd2, group = group,
+  fun.adjust.var = NULL, adjust.var = NULL, period.mean = 3)
 err.est.different$Estimates
 
 ## results are equal for yearly estimates
