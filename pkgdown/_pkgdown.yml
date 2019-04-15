@@ -30,7 +30,7 @@ reference:
     - computeLinear
 
 development:
-  mode: unreleased
+  mode: release
 
 template:
   params:
