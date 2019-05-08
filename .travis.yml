@@ -4,10 +4,8 @@ cache: packages
 env:
   - SURVEYSD_ADDITIONAL_TEST = FALSE
 
-addons:
-  apt:
-    packages:
-    - ghostscript
+apt_packages:
+  - ghostscript
 
 matrix:
   include:
