@@ -168,7 +168,7 @@ type factor into a single one to allow multidimensional ipu-steps. See examples.
     </tr>
     <tr>
       <th>targets</th>
-      <td><p>key figure to target with the ipu scheme. A numeric verctor of the same length as <code><a href='https://www.rdocumentation.org/packages/base/topics/levels'>levels(classes)</a></code>.
+      <td><p>key figure to target with the ipu scheme. A numeric verctor of the same length as <code><a href='https://rdrr.io/r/base/levels.html'>levels(classes)</a></code>.
 This can also be a <code>table</code> produced by <code>xtabs</code>. See examples.</p></td>
     </tr>
     <tr>
@@ -181,7 +181,7 @@ This can also be a <code>table</code> produced by <code>xtabs</code>. See exampl
 
     <p><code>ipf_step</code> returns the adjusted weights. <code>ipf_step_ref</code> does the same, but updates <code>w</code> by reference rather than
 returning. <code>ipf_step_f</code> returns a multiplicator: adjusted weights divided by unadjusted weights. <code>combine_factors</code> is
-designed to make <code>ipf_step</code> work with contingency tables produced by <a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a>.</p>
+designed to make <code>ipf_step</code> work with contingency tables produced by <a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -191,83 +191,83 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class='co'>## create random data</span>
 <span class='no'>nobs</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
 <span class='no'>classLabels</span> <span class='kw'>&lt;-</span> <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>3</span>]
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(
-  <span class='kw'>weight</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>exp</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>nobs</span>)),
-  <span class='kw'>household</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>classLabels</span>, <span class='no'>nobs</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
+  <span class='kw'>weight</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>nobs</span>)),
+  <span class='kw'>household</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>classLabels</span>, <span class='no'>nobs</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 )
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  2.2494832         b
-#&gt; 2  0.5939796         a
-#&gt; 3  3.8931605         b
-#&gt; 4  1.1415837         a
-#&gt; 5  4.1788619         c
-#&gt; 6  2.9085426         b
-#&gt; 7  0.1370816         a
-#&gt; 8  0.3527599         b
-#&gt; 9  0.5096907         b
-#&gt; 10 0.8405626         a</div><div class='input'>
+#&gt; 1  0.6640834         c
+#&gt; 2  5.1397911         b
+#&gt; 3  1.2591308         a
+#&gt; 4  0.6516811         c
+#&gt; 5  0.9171716         b
+#&gt; 6  2.1896192         a
+#&gt; 7  0.4860760         c
+#&gt; 8  3.0053915         c
+#&gt; 9  5.6514550         a
+#&gt; 10 0.5395121         c</div><div class='input'>
 <span class='co'>## create targets (same lenght as classLabels!)</span>
 <span class='no'>targets</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>5</span>
 
 <span class='co'>## calculate weights</span>
 <span class='no'>new_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>new_weight</span>)</div><div class='output co'>#&gt;       weight household new_weight
-#&gt; 1  2.2494832         b  0.9076319
-#&gt; 2  0.5939796         a  0.6567647
-#&gt; 3  3.8931605         b  1.5708304
-#&gt; 4  1.1415837         a  1.2622518
-#&gt; 5  4.1788619         c  5.0000000
-#&gt; 6  2.9085426         b  1.1735522
-#&gt; 7  0.1370816         a  0.1515715
-#&gt; 8  0.3527599         b  0.1423332
-#&gt; 9  0.5096907         b  0.2056524
-#&gt; 10 0.8405626         a  0.9294121</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>new_weight</span>)</div><div class='output co'>#&gt;       weight household new_weight
+#&gt; 1  0.6640834         c  0.6210167
+#&gt; 2  5.1397911         b  3.3943026
+#&gt; 3  1.2591308         a  0.4150887
+#&gt; 4  0.6516811         c  0.6094186
+#&gt; 5  0.9171716         b  0.6056974
+#&gt; 6  2.1896192         a  0.7218362
+#&gt; 7  0.4860760         c  0.4545532
+#&gt; 8  3.0053915         c  2.8104875
+#&gt; 9  5.6514550         a  1.8630751
+#&gt; 10 0.5395121         c  0.5045239</div><div class='input'>
 <span class='co'>## check solution</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>new_weight</span> ~ <span class='no'>dat</span>$<span class='no'>household</span>)</div><div class='output co'>#&gt; dat$household
+<span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>new_weight</span> ~ <span class='no'>dat</span>$<span class='no'>household</span>)</div><div class='output co'>#&gt; dat$household
 #&gt; a b c 
 #&gt; 3 4 5 </div><div class='input'>
 <span class='co'>## calculate weights "by reference"</span>
 <span class='fu'>ipf_step_ref</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  0.9076319         b
-#&gt; 2  0.6567647         a
-#&gt; 3  1.5708304         b
-#&gt; 4  1.2622518         a
-#&gt; 5  5.0000000         c
-#&gt; 6  1.1735522         b
-#&gt; 7  0.1515715         a
-#&gt; 8  0.1423332         b
-#&gt; 9  0.2056524         b
-#&gt; 10 0.9294121         a</div><div class='input'>
+#&gt; 1  0.6210167         c
+#&gt; 2  3.3943026         b
+#&gt; 3  0.4150887         a
+#&gt; 4  0.6094186         c
+#&gt; 5  0.6056974         b
+#&gt; 6  0.7218362         a
+#&gt; 7  0.4545532         c
+#&gt; 8  2.8104875         c
+#&gt; 9  1.8630751         a
+#&gt; 10 0.5045239         c</div><div class='input'>
 <span class='co'>############# multidimensional ipu ##############</span>
 
 <span class='co'>## load data</span>
-<span class='no'>factors</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"time"</span>, <span class='st'>"sex"</span>, <span class='st'>"smoker"</span>, <span class='st'>"day"</span>)
-<span class='no'>tips</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>sex</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Female"</span>,<span class='st'>"Male"</span>,<span class='st'>"Male"</span>), <span class='kw'>day</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Sun"</span>,<span class='st'>"Mon"</span>,<span class='st'>"Tue"</span>),
-<span class='kw'>time</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Dinner"</span>,<span class='st'>"Lunch"</span>,<span class='st'>"Lunch"</span>), <span class='kw'>smoker</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"No"</span>,<span class='st'>"Yes"</span>,<span class='st'>"No"</span>))
+<span class='no'>factors</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"time"</span>, <span class='st'>"sex"</span>, <span class='st'>"smoker"</span>, <span class='st'>"day"</span>)
+<span class='no'>tips</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>sex</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Female"</span>,<span class='st'>"Male"</span>,<span class='st'>"Male"</span>), <span class='kw'>day</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Sun"</span>,<span class='st'>"Mon"</span>,<span class='st'>"Tue"</span>),
+<span class='kw'>time</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Dinner"</span>,<span class='st'>"Lunch"</span>,<span class='st'>"Lunch"</span>), <span class='kw'>smoker</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"No"</span>,<span class='st'>"Yes"</span>,<span class='st'>"No"</span>))
 <span class='no'>tips</span> <span class='kw'>&lt;-</span> <span class='no'>tips</span>[<span class='no'>factors</span>]
 
 <span class='co'>## combine factors</span>
-<span class='no'>con</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(~<span class='no'>.</span>, <span class='no'>tips</span>)
+<span class='no'>con</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(~<span class='no'>.</span>, <span class='no'>tips</span>)
 <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'>combine_factors</span>(<span class='no'>tips</span>, <span class='no'>con</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='no'>tips</span>, <span class='no'>cf</span>)[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>tips</span>), <span class='fl'>10</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),]</div><div class='output co'>#&gt;       time    sex smoker day cf
+<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>tips</span>, <span class='no'>cf</span>)[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>tips</span>), <span class='fl'>10</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),]</div><div class='output co'>#&gt;       time    sex smoker day cf
 #&gt; 1   Dinner Female     No Sun  9
 #&gt; 2    Lunch   Male    Yes Mon  8
-#&gt; 1.1 Dinner Female     No Sun  9
 #&gt; 2.1  Lunch   Male    Yes Mon  8
 #&gt; 3    Lunch   Male     No Tue 20
+#&gt; 2.2  Lunch   Male    Yes Mon  8
+#&gt; 1.1 Dinner Female     No Sun  9
+#&gt; 2.3  Lunch   Male    Yes Mon  8
 #&gt; 1.2 Dinner Female     No Sun  9
 #&gt; 3.1  Lunch   Male     No Tue 20
-#&gt; 2.2  Lunch   Male    Yes Mon  8
-#&gt; 3.2  Lunch   Male     No Tue 20
-#&gt; 2.3  Lunch   Male    Yes Mon  8</div><div class='input'>
+#&gt; 2.4  Lunch   Male    Yes Mon  8</div><div class='input'>
 <span class='co'>## adjust weights</span>
-<span class='no'>weight</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>tips</span>)) + <span class='fl'>5</span>
+<span class='no'>weight</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>tips</span>)) + <span class='fl'>5</span>
 <span class='no'>adjusted_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>weight</span>, <span class='no'>cf</span>, <span class='no'>con</span>)
 
 <span class='co'>## check outputs</span>
-<span class='no'>con2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>adjusted_weight</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>tips</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>((<span class='no'>con</span> - <span class='no'>con2</span>)^<span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] 0</div><div class='input'>
+<span class='no'>con2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>adjusted_weight</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>tips</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>((<span class='no'>con</span> - <span class='no'>con2</span>)^<span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] 0</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

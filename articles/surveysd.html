@@ -97,7 +97,7 @@
     <div class="page-header toc-ignore">
       <h1>Introduction to surveysd</h1>
             
-            <h4 class="date">2019-04-15</h4>
+            <h4 class="date">2019-05-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/surveysd.Rmd"><code>vignettes/surveysd.Rmd</code></a></small>
       <div class="hidden name"><code>surveysd.Rmd</code></div>
@@ -110,13 +110,17 @@
 <div id="load-dummy-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#load-dummy-data" class="anchor"></a>Load dummy data</h3>
-<p>A test data set based on <code><a href="https://www.rdocumentation.org/packages/utils/topics/data">data(eusilc, package = "laeken")</a></code> can be created with <code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(surveysd)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">1234</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">eusilc &lt;-<span class="st"> </span><span class="kw"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span>(<span class="dt">n =</span> <span class="dv">2</span>, <span class="dt">prettyNames =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">eusilc[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, gender, pWeight)]</a></code></pre></div>
+<p>A test data set based on <code><a href="https://rdrr.io/r/utils/data.html">data(eusilc, package = "laeken")</a></code> can be created with <code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(surveysd)</a></code></pre></div>
+<pre><code>## Registered S3 methods overwritten by 'ggplot2':
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">eusilc &lt;-<span class="st"> </span><span class="kw"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span>(<span class="dt">n =</span> <span class="dv">2</span>, <span class="dt">prettyNames =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">eusilc[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, gender, pWeight)]</a></code></pre></div>
 <pre><code>##    year povertyRisk gender  pWeight
 ## 1: 2010       FALSE female 504.5696
 ## 2: 2010       FALSE   male 504.5696
@@ -128,65 +132,64 @@
 <h3 class="hasAnchor">
 <a href="#draw-bootstrap-replicates" class="anchor"></a>Draw bootstrap replicates</h3>
 <p>Use stratified resampling without replacement to generate 10 samples. Those samples are consistent with respect to the reference periods.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">dat_boot &lt;-<span class="st"> </span><span class="kw"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span>(eusilc, <span class="dt">REP =</span> <span class="dv">10</span>, <span class="dt">hid =</span> <span class="st">"hid"</span>, <span class="dt">weights =</span> <span class="st">"pWeight"</span>, </a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">                           <span class="dt">strata =</span> <span class="st">"region"</span>, <span class="dt">period =</span> <span class="st">"year"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">dat_boot &lt;-<span class="st"> </span><span class="kw"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span>(eusilc, <span class="dt">REP =</span> <span class="dv">10</span>, <span class="dt">hid =</span> <span class="st">"hid"</span>, <span class="dt">weights =</span> <span class="st">"pWeight"</span>, </a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">                           <span class="dt">strata =</span> <span class="st">"region"</span>, <span class="dt">period =</span> <span class="st">"year"</span>)</a></code></pre></div>
 </div>
 <div id="calibrate-bootstrap-replicates" class="section level3">
 <h3 class="hasAnchor">
 <a href="#calibrate-bootstrap-replicates" class="anchor"></a>Calibrate bootstrap replicates</h3>
 <p>Calibrate each sample according to the distribution of <code>gender</code> (on a personal level) and <code>region</code> (on a household level).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">dat_boot_calib &lt;-<span class="st"> </span><span class="kw"><a href="../reference/recalib.html">recalib</a></span>(dat_boot, <span class="dt">conP.var =</span> <span class="st">"gender"</span>, <span class="dt">conH.var =</span> <span class="st">"region"</span>)</a></code></pre></div>
-<pre><code>## Convergence reached in 1 steps</code></pre>
-<pre><code>## Convergence reached in 3 steps</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">dat_boot_calib &lt;-<span class="st"> </span><span class="kw"><a href="../reference/recalib.html">recalib</a></span>(dat_boot, <span class="dt">conP.var =</span> <span class="st">"gender"</span>, <span class="dt">conH.var =</span> <span class="st">"region"</span>)</a></code></pre></div>
 <pre><code>## Convergence reached in 2 steps</code></pre>
-<pre><code>## Convergence reached in 3 steps</code></pre>
-<pre><code>## Convergence reached in 2 steps 
-## 
-## Convergence reached in 2 steps</code></pre>
 <pre><code>## Convergence reached in 3 steps 
 ## 
 ## Convergence reached in 3 steps</code></pre>
+<pre><code>## Convergence reached in 1 steps</code></pre>
+<pre><code>## Convergence reached in 2 steps</code></pre>
+<pre><code>## Convergence reached in 3 steps</code></pre>
+<pre><code>## Convergence reached in 1 steps</code></pre>
+<pre><code>## Convergence reached in 3 steps</code></pre>
 <pre><code>## Convergence reached in 2 steps 
 ## 
 ## Convergence reached in 2 steps</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, gender, pWeight, w1, w2, w3, w4)]</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, gender, pWeight, w1, w2, w3, w4)]</a></code></pre></div>
 <pre><code>##    year povertyRisk gender  pWeight       w1       w2       w3       w4
-## 1: 2010       FALSE female 504.5696 1.461988  996.645 1.467084 1.480214
-## 2: 2010       FALSE   male 504.5696 1.461988  996.645 1.467084 1.480214
-## 3: 2010       FALSE   male 504.5696 1.461988  996.645 1.467084 1.480214
-## 4: 2011       FALSE female 504.5696 1.461988 1015.108 1.420320 1.453871
-## 5: 2011       FALSE   male 504.5696 1.461988 1015.108 1.420320 1.453871</code></pre>
+## 1: 2010       FALSE female 504.5696 1.456272 1.458504 1006.351 1007.677
+## 2: 2010       FALSE   male 504.5696 1.456272 1.458504 1006.351 1007.677
+## 3: 2010       FALSE   male 504.5696 1.456272 1.458504 1006.351 1007.677
+## 4: 2011       FALSE female 504.5696 1.464918 1.563892 1012.509 1007.677
+## 5: 2011       FALSE   male 504.5696 1.464918 1.563892 1012.509 1007.677</code></pre>
 </div>
 <div id="estimate-with-respect-to-a-grouping-variable" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimate-with-respect-to-a-grouping-variable" class="anchor"></a>Estimate with respect to a grouping variable</h3>
 <p>Estimate relative amount of persons at risk of poverty per period and <code>gender</code>.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">err.est &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> <span class="st">"gender"</span>)</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">err.est<span class="op">$</span>Estimates</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">err.est &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> <span class="st">"gender"</span>)</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">err.est<span class="op">$</span>Estimates</a></code></pre></div>
 <pre><code>##    year     n       N gender val_povertyRisk stE_povertyRisk
-## 1: 2010  7267 3979572   male        12.02660       0.5533397
-## 2: 2010  7560 4202650 female        16.73351       0.4554259
-## 3: 2010 14827 8182222   &lt;NA&gt;        14.44422       0.4682423
-## 4: 2011  7267 3979572   male        12.78831       0.4484600
-## 5: 2011  7560 4202650 female        16.52796       0.4952828
-## 6: 2011 14827 8182222   &lt;NA&gt;        14.70912       0.4207039</code></pre>
+## 1: 2010  7267 3979572   male        12.02660       0.4889923
+## 2: 2010  7560 4202650 female        16.73351       0.5343574
+## 3: 2010 14827 8182222   &lt;NA&gt;        14.44422       0.4300383
+## 4: 2011  7267 3979572   male        12.81921       0.4693456
+## 5: 2011  7560 4202650 female        16.62488       0.4896667
+## 6: 2011 14827 8182222   &lt;NA&gt;        14.77393       0.4166631</code></pre>
 <p>The output contains estimates (<code>val_povertyRisk</code>) as well as standard errors (<code>stE_povertyRisk</code>) measured in percent.</p>
 </div>
 <div id="estimate-with-respect-to-several-variables" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimate-with-respect-to-several-variables" class="anchor"></a>Estimate with respect to several variables</h3>
 <p>Estimate relative amount of persons at risk of poverty per period for each <code>region</code>, <code>gender</code>, and combination of both.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">group &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))</a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">err.est &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> group)</a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(err.est<span class="op">$</span>Estimates)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">group &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">err.est &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> group)</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(err.est<span class="op">$</span>Estimates)</a></code></pre></div>
 <pre><code>##    year   n        N gender     region val_povertyRisk stE_povertyRisk
-## 1: 2010 261 122741.8   male Burgenland       17.414524        3.496528
-## 2: 2010 288 137822.2 female Burgenland       21.432598        3.368244
-## 3: 2010 359 182732.9   male Vorarlberg       12.973259        4.027985
-## 4: 2010 374 194622.1 female Vorarlberg       19.883637        4.534329
-## 5: 2010 440 253143.7   male   Salzburg        9.156964        1.731175
-## 6: 2010 484 282307.3 female   Salzburg       17.939382        2.616751</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">## skipping 54 more rows</a></code></pre></div>
+## 1: 2010 261 122741.8   male Burgenland       17.414524        3.175991
+## 2: 2010 288 137822.2 female Burgenland       21.432598        4.118974
+## 3: 2010 359 182732.9   male Vorarlberg       12.973259        2.147179
+## 4: 2010 374 194622.1 female Vorarlberg       19.883637        2.682142
+## 5: 2010 440 253143.7   male   Salzburg        9.156964        2.080256
+## 6: 2010 484 282307.3 female   Salzburg       17.939382        3.167576</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">## skipping 54 more rows</a></code></pre></div>
 </div>
   </div>
 

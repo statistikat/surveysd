@@ -151,7 +151,7 @@ bootstraping.</p>
 
     <pre class="usage"><span class='fu'>draw.bootstrap</span>(<span class='no'>dat</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>weights</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>strata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cluster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>totals</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>single.PSU</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>), <span class='kw'>boot.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>single.PSU</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>), <span class='kw'>boot.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>pid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>new.method</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -206,7 +206,7 @@ the the totals per strata and/or cluster. Is ONLY optional if <code>cluster</cod
 <code>NULL</code> or equal <code>hid</code> and <code>strata</code> contains one columnname! Then the
 households per strata will be calcualted using the <code>weights</code> argument. If
 clusters and strata for multiple stages are specified <code>totals</code> needs to be
-a vector of <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(strata)</a></code> specifying the column on <code>dat</code> that contain
+a vector of <code><a href='https://rdrr.io/r/base/length.html'>length(strata)</a></code> specifying the column on <code>dat</code> that contain
 the total number of PSUs at each stage. <code>totals</code> is interpreted from left
 the right, meaning that the first argument corresponds to the number of
 PSUs at the first and the last argument to the number of PSUs at the last
@@ -313,7 +313,7 @@ replicate as the other households members had in the previous periods.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a></code> for more information on
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/data.table/man/data.table.html'>data.table</a></code> for more information on
 data.table objects.</p></div>
     
 
@@ -333,40 +333,40 @@ data.table objects.</p></div>
 <span class='co'>## use multi-level clustering</span>
 <span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
   <span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
-  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
+  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
 
 
 <span class='co'># create spit households</span>
 <span class='no'>eusilc</span>[, <span class='no'>pidsplit</span> <span class='kw'>:=</span> <span class='no'>pid</span>]
-<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unique'>unique</a></span>(<span class='no'>year</span>)]
+<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[, <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>year</span>)]
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
-<span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>()
+<span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
 <span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>){
   <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[
-    <span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>-<span class='fl'>1</span>) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>)
+    <span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>-<span class='fl'>1</span>) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
+    <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>)
   ]
   <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[
-    (<span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>)) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
-    <span class='fu'>.</span>(<span class='kw'>pid</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>))
+    (<span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>)) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
+    <span class='fu'>.</span>(<span class='kw'>pid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>))
   ]
-  <span class='no'>overwrite.person</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"pidsplit"</span>, <span class='st'>"year_curr"</span>) <span class='kw'>:=</span> <span class='fu'>.</span>(<span class='no'>split.person</span>, <span class='no'>y</span>)]
+  <span class='no'>overwrite.person</span>[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"pidsplit"</span>, <span class='st'>"year_curr"</span>) <span class='kw'>:=</span> <span class='fu'>.</span>(<span class='no'>split.person</span>, <span class='no'>y</span>)]
 
   <span class='no'>eusilc</span>[<span class='no'>overwrite.person</span>, <span class='no'>pidsplit</span> <span class='kw'>:=</span> <span class='no'>i.pidsplit</span>,
          <span class='kw'>on</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>pid</span>, <span class='no'>year</span> <span class='kw'>&gt;=</span> <span class='no'>year_curr</span>)]
-  <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>leaf_out</span>,
-                <span class='no'>eusilc</span>[<span class='no'>pid</span> <span class='kw'>%in%</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>pid</span>,
+  <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>leaf_out</span>,
+                <span class='no'>eusilc</span>[<span class='no'>pid</span> <span class='kw'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>pid</span>,
                                   <span class='no'>overwrite.person</span>$<span class='no'>pidsplit</span>),
-                <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unique'>unique</a></span>(<span class='no'>hid</span>)])
+                <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>hid</span>)])
 }
 
 <span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
   <span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
-  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"pidsplit"</span>)
 <span class='co'># split households were considered e.g. household and</span>
 <span class='co'># split household were both selected or not selected</span>
-<span class='no'>dat_boot</span>[, <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>uniqueN</a></span>(<span class='no'>w1</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>pidsplit</span>][<span class='no'>V1</span> <span class='kw'>&gt;</span> <span class='fl'>1</span>]
+<span class='no'>dat_boot</span>[, <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>uniqueN</a></span>(<span class='no'>w1</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>pidsplit</span>][<span class='no'>V1</span> <span class='kw'>&gt;</span> <span class='fl'>1</span>]
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

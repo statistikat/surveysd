@@ -196,40 +196,40 @@ trailing "_orig".</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>surveysd</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>laeken</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>data.table</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>surveysd</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>laeken</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
 
-<span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>surveysd</span><span class='kw ns'>:::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/surveysd/topics/demo.eusilc'>demo.eusilc</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>4</span>)
+<span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>surveysd</span><span class='kw ns'>:::</span><span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>4</span>)
 
 <span class='co'># create spit households</span>
 <span class='no'>eusilc</span>[,<span class='no'>rb030split</span><span class='kw'>:=</span><span class='no'>rb030</span>]
-<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>unique</a></span>(<span class='no'>year</span>)]
+<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>unique</a></span>(<span class='no'>year</span>)]
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
-<span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>()
+<span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
 <span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>){
-  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>-<span class='fl'>1</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
-                         <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>)]
-  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
-                             <span class='fu'>.</span>(<span class='kw'>rb030</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>))]
-  <span class='no'>overwrite.person</span>[,<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"rb030split"</span>,<span class='st'>"year_curr"</span>)<span class='kw'>:=</span><span class='fu'>.</span>(<span class='no'>split.person</span>,<span class='no'>y</span>)]
+  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>-<span class='fl'>1</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
+                         <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>)]
+  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
+                             <span class='fu'>.</span>(<span class='kw'>rb030</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>))]
+  <span class='no'>overwrite.person</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rb030split"</span>,<span class='st'>"year_curr"</span>)<span class='kw'>:=</span><span class='fu'>.</span>(<span class='no'>split.person</span>,<span class='no'>y</span>)]
 
   <span class='no'>eusilc</span>[<span class='no'>overwrite.person</span>,
          <span class='no'>rb030split</span><span class='kw'>:=</span><span class='no'>i.rb030split</span>,<span class='kw'>on</span><span class='kw'>=</span><span class='fu'>.</span>(<span class='no'>rb030</span>,<span class='no'>year</span><span class='kw'>&gt;=</span><span class='no'>year_curr</span>)]
-  <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(
+  <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
     <span class='no'>leaf_out</span>,
-    <span class='no'>eusilc</span>[<span class='no'>rb030</span><span class='kw'>%in%</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>rb030</span>,<span class='no'>overwrite.person</span>$<span class='no'>rb030split</span>),
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>unique</a></span>(<span class='no'>db030</span>)])
+    <span class='no'>eusilc</span>[<span class='no'>rb030</span><span class='kw'>%in%</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>rb030</span>,<span class='no'>overwrite.person</span>$<span class='no'>rb030split</span>),
+    <span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>unique</a></span>(<span class='no'>db030</span>)])
 }
 
 <span class='co'># pid which are in split households</span>
-<span class='no'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
+<span class='no'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
 
 <span class='no'>eusilc.new</span> <span class='kw'>&lt;-</span> <span class='fu'>generate.HHID</span>(<span class='no'>eusilc</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"rb030split"</span>,
                             <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"db030"</span>)
 
 <span class='co'># no longer any split households in the data</span>
-<span class='no'>eusilc.new</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
+<span class='no'>eusilc.new</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

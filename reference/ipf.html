@@ -312,50 +312,50 @@ incease the performance of the scheme.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/simPop/topics/ipu'>ipu</a></code></p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/simPop/man/ipu.html'>ipu</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>eusilcS</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"simPop"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>data.table</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/setDT'>setDT</a></span>(<span class='no'>eusilcS</span>)
-<span class='no'>eusilcS</span> <span class='kw'>&lt;-</span> <span class='no'>eusilcS</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>db030</span>,<span class='no'>hsize</span>,<span class='no'>db040</span>,<span class='no'>age</span>,<span class='no'>rb090</span>,<span class='no'>netIncome</span>,<span class='no'>db090</span>,<span class='no'>rb050</span>)]
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>eusilcS</span>,<span class='kw'>package</span><span class='kw'>=</span><span class='st'>"simPop"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/setDT.html'>setDT</a></span>(<span class='no'>eusilcS</span>)
+<span class='no'>eusilcS</span> <span class='kw'>&lt;-</span> <span class='no'>eusilcS</span>[, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>db030</span>,<span class='no'>hsize</span>,<span class='no'>db040</span>,<span class='no'>age</span>,<span class='no'>rb090</span>,<span class='no'>netIncome</span>,<span class='no'>db090</span>,<span class='no'>rb050</span>)]
 
 <span class='co'>## rename columns</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/setattr'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"rb090"</span>, <span class='st'>"gender"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/setattr'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"db040"</span>, <span class='st'>"state"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/setattr'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"db030"</span>, <span class='st'>"household"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/setattr'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"rb050"</span>, <span class='st'>"weight"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/setattr.html'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"rb090"</span>, <span class='st'>"gender"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/setattr.html'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"db040"</span>, <span class='st'>"state"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/setattr.html'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"db030"</span>, <span class='st'>"household"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/setattr.html'>setnames</a></span>(<span class='no'>eusilcS</span>, <span class='st'>"rb050"</span>, <span class='st'>"weight"</span>)
 
 <span class='co'>## some recoding</span>
 <span class='co'># generate age groups</span>
-<span class='no'>eusilcS</span>[, <span class='no'>agegroup</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cut'>cut</a></span>(<span class='no'>age</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>10</span>*<span class='fl'>1</span>:<span class='fl'>9</span>, <span class='fl'>Inf</span>), <span class='kw'>right</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)]
+<span class='no'>eusilcS</span>[, <span class='no'>agegroup</span> <span class='kw'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/cut.html'>cut</a></span>(<span class='no'>age</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>Inf</span>, <span class='fl'>10</span>*<span class='fl'>1</span>:<span class='fl'>9</span>, <span class='fl'>Inf</span>), <span class='kw'>right</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)]
 <span class='co'># some recoding of netIncome for reasons of simplicity</span>
-<span class='no'>eusilcS</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>netIncome</span>), <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]
+<span class='no'>eusilcS</span>[<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>netIncome</span>), <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]
 <span class='no'>eusilcS</span>[<span class='no'>netIncome</span> <span class='kw'>&lt;</span> <span class='fl'>0</span>, <span class='no'>netIncome</span> <span class='kw'>:=</span> <span class='fl'>0</span>]
 <span class='co'># set hsize to 1,...,5+</span>
-<span class='no'>eusilcS</span>[, <span class='no'>hsize</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cut'>cut</a></span>(<span class='no'>hsize</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0</span>:<span class='fl'>4</span>, <span class='fl'>Inf</span>), <span class='kw'>labels</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='st'>"5+"</span>))]
+<span class='no'>eusilcS</span>[, <span class='no'>hsize</span> <span class='kw'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/cut.html'>cut</a></span>(<span class='no'>hsize</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>:<span class='fl'>4</span>, <span class='fl'>Inf</span>), <span class='kw'>labels</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='st'>"5+"</span>))]
 <span class='co'># treat households as a factor variable</span>
-<span class='no'>eusilcS</span>[, <span class='no'>household</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/factor'>as.factor</a></span>(<span class='no'>household</span>)]
+<span class='no'>eusilcS</span>[, <span class='no'>household</span> <span class='kw'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span>(<span class='no'>household</span>)]
 
 <span class='co'>## example for base weights assuming a simple random sample of households</span>
 <span class='co'>## stratified per region</span>
 <span class='no'>eusilcS</span>[, <span class='no'>regSamp</span> <span class='kw'>:=</span> <span class='no'>.N</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
-<span class='no'>eusilcS</span>[, <span class='no'>regPop</span> <span class='kw'>:=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>weight</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
+<span class='no'>eusilcS</span>[, <span class='no'>regPop</span> <span class='kw'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>weight</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>state</span>]
 <span class='no'>eusilcS</span>[, <span class='no'>baseWeight</span> <span class='kw'>:=</span> <span class='no'>regPop</span>/<span class='no'>regSamp</span>]
 
 <span class='co'>## constraints on person level</span>
 <span class='co'># age</span>
-<span class='no'>conP1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>agegroup</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
+<span class='no'>conP1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>agegroup</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
 <span class='co'># gender by region</span>
-<span class='no'>conP2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>gender</span> + <span class='no'>state</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
+<span class='no'>conP2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>gender</span> + <span class='no'>state</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
 <span class='co'># personal net income by gender</span>
-<span class='no'>conP3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span>*<span class='no'>netIncome</span> ~ <span class='no'>gender</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
+<span class='no'>conP3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>weight</span>*<span class='no'>netIncome</span> ~ <span class='no'>gender</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>)
 
 <span class='co'>## constraints on household level</span>
-<span class='no'>conH1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>hsize</span> + <span class='no'>state</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>,
-               <span class='kw'>subset</span> <span class='kw'>=</span> !<span class='fu'><a href='https://www.rdocumentation.org/packages/data.table/topics/duplicated'>duplicated</a></span>(<span class='no'>household</span>))
+<span class='no'>conH1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>weight</span> ~ <span class='no'>hsize</span> + <span class='no'>state</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilcS</span>,
+               <span class='kw'>subset</span> <span class='kw'>=</span> !<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>duplicated</a></span>(<span class='no'>household</span>))
 
 <span class='co'># array of convergence limits for conH1</span>
 <span class='no'>epsH1</span> <span class='kw'>&lt;-</span> <span class='no'>conH1</span>
@@ -365,24 +365,24 @@ incease the performance of the scheme.</p>
 <span class='co'># without array epsH1</span>
 
 <span class='no'>calibweights1</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf</span>(<span class='no'>eusilcS</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"household"</span>,
-                      <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>, <span class='kw'>netIncome</span> <span class='kw'>=</span> <span class='no'>conP3</span>),
-                      <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conH1</span>),
-                      <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fl'>1e-06</span>, <span class='fl'>1e-06</span>, <span class='fl'>1e-03</span>),
+                      <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>, <span class='kw'>netIncome</span> <span class='kw'>=</span> <span class='no'>conP3</span>),
+                      <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conH1</span>),
+                      <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>1e-06</span>, <span class='fl'>1e-06</span>, <span class='fl'>1e-03</span>),
                       <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
                       <span class='kw'>bound</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,  <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>)
 
 <span class='co'># with array epsH1, base weights and bound</span>
 <span class='no'>calibweights2</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf</span>(<span class='no'>eusilcS</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"household"</span>,
-                      <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>),
-                      <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>conH1</span>),
+                      <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>),
+                      <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conH1</span>),
                       <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>,
-                      <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>epsH1</span>),
+                      <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>epsH1</span>),
                       <span class='kw'>w</span> <span class='kw'>=</span> <span class='st'>"baseWeight"</span>,
                       <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>)
 
 <span class='co'># show an adjusted version of conP and the original</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP_adj"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP_adj"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP"</span>)
 <span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
