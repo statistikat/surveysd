@@ -6,9 +6,10 @@
 * resolve issues when datasets have columns with certain names (#7, #10)
 * automatize the gh-pages builds
     * css updates
-* automated lint-checking
+* automated linter-checking
 * new badges (code coverage, cran)
 * update setup for vignettes
+* fix issue when household column is not a factor (#12)
 
 # surveysd 1.0.0
 
