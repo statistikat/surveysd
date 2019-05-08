@@ -581,9 +581,11 @@ ipf <- function(
   if (is.null(hid)) {
     #delVars <- c("hid")
     hid <- "hid"
-    dat[, hid := 1:nrow(dat)]
+    dat[, hid := as.factor(1:nrow(dat))]
     dat[, representativeHouseholdForCalibration := 1]
   } else {
+    if (!is.factor(dat[[hid]]))
+      data.table::set(dat, NULL, hid, as.factor(dat[[hid]]))
     dat[, representativeHouseholdForCalibration :=
           as.numeric(!duplicated(get(hid)))]
   }
