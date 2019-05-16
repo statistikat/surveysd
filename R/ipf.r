@@ -277,7 +277,7 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
           bound = bound))
       }else{
         set(dat, j = variableKeepingTheCalibWeight, value = boundsFakHH(
-          g1 = get(variableKeepingTheCalibWeight),
+          g1 = dat[[variableKeepingTheCalibWeight]],
           g0 = dat[[variableKeepingTheBaseWeight]],
           eps = dat[["epsHcur"]], orig = dat[["value"]],
           p = dat[["wValue"]], bound = bound)
