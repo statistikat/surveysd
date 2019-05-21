@@ -3,15 +3,9 @@
 \name{cpp_mean}
 \alias{cpp_mean}
 \alias{geometric_mean_reference}
-\alias{geometric_mean}
-\alias{arithmetic_mean}
 \title{Calculate mean by factors}
 \usage{
 geometric_mean_reference(w, classes)
-
-geometric_mean(w, classes)
-
-arithmetic_mean(w, classes)
 }
 \arguments{
 \item{w}{An numeric vector. All entries should be positive.}
@@ -25,6 +19,8 @@ observation. \code{geometric_mean_reference} returns the same value by reference
 overwritten by the updated weights. See examples.
 }
 \examples{
+
+\dontrun{
 
 ## create random data
 nobs <- 10
@@ -46,5 +42,5 @@ cbind(dat, arith_weight)
 ## calculate weights "by reference"
 geometric_mean_reference(dat$weight, dat$household)
 dat
-
+}
 }

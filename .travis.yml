@@ -4,6 +4,9 @@ cache: packages
 env:
   - SURVEYSD_ADDITIONAL_TEST = FALSE
 
+apt_packages:
+  - ghostscript
+
 matrix:
   include:
     - r: devel

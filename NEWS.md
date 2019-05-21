@@ -1,8 +1,15 @@
+# surveysd 1.0.1
+
+* fix bug with fpc calculation ([0824834](https://github.com/statistikat/surveysd/commit/0824834))
+* fix bug with dummy data ([5adb6b7](https://github.com/statistikat/surveysd/commit/5adb6b7))
+* improve readability of code and resolve linters
+* resolve issues when datasets have columns with certain names (#7, #10)
 * automatize the gh-pages builds
     * css updates
-* automated lin-checking
+* automated linter-checking
 * new badges (code coverage, cran)
 * update setup for vignettes
+* fix issue when household column is not a factor (#12)
 
 # surveysd 1.0.0
 
