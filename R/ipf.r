@@ -277,7 +277,7 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
           bound = bound))
       }else{
         set(dat, j = variableKeepingTheCalibWeight, value = boundsFakHH(
-          g1 = get(variableKeepingTheCalibWeight),
+          g1 = dat[[variableKeepingTheCalibWeight]],
           g0 = dat[[variableKeepingTheBaseWeight]],
           eps = dat[["epsHcur"]], orig = dat[["value"]],
           p = dat[["wValue"]], bound = bound)
@@ -581,9 +581,11 @@ ipf <- function(
   if (is.null(hid)) {
     #delVars <- c("hid")
     hid <- "hid"
-    dat[, hid := 1:nrow(dat)]
+    dat[, hid := as.factor(1:nrow(dat))]
     dat[, representativeHouseholdForCalibration := 1]
   } else {
+    if (!is.factor(dat[[hid]]))
+      data.table::set(dat, NULL, hid, as.factor(dat[[hid]]))
     dat[, representativeHouseholdForCalibration :=
           as.numeric(!duplicated(get(hid)))]
   }
