@@ -1,6 +1,6 @@
 pandoc: '2.2'
 pkgdown: 1.3.0.9000
-pkgdown_sha: 96e12f83bb3f92e4a30309181cc14134bd92b644
+pkgdown_sha: 31bff03d3e9945e4464fccb6a9ee55c9d32b84e7
 articles:
   error_estimation: error_estimation.html
   methodology: methodology.html
