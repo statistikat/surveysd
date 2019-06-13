@@ -84,8 +84,8 @@
 
 recalib <- function(
   dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"), b.rep =
-    attr(dat, "b.rep"), period = attr(dat, "period"), conP.var =
-    c("RB090"), conH.var = c("DB040", "DB100"), ...) {
+    attr(dat, "b.rep"), period = attr(dat, "period"), conP.var = NULL,
+  conH.var = NULL, ...) {
 
   verbose <- epsP <- epsH <- bound <- maxIter <- meanHH <- check_hh_vars <-
     hidfactor <- calibWeight <- FirstPersonInHousehold_ <- NULL

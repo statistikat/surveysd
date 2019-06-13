@@ -6,7 +6,7 @@
 \usage{
 recalib(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
   b.rep = attr(dat, "b.rep"), period = attr(dat, "period"),
-  conP.var = c("RB090"), conH.var = c("DB040", "DB100"), ...)
+  conP.var = NULL, conH.var = NULL, ...)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for
