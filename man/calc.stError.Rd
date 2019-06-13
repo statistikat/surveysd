@@ -189,10 +189,10 @@ The averaging of the results is also applied in differences of point
 estimates. For instance defining \code{period.diff = "2015-2009"} and
 \code{period.mean = 3}
 the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as
-2017 and 2011 are calcualated and finally the average over these 3
+2014 and 2008 are calcualated and finally the average over these 3
 differences is calculated.
-The periods set in \code{period.diff} are always used as starting periods from
-which \code{period.mean-1} consecutive periods are used to build the average.
+The periods set in \code{period.diff} are always used as the middle periods around
+which the mean over \code{period.mean} years is build.
 \cr
 Setting \code{bias} to \code{TRUE} returns the calculation of a mean over the results
 from the bootstrap replicates. In  the output the corresponding columns is
@@ -265,9 +265,9 @@ err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
                         fun = weightedRatio, period.mean = 3)
 err.est$Estimates
 
-# get estimate for difference of period 2016 and 2013
+# get estimate for difference of period 2011 and 2012
 
-period.diff <- c("2015-2011")
+period.diff <- c("2012-2011")
 err.est <- calc.stError(
   dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
   period.diff = period.diff, period.mean = 3)
