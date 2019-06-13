@@ -141,20 +141,21 @@ recalib <- function(
   if (!all(conH.var %in% c.names)) {
     stop("Not all elements in conH.var are column names in dat")
   }
-  if (is.null(conH.var) & is.null(conP.var)) {
-    stop("conH.var and conP.var cannot both be NULL")
-  }
-
-  var.miss <- unlist(
-    dat[, lapply(
-      .SD,
-      function(z) {
-        sum(is.na(z))
-      }
-    ), .SDcols = c(conH.var, conP.var)])
-  var.miss <- var.miss[var.miss > 0]
-  if (length(var.miss) > 0) {
-    stop("Missing values detected in column(s)", names(var.miss))
+  if (!is.null(conH.var) | !is.null(conP.var)) {
+    var.miss <- unlist(
+      dat[, lapply(
+        .SD,
+        function(z) {
+          sum(is.na(z))
+        }
+      ), .SDcols = c(conH.var, conP.var)])
+    var.miss <- var.miss[var.miss > 0]
+    if (length(var.miss) > 0) {
+      stop("Missing values detected in column(s)", names(var.miss))
+    }
+  } else {
+    message("recalib: conP and conH are both missing. ",
+            "Only calibrating for the population totals")
   }
 
   # check period
@@ -252,18 +253,20 @@ recalib <- function(
       nrow(check.z) > 0
     })
 
-    if (any(unlist(c(check.conH, check.conP)))) {
-      calib.fail <- c(calib.fail, g)
-      set(dat, j = g, value = NA_real_)
-    } else {
-      set(dat, j = g, value = ipf(
-        dat = copy(dat[, mget(c(g, select.var))]), conP = conP,
-        conH = conH, verbose = verbose, epsP = epsP, epsH = epsH,
-        w = g, bound = bound, maxIter = maxIter, meanHH = meanHH,
-        hid = "hidfactor", check_hh_vars = check_hh_vars
-      )[, calibWeight])
-      if (dat[, any(is.na(get(g)))]) {
+    if (!is.null(conP.var) | !is.null(conH.var)) {
+      if (any(unlist(c(check.conH, check.conP)))) {
         calib.fail <- c(calib.fail, g)
+        set(dat, j = g, value = NA_real_)
+      } else {
+        set(dat, j = g, value = ipf(
+          dat = copy(dat[, mget(c(g, select.var))]), conP = conP,
+          conH = conH, verbose = verbose, epsP = epsP, epsH = epsH,
+          w = g, bound = bound, maxIter = maxIter, meanHH = meanHH,
+          hid = "hidfactor", check_hh_vars = check_hh_vars
+        )[, calibWeight])
+        if (dat[, any(is.na(get(g)))]) {
+          calib.fail <- c(calib.fail, g)
+        }
       }
     }
   }
