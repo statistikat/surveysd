@@ -56,10 +56,8 @@ test_that("test para - conP.var conH.var", {
     eusilc, conP.var = NULL, conH.var = "db040"), NA)
   expect_error(recalib(
     eusilc, conP.var = "rb090", conH.var = NULL), NA)
-  expect_error(
-    recalib(
-      eusilc, conP.var = NULL, conH.var = NULL),
-    "conH.var and conP.var cannot both be NULL")
+  expect_error(recalib(
+      eusilc, conP.var = NULL, conH.var = NULL), NA)
 })
 
 test_that("test return", {
