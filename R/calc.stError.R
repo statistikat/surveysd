@@ -685,7 +685,7 @@ help.stError <- function(
     national.arg <- c("Nat[1]")
     dt.eval("dat[,Nat:=fun(", var, ",", weights, add.arg, "),by=list(",
             period, ")]")
-    
+
     # create new functions which divides by national level
     fun_original <- fun # nolint
     fun <- dt.eval(
@@ -924,7 +924,7 @@ help.stError <- function(
       # calcualte differences between periods and mean over consecutive
       #   differences
       if (!is.null(unlist(period.diff.mean))) {
-        i.diff.mean <- (period.mean+1)/2
+        i.diff.mean <- (period.mean + 1) / 2
         # i.diff.mean <- 1 # nolint
         diff.mean.est <- lapply(period.diff.mean, function(d) {
           # calculate differences for all pairwise periods in d
