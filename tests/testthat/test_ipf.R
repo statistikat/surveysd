@@ -1,81 +1,58 @@
 context("ipf")
 library(surveysd)
 library(data.table)
-data(eusilcS, package = "simPop")
-setDT(eusilcS)
-eusilcS <- eusilcS[, list(db030, hsize, db040, age, rb090, netIncome,
-                          db090, rb050)]
+eusilc <- demo.eusilc(n = 1, prettyNames = TRUE)
 
-## rename columns
-setnames(eusilcS, "rb090", "gender")
-setnames(eusilcS, "db040", "state")
-setnames(eusilcS, "db030", "household")
-setnames(eusilcS, "rb050", "weight")
-
-## some recoding
-# generate age groups
-eusilcS[, agegroup := cut(age, c(-Inf, 10 * 1:9, Inf), right = FALSE)]
-# some recoding of netIncome for reasons of simplicity
-eusilcS[is.na(netIncome), netIncome := 0]
-eusilcS[netIncome < 0, netIncome := 0]
-eusilcS[, HHnetIncome := sum(netIncome), by = household]
-# set hsize to 1,...,5+
-eusilcS[, hsize := cut(hsize, c(0:4, Inf), labels = c(1:4, "5+"))]
 # treat households as a factor variable
-eusilcS[, household := as.factor(household)]
+eusilc[, household := as.factor(hid)]
+eusilc[, hid := NULL]
 
 ## example for base weights assuming a simple random sample of households
 ## stratified per region
-eusilcS[, regSamp := .N, by = state]
-eusilcS[, regPop := sum(weight), by = state]
-eusilcS[, baseWeight := regPop / regSamp]
+eusilc[, regSamp := .N, by = region]
+eusilc[, regPop := sum(pWeight), by = region]
+eusilc[, baseWeight := regPop / regSamp]
+eusilc[, pIncome := eqIncome / .N, by = household]
 
 ## constraints on person level
 # age
-conP1 <- xtabs(weight ~ agegroup, data = eusilcS)
+conP1 <- xtabs(pWeight ~ age, data = eusilc)
 # gender by region
-conP2 <- xtabs(weight ~ gender + state, data = eusilcS)
+conP2 <- xtabs(pWeight ~ gender + region, data = eusilc)
 # personal net income by gender
-conP3 <- xtabs(weight * netIncome ~ gender, data = eusilcS)
+conP3 <- xtabs(pWeight * pIncome ~ gender, data = eusilc)
 
 ## constraints on household level
-conH1 <- xtabs(weight ~ hsize + state, data = eusilcS,
+conH1 <- xtabs(pWeight ~ hsize + region, data = eusilc,
                subset = !duplicated(household))
 ## constraints on household level netIncome
-conH2 <- xtabs(weight * HHnetIncome ~ state, data = eusilcS,
+conH2 <- xtabs(pWeight * eqIncome ~ region, data = eusilc,
                subset = !duplicated(household))
 # array of convergence limits for conH1
 epsH1 <- conH1
 epsH1[1:4, ] <- 0.005
-epsH1["5+", ] <- 0.2
-
-
-
-
+epsH1[5, ] <- 0.2
 
 test_that("ipf with a numerical variable works as expected - computeLinear", {
   # without array epsP1
   calibweights1 <- ipf(
-    eusilcS, hid = "household",
-    conP = list(conP1, conP2, netIncome = conP3),
+    eusilc, hid = "household",
+    conP = list(conP1, conP2, pIncome = conP3),
     conH = list(conH1),
     epsP = list(1e-06, 1e-06, 1e-03),
     epsH = 0.01,
     bound = NULL, verbose = FALSE,  maxIter = 200,
     numericalWeighting = computeLinear)
-  expect_true(abs(calibweights1[, sum(calibWeight * netIncome)] - sum(conP3)) /
-                sum(conP3) < .01)
-  expect_true(all(
-    abs(calibweights1[, sum(calibWeight * netIncome), by = gender]$V1 - conP3) /
-      conP3 < .01
-  ))
+  conP3_adj <- xtabs(calibWeight * pIncome ~ gender, data = calibweights1)
+  expect_true(abs(sum(conP3_adj) - sum(conP3)) / sum(conP3) < .01)
+  expect_true(all(abs(conP3_adj - conP3) / conP3 < .01))
 
   err <- max(c(
-    max(abs(xtabs(calibWeight ~ agegroup, data = calibweights1) -
+    max(abs(xtabs(calibWeight ~ age, data = calibweights1) -
               conP1) / conP1),
-    max(abs(xtabs(calibWeight ~ gender + state, data = calibweights1) -
+    max(abs(xtabs(calibWeight ~ gender + region, data = calibweights1) -
               conP2) / conP2),
-    max(abs(xtabs(calibWeight ~ hsize + state, data = calibweights1,
+    max(abs(xtabs(calibWeight ~ hsize + region, data = calibweights1,
                   subset = !duplicated(household)) - conH1) / conH1)))
   expect_true(err < .01)
 })
@@ -83,26 +60,23 @@ test_that("ipf with a numerical variable works as expected - computeLinear", {
 test_that("ipf with a numerical variable works as expected - computeLinearG1", {
   # without array epsP1
   calibweights1 <- ipf(
-    eusilcS, hid = "household",
-    conP = list(conP1, conP2, netIncome = conP3),
+    eusilc, hid = "household",
+    conP = list(conP1, conP2, pIncome = conP3),
     conH = list(conH1),
     epsP = list(1e-06, 1e-06, 1e-03),
     epsH = 0.01,
     bound = NULL, verbose = FALSE, maxIter = 200,
     numericalWeighting = computeLinearG1)
-  expect_true(abs(calibweights1[, sum(calibWeight * netIncome)] - sum(conP3)) /
-                sum(conP3) < .01)
-  expect_true(all(
-    abs(calibweights1[, sum(calibWeight * netIncome), by = gender]$V1 - conP3) /
-      conP3 < .01
-  ))
+  conP3_adj <- xtabs(calibWeight * pIncome ~ gender, data = calibweights1)
+  expect_true(abs(sum(conP3_adj) - sum(conP3)) / sum(conP3) < .01)
+  expect_true(all(abs(conP3_adj - conP3) / conP3 < .01))
 
   err <- max(c(
-    max(abs(xtabs(calibWeight ~ agegroup, data = calibweights1) -
+    max(abs(xtabs(calibWeight ~ age, data = calibweights1) -
               conP1) / conP1),
-    max(abs(xtabs(calibWeight ~ gender + state, data = calibweights1) -
+    max(abs(xtabs(calibWeight ~ gender + region, data = calibweights1) -
               conP2) / conP2),
-    max(abs(xtabs(calibWeight ~ hsize + state, data = calibweights1,
+    max(abs(xtabs(calibWeight ~ hsize + region, data = calibweights1,
                   subset = !duplicated(household)) - conH1) / conH1)))
   expect_true(err < .01)
 })
@@ -111,26 +85,23 @@ test_that("ipf with a numerical variable works as expected - computeLinearG1", {
 test_that("ipf with a numerical variable in households  as expected", {
   # without array epsP1
   calibweights1 <- ipf(
-    eusilcS, hid = "household",
+    eusilc, hid = "household",
     conP = list(conP1, conP2),
-    conH = list(conH1, HHnetIncome = conH2),
+    conH = list(conH1, eqIncome = conH2),
     epsP = list(1e-06, 1e-06),
     epsH = list(0.01, 0.01),
     bound = NULL, verbose = FALSE,  maxIter = 50,
     numericalWeighting = computeFrac)
-  expect_true(abs(calibweights1[, sum(calibWeight * netIncome)] - sum(conP3)) /
-                sum(conP3) < .01)
-  expect_true(all(
-    abs(calibweights1[, sum(calibWeight * netIncome), by = gender]$V1 - conP3) /
-      conP3 < .01
-  ))
+  conP3_adj <- xtabs(calibWeight * pIncome ~ gender, data = calibweights1)
+  expect_true(abs(sum(conP3_adj) - sum(conP3)) / sum(conP3) < .01)
+  expect_true(all(abs(conP3_adj - conP3) / conP3 < .01))
 
   err <- max(c(
-    max(abs(xtabs(calibWeight ~ agegroup, data = calibweights1) -
+    max(abs(xtabs(calibWeight ~ age, data = calibweights1) -
               conP1) / conP1),
-    max(abs(xtabs(calibWeight ~ gender + state, data = calibweights1) -
+    max(abs(xtabs(calibWeight ~ gender + region, data = calibweights1) -
               conP2) / conP2),
-    max(abs(xtabs(calibWeight ~ hsize + state, data = calibweights1,
+    max(abs(xtabs(calibWeight ~ hsize + region, data = calibweights1,
                   subset = !duplicated(household)) - conH1) / conH1)))
   expect_true(err < .01)
 })
@@ -138,15 +109,15 @@ test_that("ipf with a numerical variable in households  as expected", {
 test_that("ipf works as expected", {
   # with array epsP1, base weights and bound
   calibweights2 <- ipf(
-    eusilcS, hid = "household", conP = list(conP1, conP2), conH = list(conH1),
+    eusilc, hid = "household", conP = list(conP1, conP2), conH = list(conH1),
     epsP = 1e-06, epsH = list(epsH1), w = "baseWeight", bound = 4,
     verbose = FALSE, maxIter = 200)
   err <- max(c(
-    max(abs(xtabs(calibWeight ~ agegroup, data = calibweights2) - conP1) /
+    max(abs(xtabs(calibWeight ~ age, data = calibweights2) - conP1) /
           conP1),
-    max(abs(xtabs(calibWeight ~ gender + state, data = calibweights2) - conP2) /
+    max(abs(xtabs(calibWeight ~ gender + region, data = calibweights2) - conP2) /
           conP2),
-    max(abs(xtabs(calibWeight ~ hsize + state, data = calibweights2,
+    max(abs(xtabs(calibWeight ~ hsize + region, data = calibweights2,
                   subset = !duplicated(household)) - conH1) / conH1)))
   expect_true(err < .01)
 })
@@ -154,16 +125,16 @@ test_that("ipf works as expected", {
 test_that("ipf works as expected calibWeight renamed", {
   # with array epsP1, base weights and bound
   calibweights2 <- ipf(
-    eusilcS, hid = "household", conP = list(conP1, conP2), conH = list(conH1),
+    eusilc, hid = "household", conP = list(conP1, conP2), conH = list(conH1),
     epsP = 1e-06, epsH = list(epsH1), w = "baseWeight", bound = 4,
     verbose = FALSE, maxIter = 200, nameCalibWeight = "calibWeightNew")
   err <- max(c(
-    max(abs(xtabs(calibWeightNew ~ agegroup, data = calibweights2) - conP1) /
+    max(abs(xtabs(calibWeightNew ~ age, data = calibweights2) - conP1) /
           conP1),
     max(abs(
-      xtabs(calibWeightNew ~ gender + state, data = calibweights2) - conP2) /
+      xtabs(calibWeightNew ~ gender + region, data = calibweights2) - conP2) /
           conP2),
-    max(abs(xtabs(calibWeightNew ~ hsize + state, data = calibweights2,
+    max(abs(xtabs(calibWeightNew ~ hsize + region, data = calibweights2,
                   subset = !duplicated(household)) - conH1) / conH1)))
   expect_true(err < .01)
 })
