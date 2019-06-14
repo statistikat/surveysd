@@ -23,7 +23,6 @@ BugReports: https://github.com/statistikat/surveysd/issues
 RoxygenNote: 6.1.1
 Suggests: 
     testthat,
-    simPop,
     knitr,
     rmarkdown
 Roxygen: list(markdown = TRUE)

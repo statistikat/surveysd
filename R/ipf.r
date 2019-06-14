@@ -467,7 +467,6 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #'   `formP`, `formH` \tab Formulas that were used to calculate `conP_adj` and
 #'   `conH_adj` based on the output table.
 #' }
-#' @seealso `\link[simPop]{ipu}`
 #' @export ipf
 #' @author Alexander Kowarik, Gregor de Cillia
 #' @examples

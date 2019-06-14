@@ -187,9 +187,6 @@ attr(calibweights2, "conP_adj")
 attr(calibweights2, "conP")
 }
 }
-\seealso{
-\code{\link[simPop]{ipu}}
-}
 \author{
 Alexander Kowarik, Gregor de Cillia
 }
