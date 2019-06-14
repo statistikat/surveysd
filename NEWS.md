@@ -1,3 +1,16 @@
+# surveysd 1.1.0
+
+* uncouple surveysd from simPop
+    * use `demo.eusilc()` for all examples and unit tests in this package
+    * remove simPop from the "Suggests" field (DESCRIPTION)
+* remove hardcoded variable names in default parameters
+* allow calls to `recalib()` without specifying `conP.vars` or `conH.vars`
+
+# surveysd 1.0.2
+
+* fix bug with NSE
+* update documentation for calc.stError
+
 # surveysd 1.0.1
 
 * fix bug with fpc calculation ([0824834](https://github.com/statistikat/surveysd/commit/0824834))
