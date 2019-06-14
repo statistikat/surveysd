@@ -369,10 +369,10 @@ The averaging of the results is also applied in differences of point
 estimates. For instance defining <code>period.diff = "2015-2009"</code> and
 <code>period.mean = 3</code>
 the differences in point estimates of 2015 and 2009, 2016 and 2010 as well as
-2017 and 2011 are calcualated and finally the average over these 3
+2014 and 2008 are calcualated and finally the average over these 3
 differences is calculated.
-The periods set in <code>period.diff</code> are always used as starting periods from
-which <code>period.mean-1</code> consecutive periods are used to build the average.
+The periods set in <code>period.diff</code> are always used as the middle periods around
+which the mean over <code>period.mean</code> years is build.
 <br />
 Setting <code>bias</code> to <code>TRUE</code> returns the calculation of a mean over the results
 from the bootstrap replicates. In  the output the corresponding columns is
@@ -545,18 +545,21 @@ standard error \(\sigma\).</p>
 #&gt; 4: 2011_2012_2013 14827 8182222        14.90307       1.0223884
 #&gt; 5:           2012 14827 8182222        15.04515       1.0700378
 #&gt; 6:           2013 14827 8182222        14.89013       1.0040285</div><div class='input'>
-<span class='co'># get estimate for difference of period 2016 and 2013</span>
+<span class='co'># get estimate for difference of period 2011 and 2012</span>
 
-<span class='no'>period.diff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"2015-2011"</span>)
+<span class='no'>period.diff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"2012-2011"</span>)
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
   <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
-#&gt; 1:           2010 14827 8182222        14.44422       0.9799161
-#&gt; 2: 2010_2011_2012 14827 8182222        14.75443       1.0136853
-#&gt; 3:           2011 14827 8182222        14.77393       1.0353349
-#&gt; 4: 2011_2012_2013 14827 8182222        14.90307       1.0223884
-#&gt; 5:           2012 14827 8182222        15.04515       1.0700378
-#&gt; 6:           2013 14827 8182222        14.89013       1.0040285</div><div class='input'>
+  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
+#&gt; 1:           2010 14827 8182222      14.4442182     0.979916126
+#&gt; 2: 2010_2011_2012 14827 8182222      14.7544308     1.013685324
+#&gt; 3:           2011 14827 8182222      14.7739255     1.035334876
+#&gt; 4: 2011_2012_2013 14827 8182222      14.9030692     1.022388390
+#&gt; 5:           2012 14827 8182222      15.0451487     1.070037835
+#&gt; 6:      2012-2011 14827 8182222       0.2712233     0.340045474
+#&gt; 7: 2012-2011_mean 14827 8182222       0.1486385     0.009532779
+#&gt; 8:           2013 14827 8182222      14.8901335     1.004028533</div><div class='input'>
 <span class='co'># use add.arg-argument</span>
 <span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>,<span class='no'>w</span>,<span class='no'>b</span>){
   <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>x</span>*<span class='no'>w</span>*<span class='no'>b</span>)
@@ -590,18 +593,19 @@ standard error \(\sigma\).</p>
 
 <span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
   <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>help_gini</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
-  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Removing 2015-2011 from period.diff - period(s) not present in column year</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No differences will be calculated</span></div><div class='input'><span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
+  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland        82.58548       1.8403555
 #&gt;   2: 2010   288  137822.2 female    Burgenland        78.56740       1.5081260
 #&gt;   3: 2010   359  182732.9   male    Vorarlberg        87.02674       3.2649724
 #&gt;   4: 2010   374  194622.1 female    Vorarlberg        80.11636       3.2806993
 #&gt;   5: 2010   440  253143.7   male      Salzburg        90.84304       2.0805572
 #&gt;  ---                                                                          
-#&gt; 176: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria        85.65952       0.2211517
-#&gt; 177: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria        85.59922       1.5586570
-#&gt; 178: 2013  7267 3979571.7   male          &lt;NA&gt;        86.11038       1.1465064
-#&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;        84.16246       0.8746770
-#&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        85.10987       1.0040285</div><div class='input'>
+#&gt; 236: 2013  2804 1555709.0   &lt;NA&gt; Lower Austria        85.65952       0.2211517
+#&gt; 237: 2013  2805 1421620.0   &lt;NA&gt; Upper Austria        85.59922       1.5586570
+#&gt; 238: 2013  7267 3979571.7   male          &lt;NA&gt;        86.11038       1.1465064
+#&gt; 239: 2013  7560 4202650.3 female          &lt;NA&gt;        84.16246       0.8746770
+#&gt; 240: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        85.10987       1.0040285</div><div class='input'>
 <span class='co'># using fun.adjust.var and adjust.var to estimate povmd60 indicator</span>
 <span class='co'># for each period and bootstrap weight before applying the weightedRatio</span>
 <span class='co'># point estimate</span>
@@ -698,7 +702,7 @@ standard error \(\sigma\).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
 </div>
       </footer>
    </div>
