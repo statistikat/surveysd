@@ -154,7 +154,7 @@ recalib <- function(
       stop("Missing values detected in column(s)", names(var.miss))
     }
   } else {
-    message("recalib: conP and conH are both missing. ",
+    message("recalib: conP.var and conH.var are both missing. ",
             "Only calibrating for the population totals")
   }
 
@@ -165,7 +165,7 @@ recalib <- function(
   if (!period %in% c.names) {
     stop(paste0(period, " is not a column in dat"))
   }
-
+  
 
   ##########################################################
 
@@ -180,12 +180,18 @@ recalib <- function(
   ellipsis[["check_hh_vars"]] <- getEllipsis("check_hh_vars", FALSE, ellipsis)
   ellipsis[["conversion_messages"]] <- getEllipsis("conversion_messages", FALSE,
                                                    ellipsis)
-
+  
+  ellipsisNames <- names(ellipsis)
+  ellipsisContent <- paste0("ellipsis[['",ellipsisNames,"']]")
   eval(parse(text = paste(
-    names(ellipsis),
-    unlist(lapply(ellipsis, as.character)), sep = "<-"
+    ellipsisNames,
+    ellipsisContent, sep = "<-"
   )))
 
+  if((!is.null(ellipsis[["conP"]]))|(!is.null(ellipsis[["conH"]]))){
+    message("recalib: conP and conH are estimated internally from conP.var and conH.var for now\n",
+            "Supplying conP and conH might be implemented in future versions")
+  }
   # recode household and person variables to factor
   # improves runtime for ipf
   #
@@ -228,7 +234,6 @@ recalib <- function(
   } else {
     conH <- NULL
   }
-
 
   # define new Index
   new_id <- paste(c(hid, period), collapse = ",")
