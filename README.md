@@ -14,9 +14,7 @@ bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.sv
 [![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
 [![CRAN](https://img.shields.io/cran/v/surveysd.svg?colorB=green&logo=R&logoColor=blue&label=CRAN)](https://CRAN.R-project.org/package=surveysd)
 
-<!--
 [![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
--->
 
 This is the development place for the R-package `surveysd`. The package
 can be used to estimate the standard deviation of estimates in complex
