@@ -175,9 +175,18 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
             (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur),
           list(
             maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
-            head(epsPcur, 1),
-            sumCalib = sum(get(variableKeepingTheCalibWeight)), head(value, 1)),
+            epsP=head(epsPcur, 1),
+            CalibMargin = {
+              if(!is.null(numericalWeightingVar)){
+                sum(get(variableKeepingTheCalibWeight)*get(numericalWeightingVar))
+              }else{
+                sum(get(variableKeepingTheCalibWeight))
+              }
+            },
+            PopMargin=head(value, 1)),
           by = eval(pColNames[[i]])]
+        
+        
         print(tmp[order(maxFac, decreasing = TRUE), ])
         message("-----------------------------------------\n")
       }
