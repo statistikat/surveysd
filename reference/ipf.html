@@ -15,10 +15,12 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
@@ -41,13 +43,13 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Iterative Proportional Fitting — ipf" />
 
+<meta property="og:title" content="Iterative Proportional Fitting — ipf" />
 <meta property="og:description" content="Adjust sampling weights to given totals based on household-level and/or
 individual level constraints." />
-
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -115,7 +117,6 @@ individual level constraints." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/statistikat/surveysd">
@@ -142,10 +143,8 @@ individual level constraints." />
     </div>
 
     <div class="ref-description">
-    
     <p>Adjust sampling weights to given totals based on household-level and/or
 individual level constraints.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>ipf</span>(<span class='no'>dat</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conP</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conH</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>,
@@ -154,7 +153,7 @@ individual level constraints.</p>
   <span class='kw'>looseH</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>numericalWeighting</span> <span class='kw'>=</span> <span class='no'>computeLinear</span>,
   <span class='kw'>check_hh_vars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>conversion_messages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>nameCalibWeight</span> <span class='kw'>=</span> <span class='st'>"calibWeight"</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -275,7 +274,7 @@ with similar inputs (for example bootstrapping)</p></td>
 newly generated calibrated weight.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>The function will return the input data <code>dat</code> with the calibrated
@@ -293,7 +292,6 @@ as well as the following.</p><table class='table'>
 </table>
 
 
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function implements the weighting procedure described
@@ -312,10 +310,10 @@ as well as the household variable are coded as <code>factor</code>-columns in <c
 Otherwise, conversions will be necessary which can be monitored with the
 <code>conversion_messages</code> argument. Setting <code>check_hh_vars</code> to <code>FALSE</code> can also
 incease the performance of the scheme.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+
 <span class='co'># load data</span>
 <span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
@@ -365,17 +363,14 @@ incease the performance of the scheme.</p>
 <span class='co'># show an adjusted version of conP and the original</span>
 <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP_adj"</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP"</span>)
-<span class='co'># }</span></pre>
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -391,7 +386,7 @@ incease the performance of the scheme.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.9000.</p>
 </div>
 
       </footer>

@@ -15,10 +15,12 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
@@ -41,15 +43,15 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Calculate mean by factors — cpp_mean" />
 
+<meta property="og:title" content="Calculate mean by factors — cpp_mean" />
 <meta property="og:description" content="These functions calculate the arithmetic and geometric mean of the weight for each class. geometric_mean and
 arithmetic_mean return a numeric vector of the same length as w which stores the averaged weight for each
 observation. geometric_mean_reference returns the same value by reference, i.e. the input value w gets
 overwritten by the updated weights. See examples." />
-
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -117,7 +119,6 @@ overwritten by the updated weights. See examples." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/statistikat/surveysd">
@@ -144,16 +145,14 @@ overwritten by the updated weights. See examples." />
     </div>
 
     <div class="ref-description">
-    
     <p>These functions calculate the arithmetic and geometric mean of the weight for each class. <code>geometric_mean</code> and
 <code>arithmetic_mean</code> return a <code>numeric</code> vector of the same length as <code>w</code> which stores the averaged weight for each
 observation. <code>geometric_mean_reference</code> returns the same value by reference, i.e. the input value <code>w</code> gets
 overwritten by the updated weights. See examples.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>geometric_mean_reference</span>(<span class='no'>w</span>, <span class='no'>classes</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -166,11 +165,12 @@ overwritten by the updated weights. See examples.</p>
       <td><p>A factor variable. Must have the same length as <code>w</code>.</p></td>
     </tr>
     </table>
-    
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-</div><span class='co'># NOT RUN {</span>
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+
 <span class='co'>## create random data</span>
 <span class='no'>nobs</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
 <span class='no'>classLabels</span> <span class='kw'>&lt;-</span> <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>3</span>]
@@ -191,13 +191,12 @@ overwritten by the updated weights. See examples.</p>
 <span class='co'>## calculate weights "by reference"</span>
 <span class='fu'>geometric_mean_reference</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>)
 <span class='no'>dat</span>
-<span class='co'># }</span></pre>
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -211,7 +210,7 @@ overwritten by the updated weights. See examples.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.9000.</p>
 </div>
 
       </footer>
