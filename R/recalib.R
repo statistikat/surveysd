@@ -41,10 +41,10 @@
 #' @param period character specifying the name of the column in `dat` containing
 #'   the sample period.
 #' @param conP.var character vector containig person-specific variables to which
-#'   weights should be calibrated. Contingency tables for the population are
+#'   weights should be calibrated or a list of such character vectors. Contingency tables for the population are
 #'   calculated per `period` using `weights`.
 #' @param conH.var character vector containig household-specific variables to
-#'   which weights should be calibrated. Contingency tables for the population
+#'   which weights should be calibrated or a list of such character vectors. Contingency tables for the population
 #'   are calculated per `period` using `weights`.
 #' @param ... additional arguments passed on to function [ipf()] from this
 #'   package.
@@ -133,12 +133,12 @@ recalib <- function(
   }
 
   # check conP.var
-  if (!all(conP.var %in% c.names)) {
+  if (!all(unlist(conP.var) %in% c.names)) {
     stop("Not all elements in conP.var are column names in dat")
   }
 
   # check conH.var
-  if (!all(conH.var %in% c.names)) {
+  if (!all(unlist(conH.var) %in% c.names)) {
     stop("Not all elements in conH.var are column names in dat")
   }
   if (!is.null(conH.var) | !is.null(conP.var)) {
@@ -148,7 +148,7 @@ recalib <- function(
         function(z) {
           sum(is.na(z))
         }
-      ), .SDcols = c(conH.var, conP.var)])
+      ), .SDcols = c(unlist(conH.var), unlist(conP.var))])
     var.miss <- var.miss[var.miss > 0]
     if (length(var.miss) > 0) {
       stop("Missing values detected in column(s)", names(var.miss))
@@ -165,7 +165,7 @@ recalib <- function(
   if (!period %in% c.names) {
     stop(paste0(period, " is not a column in dat"))
   }
-  
+
 
   ##########################################################
 
@@ -180,7 +180,7 @@ recalib <- function(
   ellipsis[["check_hh_vars"]] <- getEllipsis("check_hh_vars", FALSE, ellipsis)
   ellipsis[["conversion_messages"]] <- getEllipsis("conversion_messages", FALSE,
                                                    ellipsis)
-  
+
   ellipsisNames <- names(ellipsis)
   ellipsisContent <- paste0("ellipsis[['",ellipsisNames,"']]")
   eval(parse(text = paste(
@@ -196,7 +196,7 @@ recalib <- function(
   # improves runtime for ipf
   #
 
-  vars <- c(period, conP.var, conH.var)
+  vars <- c(period, unlist(conP.var), unlist(conH.var))
   vars.class <- unlist(lapply(dat[, mget(vars)], function(z) {
     z.class <- class(z)
     if (z.class[1] == "labelled"){
@@ -215,9 +215,9 @@ recalib <- function(
   # calculate contingency tables
   if (!is.null(conP.var)) {
     conP <- lapply(conP.var, function(z) {
-      form.z <- paste0("V1~", paste(gsub(",", "+", period), z, sep = "+"))
-      dt.eval("xtabs(", form.z, ",data=dat[,sum(", weights, "),by=list(",
-              period, ",", z, ")])")
+      z <- paste(z, collapse = "+")
+      form.z <- paste0(weights,"~", paste(gsub(",", "+", period), z, sep = "+"))
+      xtabs(form.z, data = dat)
     })
   } else {
     conP <- NULL
@@ -226,9 +226,10 @@ recalib <- function(
     dt.eval("dat[,FirstPersonInHousehold_:=c(1L,rep(0,.N-1)),by=list(", hid,
             ",", period, ")]")
     conH <- lapply(conH.var, function(z) {
-      form.z <- paste0("V1~", paste(gsub(",", "+", period), z, sep = "+"))
+      z <- paste(z, collapse = "+")
+      form.z <- paste0(weights,"~", paste(gsub(",", "+", period), z, sep = "+"))
       dt.eval("xtabs(", form.z, ",data=dat[,sum(FirstPersonInHousehold_*",
-              weights, "),by=list(", period, ",", z, ")])")
+              weights, ")])")
     })
     dat[, FirstPersonInHousehold_ := NULL]
   } else {
@@ -240,7 +241,7 @@ recalib <- function(
   dt.eval("dat[,hidfactor:=factor(paste0(", new_id, "))]")
 
   # calibrate weights to conP and conH
-  select.var <- c("hidfactor", weights, period, conP.var, conH.var)
+  select.var <- c("hidfactor", weights, period, unlist(conP.var), unlist(conH.var))
   calib.fail <- c()
 
   for (g in b.rep) {
