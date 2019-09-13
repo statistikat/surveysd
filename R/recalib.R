@@ -133,12 +133,12 @@ recalib <- function(
   }
 
   # check conP.var
-  if (!all(unlist(conP.var) %in% c.names)) {
+  if (!all(unique(unlist(conP.var)) %in% c.names)) {
     stop("Not all elements in conP.var are column names in dat")
   }
 
   # check conH.var
-  if (!all(unlist(conH.var) %in% c.names)) {
+  if (!all(unique(unlist(conH.var)) %in% c.names)) {
     stop("Not all elements in conH.var are column names in dat")
   }
   if (!is.null(conH.var) | !is.null(conP.var)) {
@@ -148,7 +148,7 @@ recalib <- function(
         function(z) {
           sum(is.na(z))
         }
-      ), .SDcols = c(unlist(conH.var), unlist(conP.var))])
+      ), .SDcols = c(unique(unlist(conH.var)), unique(unlist(conP.var)))])
     var.miss <- var.miss[var.miss > 0]
     if (length(var.miss) > 0) {
       stop("Missing values detected in column(s)", names(var.miss))
@@ -196,7 +196,7 @@ recalib <- function(
   # improves runtime for ipf
   #
 
-  vars <- c(period, unlist(conP.var), unlist(conH.var))
+  vars <- c(period, unique(unlist(conP.var)), unique(unlist(conH.var)))
   vars.class <- unlist(lapply(dat[, mget(vars)], function(z) {
     z.class <- class(z)
     if (z.class[1] == "labelled"){
@@ -228,8 +228,7 @@ recalib <- function(
     conH <- lapply(conH.var, function(z) {
       z <- paste(z, collapse = "+")
       form.z <- paste0(weights,"~", paste(gsub(",", "+", period), z, sep = "+"))
-      dt.eval("xtabs(", form.z, ",data=dat[,sum(FirstPersonInHousehold_*",
-              weights, ")])")
+      xtabs(form.z,data=dat[FirstPersonInHousehold_==1])
     })
     dat[, FirstPersonInHousehold_ := NULL]
   } else {
@@ -241,7 +240,7 @@ recalib <- function(
   dt.eval("dat[,hidfactor:=factor(paste0(", new_id, "))]")
 
   # calibrate weights to conP and conH
-  select.var <- c("hidfactor", weights, period, unlist(conP.var), unlist(conH.var))
+  select.var <- c("hidfactor", weights, period, unique(unlist(conP.var)), unique(unlist(conH.var)))
   calib.fail <- c()
 
   for (g in b.rep) {
