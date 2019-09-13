@@ -293,6 +293,7 @@ recalib <- function(
       b.rep_new <- paste0(lead.char, 1:length(b.rep))
       setnames(dat, b.rep, b.rep_new)
       cat("Returning", length(b.rep), "calibrated bootstrap weights\n")
+      b.rep <- b.rep_new
     }
   }
 
