@@ -25,11 +25,11 @@ containing bootstrap weights which should be recalibratet}
 the sample period.}
 
 \item{conP.var}{character vector containig person-specific variables to which
-weights should be calibrated. Contingency tables for the population are
+weights should be calibrated or a list of such character vectors. Contingency tables for the population are
 calculated per \code{period} using \code{weights}.}
 
 \item{conH.var}{character vector containig household-specific variables to
-which weights should be calibrated. Contingency tables for the population
+which weights should be calibrated or a list of such character vectors. Contingency tables for the population
 are calculated per \code{period} using \code{weights}.}
 
 \item{...}{additional arguments passed on to function \code{\link[=ipf]{ipf()}} from this
