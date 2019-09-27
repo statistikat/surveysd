@@ -20,7 +20,8 @@ specified by \code{strata=c("strata1>strata2>strata3")}. See Details for more
 information.}
 
 \item{cluster}{string specifying the column name in \code{dat} that is used for
-clustering. For multistage sampling multiple column names can be specified
+clustering. For instance given a household sample the column containing the household ID should be supplied.
+For multistage sampling multiple column names can be specified
 by \code{cluster=c("cluster1>cluster2>cluster3")}.
 See Details for more information.}
 

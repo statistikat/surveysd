@@ -89,3 +89,14 @@ randomInsert <- function(x, y, n = 20){
   x[x.indices] <- y.values
   return(x)
 }
+
+generateRandomName <- function(nchar=20,existingNames){
+  
+  newName <- paste(sample(c(letters,LETTERS),nchar),collapse="")
+  while(newName%in%existingNames){
+    newName <- paste(sample(c(letters,LETTERS),nchar),collapse="")
+  }
+
+  
+  return(newName)
+}
