@@ -98,7 +98,7 @@
     <div class="page-header toc-ignore">
       <h1>Error estimation</h1>
             
-            <h4 class="date">2019-09-13</h4>
+            <h4 class="date">2019-09-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd"><code>vignettes/error_estimation.Rmd</code></a></small>
       <div class="hidden name"><code>error_estimation.Rmd</code></div>
@@ -143,17 +143,17 @@
 <a class="sourceLine" id="cb3-3" data-line-number="3">## print part of the dataset</a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">dat_boot_calib[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(year, povertyRisk, eqIncome, onePerson, pWeight, w1, w2, w3, w4, w5)]</a></code></pre></div>
 <pre><code>##    year povertyRisk eqIncome onePerson  pWeight       w1       w2       w3
-## 1: 2010       FALSE 16090.69     FALSE 504.5696 1.467361 1.461925 1.448003
-## 2: 2010       FALSE 16090.69     FALSE 504.5696 1.467361 1.461925 1.448003
-## 3: 2010       FALSE 16090.69     FALSE 504.5696 1.467361 1.461925 1.448003
-## 4: 2011       FALSE 16090.69     FALSE 504.5696 1.464252 1.400870 1.360662
-## 5: 2011       FALSE 16090.69     FALSE 504.5696 1.464252 1.400870 1.360662
+## 1: 2010       FALSE 16090.69     FALSE 504.5696 1.459066 1006.555 1.455580
+## 2: 2010       FALSE 16090.69     FALSE 504.5696 1.459066 1006.555 1.455580
+## 3: 2010       FALSE 16090.69     FALSE 504.5696 1.459066 1006.555 1.455580
+## 4: 2011       FALSE 16090.69     FALSE 504.5696 1.380779  967.380 1.456154
+## 5: 2011       FALSE 16090.69     FALSE 504.5696 1.380779  967.380 1.456154
 ##          w4       w5
-## 1: 1.479799 1.490757
-## 2: 1.479799 1.490757
-## 3: 1.479799 1.490757
-## 4: 1.510375 1.477272
-## 5: 1.510375 1.477272</code></pre>
+## 1: 1.462730 1018.671
+## 2: 1.462730 1018.671
+## 3: 1.462730 1018.671
+## 4: 1.516569 1004.087
+## 5: 1.516569 1004.087</code></pre>
 </div>
 <div id="estimator-functions" class="section level2">
 <h2 class="hasAnchor">
@@ -164,24 +164,24 @@
 <p>Those functions calculate the ratio of persons at risk of povery (in percent) and the total income. By default, the results are calculated seperately for each reference period.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">povertyRate<span class="op">$</span>Estimates</a></code></pre></div>
 <pre><code>##    year     n       N val_povertyRisk stE_povertyRisk
-## 1: 2010 14827 8182222        14.44422       0.4710230
-## 2: 2011 14827 8182222        14.77393       0.5615682
-## 3: 2012 14827 8182222        15.04515       0.3879097
-## 4: 2013 14827 8182222        14.89013       0.4429596
-## 5: 2014 14827 8182222        15.14556       0.5121590
-## 6: 2015 14827 8182222        15.53640       0.4302365
-## 7: 2016 14827 8182222        15.08315       0.3469344
-## 8: 2017 14827 8182222        15.42019       0.5633740</code></pre>
+## 1: 2010 14827 8182222        14.44422       0.5829182
+## 2: 2011 14827 8182222        14.77393       0.6761383
+## 3: 2012 14827 8182222        15.04515       0.4903267
+## 4: 2013 14827 8182222        14.89013       0.4751962
+## 5: 2014 14827 8182222        15.14556       0.5188642
+## 6: 2015 14827 8182222        15.53640       0.4798736
+## 7: 2016 14827 8182222        15.08315       0.3559527
+## 8: 2017 14827 8182222        15.42019       0.5582783</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">totalIncome<span class="op">$</span>Estimates</a></code></pre></div>
 <pre><code>##    year     n       N val_eqIncome stE_eqIncome
-## 1: 2010 14827 8182222 162750998071    973119034
-## 2: 2011 14827 8182222 161926931417    840418104
-## 3: 2012 14827 8182222 162576509628   1115195638
-## 4: 2013 14827 8182222 163199507862   1396066604
-## 5: 2014 14827 8182222 163986275009   1384785226
-## 6: 2015 14827 8182222 163416275447   1339544407
-## 7: 2016 14827 8182222 162706205137   1274753118
-## 8: 2017 14827 8182222 164314959107   1396270280</code></pre>
+## 1: 2010 14827 8182222 162750998071    959510036
+## 2: 2011 14827 8182222 161926931417    900201396
+## 3: 2012 14827 8182222 162576509628   1195965007
+## 4: 2013 14827 8182222 163199507862   1472304274
+## 5: 2014 14827 8182222 163986275009   1525837944
+## 6: 2015 14827 8182222 163416275447   1335217370
+## 7: 2016 14827 8182222 162706205137   1204524680
+## 8: 2017 14827 8182222 164314959107   1320123257</code></pre>
 <p>Columns that use the <code>val_</code> prefix denote the point estimate belonging to the “main weight” of the dataset, which is <code>pWeight</code> in case of the dataset used here.</p>
 <p>Columns with the <code>stE_</code> prefix denote standard errors calculated with bootstrap replicates. The replicates result in using <code>w1</code>, <code>w2</code>, …, <code>w10</code> instead of <code>pWeight</code> when applying the estimator.</p>
 <p><code>n</code> denotes the number of observations for the year and <code>N</code> denotes the total weight of those persons.</p>
@@ -207,23 +207,23 @@
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">multipleRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), <span class="dt">fun =</span> weightedRatio)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">multipleRates<span class="op">$</span>Estimates</a></code></pre></div>
 <pre><code>##    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
-## 1: 2010 14827 8182222        14.44422       0.4710230      14.85737
-## 2: 2011 14827 8182222        14.77393       0.5615682      14.85737
-## 3: 2012 14827 8182222        15.04515       0.3879097      14.85737
-## 4: 2013 14827 8182222        14.89013       0.4429596      14.85737
-## 5: 2014 14827 8182222        15.14556       0.5121590      14.85737
-## 6: 2015 14827 8182222        15.53640       0.4302365      14.85737
-## 7: 2016 14827 8182222        15.08315       0.3469344      14.85737
-## 8: 2017 14827 8182222        15.42019       0.5633740      14.85737
+## 1: 2010 14827 8182222        14.44422       0.5829182      14.85737
+## 2: 2011 14827 8182222        14.77393       0.6761383      14.85737
+## 3: 2012 14827 8182222        15.04515       0.4903267      14.85737
+## 4: 2013 14827 8182222        14.89013       0.4751962      14.85737
+## 5: 2014 14827 8182222        15.14556       0.5188642      14.85737
+## 6: 2015 14827 8182222        15.53640       0.4798736      14.85737
+## 7: 2016 14827 8182222        15.08315       0.3559527      14.85737
+## 8: 2017 14827 8182222        15.42019       0.5582783      14.85737
 ##    stE_onePerson
-## 1:     0.2602878
-## 2:     0.3228597
-## 3:     0.3342605
-## 4:     0.3798783
-## 5:     0.4507181
-## 6:     0.4143875
-## 7:     0.3280088
-## 8:     0.2870508</code></pre>
+## 1:     0.2568455
+## 2:     0.2774971
+## 3:     0.2905952
+## 4:     0.3452929
+## 5:     0.4386546
+## 6:     0.3803537
+## 7:     0.3099259
+## 8:     0.3025539</code></pre>
 <p>Here we see the relative number of persons at risk of poverty and the relative number of one-person households.</p>
 </div>
 </div>
@@ -238,16 +238,16 @@
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, <span class="dt">group =</span> <span class="st">"region"</span>)</a>
 <a class="sourceLine" id="cb15-2" data-line-number="2">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
 <pre><code>##     year     n       N        region val_povertyRisk stE_povertyRisk
-##  1: 2010   549  260564    Burgenland        19.53984       1.7962051
-##  2: 2010   733  377355    Vorarlberg        16.53731       3.2682348
-##  3: 2010   924  535451      Salzburg        13.78734       2.2561119
-##  4: 2010  1078  563648     Carinthia        13.08627       1.7480745
-##  5: 2010  1317  701899         Tyrol        15.30819       2.0314532
-##  6: 2010  2295 1167045        Styria        14.37464       1.3554432
-##  7: 2010  2322 1598931        Vienna        17.23468       1.0438717
-##  8: 2010  2804 1555709 Lower Austria        13.84362       1.6944545
-##  9: 2010  2805 1421620 Upper Austria        10.88977       0.8676276
-## 10: 2010 14827 8182222          &lt;NA&gt;        14.44422       0.4710230</code></pre>
+##  1: 2010   549  260564    Burgenland        19.53984       1.7963347
+##  2: 2010   733  377355    Vorarlberg        16.53731       3.2774567
+##  3: 2010   924  535451      Salzburg        13.78734       2.2523362
+##  4: 2010  1078  563648     Carinthia        13.08627       1.7427986
+##  5: 2010  1317  701899         Tyrol        15.30819       1.3916058
+##  6: 2010  2295 1167045        Styria        14.37464       1.3485703
+##  7: 2010  2322 1598931        Vienna        17.23468       1.0419000
+##  8: 2010  2804 1555709 Lower Austria        13.84362       1.7019212
+##  9: 2010  2805 1421620 Upper Austria        10.88977       0.8701448
+## 10: 2010 14827 8182222          &lt;NA&gt;        14.44422       0.5829182</code></pre>
 <p>The last column with <code>region = NA</code> denotes the aggregate over all regions. Note that the columns <code>N</code> and <code>n</code> now show the weighted and unweighted number of persons in each region.</p>
 <div id="several-grouping-variables" class="section level3">
 <h3 class="hasAnchor">
@@ -276,18 +276,18 @@
 ## 11: 2010  7560 4202650 female          &lt;NA&gt;        16.73351
 ## 12: 2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        14.44422
 ##     stE_povertyRisk
-##  1:       1.7962051
-##  2:       3.2682348
-##  3:       2.2561119
-##  4:       1.7480745
-##  5:       2.0314532
-##  6:       1.3554432
-##  7:       1.0438717
-##  8:       1.6944545
-##  9:       0.8676276
-## 10:       0.5814477
-## 11:       0.4651848
-## 12:       0.4710230</code></pre>
+##  1:       1.7963347
+##  2:       3.2774567
+##  3:       2.2523362
+##  4:       1.7427986
+##  5:       1.3916058
+##  6:       1.3485703
+##  7:       1.0419000
+##  8:       1.7019212
+##  9:       0.8701448
+## 10:       0.6294860
+## 11:       0.6290441
+## 12:       0.5829182</code></pre>
 </div>
 <div id="option-2-all-combinations-of-state-and-gender" class="section level4">
 <h4 class="hasAnchor">
@@ -319,25 +319,25 @@
 ## 18: 2010  1442  737347.5 female Upper Austria       12.574206
 ## 19: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218
 ##     stE_povertyRisk
-##  1:       2.2240337
-##  2:       2.0722169
-##  3:       3.0907951
-##  4:       3.7366664
-##  5:       1.8991413
-##  6:       2.5337406
-##  7:       2.0564400
-##  8:       1.9761700
-##  9:       2.2576659
-## 10:       2.0523531
-## 11:       1.5091092
-## 12:       1.3336286
-## 13:       1.3880995
-## 14:       0.9322183
-## 15:       1.1708532
-## 16:       1.8277282
-## 17:       1.6402739
-## 18:       0.7678252
-## 19:       0.4710230</code></pre>
+##  1:       2.2233926
+##  2:       2.0806293
+##  3:       3.0976410
+##  4:       3.7435376
+##  5:       1.8974748
+##  6:       2.5305822
+##  7:       2.0566143
+##  8:       1.9709443
+##  9:       1.0350617
+## 10:       2.2101768
+## 11:       1.5095045
+## 12:       1.3336364
+## 13:       1.3743809
+## 14:       0.9295877
+## 15:       1.1700859
+## 16:       1.8349672
+## 17:       1.6423009
+## 18:       0.7703255
+## 19:       0.5829182</code></pre>
 </div>
 <div id="option-3-cobination-of-option-1-and-option-2" class="section level4">
 <h4 class="hasAnchor">
@@ -386,36 +386,36 @@
 ## 30: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218
 ##     year     n         N gender        region val_povertyRisk
 ##     stE_povertyRisk
-##  1:       2.2240337
-##  2:       2.0722169
-##  3:       3.0907951
-##  4:       3.7366664
-##  5:       1.8991413
-##  6:       2.5337406
-##  7:       2.0564400
-##  8:       1.7962051
-##  9:       1.9761700
-## 10:       2.2576659
-## 11:       2.0523531
-## 12:       3.2682348
-## 13:       2.2561119
-## 14:       1.7480745
-## 15:       1.5091092
-## 16:       1.3336286
-## 17:       1.3880995
-## 18:       0.9322183
-## 19:       2.0314532
-## 20:       1.1708532
-## 21:       1.8277282
-## 22:       1.6402739
-## 23:       0.7678252
-## 24:       1.3554432
-## 25:       1.0438717
-## 26:       1.6944545
-## 27:       0.8676276
-## 28:       0.5814477
-## 29:       0.4651848
-## 30:       0.4710230
+##  1:       2.2233926
+##  2:       2.0806293
+##  3:       3.0976410
+##  4:       3.7435376
+##  5:       1.8974748
+##  6:       2.5305822
+##  7:       2.0566143
+##  8:       1.7963347
+##  9:       1.9709443
+## 10:       1.0350617
+## 11:       2.2101768
+## 12:       3.2774567
+## 13:       2.2523362
+## 14:       1.7427986
+## 15:       1.5095045
+## 16:       1.3336364
+## 17:       1.3743809
+## 18:       0.9295877
+## 19:       1.3916058
+## 20:       1.1700859
+## 21:       1.8349672
+## 22:       1.6423009
+## 23:       0.7703255
+## 24:       1.3485703
+## 25:       1.0419000
+## 26:       1.7019212
+## 27:       0.8701448
+## 28:       0.6294860
+## 29:       0.6290441
+## 30:       0.5829182
 ##     stE_povertyRisk</code></pre>
 </div>
 </div>
@@ -444,7 +444,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
 </div>
 
       </footer>
