@@ -25,8 +25,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -314,7 +314,7 @@ People who enter already existing households will also get the same bootstrap
 replicate as the other households members had in the previous periods.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/data.table/man/data.table.html'>data.table</a></code> for more information on
+    <div class='dont-index'><p><code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> for more information on
 data.table objects.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -366,10 +366,10 @@ data.table objects.</p></div>
   <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"pidsplit"</span>)
 <span class='co'># split households were considered e.g. household and</span>
 <span class='co'># split household were both selected or not selected</span>
-<span class='no'>dat_boot</span>[, <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>uniqueN</a></span>(<span class='no'>w1</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>pidsplit</span>][<span class='no'>V1</span> <span class='kw'>&gt;</span> <span class='fl'>1</span>]
+<span class='no'>dat_boot</span>[, <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='no'>w1</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>pidsplit</span>][<span class='no'>V1</span> <span class='kw'>&gt;</span> <span class='fl'>1</span>]
 }</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>

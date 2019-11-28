@@ -26,8 +26,8 @@ into account split households — generate.HHID • surveysd</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -205,13 +205,13 @@ trailing "_orig".</p>
 
 <span class='co'># create spit households</span>
 <span class='no'>eusilc</span>[,<span class='no'>rb030split</span><span class='kw'>:=</span><span class='no'>rb030</span>]
-<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>unique</a></span>(<span class='no'>year</span>)]
+<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>unique</a></span>(<span class='no'>year</span>)]
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
 <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
 <span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>){
-  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>-<span class='fl'>1</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
+  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>-<span class='fl'>1</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
                          <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>)]
-  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
+  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
                              <span class='fu'>.</span>(<span class='kw'>rb030</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>))]
   <span class='no'>overwrite.person</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rb030split"</span>,<span class='st'>"year_curr"</span>)<span class='kw'>:=</span><span class='fu'>.</span>(<span class='no'>split.person</span>,<span class='no'>y</span>)]
 
@@ -220,20 +220,20 @@ trailing "_orig".</p>
   <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
     <span class='no'>leaf_out</span>,
     <span class='no'>eusilc</span>[<span class='no'>rb030</span><span class='kw'>%in%</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>rb030</span>,<span class='no'>overwrite.person</span>$<span class='no'>rb030split</span>),
-    <span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>unique</a></span>(<span class='no'>db030</span>)])
+    <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>unique</a></span>(<span class='no'>db030</span>)])
 }
 
 <span class='co'># pid which are in split households</span>
-<span class='no'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
+<span class='no'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
 
 <span class='no'>eusilc.new</span> <span class='kw'>&lt;-</span> <span class='fu'>generate.HHID</span>(<span class='no'>eusilc</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"rb030split"</span>,
                             <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"db030"</span>)
 
 <span class='co'># no longer any split households in the data</span>
-<span class='no'>eusilc.new</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://rdrr.io/pkg/data.table/man/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
+<span class='no'>eusilc.new</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
 }</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>

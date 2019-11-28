@@ -13,8 +13,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Error estimation">
@@ -98,7 +98,7 @@
     <div class="page-header toc-ignore">
       <h1>Error estimation</h1>
             
-            <h4 class="date">2019-09-27</h4>
+            <h4 class="date">2019-11-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd"><code>vignettes/error_estimation.Rmd</code></a></small>
       <div class="hidden name"><code>error_estimation.Rmd</code></div>
@@ -195,8 +195,8 @@
 <a class="sourceLine" id="cb10-4" data-line-number="4">}</a>
 <a class="sourceLine" id="cb10-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb10-6" data-line-number="6">## check if results are equal to the one using `suveysd::weightedSum()`</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">totalIncome2 &lt;-<span class="st"> </span>totalIncome &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> weightedSum)</a>
-<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(totalIncome, totalIncome2)</a></code></pre></div>
+<a class="sourceLine" id="cb10-7" data-line-number="7">totalIncome2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat_boot_calib, <span class="dt">var =</span> <span class="st">"eqIncome"</span>, <span class="dt">fun =</span> myWeightedSum)</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(totalIncome<span class="op">$</span>Estimates, totalIncome2<span class="op">$</span>Estimates)</a></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>The parameters <code>x</code> and <code>w</code> can be assumed to be vectors with equal length with <code>w</code> being numeric and <code>x</code> being the column defined in the <code>var</code> argument. It will be called once for each period (in this case <code>year</code>) and for each weight column (in this case <code>pWeight</code>, <code>w1</code>, <code>w2</code>, …, <code>w10</code>).</p>
 </div>
@@ -262,32 +262,19 @@
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
 <a class="sourceLine" id="cb17-2" data-line-number="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))</a>
 <a class="sourceLine" id="cb17-3" data-line-number="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<pre><code>##     year     n       N gender        region val_povertyRisk
-##  1: 2010   549  260564   &lt;NA&gt;    Burgenland        19.53984
-##  2: 2010   733  377355   &lt;NA&gt;    Vorarlberg        16.53731
-##  3: 2010   924  535451   &lt;NA&gt;      Salzburg        13.78734
-##  4: 2010  1078  563648   &lt;NA&gt;     Carinthia        13.08627
-##  5: 2010  1317  701899   &lt;NA&gt;         Tyrol        15.30819
-##  6: 2010  2295 1167045   &lt;NA&gt;        Styria        14.37464
-##  7: 2010  2322 1598931   &lt;NA&gt;        Vienna        17.23468
-##  8: 2010  2804 1555709   &lt;NA&gt; Lower Austria        13.84362
-##  9: 2010  2805 1421620   &lt;NA&gt; Upper Austria        10.88977
-## 10: 2010  7267 3979572   male          &lt;NA&gt;        12.02660
-## 11: 2010  7560 4202650 female          &lt;NA&gt;        16.73351
-## 12: 2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        14.44422
-##     stE_povertyRisk
-##  1:       1.7963347
-##  2:       3.2774567
-##  3:       2.2523362
-##  4:       1.7427986
-##  5:       1.3916058
-##  6:       1.3485703
-##  7:       1.0419000
-##  8:       1.7019212
-##  9:       0.8701448
-## 10:       0.6294860
-## 11:       0.6290441
-## 12:       0.5829182</code></pre>
+<pre><code>##     year     n       N gender        region val_povertyRisk stE_povertyRisk
+##  1: 2010   549  260564   &lt;NA&gt;    Burgenland        19.53984       1.7963347
+##  2: 2010   733  377355   &lt;NA&gt;    Vorarlberg        16.53731       3.2774567
+##  3: 2010   924  535451   &lt;NA&gt;      Salzburg        13.78734       2.2523362
+##  4: 2010  1078  563648   &lt;NA&gt;     Carinthia        13.08627       1.7427986
+##  5: 2010  1317  701899   &lt;NA&gt;         Tyrol        15.30819       1.3916058
+##  6: 2010  2295 1167045   &lt;NA&gt;        Styria        14.37464       1.3485703
+##  7: 2010  2322 1598931   &lt;NA&gt;        Vienna        17.23468       1.0419000
+##  8: 2010  2804 1555709   &lt;NA&gt; Lower Austria        13.84362       1.7019212
+##  9: 2010  2805 1421620   &lt;NA&gt; Upper Austria        10.88977       0.8701448
+## 10: 2010  7267 3979572   male          &lt;NA&gt;        12.02660       0.6294860
+## 11: 2010  7560 4202650 female          &lt;NA&gt;        16.73351       0.6290441
+## 12: 2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        14.44422       0.5829182</code></pre>
 </div>
 <div id="option-2-all-combinations-of-state-and-gender" class="section level4">
 <h4 class="hasAnchor">
@@ -298,46 +285,26 @@
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))</a>
 <a class="sourceLine" id="cb19-3" data-line-number="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<pre><code>##     year     n         N gender        region val_povertyRisk
-##  1: 2010   261  122741.8   male    Burgenland       17.414524
-##  2: 2010   288  137822.2 female    Burgenland       21.432598
-##  3: 2010   359  182732.9   male    Vorarlberg       12.973259
-##  4: 2010   374  194622.1 female    Vorarlberg       19.883637
-##  5: 2010   440  253143.7   male      Salzburg        9.156964
-##  6: 2010   484  282307.3 female      Salzburg       17.939382
-##  7: 2010   517  268581.4   male     Carinthia       10.552149
-##  8: 2010   561  295066.6 female     Carinthia       15.392924
-##  9: 2010   650  339566.5   male         Tyrol       12.857542
-## 10: 2010   667  362332.5 female         Tyrol       17.604861
-## 11: 2010  1128  571011.7   male        Styria       11.671247
-## 12: 2010  1132  774405.4   male        Vienna       15.590616
-## 13: 2010  1167  596033.3 female        Styria       16.964539
-## 14: 2010  1190  824525.6 female        Vienna       18.778813
-## 15: 2010  1363  684272.5   male Upper Austria        9.074690
-## 16: 2010  1387  772593.2 female Lower Austria       16.372949
-## 17: 2010  1417  783115.8   male Lower Austria       11.348283
-## 18: 2010  1442  737347.5 female Upper Austria       12.574206
-## 19: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218
-##     stE_povertyRisk
-##  1:       2.2233926
-##  2:       2.0806293
-##  3:       3.0976410
-##  4:       3.7435376
-##  5:       1.8974748
-##  6:       2.5305822
-##  7:       2.0566143
-##  8:       1.9709443
-##  9:       1.0350617
-## 10:       2.2101768
-## 11:       1.5095045
-## 12:       1.3336364
-## 13:       1.3743809
-## 14:       0.9295877
-## 15:       1.1700859
-## 16:       1.8349672
-## 17:       1.6423009
-## 18:       0.7703255
-## 19:       0.5829182</code></pre>
+<pre><code>##     year     n         N gender        region val_povertyRisk stE_povertyRisk
+##  1: 2010   261  122741.8   male    Burgenland       17.414524       2.2233926
+##  2: 2010   288  137822.2 female    Burgenland       21.432598       2.0806293
+##  3: 2010   359  182732.9   male    Vorarlberg       12.973259       3.0976410
+##  4: 2010   374  194622.1 female    Vorarlberg       19.883637       3.7435376
+##  5: 2010   440  253143.7   male      Salzburg        9.156964       1.8974748
+##  6: 2010   484  282307.3 female      Salzburg       17.939382       2.5305822
+##  7: 2010   517  268581.4   male     Carinthia       10.552149       2.0566143
+##  8: 2010   561  295066.6 female     Carinthia       15.392924       1.9709443
+##  9: 2010   650  339566.5   male         Tyrol       12.857542       1.0350617
+## 10: 2010   667  362332.5 female         Tyrol       17.604861       2.2101768
+## 11: 2010  1128  571011.7   male        Styria       11.671247       1.5095045
+## 12: 2010  1132  774405.4   male        Vienna       15.590616       1.3336364
+## 13: 2010  1167  596033.3 female        Styria       16.964539       1.3743809
+## 14: 2010  1190  824525.6 female        Vienna       18.778813       0.9295877
+## 15: 2010  1363  684272.5   male Upper Austria        9.074690       1.1700859
+## 16: 2010  1387  772593.2 female Lower Austria       16.372949       1.8349672
+## 17: 2010  1417  783115.8   male Lower Austria       11.348283       1.6423009
+## 18: 2010  1442  737347.5 female Upper Austria       12.574206       0.7703255
+## 19: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218       0.5829182</code></pre>
 </div>
 <div id="option-3-cobination-of-option-1-and-option-2" class="section level4">
 <h4 class="hasAnchor">
@@ -353,76 +320,44 @@
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">povertyRates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calc.stError.html">calc.stError</a></span>(dat2, <span class="dt">var =</span> <span class="st">"povertyRisk"</span>, <span class="dt">fun =</span> weightedRatio, </a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">                             <span class="dt">group =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3">povertyRates<span class="op">$</span>Estimates</a></code></pre></div>
-<pre><code>##     year     n         N gender        region val_povertyRisk
-##  1: 2010   261  122741.8   male    Burgenland       17.414524
-##  2: 2010   288  137822.2 female    Burgenland       21.432598
-##  3: 2010   359  182732.9   male    Vorarlberg       12.973259
-##  4: 2010   374  194622.1 female    Vorarlberg       19.883637
-##  5: 2010   440  253143.7   male      Salzburg        9.156964
-##  6: 2010   484  282307.3 female      Salzburg       17.939382
-##  7: 2010   517  268581.4   male     Carinthia       10.552149
-##  8: 2010   549  260564.0   &lt;NA&gt;    Burgenland       19.539837
-##  9: 2010   561  295066.6 female     Carinthia       15.392924
-## 10: 2010   650  339566.5   male         Tyrol       12.857542
-## 11: 2010   667  362332.5 female         Tyrol       17.604861
-## 12: 2010   733  377355.0   &lt;NA&gt;    Vorarlberg       16.537310
-## 13: 2010   924  535451.0   &lt;NA&gt;      Salzburg       13.787343
-## 14: 2010  1078  563648.0   &lt;NA&gt;     Carinthia       13.086268
-## 15: 2010  1128  571011.7   male        Styria       11.671247
-## 16: 2010  1132  774405.4   male        Vienna       15.590616
-## 17: 2010  1167  596033.3 female        Styria       16.964539
-## 18: 2010  1190  824525.6 female        Vienna       18.778813
-## 19: 2010  1317  701899.0   &lt;NA&gt;         Tyrol       15.308190
-## 20: 2010  1363  684272.5   male Upper Austria        9.074690
-## 21: 2010  1387  772593.2 female Lower Austria       16.372949
-## 22: 2010  1417  783115.8   male Lower Austria       11.348283
-## 23: 2010  1442  737347.5 female Upper Austria       12.574206
-## 24: 2010  2295 1167045.0   &lt;NA&gt;        Styria       14.374637
-## 25: 2010  2322 1598931.0   &lt;NA&gt;        Vienna       17.234683
-## 26: 2010  2804 1555709.0   &lt;NA&gt; Lower Austria       13.843623
-## 27: 2010  2805 1421620.0   &lt;NA&gt; Upper Austria       10.889773
-## 28: 2010  7267 3979571.7   male          &lt;NA&gt;       12.026600
-## 29: 2010  7560 4202650.3 female          &lt;NA&gt;       16.733508
-## 30: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218
-##     year     n         N gender        region val_povertyRisk
-##     stE_povertyRisk
-##  1:       2.2233926
-##  2:       2.0806293
-##  3:       3.0976410
-##  4:       3.7435376
-##  5:       1.8974748
-##  6:       2.5305822
-##  7:       2.0566143
-##  8:       1.7963347
-##  9:       1.9709443
-## 10:       1.0350617
-## 11:       2.2101768
-## 12:       3.2774567
-## 13:       2.2523362
-## 14:       1.7427986
-## 15:       1.5095045
-## 16:       1.3336364
-## 17:       1.3743809
-## 18:       0.9295877
-## 19:       1.3916058
-## 20:       1.1700859
-## 21:       1.8349672
-## 22:       1.6423009
-## 23:       0.7703255
-## 24:       1.3485703
-## 25:       1.0419000
-## 26:       1.7019212
-## 27:       0.8701448
-## 28:       0.6294860
-## 29:       0.6290441
-## 30:       0.5829182
-##     stE_povertyRisk</code></pre>
+<pre><code>##     year     n         N gender        region val_povertyRisk stE_povertyRisk
+##  1: 2010   261  122741.8   male    Burgenland       17.414524       2.2233926
+##  2: 2010   288  137822.2 female    Burgenland       21.432598       2.0806293
+##  3: 2010   359  182732.9   male    Vorarlberg       12.973259       3.0976410
+##  4: 2010   374  194622.1 female    Vorarlberg       19.883637       3.7435376
+##  5: 2010   440  253143.7   male      Salzburg        9.156964       1.8974748
+##  6: 2010   484  282307.3 female      Salzburg       17.939382       2.5305822
+##  7: 2010   517  268581.4   male     Carinthia       10.552149       2.0566143
+##  8: 2010   549  260564.0   &lt;NA&gt;    Burgenland       19.539837       1.7963347
+##  9: 2010   561  295066.6 female     Carinthia       15.392924       1.9709443
+## 10: 2010   650  339566.5   male         Tyrol       12.857542       1.0350617
+## 11: 2010   667  362332.5 female         Tyrol       17.604861       2.2101768
+## 12: 2010   733  377355.0   &lt;NA&gt;    Vorarlberg       16.537310       3.2774567
+## 13: 2010   924  535451.0   &lt;NA&gt;      Salzburg       13.787343       2.2523362
+## 14: 2010  1078  563648.0   &lt;NA&gt;     Carinthia       13.086268       1.7427986
+## 15: 2010  1128  571011.7   male        Styria       11.671247       1.5095045
+## 16: 2010  1132  774405.4   male        Vienna       15.590616       1.3336364
+## 17: 2010  1167  596033.3 female        Styria       16.964539       1.3743809
+## 18: 2010  1190  824525.6 female        Vienna       18.778813       0.9295877
+## 19: 2010  1317  701899.0   &lt;NA&gt;         Tyrol       15.308190       1.3916058
+## 20: 2010  1363  684272.5   male Upper Austria        9.074690       1.1700859
+## 21: 2010  1387  772593.2 female Lower Austria       16.372949       1.8349672
+## 22: 2010  1417  783115.8   male Lower Austria       11.348283       1.6423009
+## 23: 2010  1442  737347.5 female Upper Austria       12.574206       0.7703255
+## 24: 2010  2295 1167045.0   &lt;NA&gt;        Styria       14.374637       1.3485703
+## 25: 2010  2322 1598931.0   &lt;NA&gt;        Vienna       17.234683       1.0419000
+## 26: 2010  2804 1555709.0   &lt;NA&gt; Lower Austria       13.843623       1.7019212
+## 27: 2010  2805 1421620.0   &lt;NA&gt; Upper Austria       10.889773       0.8701448
+## 28: 2010  7267 3979571.7   male          &lt;NA&gt;       12.026600       0.6294860
+## 29: 2010  7560 4202650.3 female          &lt;NA&gt;       16.733508       0.6290441
+## 30: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218       0.5829182
+##     year     n         N gender        region val_povertyRisk stE_povertyRisk</code></pre>
 </div>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
         <div id="tocnav">
       <h2 class="hasAnchor">
