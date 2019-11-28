@@ -83,8 +83,8 @@ myWeightedSum <- function(x, w) {
 }
 
 ## check if results are equal to the one using `suveysd::weightedSum()`
-totalIncome2 <- totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum)
-all.equal(totalIncome, totalIncome2)
+totalIncome2 <- calc.stError(dat_boot_calib, var = "eqIncome", fun = myWeightedSum)
+all.equal(totalIncome$Estimates, totalIncome2$Estimates)
 ```
 
 The parameters `x` and `w` can be assumed to be vectors with equal length with `w` being numeric and
