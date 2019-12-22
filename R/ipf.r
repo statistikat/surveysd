@@ -579,8 +579,8 @@ ipf <- function(
   } else {
     if (!is.factor(dat[[hid]]))
       data.table::set(dat, NULL, hid, as.factor(dat[[hid]]))
-    dat[, representativeHouseholdForCalibration :=
-          as.numeric(!duplicated(get(hid)))]
+    rh <- as.numeric(!duplicated(dat[[hid]]))
+    dat[, representativeHouseholdForCalibration := rh]
   }
 
   ## Names of the calibration variables for Person and household dimension
