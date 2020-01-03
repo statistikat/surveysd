@@ -45,19 +45,59 @@ test_that("test para - hid, weights and period", {
 
 test_that("test para - conP.var conH.var", {
 
+  # check single values
   expect_error(
     recalib(eusilc, conP.var = "rb090s", conH.var = "db040"),
     "Not all elements in conP.var are column names in dat")
   expect_error(
     recalib(eusilc, conP.var = "rb090", conH.var = "db040s"),
     "Not all elements in conH.var are column names in dat")
-
+  
+  # check multiple values through list
+  expect_error(
+    recalib(eusilc, conP.var = list("rb090s","age"), conH.var = "db040"),
+    "Not all elements in conP.var are column names in dat")
+  expect_error(
+    recalib(eusilc, conP.var = list("rb090"), conH.var = list("db040s","hsize")),
+    "Not all elements in conH.var are column names in dat")
+  
   expect_error(recalib(
     eusilc, conP.var = NULL, conH.var = "db040"), NA)
   expect_error(recalib(
     eusilc, conP.var = "rb090", conH.var = NULL), NA)
   expect_error(recalib(
       eusilc, conP.var = NULL, conH.var = NULL), NA)
+  expect_error(recalib(
+    eusilc, conP.var = list("rb090","age"), conH.var = "db040"), NA)
+  expect_error(recalib(
+    eusilc, conP.var = list("rb090",c("age","rb090")), conH.var = "db040"), NA)
+  expect_error(recalib(
+    eusilc, conP.var = list("rb090"), conH.var = list("db040","hsize")), NA)
+})
+
+
+test_that("test para - conP conH", {
+  
+  conP1 <- xtabs(db090 ~ age + year, data = eusilc)
+  conP2 <- xtabs(db090 ~ rb090 + year, data = eusilc)
+  # conP2 <- xtabs(db090 ~ rb090 + db040 + year, data = eusilc)
+  
+  conH1 <- xtabs(db090 ~ hsize + db040, data = eusilc[!duplicated(db030)])
+  conH2 <- xtabs(db090 ~ db040, data = eusilc[!duplicated(db030)])
+  
+  expect_error(
+    recalib(eusilc, conP.var = "rb090", conH.var = NULL, conP = list(conP2)),
+    "Not all elements in conP.var are column names in dat")
+  expect_error(
+    recalib(eusilc, conP.var = "rb090", conH.var = "db040s"),
+    "Not all elements in conH.var are column names in dat")
+  
+  expect_error(recalib(
+    eusilc, conP.var = NULL, conH.var = "db040"), NA)
+  expect_error(recalib(
+    eusilc, conP.var = "rb090", conH.var = NULL), NA)
+  expect_error(recalib(
+    eusilc, conP.var = NULL, conH.var = NULL), NA)
 })
 
 test_that("test return", {
