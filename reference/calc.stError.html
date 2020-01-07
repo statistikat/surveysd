@@ -474,18 +474,18 @@ standard error \(\sigma\).</p>
 #&gt; 59306: 556.4260 556.4260 2013       FALSE    1.513432 1.524735   1.463031
 #&gt; 59307: 556.4260 556.4260 2013       FALSE    1.513432 1.524735   1.463031
 #&gt; 59308: 643.2557 643.2557 2013        TRUE 1252.346794 1.223191   1.196437
-#&gt;        onePerson
-#&gt;     1:     FALSE
-#&gt;     2:     FALSE
-#&gt;     3:     FALSE
-#&gt;     4:     FALSE
-#&gt;     5:     FALSE
-#&gt;    ---          
-#&gt; 59304:     FALSE
-#&gt; 59305:     FALSE
-#&gt; 59306:     FALSE
-#&gt; 59307:     FALSE
-#&gt; 59308:      TRUE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>),
+#&gt;        FirstPersonInHousehold_ onePerson
+#&gt;     1:                       1     FALSE
+#&gt;     2:                       0     FALSE
+#&gt;     3:                       0     FALSE
+#&gt;     4:                       1     FALSE
+#&gt;     5:                       0     FALSE
+#&gt;    ---                                  
+#&gt; 59304:                       1     FALSE
+#&gt; 59305:                       0     FALSE
+#&gt; 59306:                       0     FALSE
+#&gt; 59307:                       0     FALSE
+#&gt; 59308:                       1      TRUE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>),
                         <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
 <span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
 #&gt; 1: 2010 14827 8182222        14.44422       1.0545063      14.85737
