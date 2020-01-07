@@ -267,10 +267,10 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
           !is.na(fVariableForCalibrationIPF) &
             (abs(1 / fVariableForCalibrationIPF - 1) > epsHcur),
           list(maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
-               head(epsHcur, 1),
+               epsH = head(epsHcur, 1),
                sumCalibWeight = sum(get(variableKeepingTheCalibWeight) *
                                       representativeHouseholdForCalibration),
-               head(value, 1)),
+               PopMargin = head(value, 1)),
           by = eval(hColNames[[i]])]
         print(tmp[order(maxFac, decreasing = TRUE), ])
 
@@ -549,7 +549,7 @@ ipf <- function(
 
   OriginalSortingVariable <- V1 <- epsvalue <-
     f <- temporary_hvar <-
-    value <- wValue <- representativeHouseholdForCalibration <- NULL
+    value <- wValue <- representativeHouseholdForCalibration <- ..hid <- NULL
   dat_original <- dat
   dat <- copy(dat)
   ## originalsorting is fucked up without this

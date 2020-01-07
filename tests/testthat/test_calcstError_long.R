@@ -15,7 +15,8 @@ if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
                            period = "year", strata = "db040")
   eusilc <- recalib(
     eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2),
-    period = "year", conP.var = "rb090", conH.var = "db040")
+    period = "year", conP.var = c("rb090", "age"),
+    conH.var = c("db040", "hsize"))
 
   # these are some longer tests
 

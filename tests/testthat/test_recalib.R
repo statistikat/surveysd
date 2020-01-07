@@ -7,7 +7,7 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-eusilc <- surveysd:::demo.eusilc()
+eusilc <- surveysd:::demo.eusilc(n=4)
 eusilc <- draw.bootstrap(eusilc, REP = 2, hid = "db030", weights = "db090",
                          period = "year", strata = "db040")
 
@@ -82,7 +82,7 @@ test_that("test para - conP conH", {
   conP2 <- xtabs(db090 ~ rb090 + year, data = eusilc)
   # conP2 <- xtabs(db090 ~ rb090 + db040 + year, data = eusilc)
   
-  conH1 <- xtabs(db090 ~ hsize + db040 + year, data = eusilc[!duplicated(paste(db030,year))])
+  conH1 <- xtabs(db090 ~ hsize + year, data = eusilc[!duplicated(paste(db030,year))])
   conH2 <- xtabs(db090 ~ db040 + year, data = eusilc[!duplicated(paste(db030,year))])
   
   expect_error(
@@ -103,7 +103,7 @@ test_that("test para - conP conH", {
 test_that("test return", {
   dat.calib <- recalib(
     eusilc, hid = "db030", weights = "db090", b.rep = paste0("w", 1:2), period =
-      "year", conP.var = "rb090", conH.var = "db040")
+      "year", conP.var = c("rb090", "age"), conH.var = c("db040", "hsize"))
   rb090.compare <- dat.calib[, lapply(.SD, sum), by = list(year, rb090),
                              .SDcols = c("db090", paste0("w", 1:2))]
   expect_true(all(!is.na(rb090.compare[, .SD, .SDcols = paste0("w", 1:2)])))
@@ -113,7 +113,7 @@ test_that("test return", {
       abs(db090 - z) / db090
     }
     ), .SDcols = paste0("w", 1:2)]
-  expect_true(all(rb090.compare < 0.01))
+  expect_true(all(rb090.compare < formals(recalib)$epsP))
 
   db040.compare <- dat.calib[, lapply(
     .SD,
@@ -127,5 +127,5 @@ test_that("test return", {
       abs(db090 - z) / db090
     }
   ), .SDcols = paste0("w", 1:2)]
-  expect_true(all(db040.compare < 0.05))
+  expect_true(all(db040.compare < formals(recalib)$epsH))
 })
