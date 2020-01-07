@@ -88,6 +88,13 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 # calibrate on other variables
 dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
                           conH.var = c("region", "hsize"))
+
+# supply contingency tables directly                           
+conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
+conH <- xtabs(pWeight ~ hsize + region + year, data = eusilc[!duplicated(paste(db030,year))])
+dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
+                          conH.var = NULL, conP = list(conP),
+                          conH = list(conH))                           
 }
 
 }
