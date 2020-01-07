@@ -41,10 +41,10 @@
 #' @param period character specifying the name of the column in `dat` containing
 #'   the sample period.
 #' @param conP.var character vector containig person-specific variables to which
-#'   weights should be calibrated. Contingency tables for the population are
+#'   weights should be calibrated or a list of such character vectors. Contingency tables for the population are
 #'   calculated per `period` using `weights`.
 #' @param conH.var character vector containig household-specific variables to
-#'   which weights should be calibrated. Contingency tables for the population
+#'   which weights should be calibrated or a list of such character vectors. Contingency tables for the population
 #'   are calculated per `period` using `weights`.
 #' @param ... additional arguments passed on to function [ipf()] from this
 #'   package.
@@ -77,6 +77,13 @@
 #' # calibrate on other variables
 #' dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
 #'                           conH.var = c("region", "hsize"))
+#' 
+#' # supply contingency tables directly                           
+#' conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
+#' conH <- xtabs(pWeight ~ hsize + region + year, data = eusilc[!duplicated(paste(db030,year))])
+#' dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
+#'                           conH.var = NULL, conP = list(conP),
+#'                           conH = list(conH))                           
 #' }
 #'
 #' @export recalib
@@ -133,31 +140,14 @@ recalib <- function(
   }
 
   # check conP.var
-  if (!all(conP.var %in% c.names)) {
+  if (!all(unique(unlist(conP.var)) %in% c.names)) {
     stop("Not all elements in conP.var are column names in dat")
   }
 
   # check conH.var
-  if (!all(conH.var %in% c.names)) {
+  if (!all(unique(unlist(conH.var)) %in% c.names)) {
     stop("Not all elements in conH.var are column names in dat")
   }
-  if (!is.null(conH.var) | !is.null(conP.var)) {
-    var.miss <- unlist(
-      dat[, lapply(
-        .SD,
-        function(z) {
-          sum(is.na(z))
-        }
-      ), .SDcols = c(conH.var, conP.var)])
-    var.miss <- var.miss[var.miss > 0]
-    if (length(var.miss) > 0) {
-      stop("Missing values detected in column(s)", names(var.miss))
-    }
-  } else {
-    message("recalib: conP.var and conH.var are both missing. ",
-            "Only calibrating for the population totals")
-  }
-
   # check period
   if (length(period) != 1) {
     stop(paste0(period, " must have length 1"))
@@ -165,38 +155,80 @@ recalib <- function(
   if (!period %in% c.names) {
     stop(paste0(period, " is not a column in dat"))
   }
-  
+
 
   ##########################################################
 
   # define default values for ipf
   ellipsis <- list(...)
-  ellipsis[["verbose"]] <- getEllipsis("verbose", TRUE, ellipsis)
-  ellipsis[["epsP"]] <- getEllipsis("epsP", 1e-2, ellipsis)
-  ellipsis[["epsH"]] <- getEllipsis("epsH", 5e-2, ellipsis)
-  ellipsis[["bound"]] <- getEllipsis("bound", 4, ellipsis)
-  ellipsis[["maxIter"]] <- getEllipsis("maxIter", 100, ellipsis)
-  ellipsis[["meanHH"]] <- getEllipsis("meanHH", TRUE, ellipsis)
-  ellipsis[["check_hh_vars"]] <- getEllipsis("check_hh_vars", FALSE, ellipsis)
-  ellipsis[["conversion_messages"]] <- getEllipsis("conversion_messages", FALSE,
+  ellipsis[["verbose"]] <- getEllipsis2("verbose", TRUE, ellipsis)
+  ellipsis[["epsP"]] <- getEllipsis2("epsP", 1e-2, ellipsis)
+  ellipsis[["epsH"]] <- getEllipsis2("epsH", 5e-2, ellipsis)
+  ellipsis[["conP"]] <- getEllipsis2("conP", NULL, ellipsis)
+  ellipsis[["conH"]] <- getEllipsis2("conH", NULL, ellipsis)
+  ellipsis[["bound"]] <- getEllipsis2("bound", 4, ellipsis)
+  ellipsis[["maxIter"]] <- getEllipsis2("maxIter", 100, ellipsis)
+  ellipsis[["meanHH"]] <- getEllipsis2("meanHH", TRUE, ellipsis)
+  ellipsis[["check_hh_vars"]] <- getEllipsis2("check_hh_vars", FALSE, ellipsis)
+  ellipsis[["conversion_messages"]] <- getEllipsis2("conversion_messages", FALSE,
                                                    ellipsis)
-  
+
   ellipsisNames <- names(ellipsis)
   ellipsisContent <- paste0("ellipsis[['",ellipsisNames,"']]")
   eval(parse(text = paste(
     ellipsisNames,
     ellipsisContent, sep = "<-"
   )))
-
-  if((!is.null(ellipsis[["conP"]]))|(!is.null(ellipsis[["conH"]]))){
-    message("recalib: conP and conH are estimated internally from conP.var and conH.var for now\n",
-            "Supplying conP and conH might be implemented in future versions")
+  
+  if(length(ellipsis[["conH"]])==0){
+    conH <- NULL
   }
+  if(length(ellipsis[["conP"]])==0){
+    conP <- NULL
+  }
+  
+  # check conP and conH
+  conPnames <- lapply(conP,function(z){
+    z <- names(dimnames(z))
+    z[z!=period]
+  })
+  conHnames <- lapply(conH,function(z){
+    z <- names(dimnames(z))
+    z[z!=period]
+  })
+
+  if (!all(unlist(conPnames) %in% c.names)) {
+    stop("Not all dimnames in conP are column names in dat")
+  }
+  if (!all(unlist(conHnames) %in% c.names)) {
+    stop("Not all dimnames in conH are column names in dat")
+  }
+  
+  
+  if (!is.null(conH.var) | !is.null(conP.var) | !is.null(conP) | !is.null(conH)) {
+    var.miss <- unlist(
+      dat[, lapply(
+        .SD,
+        function(z) {
+          sum(is.na(z))
+        }
+      ), .SDcols = c(unique(unlist(c(conH.var,conP.var,
+                                     conPnames,conHnames))))])
+    var.miss <- var.miss[var.miss > 0]
+    if (length(var.miss) > 0) {
+      stop("Missing values detected in column(s)", names(var.miss))
+    }
+  } else {
+    message("recalib: conP.var, conH.var, conP and conH are all missing. ",
+            "Only calibrating for the population totals")
+  }
+  
+  
+
   # recode household and person variables to factor
   # improves runtime for ipf
   #
-
-  vars <- c(period, conP.var, conH.var)
+  vars <- c(period, unique(unlist(c(conP.var,conH.var))))
   vars.class <- unlist(lapply(dat[, mget(vars)], function(z) {
     z.class <- class(z)
     if (z.class[1] == "labelled"){
@@ -213,34 +245,36 @@ recalib <- function(
 
 
   # calculate contingency tables
-  if (!is.null(conP.var)) {
-    conP <- lapply(conP.var, function(z) {
-      form.z <- paste0("V1~", paste(gsub(",", "+", period), z, sep = "+"))
-      dt.eval("xtabs(", form.z, ",data=dat[,sum(", weights, "),by=list(",
-              period, ",", z, ")])")
-    })
-  } else {
-    conP <- NULL
+  for(p in seq_along(conP.var)){
+    existTab <- sapply(conPnames,setequal,y=conP.var[p])
+    if(all(!existTab)){
+      conP <- c(conP,
+                makeCalibTable(dat,weights=weights,period=period,
+                               vars=conP.var[[p]]))
+    }else{
+      stop("contingency table for ",paste(conP.var[p],collapse = ", ")," was supplied through paramter conP AND conP.var")
+    } 
   }
-  if (!is.null(conH.var)) {
-    dt.eval("dat[,FirstPersonInHousehold_:=c(1L,rep(0,.N-1)),by=list(", hid,
-            ",", period, ")]")
-    conH <- lapply(conH.var, function(z) {
-      form.z <- paste0("V1~", paste(gsub(",", "+", period), z, sep = "+"))
-      dt.eval("xtabs(", form.z, ",data=dat[,sum(FirstPersonInHousehold_*",
-              weights, "),by=list(", period, ",", z, ")])")
-    })
-    dat[, FirstPersonInHousehold_ := NULL]
-  } else {
-    conH <- NULL
+  
+  dat[,FirstPersonInHousehold_:=c(1L,rep(0,.N-1)),by=c(hid,period)]
+  for(h in seq_along(conH.var)){
+    existTab <- sapply(conHnames,setequal,y=conH.var[h])
+    if(all(!existTab)){
+      conH <- c(conH,
+                makeCalibTable(dat[FirstPersonInHousehold_==1],
+                               weights=weights,period=period,
+                               vars=conH.var[[h]]))
+    }else{
+      stop("contingency table for ",paste(conH.var[h],collapse = ", ")," was supplied through paramter conH AND conH.var")
+    } 
   }
-
+ 
   # define new Index
   new_id <- paste(c(hid, period), collapse = ",")
-  dt.eval("dat[,hidfactor:=factor(paste0(", new_id, "))]")
+  dat[,hidfactor:=factor(do.call(paste0,.SD)), .SDcols=c(hid,period)]
 
   # calibrate weights to conP and conH
-  select.var <- c("hidfactor", weights, period, conP.var, conH.var)
+  select.var <- unique(c("hidfactor", weights, period, unlist(c(conP.var,conH.var,conPnames,conHnames))))
   calib.fail <- c()
 
   for (g in b.rep) {
@@ -293,6 +327,7 @@ recalib <- function(
       b.rep_new <- paste0(lead.char, 1:length(b.rep))
       setnames(dat, b.rep, b.rep_new)
       cat("Returning", length(b.rep), "calibrated bootstrap weights\n")
+      b.rep <- b.rep_new
     }
   }
 
@@ -314,3 +349,6 @@ recalib <- function(
 
   return(dat)
 }
+
+
+

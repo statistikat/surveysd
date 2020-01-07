@@ -36,6 +36,22 @@ dt.eval2 <- function(...) {
 getEllipsis <- function(element, default, ell) {
   ifelse(is.null(ell[[element]]), default, ell[[element]])
 }
+getEllipsis2 <- function(element,default,ell){
+  
+  if(is.null(ell[[element]])){
+    return(default)
+  }else{
+    return(ell[[element]])
+  }
+}
+
+# helpfunction to create contingency tables
+makeCalibTable <- function(dat,weights,period,vars){
+  # make contingency table
+  formTab <- paste(weights,"~",paste(c(period,vars),collapse="+"))
+  varsTab <- xtabs(formTab,data=dat)
+  return(list(varsTab))
+}
 
 paste_ <- function(a, b) {
   paste(a, b, sep = ".")
