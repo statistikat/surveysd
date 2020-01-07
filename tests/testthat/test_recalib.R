@@ -82,22 +82,22 @@ test_that("test para - conP conH", {
   conP2 <- xtabs(db090 ~ rb090 + year, data = eusilc)
   # conP2 <- xtabs(db090 ~ rb090 + db040 + year, data = eusilc)
   
-  conH1 <- xtabs(db090 ~ hsize + db040, data = eusilc[!duplicated(db030)])
-  conH2 <- xtabs(db090 ~ db040, data = eusilc[!duplicated(db030)])
+  conH1 <- xtabs(db090 ~ hsize + db040 + year, data = eusilc[!duplicated(paste(db030,year))])
+  conH2 <- xtabs(db090 ~ db040 + year, data = eusilc[!duplicated(paste(db030,year))])
   
   expect_error(
     recalib(eusilc, conP.var = "rb090", conH.var = NULL, conP = list(conP2)),
-    "Not all elements in conP.var are column names in dat")
+    "contingency table for rb090 was supplied through paramter conP AND conP.var")
   expect_error(
-    recalib(eusilc, conP.var = "rb090", conH.var = "db040s"),
-    "Not all elements in conH.var are column names in dat")
+    recalib(eusilc, conP.var = NULL, conH.var = "db040", conH = list(conH2)),
+    "contingency table for db040 was supplied through paramter conH AND conH.var")
   
   expect_error(recalib(
-    eusilc, conP.var = NULL, conH.var = "db040"), NA)
+    eusilc, conP.var = NULL, conH.var = "db040", conH = list(conH1)), NA)
   expect_error(recalib(
-    eusilc, conP.var = "rb090", conH.var = NULL), NA)
+    eusilc, conP.var = "rb090", conH.var = NULL, conP = list(conP1)), NA)
   expect_error(recalib(
-    eusilc, conP.var = NULL, conH.var = NULL), NA)
+    eusilc, conP.var = NULL, conH.var = NULL,conP = list(conP1), conH = list(conH1)), NA)
 })
 
 test_that("test return", {
