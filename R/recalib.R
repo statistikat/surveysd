@@ -332,7 +332,7 @@ recalib <- function(
   }
 
 
-  dat[, hidfactor := NULL]
+  dat[, c("hidfactor","FirstPersonInHousehold_") := NULL]
 
   # recode vars back to either integer of character
   for (i in 1:length(vars.class)) {
