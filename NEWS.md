@@ -1,3 +1,8 @@
+# surveysd 1.1.1
+
+* `recalib()` accepts conP and conH in the same way as `ipf`
+* fixed bug in `ipf()` when supplying `hid="hid"`, see https://github.com/statistikat/surveysd/pull/20 
+
 # surveysd 1.1.0
 
 * uncouple surveysd from simPop
