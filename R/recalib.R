@@ -77,6 +77,13 @@
 #' # calibrate on other variables
 #' dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
 #'                           conH.var = c("region", "hsize"))
+#' 
+#' # supply contingency tables directly                           
+#' conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
+#' conH <- xtabs(pWeight ~ hsize + region + year, data = eusilc[!duplicated(paste(db030,year))])
+#' dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
+#'                           conH.var = NULL, conP = list(conP),
+#'                           conH = list(conH))                           
 #' }
 #'
 #' @export recalib
@@ -182,12 +189,12 @@ recalib <- function(
   
   # check conP and conH
   conPnames <- lapply(conP,function(z){
-    znames <- names(attr(z,which="dimnames"))
-    return(znames[znames!=period])
+    z <- names(dimnames(z))
+    z[z!=period]
   })
   conHnames <- lapply(conH,function(z){
-    znames <- names(attr(z,which="dimnames"))
-    return(znames[znames!=period])
+    z <- names(dimnames(z))
+    z[z!=period]
   })
 
   if (!all(unlist(conPnames) %in% c.names)) {
@@ -239,26 +246,26 @@ recalib <- function(
 
   # calculate contingency tables
   for(p in seq_along(conP.var)){
-    existTab <- sapply(conPnames,identical,y=vars)
+    existTab <- sapply(conPnames,setequal,y=conP.var[p])
     if(all(!existTab)){
       conP <- c(conP,
                 makeCalibTable(dat,weights=weights,period=period,
                                vars=conP.var[[p]]))
     }else{
-      stop("contingency table for ",paste(vars,collapse = ", ")," was supplied through paramter conP AND conP.var")
+      stop("contingency table for ",paste(conP.var[p],collapse = ", ")," was supplied through paramter conP AND conP.var")
     } 
   }
   
   dat[,FirstPersonInHousehold_:=c(1L,rep(0,.N-1)),by=c(hid,period)]
   for(h in seq_along(conH.var)){
-    existTab <- sapply(conHnames,identical,y=vars)
+    existTab <- sapply(conHnames,setequal,y=conH.var[h])
     if(all(!existTab)){
       conH <- c(conH,
                 makeCalibTable(dat[FirstPersonInHousehold_==1],
                                weights=weights,period=period,
                                vars=conH.var[[h]]))
     }else{
-      stop("contingency table for ",paste(vars,collapse = ", ")," was supplied through paramter conH AND conH.var")
+      stop("contingency table for ",paste(conH.var[h],collapse = ", ")," was supplied through paramter conH AND conH.var")
     } 
   }
  
