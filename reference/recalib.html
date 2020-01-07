@@ -251,13 +251,6 @@ proportional fitting.</p></div>
 <span class='co'># calibrate on other variables</span>
 <span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'>recalib</span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"age"</span>),
                           <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"hsize"</span>))
-
-<span class='co'># supply contingency tables directly                           </span>
-<span class='no'>conP</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>age</span> + <span class='no'>gender</span> + <span class='no'>year</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>)
-<span class='no'>conH</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>hsize</span> + <span class='no'>region</span> + <span class='no'>year</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>db030</span>,<span class='no'>year</span>))])
-<span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'>recalib</span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-                          <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conP</span>),
-                          <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conH</span>))
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
