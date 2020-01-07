@@ -35,7 +35,7 @@ eusilc <- demo.eusilc(prettyNames = TRUE)
 dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
-                          verbose = TRUE)
+                          epsP = 1e-2, epsH = 2.5e-2, verbose = TRUE)
 dat_boot_calib[, onePerson := nrow(.SD) == 1, by = .(year, hid)]
 
 ## print part of the dataset
