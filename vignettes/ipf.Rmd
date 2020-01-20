@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Iterative Proportional Fitting}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: lib.bib
 ---
 
 ```{r, include = FALSE}
@@ -17,7 +18,7 @@ knitr::opts_chunk$set(
 ```
 
 This vignette explains the usage of the `ipf()` function, which has been used for calibrating the labour force survey of austria for several years.
-It is based on the Iterative Proportional Fitting algorithm and gives some flexibility about the details of the implementation.
+It is based on the Iterative Proportional Fitting algorithm and gives some flexibility about the details of the implementation. See [@mekogu2016] or `vignette("methodology")` for more details.
 
 ## Setup
 
@@ -159,3 +160,5 @@ ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight",
 
 We see that changing the tolerances from `0.01` (one percent) to `0.0001`
 increases the number of required iterations.
+
+## References

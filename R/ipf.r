@@ -185,8 +185,8 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
             },
             PopMargin=head(value, 1)),
           by = eval(pColNames[[i]])]
-        
-        
+
+
         print(tmp[order(maxFac, decreasing = TRUE), ])
         message("-----------------------------------------\n")
       }
