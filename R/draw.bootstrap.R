@@ -189,8 +189,7 @@ draw.bootstrap <- function(
   cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
     NULL, split = FALSE, pid = NULL, new.method = FALSE) {
 
-  occurence_first_period <- STRATA_VAR_HELP <- fpc <- ssd_hid <-
-    ssd_period <- NULL
+  occurence_first_period <- STRATA_VAR_HELP <- fpc <- NULL
 
   ##########################################################
   # INPUT CHECKING
@@ -202,7 +201,8 @@ draw.bootstrap <- function(
   dat <- copy(dat)
 
   c.names <- colnames(dat)
-
+    
+  removeCols <- c()
   # check REP
   if (length(REP) != 1) {
     stop("REP must have length 1")
@@ -216,8 +216,9 @@ draw.bootstrap <- function(
 
   # check hid
   if (is.null(hid)) {
-    dat[, ssd_hid := 1:.N]
-    hid <- "ssd_hid"
+    hid <- generateRandomName(20,colnames(dat))
+    dat[, c(hid) := 1:.N]
+    removeCols <- c(removeCols,hid)
   }
 
   if (length(hid) != 1) {
@@ -240,8 +241,9 @@ draw.bootstrap <- function(
 
   # check period
   if (is.null(period)) {
-    dat[, ssd_period := 1]
-    period <- "ssd_period"
+    period <- generateRandomName(20,colnames(dat))
+    dat[, c(period) := 1]
+    removeCols <- c(removeCols,period)
   }
 
   if (length(period) != 1) {
@@ -307,10 +309,12 @@ draw.bootstrap <- function(
         stop("When defining multiple strata variables for single stage",
              " sampling design\n none of them can be '1' or 'I'.")
       }
-
-      dt.eval("dat[,STRATA_VAR_HELP:=paste(", paste0(strata, collapse = ","),
+      strata_var_help <- generateRandomName(20,colnames(dat))
+      dat[,c(strata_var_help):=do.call(paste,c(.SD,sep="-")),]
+      dt.eval("dat[,",strata_var_help,":=paste(", paste0(strata, collapse = ","),
               ",sep='-')]")
-      strata <- "STRATA_VAR_HELP"
+      strata <- strata_var_help
+      removeCols <- c(removeCols,strata)
     }
   }
 
@@ -369,16 +373,17 @@ draw.bootstrap <- function(
     if (length(cluster) == 1) {
       # if no clusters are specified calculate number of households in each
       #   strata
-      totals <- "fpc"
+      totals <- generateRandomName(20,existingNames = colnames(dat))
       fpc.strata <- strata[!strata %in% c("I", "1")] # nolint
-      dt.eval("dat[,fpc:=sum(", weights, "[!duplicated(",
+      dt.eval("dat[,",totals,":=sum(", weights, "[!duplicated(",
               hid, ")]),by=c(fpc.strata,period)]")
+      removeCols <- c(removeCols,totals)
     } else {
 
       stop("For multistage sampling the number of PSUs at each level needs to ",
            "be specified!")
     }
-    add.totals <- TRUE
+
   } else {
 
     if (length(totals) != length(strata)) {
@@ -390,9 +395,6 @@ draw.bootstrap <- function(
     if (!any(unlist(dat[, lapply(.SD, is.numeric), .SDcols = c(totals)]))) {
       stop("Not all elements in totals are numeric columns in dat")
     }
-
-    add.totals <- FALSE
-
   }
   ##########################################################
 
@@ -435,14 +437,8 @@ draw.bootstrap <- function(
     dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
     dat[, c(paste0(hid, "_orig")) := NULL]
   }
-  if (add.totals) {
-    dt.eval("dat[,", totals, ":=NULL]")
-  }
-  if ("STRATA_VAR_HELP" %in% colnames(dat)) {
-    dat[, STRATA_VAR_HELP := NULL]
-  }
-  if ("fpc" %in% colnames(dat)) {
-    dat[, fpc := NULL]
+  if(length(removeCols)>0){
+    dat[,c(removeCols):=NULL]
   }
 
   setattr(dat, "weights", weights)

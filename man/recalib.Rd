@@ -4,9 +4,18 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
-  b.rep = attr(dat, "b.rep"), period = attr(dat, "period"),
-  conP.var = NULL, conH.var = NULL, ...)
+recalib(
+  dat,
+  hid = attr(dat, "hid"),
+  weights = attr(dat, "weights"),
+  b.rep = attr(dat, "b.rep"),
+  period = attr(dat, "period"),
+  conP.var = NULL,
+  conH.var = NULL,
+  epsP = 0.01,
+  epsH = 0.02,
+  ...
+)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for
@@ -25,12 +34,16 @@ containing bootstrap weights which should be recalibratet}
 the sample period.}
 
 \item{conP.var}{character vector containig person-specific variables to which
-weights should be calibrated. Contingency tables for the population are
+weights should be calibrated or a list of such character vectors. Contingency tables for the population are
 calculated per \code{period} using \code{weights}.}
 
 \item{conH.var}{character vector containig household-specific variables to
-which weights should be calibrated. Contingency tables for the population
+which weights should be calibrated or a list of such character vectors. Contingency tables for the population
 are calculated per \code{period} using \code{weights}.}
+
+\item{epsP}{numeric value specifying the convergence limit for \code{conP.var} or \code{conP}, see \code{\link[=ipf]{ipf()}}.}
+
+\item{epsH}{numeric value specifying the convergence limit for \code{conH.var} or \code{conH}, see \code{\link[=ipf]{ipf()}}.}
 
 \item{...}{additional arguments passed on to function \code{\link[=ipf]{ipf()}} from this
 package.}
@@ -82,12 +95,20 @@ dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid",
                            strata = "region", period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
+dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
+                          verbose = TRUE)
 
 
 # calibrate on other variables
 dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
-                          conH.var = c("region", "hsize"))
+                          conH.var = c("region", "hsize"), verbose = TRUE)
+
+# supply contingency tables directly                           
+conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
+conH <- xtabs(pWeight ~ hsize + region + year, data = eusilc[!duplicated(paste(db030,year))])
+dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
+                          conH.var = NULL, conP = list(conP),
+                          conH = list(conH), verbose = TRUE)                           
 }
 
 }

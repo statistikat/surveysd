@@ -14,7 +14,8 @@ bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.sv
 [![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
 [![CRAN](https://img.shields.io/cran/v/surveysd.svg?colorB=green&logo=R&logoColor=blue&label=CRAN)](https://CRAN.R-project.org/package=surveysd)
 
-[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
+[![Mentioned in Awesome Official
+Statistics](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)
 
 This is the development place for the R-package `surveysd`. The package
 can be used to estimate the standard deviation of estimates in complex
@@ -43,6 +44,8 @@ A typical workflow with this package consists of three steps. To see
 these concepts in practice, please refer to the [getting started
 vignette](https://statistikat.github.io/surveysd/articles/surveysd.html).
 
+  - Calibrated weights can be generated with the function `ipf()` using
+    an iterative proportional updating algorithm.
   - Bootstrap samples are drawn with rescaled bootstrapping in the
     function `draw.bootstrap()`.
   - These samples can then be calibrated with an iterative proportional

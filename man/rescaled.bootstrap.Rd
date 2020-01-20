@@ -4,10 +4,17 @@
 \alias{rescaled.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-rescaled.bootstrap(dat, REP = 1000, strata = "DB050>1",
-  cluster = "DB060>DB030", fpc = "N.cluster>N.households",
-  single.PSU = c("merge", "mean"), return.value = c("data",
-  "replicates"), check.input = TRUE, new.method = FALSE)
+rescaled.bootstrap(
+  dat,
+  REP = 1000,
+  strata = "DB050>1",
+  cluster = "DB060>DB030",
+  fpc = "N.cluster>N.households",
+  single.PSU = c("merge", "mean"),
+  return.value = c("data", "replicates"),
+  check.input = TRUE,
+  new.method = FALSE
+)
 }
 \arguments{
 \item{dat}{either data frame or data table containing the survey sample}
@@ -20,7 +27,8 @@ specified by \code{strata=c("strata1>strata2>strata3")}. See Details for more
 information.}
 
 \item{cluster}{string specifying the column name in \code{dat} that is used for
-clustering. For multistage sampling multiple column names can be specified
+clustering. For instance given a household sample the column containing the household ID should be supplied.
+For multistage sampling multiple column names can be specified
 by \code{cluster=c("cluster1>cluster2>cluster3")}.
 See Details for more information.}
 

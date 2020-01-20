@@ -4,10 +4,21 @@
 \alias{draw.bootstrap}
 \title{Draw bootstrap replicates}
 \usage{
-draw.bootstrap(dat, REP = 1000, hid = NULL, weights, period = NULL,
-  strata = NULL, cluster = NULL, totals = NULL,
-  single.PSU = c("merge", "mean"), boot.names = NULL, split = FALSE,
-  pid = NULL, new.method = FALSE)
+draw.bootstrap(
+  dat,
+  REP = 1000,
+  hid = NULL,
+  weights,
+  period = NULL,
+  strata = NULL,
+  cluster = NULL,
+  totals = NULL,
+  single.PSU = c("merge", "mean"),
+  boot.names = NULL,
+  split = FALSE,
+  pid = NULL,
+  new.method = FALSE
+)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data with
@@ -124,7 +135,7 @@ clustering in additional stages is specified the number of column names in
 there was no clustering or stratification one can set "1" or "I" for this
 stage.
 
-For example \code{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would
+For example \verb{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would
 speficy a 2 stage sampling design where at the first stage the municipalities
 where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without

@@ -175,9 +175,18 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
             (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur),
           list(
             maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
-            head(epsPcur, 1),
-            sumCalib = sum(get(variableKeepingTheCalibWeight)), head(value, 1)),
+            epsP=head(epsPcur, 1),
+            CalibMargin = {
+              if(!is.null(numericalWeightingVar)){
+                sum(get(variableKeepingTheCalibWeight)*get(numericalWeightingVar))
+              }else{
+                sum(get(variableKeepingTheCalibWeight))
+              }
+            },
+            PopMargin=head(value, 1)),
           by = eval(pColNames[[i]])]
+        
+        
         print(tmp[order(maxFac, decreasing = TRUE), ])
         message("-----------------------------------------\n")
       }
@@ -258,10 +267,10 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
           !is.na(fVariableForCalibrationIPF) &
             (abs(1 / fVariableForCalibrationIPF - 1) > epsHcur),
           list(maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
-               head(epsHcur, 1),
+               epsH = head(epsHcur, 1),
                sumCalibWeight = sum(get(variableKeepingTheCalibWeight) *
                                       representativeHouseholdForCalibration),
-               head(value, 1)),
+               PopMargin = head(value, 1)),
           by = eval(hColNames[[i]])]
         print(tmp[order(maxFac, decreasing = TRUE), ])
 
@@ -540,7 +549,7 @@ ipf <- function(
 
   OriginalSortingVariable <- V1 <- epsvalue <-
     f <- temporary_hvar <-
-    value <- wValue <- representativeHouseholdForCalibration <- NULL
+    value <- wValue <- representativeHouseholdForCalibration <- ..hid <- NULL
   dat_original <- dat
   dat <- copy(dat)
   ## originalsorting is fucked up without this
@@ -571,7 +580,7 @@ ipf <- function(
     if (!is.factor(dat[[hid]]))
       data.table::set(dat, NULL, hid, as.factor(dat[[hid]]))
     dat[, representativeHouseholdForCalibration :=
-          as.numeric(!duplicated(get(hid)))]
+          as.numeric(!duplicated(get(..hid)))]
   }
 
   ## Names of the calibration variables for Person and household dimension

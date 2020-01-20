@@ -23,7 +23,7 @@ computeFrac(curValue, target, x, w)
 \item{w}{Vector of weights}
 
 \item{boundLinear}{The output \code{f} will satisfy
-\code{1/boundLinear <= f <= boundLinear}. See \code{bound} in \link{ipf}}
+\verb{1/boundLinear <= f <= boundLinear}. See \code{bound} in \link{ipf}}
 }
 \value{
 A weight multiplier \code{f}

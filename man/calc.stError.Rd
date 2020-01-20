@@ -5,12 +5,25 @@
 \title{Calcualte point estimates and their standard errors using bootstrap
 weights.}
 \usage{
-calc.stError(dat, weights = attr(dat, "weights"), b.weights = attr(dat,
-  "b.rep"), period = attr(dat, "period"), var, fun = weightedRatio,
-  national = FALSE, group = NULL, fun.adjust.var = NULL,
-  adjust.var = NULL, period.diff = NULL, period.mean = NULL,
-  bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL,
-  add.arg = NULL)
+calc.stError(
+  dat,
+  weights = attr(dat, "weights"),
+  b.weights = attr(dat, "b.rep"),
+  period = attr(dat, "period"),
+  var,
+  fun = weightedRatio,
+  national = FALSE,
+  group = NULL,
+  fun.adjust.var = NULL,
+  adjust.var = NULL,
+  period.diff = NULL,
+  period.mean = NULL,
+  bias = FALSE,
+  size.limit = 20,
+  cv.limit = 10,
+  p = NULL,
+  add.arg = NULL
+)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data.
@@ -130,10 +143,10 @@ of \code{fun} using the bootstrap sample weights. \cr
 weights as it's second argument. The predifined options are \code{weightedRatio}
 and \code{weightedSum}.\cr
 \cr
-For the option \code{weightedRatio} a weighted ratio (in \%) of \code{var} is
+For the option \code{weightedRatio} a weighted ratio (in \\%) of \code{var} is
 calculated for \code{var} equal to 1, e.g
 \code{sum(weight[var==1])/sum(weight[!is.na(var)])*100}.\cr
-Additionally using the option \code{national=TRUE} the weighted ratio (in \%) is
+Additionally using the option \code{national=TRUE} the weighted ratio (in \\%) is
 divided by the weighted ratio at the national level for each \code{period}.
 \cr
 If \code{group} is not \code{NULL} but a vector of variables from \code{dat} then \code{fun} is
@@ -205,17 +218,17 @@ The parameter \code{size.limit} indicates a lower bound of the sample size for
 subsets in \code{dat} created by \code{group}. If the sample size of a subset falls
 below \code{size.limit} a warning will be displayed.\cr
 In addition all subsets for which this is the case can be selected from the
-output of \code{calc.stError} with \code{$smallGroups}.\cr
+output of \code{calc.stError} with \verb{$smallGroups}.\cr
 With the parameter \code{cv.limit} one can set an upper bound on the coefficient
 of variantion. Estimates which exceed this bound are flagged with \code{TRUE} and
-are available in the function output with \code{$cvHigh}.
-\code{cv.limit} must be a positive integer and is treated internally as \%, e.g.
+are available in the function output with \verb{$cvHigh}.
+\code{cv.limit} must be a positive integer and is treated internally as \\%, e.g.
 for \code{cv.limit=1} the estimate will be flagged if the coefficient of
-variantion exceeds 1\%.\cr
+variantion exceeds 1\\%.\cr
 \cr
 When specifying \code{period.mean}, the decrease in standard error for choosing
 this method is internally calcualted and a rough estimate for an implied
-increase in sample size is available in the output with \code{$stEDecrease}.
+increase in sample size is available in the output with \verb{$stEDecrease}.
 The rough estimate for the increase in sample size uses the fact that for a
 sample of size \eqn{n} the sample estimate for the standard error of most
 point estimates converges with a factor \eqn{1/\sqrt{n}} against the true

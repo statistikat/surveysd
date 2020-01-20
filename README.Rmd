@@ -39,6 +39,7 @@ bootstrapping procedure with custom estimating functions.
 A typical workflow with this package consists of three steps. To see these concepts in practice,
 please refer to the [getting started vignette].
 
+* Calibrated weights can be generated with the function `ipf()` using an iterative proportional updating algorithm.
 * Bootstrap samples are drawn with rescaled bootstrapping in the function `draw.bootstrap()`.
 * These samples can then be calibrated with an iterative proportional updating algorithm using 
 `recalib()`.
