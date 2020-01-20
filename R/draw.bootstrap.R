@@ -152,7 +152,7 @@
 #' year <- eusilc[, unique(year)]
 #' year <- year[-1]
 #' leaf_out <- c()
-#' for(y in year){
+#' for(y in year) {
 #'   split.person <- eusilc[
 #'     year == (y-1) & !duplicated(hid) & !(hid %in% leaf_out),
 #'     sample(pid, 20)
@@ -288,7 +288,7 @@ draw.bootstrap <- function(
   spec.variables <- c(hid, weights, period, strata, cluster, totals, pid)
   spec.variables <- spec.variables[!spec.variables %in% c("1", "I")]
   dat.na <- dat[, mget(spec.variables)]
-  dat.na <- sapply(dat.na, function(z){
+  dat.na <- sapply(dat.na, function(z) {
     any(is.na(z))
   })
   if (any(dat.na)) {

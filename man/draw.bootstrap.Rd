@@ -184,7 +184,7 @@ eusilc[, pidsplit := pid]
 year <- eusilc[, unique(year)]
 year <- year[-1]
 leaf_out <- c()
-for(y in year){
+for(y in year) {
   split.person <- eusilc[
     year == (y-1) & !duplicated(hid) & !(hid \%in\% leaf_out),
     sample(pid, 20)

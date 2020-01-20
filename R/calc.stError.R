@@ -250,7 +250,7 @@
 #' err.est$Estimates
 #'
 #' # use add.arg-argument
-#' fun <- function(x,w,b){
+#' fun <- function(x, w, b) {
 #'   sum(x*w*b)
 #' }
 #' add.arg = list(b="onePerson")
@@ -270,7 +270,7 @@
 #' library(laeken)
 #'
 #' ## set up help function that returns only the gini index
-#' help_gini <- function(x, w){
+#' help_gini <- function(x, w) {
 #'  return(gini(x, w)$value)
 #' }
 #'
@@ -289,7 +289,7 @@
 #'
 #' # this function estimates the povmd60 indicator with x as income vector
 #' # and w as weight vector
-#' povmd <- function(x, w){
+#' povmd <- function(x, w) {
 #'  md <- laeken::weightedMedian(x, w)*0.6
 #'  pmd60 <- x < md
 #'  return(as.integer(pmd60))
@@ -309,7 +309,7 @@
 #' # and set fun.adjust.var=NULL,adjust.var=NULL
 #' # and set fun = povmd, var = "eqIncome"
 #'
-#' povmd2 <- function(x, w){
+#' povmd2 <- function(x, w) {
 #'  md <- laeken::weightedMedian(x, w)*0.6
 #'  pmd60 <- x < md
 #'  # weighted ratio is directly estimated inside my function
@@ -422,7 +422,7 @@ calc.stError <- function(
            " not argument(s) of supplied function.")
     }
 
-    if (any(!unlist(add.arg) %in% c.names)){
+    if (any(!unlist(add.arg) %in% c.names)) {
       notInData <- unlist(add.arg)
       notInData <- notInData[!notInData %in% c.names]
       stop(paste(notInData, collapse = " "), " not in column names of dat.")
@@ -538,7 +538,7 @@ calc.stError <- function(
     period.diff <- strsplit(period.diff, "-")
 
     rm.index <- rep(0, length(period.diff))
-    for (i in 1:length(period.diff)) {
+    for (i in seq_len(period.diff)) {
       if (any(!period.diff[[i]] %in% periods.dat)) {
         warning("Removing ", paste(period.diff[[i]], collapse = "-"),
                 " from period.diff - period(s) not present in column ",
@@ -692,7 +692,7 @@ help.stError <- function(
     fun_original <- fun # nolint
     fun <- dt.eval(
       "function(", paste0(formalArgs(fun), collapse = ","),
-      ",national.arg){fun_original(x,w,add.arg)/national.arg*100}")
+      ",national.arg) {fun_original(x,w,add.arg)/national.arg*100}")
   }
 
   # define names for estimates for each weight (normal weights and boostrap
@@ -708,7 +708,7 @@ help.stError <- function(
     dt.eval("dat[,", varnew, ":=.(", eval.fun.adjust, "),by=list(",
             period, ")]")
 
-    res.names <- c(t(outer(var, 1:length(c(weights, b.weights)), paste_)))
+    res.names <- c(t(outer(var, seq_len(c(weights, b.weights)), paste_)))
 
     varnew <- c(var, paste0(var, ".", 2:(length(b.weights) + 1)))
 
@@ -721,7 +721,7 @@ help.stError <- function(
     }
   } else {
 
-    res.names <- c(t(outer(var, 1:length(c(weights, b.weights)), paste_)))
+    res.names <- c(t(outer(var, seq_len(c(weights, b.weights)), paste_)))
     if (national) {
       eval.fun <- paste0(res.names, "=fun(", paste(c(t(outer(
         var, c(weights, b.weights), paste_c
@@ -848,7 +848,7 @@ help.stError <- function(
       roll.miss <- unique(dt.eval("dat[", na.eval, ",list(", by.eval, ")]"))
       roll.miss <- lapply(
         roll.miss,
-        function(l){
+        function(l) {
           unique(na.omit(l))
         }
       )
@@ -949,7 +949,7 @@ help.stError <- function(
         diff.mean.est[, est_type := "diff_mean"]
 
         # calcualte N and n for groups and diff
-        diff.roll.Nn <- lapply(period.diff.mean, function(y){
+        diff.roll.Nn <- lapply(period.diff.mean, function(y) {
           y_cond <- paste(period, paste0("c(", paste(unlist(y), collapse = ","),
                                          ")"), sep = "%in%")
           diff.y <- dt.eval("var.est[ID==1&est==var[1]&", y_cond,

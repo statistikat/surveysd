@@ -289,7 +289,7 @@ err.est <- calc.stError(
 err.est$Estimates
 
 # use add.arg-argument
-fun <- function(x,w,b){
+fun <- function(x, w, b) {
   sum(x*w*b)
 }
 add.arg = list(b="onePerson")
@@ -309,7 +309,7 @@ all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
 library(laeken)
 
 ## set up help function that returns only the gini index
-help_gini <- function(x, w){
+help_gini <- function(x, w) {
  return(gini(x, w)$value)
 }
 
@@ -328,7 +328,7 @@ err.est$Estimates
 
 # this function estimates the povmd60 indicator with x as income vector
 # and w as weight vector
-povmd <- function(x, w){
+povmd <- function(x, w) {
  md <- laeken::weightedMedian(x, w)*0.6
  pmd60 <- x < md
  return(as.integer(pmd60))
@@ -348,7 +348,7 @@ err.est$Estimates
 # and set fun.adjust.var=NULL,adjust.var=NULL
 # and set fun = povmd, var = "eqIncome"
 
-povmd2 <- function(x, w){
+povmd2 <- function(x, w) {
  md <- laeken::weightedMedian(x, w)*0.6
  pmd60 <- x < md
  # weighted ratio is directly estimated inside my function

@@ -48,7 +48,7 @@ eusilc[,rb030split:=rb030]
 year <- eusilc[,unique(year)]
 year <- year[-1]
 leaf_out <- c()
-for(y in year){
+for(y in year) {
   split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030\%in\%leaf_out,
                          sample(rb030,20)]
   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030\%in\%leaf_out,

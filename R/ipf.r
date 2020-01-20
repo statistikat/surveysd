@@ -8,9 +8,9 @@
 combine_factors <- function(dat, targets) {
 
   x <- as.data.frame(targets)
-  x$ID_ipu <- 1:nrow(x)
+  x$ID_ipu <- seq_len(x)
   x <- merge(dat, x, by = names(dimnames(targets)), sort = FALSE, all.x = TRUE)
-  factor(x$ID_ipu, levels = 1:length(targets))
+  factor(x$ID_ipu, levels = seq_len(targets))
 }
 
 getMeanFun <- function(meanHH) {
@@ -21,7 +21,7 @@ getMeanFun <- function(meanHH) {
   meanfun <- switch(meanHH,
                     arithmetic = arithmetic_mean,
                     geometric = geometric_mean,
-                    none = function(x, w){
+                    none = function(x, w) {
                       x
                     }
   )
@@ -42,14 +42,14 @@ getMeanFun <- function(meanHH) {
 #' @examples
 #' kishFactor(rep(1,10))
 #' kishFactor(rlnorm(10))
-kishFactor <- function(w){
+kishFactor <- function(w) {
   if (!is.numeric(w)) {
     stop("The input must be a numeric vector")
   }
   n <- length(w)
   sqrt(n * sum(w ^ 2) / sum(w) ^ 2)
 }
-boundsFak <- function(g1, g0, f, bound = 4){
+boundsFak <- function(g1, g0, f, bound = 4) {
   # Berechnet die neuen Gewichte (innerhalb 4, .25 Veraenderungsraten)
   g1 <- g1 * f
   TF <- which((g1 / g0) > bound)
@@ -60,7 +60,7 @@ boundsFak <- function(g1, g0, f, bound = 4){
   g1[TF] <- (1 / bound) * g0[TF]
   return(g1)
 }
-boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4){
+boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4) {
   # Berechnet die neuen Gewichte fuer Unter- und Obergrenze (innerhalb 4,
   #   .25 Veraenderungsraten)
   u <- orig * (1 - eps)
@@ -333,7 +333,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
   # add calibrated weights. Use setkey to make sure the indexes match
   setkey(dat, OriginalSortingVariable)
 
-  if ((maxIter < calIter) & returnNA){
+  if ((maxIter < calIter) & returnNA) {
     outTable[, c(variableKeepingTheCalibWeight) := NA]
   } else {
     outTable[, c(variableKeepingTheCalibWeight) :=
@@ -379,7 +379,9 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #' individual level constraints.
 #'
 #' This function implements the weighting procedure described
-#' [here](http://www.ajs.or.at/index.php/ajs/article/viewFile/doi10.17713ajs.v45i3.120/512). Usage examples can be found in the corresponding vignette (`vignette("ipf")`)
+#' [here](https://doi.org/10.17713/ajs.v45i3.120).
+#' Usage examples can be found in the corresponding vignette
+#' (`vignette("ipf")`).
 #'
 #' `conP` and `conH` are contingency tables, which can be created with `xtabs`.
 #' The `dimnames` of those tables should match the names and levels of the
@@ -575,7 +577,7 @@ ipf <- function(
   if (is.null(hid)) {
     #delVars <- c("hid")
     hid <- "hid"
-    dat[, hid := as.factor(1:nrow(dat))]
+    dat[, hid := as.factor(seq_len(dat))]
     dat[, representativeHouseholdForCalibration := 1]
   } else {
     if (!is.factor(dat[[hid]]))
@@ -588,11 +590,11 @@ ipf <- function(
   pColNames <- lapply(conP, function(x) names(dimnames(x)))
   hColNames <- lapply(conH, function(x) names(dimnames(x)))
 
-  for (i in seq_along(conP)){
+  for (i in seq_along(conP)) {
     current_colnames <- pColNames[[i]]
 
-    for (colname in current_colnames){
-      if (!inherits(dat[[colname]], "factor")){
+    for (colname in current_colnames) {
+      if (!inherits(dat[[colname]], "factor")) {
         if (conversion_messages)
           message("converting column ", colname, " to factor")
         set(
@@ -660,7 +662,7 @@ ipf <- function(
   if (check_hh_vars) {
     ## Check for non-unqiue values inside of a household for variabels used
     ##   in Household constraints
-    for (hh in hColNames){
+    for (hh in hColNames) {
       for (h in hh) {
         setnames(dat, h, "temporary_hvar")
         if (dat[, length(unique(temporary_hvar)),
