@@ -780,8 +780,8 @@ ipf <- function(
 
     if (verbose && !error) {
       message("Convergence reached in ", calIter, " steps \n")
-    } else if (verbose && maxIter == calIter){
-      message("Not converged in", maxIter, "steps \n")
+    } else if (maxIter == calIter) {
+      warning("Not converged in ", maxIter, " steps \n")
     }
     calIter <- calIter + 1
   }
