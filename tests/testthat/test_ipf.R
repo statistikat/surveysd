@@ -114,8 +114,9 @@ test_that("ipf works as expected", {
   err <- max(c(
     max(abs(xtabs(calibWeight ~ age, data = calibweights2) - conP1) /
           conP1),
-    max(abs(xtabs(calibWeight ~ gender + region, data = calibweights2) - conP2) /
-          conP2),
+    max(
+      abs(xtabs(calibWeight ~ gender + region, data = calibweights2) - conP2) /
+        conP2),
     max(abs(xtabs(calibWeight ~ hsize + region, data = calibweights2,
                   subset = !duplicated(hid)) - conH1) / conH1)))
   expect_true(err < .01)

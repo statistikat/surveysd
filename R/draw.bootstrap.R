@@ -189,7 +189,7 @@ draw.bootstrap <- function(
   cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
     NULL, split = FALSE, pid = NULL, new.method = FALSE) {
 
-  occurence_first_period <- STRATA_VAR_HELP <- fpc <- NULL
+  occurence_first_period <- NULL
 
   ##########################################################
   # INPUT CHECKING
@@ -201,7 +201,7 @@ draw.bootstrap <- function(
   dat <- copy(dat)
 
   c.names <- colnames(dat)
-    
+
   removeCols <- c()
   # check REP
   if (length(REP) != 1) {
@@ -216,9 +216,9 @@ draw.bootstrap <- function(
 
   # check hid
   if (is.null(hid)) {
-    hid <- generateRandomName(20,colnames(dat))
+    hid <- generateRandomName(20, colnames(dat))
     dat[, c(hid) := 1:.N]
-    removeCols <- c(removeCols,hid)
+    removeCols <- c(removeCols, hid)
   }
 
   if (length(hid) != 1) {
@@ -241,9 +241,9 @@ draw.bootstrap <- function(
 
   # check period
   if (is.null(period)) {
-    period <- generateRandomName(20,colnames(dat))
+    period <- generateRandomName(20, colnames(dat))
     dat[, c(period) := 1]
-    removeCols <- c(removeCols,period)
+    removeCols <- c(removeCols, period)
   }
 
   if (length(period) != 1) {
@@ -309,12 +309,13 @@ draw.bootstrap <- function(
         stop("When defining multiple strata variables for single stage",
              " sampling design\n none of them can be '1' or 'I'.")
       }
-      strata_var_help <- generateRandomName(20,colnames(dat))
-      dat[,c(strata_var_help):=do.call(paste,c(.SD,sep="-")),]
-      dt.eval("dat[,",strata_var_help,":=paste(", paste0(strata, collapse = ","),
+      strata_var_help <- generateRandomName(20, colnames(dat))
+      dat[, c(strata_var_help) := do.call(paste, c(.SD, sep = "-")), ]
+      dt.eval("dat[,", strata_var_help, ":=paste(",
+              paste0(strata, collapse = ","),
               ",sep='-')]")
       strata <- strata_var_help
-      removeCols <- c(removeCols,strata)
+      removeCols <- c(removeCols, strata)
     }
   }
 
@@ -373,11 +374,11 @@ draw.bootstrap <- function(
     if (length(cluster) == 1) {
       # if no clusters are specified calculate number of households in each
       #   strata
-      totals <- generateRandomName(20,existingNames = colnames(dat))
+      totals <- generateRandomName(20, existingNames = colnames(dat))
       fpc.strata <- strata[!strata %in% c("I", "1")] # nolint
-      dt.eval("dat[,",totals,":=sum(", weights, "[!duplicated(",
+      dt.eval("dat[,", totals, ":=sum(", weights, "[!duplicated(",
               hid, ")]),by=c(fpc.strata,period)]")
-      removeCols <- c(removeCols,totals)
+      removeCols <- c(removeCols, totals)
     } else {
 
       stop("For multistage sampling the number of PSUs at each level needs to ",
@@ -437,8 +438,8 @@ draw.bootstrap <- function(
     dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
     dat[, c(paste0(hid, "_orig")) := NULL]
   }
-  if(length(removeCols)>0){
-    dat[,c(removeCols):=NULL]
+  if (length(removeCols) > 0) {
+    dat[, c(removeCols) := NULL]
   }
 
   setattr(dat, "weights", weights)

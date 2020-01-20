@@ -36,9 +36,9 @@ dt.eval2 <- function(...) {
 getEllipsis <- function(element, default, ell) {
   ifelse(is.null(ell[[element]]), default, ell[[element]])
 }
-getEllipsis2 <- function(element,default,ell){
-  
-  if(is.null(ell[[element]])){
+getEllipsis2 <- function(element, default, ell){
+
+  if (is.null(ell[[element]])) {
     return(default)
   }else{
     return(ell[[element]])
@@ -46,10 +46,10 @@ getEllipsis2 <- function(element,default,ell){
 }
 
 # helpfunction to create contingency tables
-makeCalibTable <- function(dat,weights,period,vars){
+makeCalibTable <- function(dat, weights, period, vars){
   # make contingency table
-  formTab <- paste(weights,"~",paste(c(period,vars),collapse="+"))
-  varsTab <- xtabs(formTab,data=dat)
+  formTab <- paste(weights, "~", paste(c(period, vars), collapse = "+"))
+  varsTab <- xtabs(formTab, data = dat)
   return(list(varsTab))
 }
 
@@ -106,13 +106,13 @@ randomInsert <- function(x, y, n = 20){
   return(x)
 }
 
-generateRandomName <- function(nchar=20,existingNames){
-  
-  newName <- paste(sample(c(letters,LETTERS),nchar),collapse="")
-  while(newName%in%existingNames){
-    newName <- paste(sample(c(letters,LETTERS),nchar),collapse="")
+generateRandomName <- function(nchar = 20, existingNames){
+
+  newName <- paste(sample(c(letters, LETTERS), nchar), collapse = "")
+  while (newName %in% existingNames) {
+    newName <- paste(sample(c(letters, LETTERS), nchar), collapse = "")
   }
 
-  
+
   return(newName)
 }
