@@ -1,0 +1,164 @@
+---
+title: "Iterative Proportional Fitting"
+output: rmarkdown::html_vignette
+author:
+  - Gregor de Cillia
+vignette: >
+  %\VignetteIndexEntry{Iterative Proportional Fitting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: lib.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette explains the usage of the `ipf()` function, which has been used for calibrating the labour force survey of austria for several years.
+It is based on the Iterative Proportional Fitting algorithm and gives some flexibility about the details of the implementation. See [@mekogu2016] or `vignette("methodology")` for more details.
+
+## Setup
+
+We will assume the output of `demo.eusilc()` is our population.
+From this population, a sample without replacement is drawn.
+The sample covers 10 percent of the population.
+We assign a weight of one for all observations of the population and a weight of ten for all observations of the sample.
+
+```{r setup}
+library(surveysd)
+population <- demo.eusilc(1, prettyNames = TRUE)
+population[, pWeight := 1]
+pop_sample <- population[sample(1:.N, floor(.N*0.10)), ]
+pop_sample[, pWeight := 10]
+```
+
+## One constraint, one variable
+
+We will start with an example where we want to adapt the weights of `pop_sample` such that the weighted number of males and females matches the ones of `population`.
+We can see that this is currently not the case.
+
+```{r}
+(gender_distribution <- xtabs(pWeight ~ gender, population))
+xtabs(pWeight ~ gender, pop_sample)
+```
+
+Due to random sampling (rather than stratified sampling), there are differences betweeen the gender distributions.
+We can pass `gender_distribution` as a parameter to `ipf()` to obtain modified weights.
+
+```{r}
+pop_sample_c <- ipf(pop_sample, conP = list(gender_distribution), w = "pWeight")
+```
+
+The resulting dataset, `pop_sample_c` is similar to `pop_sample` but has an additional column with the adjusted weights.
+
+```{r}
+dim(pop_sample)
+dim(pop_sample_c)
+setdiff(names(pop_sample_c), names(pop_sample))
+```
+
+We can now calculate the weighted number of males and females according to this new weight.
+This will result in a match for the constraints.
+
+```{r}
+xtabs(calibWeight ~ gender, pop_sample_c)
+xtabs(pWeight ~ gender, population)
+```
+
+In this simple case, `ipf` just performs a post stratification step.
+This means, that all males and all females have the same weight.
+
+```{r, fig.align="center", out.width="100%"}
+xtabs(~ calibWeight + gender, pop_sample_c)
+```
+
+```{r, include = FALSE}
+overrepresented_gender <- pop_sample_c[calibWeight < 10, ][1, gender]
+```
+
+All `r overrepresented_gender`s have been weighted down (`calibWeight < 10`) to compensate for the overrepresentation in the sample.
+
+## One constraint, two variables
+
+Let's now assume that we want to put constraints on the number of males and females for each age group. 
+The numbers from the original population can be obtained with `xtabs()`.
+
+```{r}
+(con_ga <- xtabs(pWeight ~ gender + age, population))
+xtabs(pWeight ~ gender + age, pop_sample)
+```
+
+Again, we can see that those constraints are not met.
+Suppliying the contingency table `con_ga` to `ipf()` will again resolve this.
+
+```{r}
+pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga), w = "pWeight")
+xtabs(pWeight ~ gender + age, population)
+xtabs(calibWeight ~ gender + age, pop_sample_c2)
+```
+
+## Two constraints
+
+Now we assume that we know the number of persons living in each nuts2 region from registry data.
+
+```{r}
+registry_table <- xtabs(pWeight ~ region, population)
+```
+
+However, those registry data does not provide any information about age or `gender`.
+Therefore, the two contingency tables (`con_ga` and `registry_table`) have to be specified independently.
+This can be done by supplying a list to `conP`
+
+```{r}
+pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight")
+xtabs(pWeight ~ gender + age, population)
+xtabs(calibWeight ~ gender + age, pop_sample_c2)
+xtabs(pWeight ~ region, population)
+xtabs(calibWeight ~ region, pop_sample_c2)
+```
+
+this time, the constraints are not matched perfectly.
+That is, because we provided more than one constraint.
+therefore, the `ipf()` algorithm had to work iteratively.
+
+## Household Constraints
+
+If the dataset has a household structure, household constraints can be passed
+via the parameter `conH`. If this parameter is used, it is also necessary to
+supply `hid`, which defines the column names that contains household ids.
+
+```{r}
+(conH1 <- xtabs(pWeight ~ hsize + region, data = population[!duplicated(hid)]))
+pop_sample_hh <- ipf(pop_sample, hid = "hid", conH = list(conH1), w = "pWeight",
+                     bound = 10)
+xtabs(calibWeight ~ hsize + region, data = pop_sample_hh[!duplicated(hid)])
+```
+
+## Tolerances
+
+If `conP` or `conH` contain several contingency tables or if `conP` and `conH`
+are used at the same time, the ipf algorithm will operate iteratively. This
+means that the calibrated dataset will satisfy the constraints only
+approximately. The default tolerances of the approximation can be overwritten
+using the parameters `conP` and `conH`.
+
+Lowering the tolerances will improve the match between the constraints and
+the contingency tables according to the calibrated weights. However, lower
+tolerances will also make it so more iterations are necessary until a
+convergence is met. If the constraints are too small, ipf will return with
+a warning that indicates that a convergence could not be reached.
+
+```{r}
+ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight",
+    verbose = TRUE, epsP = 0.01)
+ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight",
+    verbose = TRUE, epsP = 0.0001)
+```
+
+We see that changing the tolerances from `0.01` (one percent) to `0.0001`
+increases the number of required iterations.
+
+## References

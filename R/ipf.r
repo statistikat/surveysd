@@ -185,8 +185,8 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
             },
             PopMargin=head(value, 1)),
           by = eval(pColNames[[i]])]
-        
-        
+
+
         print(tmp[order(maxFac, decreasing = TRUE), ])
         message("-----------------------------------------\n")
       }
@@ -378,7 +378,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #' individual level constraints.
 #'
 #' This function implements the weighting procedure described
-#' [here](http://www.ajs.or.at/index.php/ajs/article/viewFile/doi10.17713ajs.v45i3.120/512).
+#' [here](http://www.ajs.or.at/index.php/ajs/article/viewFile/doi10.17713ajs.v45i3.120/512). Usage examples can be found in the corresponding vignette (`vignette("ipf")`)
 #'
 #' `conP` and `conH` are contingency tables, which can be created with `xtabs`.
 #' The `dimnames` of those tables should match the names and levels of the
