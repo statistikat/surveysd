@@ -1,3 +1,9 @@
+# surveysd 1.2
+
+* Add vignette about `ipf()`
+* Resolve bug that appeared if constraints contained only one household or only
+  one person ([#17](https://github.com/statistikat/surveysd/issues/17))
+
 # surveysd 1.1.1
 
 * `recalib()` accepts conP and conH in the same way as `ipf`
