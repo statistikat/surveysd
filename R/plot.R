@@ -395,7 +395,7 @@ plot.surveysd <- function(
 }
 
 
-define_type <- function(plot.x, x, variable = "HX080"){
+define_type <- function(plot.x, x, variable = "HX080") {
 
   SMALLGROUP <- res_type <- NULL
 
@@ -421,7 +421,7 @@ define_type <- function(plot.x, x, variable = "HX080"){
   return(plot.x)
 }
 
-convert_factors <- function(x){
+convert_factors <- function(x) {
   x <- x[, lapply(
     .SD,
     function(z) {

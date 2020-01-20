@@ -178,7 +178,7 @@ recalib <- function(
   ellipsis[["conversion_messages"]] <- getEllipsis2("conversion_messages",
                                                    FALSE, ellipsis)
   ellipsis[["verbose"]] <- getEllipsis2("verbose", TRUE, ellipsis)
-  ellipsis <- lapply(names(ipfDefaults), function(z){
+  ellipsis <- lapply(names(ipfDefaults), function(z) {
     getEllipsis2(z, ipfDefaults[[z]], ellipsis)
   })
   names(ellipsis) <- names(ipfDefaults)
@@ -191,11 +191,11 @@ recalib <- function(
   )))
 
   # check conP and conH
-  conPnames <- lapply(conP, function(z){
+  conPnames <- lapply(conP, function(z) {
     z <- names(dimnames(z))
     z[z != period]
   })
-  conHnames <- lapply(conH, function(z){
+  conHnames <- lapply(conH, function(z) {
     z <- names(dimnames(z))
     z[z != period]
   })
@@ -235,13 +235,13 @@ recalib <- function(
   vars <- c(period, unique(unlist(c(conP.var, conH.var, conPnames, conHnames))))
   vars.class <- unlist(lapply(dat[, mget(vars)], function(z) {
     z.class <- class(z)
-    if (z.class[1] == "labelled"){
+    if (z.class[1] == "labelled") {
       z.class <- "factor"
     }
     return(z.class)
   }))
   # convert to factor
-  for (i in 1:length(vars)) {
+  for (i in seq_len(vars)) {
     if (vars.class[[vars[i]]] != "factor") {
       dt.eval("dat[,", vars[i], ":=as.factor(", vars[i], ")]")
     }
@@ -332,7 +332,7 @@ recalib <- function(
       cat("Calibration failed for bootstrap replicates", calib.fail, "\n")
       cat("Corresponding bootstrap replicates will be discarded\n")
       lead.char <- sub("[[:digit:]].*", "", b.rep[1])
-      b.rep_new <- paste0(lead.char, 1:length(b.rep))
+      b.rep_new <- paste0(lead.char, seq_len(b.rep))
       setnames(dat, b.rep, b.rep_new)
       cat("Returning", length(b.rep), "calibrated bootstrap weights\n")
       b.rep <- b.rep_new
@@ -343,7 +343,7 @@ recalib <- function(
   dat[, c("hidfactor", "FirstPersonInHousehold_") := NULL]
 
   # recode vars back to either integer of character
-  for (i in 1:length(vars.class)) {
+  for (i in seq_len(vars.class)) {
     if (vars.class[i] %in% c("integer", "numeric")) {
       dt.eval("dat[,", vars[i], ":=as.numeric(as.character(", vars[i], "))]")
     } else if (vars.class[i] == "character") {

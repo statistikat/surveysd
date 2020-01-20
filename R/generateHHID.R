@@ -37,7 +37,7 @@
 #' year <- eusilc[,unique(year)]
 #' year <- year[-1]
 #' leaf_out <- c()
-#' for(y in year){
+#' for(y in year) {
 #'   split.person <- eusilc[year==(y-1)&!duplicated(db030)&!db030%in%leaf_out,
 #'                          sample(rb030,20)]
 #'   overwrite.person <- eusilc[year==(y)&!duplicated(db030)&!db030%in%leaf_out,
@@ -64,7 +64,7 @@
 #'
 
 
-generate.HHID <- function(dat, period = "RB010", pid = "RB030", hid = "DB030"){
+generate.HHID <- function(dat, period = "RB010", pid = "RB030", hid = "DB030") {
 
   ID_new <- ID_orig <- ALL_NEW <- ID_new_help <- NULL
 

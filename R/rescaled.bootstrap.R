@@ -426,7 +426,7 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
   return(n_draw)
 }
 
-draw.without.replacement <- function(n, n_draw){
+draw.without.replacement <- function(n, n_draw) {
   delta <- rep(c(1.0, 0.0), c(n_draw, n - n_draw))
   if (length(delta) > 1) {
     delta <- sample(delta)
