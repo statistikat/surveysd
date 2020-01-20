@@ -161,7 +161,7 @@ if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
                                      unique(db030)])
     }
     eusilc.split <- draw.bootstrap(
-      eusilc, REP = 2, hid = "db030", weights = "db090", period = "year",
+      eusilc, REP = 10, hid = "db030", weights = "db090", period = "year",
       strata = "db040", split = TRUE, pid = "rb030split")
     eusilc.split <- eusilc.split[, lapply(.SD, uniqueN), by = rb030split,
                                  .SDcols = paste0("w", 1:10)]
