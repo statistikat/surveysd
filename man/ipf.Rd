@@ -136,7 +136,7 @@ corresponding columns in \code{dat}.
 
 \code{maxIter}, \code{epsP} and \code{epsH} are the stopping criteria. \code{epsP} and \code{epsH}
 describe relative tolerances in the sense that
-\out{\deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP} }
+\deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP}
 will be used as convergence criterium. Here i is the iteration step and wi is
 the weight of a specific person at step i.
 

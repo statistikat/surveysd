@@ -386,7 +386,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #'
 #' `maxIter`, `epsP` and `epsH` are the stopping criteria. `epsP` and `epsH`
 #' describe relative tolerances in the sense that
-#' \out{\deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP} }
+#' \deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP}
 #' will be used as convergence criterium. Here i is the iteration step and wi is
 #' the weight of a specific person at step i.
 #'
