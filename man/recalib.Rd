@@ -4,9 +4,18 @@
 \alias{recalib}
 \title{Calibrate weights}
 \usage{
-recalib(dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"),
-  b.rep = attr(dat, "b.rep"), period = attr(dat, "period"),
-  conP.var = NULL, conH.var = NULL, epsP = 0.01, epsH = 0.02, ...)
+recalib(
+  dat,
+  hid = attr(dat, "hid"),
+  weights = attr(dat, "weights"),
+  b.rep = attr(dat, "b.rep"),
+  period = attr(dat, "period"),
+  conP.var = NULL,
+  conH.var = NULL,
+  epsP = 0.01,
+  epsH = 0.02,
+  ...
+)
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the sample survey for

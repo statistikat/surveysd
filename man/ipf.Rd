@@ -4,12 +4,26 @@
 \alias{ipf}
 \title{Iterative Proportional Fitting}
 \usage{
-ipf(dat, hid = NULL, conP = NULL, conH = NULL, epsP = 1e-06,
-  epsH = 0.01, verbose = FALSE, w = NULL, bound = 4,
-  maxIter = 200, meanHH = TRUE, allPthenH = TRUE, returnNA = TRUE,
-  looseH = FALSE, numericalWeighting = computeLinear,
-  check_hh_vars = TRUE, conversion_messages = FALSE,
-  nameCalibWeight = "calibWeight")
+ipf(
+  dat,
+  hid = NULL,
+  conP = NULL,
+  conH = NULL,
+  epsP = 1e-06,
+  epsH = 0.01,
+  verbose = FALSE,
+  w = NULL,
+  bound = 4,
+  maxIter = 200,
+  meanHH = TRUE,
+  allPthenH = TRUE,
+  returnNA = TRUE,
+  looseH = FALSE,
+  numericalWeighting = computeLinear,
+  check_hh_vars = TRUE,
+  conversion_messages = FALSE,
+  nameCalibWeight = "calibWeight"
+)
 }
 \arguments{
 \item{dat}{a \code{data.table} containing household ids (optionally), base

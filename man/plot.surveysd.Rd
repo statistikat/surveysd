@@ -4,9 +4,14 @@
 \alias{plot.surveysd}
 \title{Plot surveysd-Objects}
 \usage{
-\method{plot}{surveysd}(x, variable = x$param$var[1],
-  type = c("summary", "grouping"), groups = NULL, sd.type = c("dot",
-  "ribbon"), ...)
+\method{plot}{surveysd}(
+  x,
+  variable = x$param$var[1],
+  type = c("summary", "grouping"),
+  groups = NULL,
+  sd.type = c("dot", "ribbon"),
+  ...
+)
 }
 \arguments{
 \item{x}{object of class 'surveysd' output of function \link{calc.stError}}
