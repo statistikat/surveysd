@@ -121,6 +121,7 @@
 <a href="#workflow" class="anchor"></a>Workflow</h2>
 <p>A typical workflow with this package consists of three steps. To see these concepts in practice, please refer to the <a href="https://statistikat.github.io/surveysd/articles/surveysd.html">getting started vignette</a>.</p>
 <ul>
+<li>Calibrated weights can be generated with the function <code><a href="reference/ipf.html">ipf()</a></code> using an iterative proportional updating algorithm.</li>
 <li>Bootstrap samples are drawn with rescaled bootstrapping in the function <code><a href="reference/draw.bootstrap.html">draw.bootstrap()</a></code>.</li>
 <li>These samples can then be calibrated with an iterative proportional updating algorithm using <code><a href="reference/recalib.html">recalib()</a></code>.</li>
 <li>Finally, estimation functions can be applied over all bootstrap replicates with <code><a href="reference/calc.stError.html">calc.stError()</a></code>.</li>
