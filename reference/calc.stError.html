@@ -578,7 +578,7 @@ standard error \(\sigma\).</p>
 #&gt; 7: 2012-2011_mean 14827 8182222       0.1486385      0.04537609
 #&gt; 8:           2013 14827 8182222      14.8901335      0.94582074</div><div class='input'>
 <span class='co'># use add.arg-argument</span>
-<span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>,<span class='no'>w</span>,<span class='no'>b</span>){
+<span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>, <span class='no'>b</span>) {
   <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>x</span>*<span class='no'>w</span>*<span class='no'>b</span>)
 }
 <span class='no'>add.arg</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>b</span><span class='kw'>=</span><span class='st'>"onePerson"</span>)
@@ -600,7 +600,7 @@ standard error \(\sigma\).</p>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>laeken</span>)
 
 <span class='co'>## set up help function that returns only the gini index</span>
-<span class='no'>help_gini</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>){
+<span class='no'>help_gini</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>) {
  <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/laeken/man/gini.html'>gini</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)$<span class='no'>value</span>)
 }
 
@@ -629,7 +629,7 @@ standard error \(\sigma\).</p>
 
 <span class='co'># this function estimates the povmd60 indicator with x as income vector</span>
 <span class='co'># and w as weight vector</span>
-<span class='no'>povmd</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>){
+<span class='no'>povmd</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>) {
  <span class='no'>md</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>laeken</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/laeken/man/weightedMedian.html'>weightedMedian</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)*<span class='fl'>0.6</span>
  <span class='no'>pmd60</span> <span class='kw'>&lt;-</span> <span class='no'>x</span> <span class='kw'>&lt;</span> <span class='no'>md</span>
  <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>pmd60</span>))
@@ -659,7 +659,7 @@ standard error \(\sigma\).</p>
 <span class='co'># and set fun.adjust.var=NULL,adjust.var=NULL</span>
 <span class='co'># and set fun = povmd, var = "eqIncome"</span>
 
-<span class='no'>povmd2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>){
+<span class='no'>povmd2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>) {
  <span class='no'>md</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>laeken</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/laeken/man/weightedMedian.html'>weightedMedian</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)*<span class='fl'>0.6</span>
  <span class='no'>pmd60</span> <span class='kw'>&lt;-</span> <span class='no'>x</span> <span class='kw'>&lt;</span> <span class='no'>md</span>
  <span class='co'># weighted ratio is directly estimated inside my function</span>

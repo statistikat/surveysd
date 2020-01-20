@@ -355,7 +355,7 @@ data.table objects.</p></div>
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[, <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>year</span>)]
 <span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
 <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
-<span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>){
+<span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>) {
   <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[
     <span class='no'>year</span> <span class='kw'>==</span> (<span class='no'>y</span>-<span class='fl'>1</span>) <span class='kw'>&amp;</span> !<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>hid</span>) <span class='kw'>&amp;</span> !(<span class='no'>hid</span> <span class='kw'>%in%</span> <span class='no'>leaf_out</span>),
     <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>pid</span>, <span class='fl'>20</span>)
