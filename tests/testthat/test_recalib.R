@@ -91,10 +91,12 @@ test_that("test para - conP conH", {
 
   expect_error(
     recalib(eusilc, conP.var = "rb090", conH.var = NULL, conP = list(conP2)),
-    "contingency table for rb090 was supplied through conP AND conP.var")
+    paste("contingency table for rb090 was supplied through parameter",
+          "conP AND conP.var"))
   expect_error(
     recalib(eusilc, conP.var = NULL, conH.var = "db040", conH = list(conH2)),
-    "contingency table for db040 was supplied through conH AND conH.var")
+    paste("contingency table for db040 was supplied through parameter",
+          "conH AND conH.var"))
 
   expect_error(recalib(
     eusilc, conP.var = NULL, conH.var = "db040", conH = list(conH1)), NA)
