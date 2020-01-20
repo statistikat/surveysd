@@ -241,7 +241,7 @@ recalib <- function(
     return(z.class)
   }))
   # convert to factor
-  for (i in seq_len(vars)) {
+  for (i in seq_along(vars)) {
     if (vars.class[[vars[i]]] != "factor") {
       dt.eval("dat[,", vars[i], ":=as.factor(", vars[i], ")]")
     }
@@ -332,7 +332,7 @@ recalib <- function(
       cat("Calibration failed for bootstrap replicates", calib.fail, "\n")
       cat("Corresponding bootstrap replicates will be discarded\n")
       lead.char <- sub("[[:digit:]].*", "", b.rep[1])
-      b.rep_new <- paste0(lead.char, seq_len(b.rep))
+      b.rep_new <- paste0(lead.char, seq_along(b.rep))
       setnames(dat, b.rep, b.rep_new)
       cat("Returning", length(b.rep), "calibrated bootstrap weights\n")
       b.rep <- b.rep_new
@@ -343,7 +343,7 @@ recalib <- function(
   dat[, c("hidfactor", "FirstPersonInHousehold_") := NULL]
 
   # recode vars back to either integer of character
-  for (i in seq_len(vars.class)) {
+  for (i in seq_along(vars.class)) {
     if (vars.class[i] %in% c("integer", "numeric")) {
       dt.eval("dat[,", vars[i], ":=as.numeric(as.character(", vars[i], "))]")
     } else if (vars.class[i] == "character") {

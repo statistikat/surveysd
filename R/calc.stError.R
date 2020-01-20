@@ -538,7 +538,7 @@ calc.stError <- function(
     period.diff <- strsplit(period.diff, "-")
 
     rm.index <- rep(0, length(period.diff))
-    for (i in seq_len(period.diff)) {
+    for (i in seq_along(period.diff)) {
       if (any(!period.diff[[i]] %in% periods.dat)) {
         warning("Removing ", paste(period.diff[[i]], collapse = "-"),
                 " from period.diff - period(s) not present in column ",
@@ -708,7 +708,7 @@ help.stError <- function(
     dt.eval("dat[,", varnew, ":=.(", eval.fun.adjust, "),by=list(",
             period, ")]")
 
-    res.names <- c(t(outer(var, seq_len(c(weights, b.weights)), paste_)))
+    res.names <- c(t(outer(var, seq_along(c(weights, b.weights)), paste_)))
 
     varnew <- c(var, paste0(var, ".", 2:(length(b.weights) + 1)))
 
@@ -721,7 +721,7 @@ help.stError <- function(
     }
   } else {
 
-    res.names <- c(t(outer(var, seq_len(c(weights, b.weights)), paste_)))
+    res.names <- c(t(outer(var, seq_along(c(weights, b.weights)), paste_)))
     if (national) {
       eval.fun <- paste0(res.names, "=fun(", paste(c(t(outer(
         var, c(weights, b.weights), paste_c

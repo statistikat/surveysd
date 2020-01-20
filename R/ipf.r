@@ -8,9 +8,9 @@
 combine_factors <- function(dat, targets) {
 
   x <- as.data.frame(targets)
-  x$ID_ipu <- seq_len(x)
+  x$ID_ipu <- seq_len(nrow(x))
   x <- merge(dat, x, by = names(dimnames(targets)), sort = FALSE, all.x = TRUE)
-  factor(x$ID_ipu, levels = seq_len(targets))
+  factor(x$ID_ipu, levels = seq_along(targets))
 }
 
 getMeanFun <- function(meanHH) {
@@ -577,7 +577,7 @@ ipf <- function(
   if (is.null(hid)) {
     #delVars <- c("hid")
     hid <- "hid"
-    dat[, hid := as.factor(seq_len(dat))]
+    dat[, hid := as.factor(seq_len(nrow(dat)))]
     dat[, representativeHouseholdForCalibration := 1]
   } else {
     if (!is.factor(dat[[hid]]))
