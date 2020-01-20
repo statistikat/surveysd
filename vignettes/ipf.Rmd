@@ -28,7 +28,7 @@ We assign a weight of one for all observations of the population and a weight of
 
 ```{r setup}
 library(surveysd)
-population <- demo.eusilc(2, prettyNames = TRUE)
+population <- demo.eusilc(1, prettyNames = TRUE)
 population[, pWeight := 1]
 pop_sample <- population[sample(1:.N, floor(.N*0.10)), ]
 pop_sample[, pWeight := 10]
@@ -82,41 +82,41 @@ All `r overrepresented_gender`s have been weighted down (`calibWeight < 10`) to 
 
 ## One constraint, two variables
 
-Let's now assume that we want to put constraints on the number of males and females for each year. 
+Let's now assume that we want to put constraints on the number of males and females for each age group. 
 The numbers from the original population can be obtained with `xtabs()`.
 
 ```{r}
-(gy_distribution <- xtabs(pWeight ~ gender + year, population))
-xtabs(pWeight ~ gender + year, pop_sample)
+(con_ga <- xtabs(pWeight ~ gender + age, population))
+xtabs(pWeight ~ gender + age, pop_sample)
 ```
 
 Again, we can see that those constraints are not met.
-Suppliying the contingency table `gy_distribution` to `ipf()` will again resolve this.
+Suppliying the contingency table `con_ga` to `ipf()` will again resolve this.
 
 ```{r}
-pop_sample_c2 <- ipf(pop_sample, conP = list(gy_distribution), w = "pWeight")
-xtabs(pWeight ~ gender + year, population)
-xtabs(calibWeight ~ gender + year, pop_sample_c2)
+pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga), w = "pWeight")
+xtabs(pWeight ~ gender + age, population)
+xtabs(calibWeight ~ gender + age, pop_sample_c2)
 ```
 
 ## Two constraints
 
-Now we assume that we know the distribution of household sizes from registry data.
+Now we assume that we know the number of persons living in each nuts2 region from registry data.
 
 ```{r}
-registry_table <- xtabs(pWeight ~ hsize, population)
+registry_table <- xtabs(pWeight ~ region, population)
 ```
 
-However, those registry data does not provide any information about year or `gender`.
-Therefore, the two contingency tables (`gy_distribution` and `registry_table`) have to be specified independently.
+However, those registry data does not provide any information about age or `gender`.
+Therefore, the two contingency tables (`con_ga` and `registry_table`) have to be specified independently.
 This can be done by supplying a list to `conP`
 
 ```{r}
-pop_sample_c2 <- ipf(pop_sample, conP = list(gy_distribution, registry_table), w = "pWeight")
-xtabs(pWeight ~ gender + year, population)
-xtabs(calibWeight ~ gender + year, pop_sample_c2)
-xtabs(pWeight ~ hsize, population)
-xtabs(calibWeight ~ hsize, pop_sample_c2)
+pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight")
+xtabs(pWeight ~ gender + age, population)
+xtabs(calibWeight ~ gender + age, pop_sample_c2)
+xtabs(pWeight ~ region, population)
+xtabs(calibWeight ~ region, pop_sample_c2)
 ```
 
 this time, the constraints are not matched perfectly.
@@ -131,7 +131,8 @@ supply `hid`, which defines the column names that contains household ids.
 
 ```{r}
 (conH1 <- xtabs(pWeight ~ hsize + region, data = population[!duplicated(hid)]))
-pop_sample_hh <- ipf(pop_sample, hid = "hid", conH = list(conH1), w = "pWeight")
+pop_sample_hh <- ipf(pop_sample, hid = "hid", conH = list(conH1), w = "pWeight",
+                     bound = 10)
 xtabs(calibWeight ~ hsize + region, data = pop_sample_hh[!duplicated(hid)])
 ```
 
