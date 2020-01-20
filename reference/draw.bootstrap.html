@@ -82,7 +82,7 @@ bootstraping." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -151,10 +151,21 @@ totals per strata, should be specified to ensure meaningfull survey
 bootstraping.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>draw.bootstrap</span>(<span class='no'>dat</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>weights</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cluster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>totals</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>single.PSU</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>), <span class='kw'>boot.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>pid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>new.method</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>draw.bootstrap</span>(
+  <span class='no'>dat</span>,
+  <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>weights</span>,
+  <span class='kw'>period</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cluster</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>totals</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>single.PSU</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>),
+  <span class='kw'>boot.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>pid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>new.method</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

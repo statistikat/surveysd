@@ -80,7 +80,7 @@ updating to match population totals on various household and personal levels." /
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -147,9 +147,18 @@ updating to match population totals on various household and personal levels." /
 updating to match population totals on various household and personal levels.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>recalib</span>(<span class='no'>dat</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"hid"</span>), <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"weights"</span>),
-  <span class='kw'>b.rep</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"b.rep"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"period"</span>),
-  <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.02</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>recalib</span>(
+  <span class='no'>dat</span>,
+  <span class='kw'>hid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"hid"</span>),
+  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"weights"</span>),
+  <span class='kw'>b.rep</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"b.rep"</span>),
+  <span class='kw'>period</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"period"</span>),
+  <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.02</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

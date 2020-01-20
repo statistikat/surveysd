@@ -80,7 +80,7 @@ individual level constraints." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -147,12 +147,26 @@ individual level constraints." />
 individual level constraints.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ipf</span>(<span class='no'>dat</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conP</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conH</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>,
-  <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>w</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>, <span class='kw'>meanHH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>allPthenH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>returnNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>looseH</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>numericalWeighting</span> <span class='kw'>=</span> <span class='no'>computeLinear</span>,
-  <span class='kw'>check_hh_vars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>conversion_messages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>nameCalibWeight</span> <span class='kw'>=</span> <span class='st'>"calibWeight"</span>)</pre>
+    <pre class="usage"><span class='fu'>ipf</span>(
+  <span class='no'>dat</span>,
+  <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>conP</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>conH</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>,
+  <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>w</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>,
+  <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>,
+  <span class='kw'>meanHH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>allPthenH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>returnNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>looseH</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>numericalWeighting</span> <span class='kw'>=</span> <span class='no'>computeLinear</span>,
+  <span class='kw'>check_hh_vars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>conversion_messages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>nameCalibWeight</span> <span class='kw'>=</span> <span class='st'>"calibWeight"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

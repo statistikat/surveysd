@@ -85,7 +85,7 @@ results in a reduction of the standard error." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -156,12 +156,25 @@ calcualted using the survey data for 3 or more consecutive periods, which
 results in a reduction of the standard error.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc.stError</span>(<span class='no'>dat</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"weights"</span>), <span class='kw'>b.weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>,
-  <span class='st'>"b.rep"</span>), <span class='kw'>period</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"period"</span>), <span class='no'>var</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-  <span class='kw'>national</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>bias</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>size.limit</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>cv.limit</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>add.arg</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>calc.stError</span>(
+  <span class='no'>dat</span>,
+  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"weights"</span>),
+  <span class='kw'>b.weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"b.rep"</span>),
+  <span class='kw'>period</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"period"</span>),
+  <span class='no'>var</span>,
+  <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
+  <span class='kw'>national</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>bias</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>size.limit</span> <span class='kw'>=</span> <span class='fl'>20</span>,
+  <span class='kw'>cv.limit</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>p</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>add.arg</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -312,10 +325,10 @@ of <code>fun</code> using the bootstrap sample weights. <br />
 weights as it's second argument. The predifined options are <code>weightedRatio</code>
 and <code>weightedSum</code>.<br />
 <br />
-For the option <code>weightedRatio</code> a weighted ratio (in %) of <code>var</code> is
+For the option <code>weightedRatio</code> a weighted ratio (in \<!-- %) of \code{var} is -->
 calculated for <code>var</code> equal to 1, e.g
 <code>sum(weight[var==1])/sum(weight[!is.na(var)])*100</code>.<br />
-Additionally using the option <code>national=TRUE</code> the weighted ratio (in %) is
+Additionally using the option <code>national=TRUE</code> the weighted ratio (in \<!-- %) is -->
 divided by the weighted ratio at the national level for each <code>period</code>.
 <br />
 If <code>group</code> is not <code>NULL</code> but a vector of variables from <code>dat</code> then <code>fun</code> is
@@ -390,9 +403,9 @@ output of <code>calc.stError</code> with <code>$smallGroups</code>.<br />
 With the parameter <code>cv.limit</code> one can set an upper bound on the coefficient
 of variantion. Estimates which exceed this bound are flagged with <code>TRUE</code> and
 are available in the function output with <code>$cvHigh</code>.
-<code>cv.limit</code> must be a positive integer and is treated internally as %, e.g.
+<code>cv.limit</code> must be a positive integer and is treated internally as \<!-- %, e.g. -->
 for <code>cv.limit=1</code> the estimate will be flagged if the coefficient of
-variantion exceeds 1%.<br />
+variantion exceeds 1\<!-- %.\cr -->
 <br />
 When specifying <code>period.mean</code>, the decrease in standard error for choosing
 this method is internally calcualted and a rough estimate for an implied
