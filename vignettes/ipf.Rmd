@@ -122,3 +122,29 @@ xtabs(calibWeight ~ hsize, pop_sample_c2)
 this time, the constraints are not matched perfectly.
 That is, because we provided more than one constraint.
 therefore, the `ipf()` algorithm had to work iteratively.
+
+## Household Constraints
+
+If the dataset has a household structure, household constraints can be passed
+via the parameter `conH`. If this parameter is used, it is also necessary to
+supply `hid`, which defines the column names that contains household ids.
+
+```{r}
+(conH1 <- xtabs(pWeight ~ hsize + region, data = population[!duplicated(hid)]))
+pop_sample_hh <- ipf(pop_sample, hid = "hid", conH = list(conH1), w = "pWeight")
+xtabs(calibWeight ~ hsize + region, data = pop_sample_hh[!duplicated(hid)])
+```
+
+## Tolerances
+
+If `conP` or `conH` contain several contingency tables or if `conP` and `conH`
+are used at the same time, the ipf algorithm will operate iteratively. This
+means that the calibrated dataset will satisfy the constraints only
+approximately. The default tolerances of the approximation can be overwritten
+using the parameters `conP` and `conH`.
+
+Lowering the tolerances will improve the match between the constraints and
+the contingency tables according to the calibrated weights. However, lower
+tolerances will also make it so more iterations are necessary until a
+convergence is met. If the constraints are too small, ipf will return with
+a warning that indicates that a convergence could not be reached.
