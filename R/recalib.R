@@ -257,7 +257,7 @@ recalib <- function(
       conP <- c(conP, list(xtabs(formTab, data = dat)))
     }else{
       stop("contingency table for ", paste(conP.var[p], collapse = ", "),
-           " was supplied through paramter conP AND conP.var")
+           " was supplied through parameter conP AND conP.var")
     }
   }
 
@@ -271,7 +271,7 @@ recalib <- function(
         conH, list(xtabs(formTab, data = dat[FirstPersonInHousehold_ == 1])))
     } else {
       stop("contingency table for ", paste(conH.var[[h]], collapse = ", "),
-           " was supplied through paramter conH AND conH.var")
+           " was supplied through parameter conH AND conH.var")
     }
   }
 
