@@ -149,3 +149,13 @@ the contingency tables according to the calibrated weights. However, lower
 tolerances will also make it so more iterations are necessary until a
 convergence is met. If the constraints are too small, ipf will return with
 a warning that indicates that a convergence could not be reached.
+
+```{r}
+ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight",
+    verbose = TRUE, epsP = 0.01)
+ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight",
+    verbose = TRUE, epsP = 0.0001)
+```
+
+We see that changing the tolerances from `0.01` (one percent) to `0.0001`
+increases the number of required iterations.
