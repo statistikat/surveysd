@@ -34,16 +34,20 @@ containing bootstrap weights which should be recalibratet}
 the sample period.}
 
 \item{conP.var}{character vector containig person-specific variables to which
-weights should be calibrated or a list of such character vectors. Contingency tables for the population are
-calculated per \code{period} using \code{weights}.}
+weights should be calibrated or a list of such character vectors.
+Contingency tables for the population are calculated per \code{period} using
+\code{weights}.}
 
 \item{conH.var}{character vector containig household-specific variables to
-which weights should be calibrated or a list of such character vectors. Contingency tables for the population
-are calculated per \code{period} using \code{weights}.}
+which weights should be calibrated or a list of such character vectors.
+Contingency tables for the population are calculated per \code{period} using
+\code{weights}.}
 
-\item{epsP}{numeric value specifying the convergence limit for \code{conP.var} or \code{conP}, see \code{\link[=ipf]{ipf()}}.}
+\item{epsP}{numeric value specifying the convergence limit for \code{conP.var}
+or \code{conP}, see \code{\link[=ipf]{ipf()}}.}
 
-\item{epsH}{numeric value specifying the convergence limit for \code{conH.var} or \code{conH}, see \code{\link[=ipf]{ipf()}}.}
+\item{epsH}{numeric value specifying the convergence limit for \code{conH.var}
+or \code{conH}, see \code{\link[=ipf]{ipf()}}.}
 
 \item{...}{additional arguments passed on to function \code{\link[=ipf]{ipf()}} from this
 package.}
@@ -103,12 +107,13 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
 dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
                           conH.var = c("region", "hsize"), verbose = TRUE)
 
-# supply contingency tables directly                           
+# supply contingency tables directly
 conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
-conH <- xtabs(pWeight ~ hsize + region + year, data = eusilc[!duplicated(paste(db030,year))])
+conH <- xtabs(pWeight ~ hsize + region + year,
+              data = eusilc[!duplicated(paste(db030,year))])
 dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
                           conH.var = NULL, conP = list(conP),
-                          conH = list(conH), verbose = TRUE)                           
+                          conH = list(conH), verbose = TRUE)
 }
 
 }

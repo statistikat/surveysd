@@ -173,9 +173,11 @@ used as the second argument of \code{fun.adjust.var}).
 Thus creating i=1,...,\code{length(b.weights)} additional variables.
 For applying \code{fun} on \code{var} the estimates for the bootstrap replicate will
 now use each of the corresponding new additional variables. So instead of
-\deqn{fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...}
+\deqn{fun(var,weights,...),fun(var,b.weights[1],...),
+fun(var,b.weights[2],...),...}
 the function \code{fun} will be applied in the way
-\deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...}
+\deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,
+b.weights[2],...),...}
 
 where \code{var.1}, \code{var.2}, \code{...} correspond to the estimates resulting from
 \code{fun.adjust.var} and \code{adjust.var}.

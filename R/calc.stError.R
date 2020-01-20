@@ -113,9 +113,11 @@
 #' Thus creating i=1,...,`length(b.weights)` additional variables.
 #' For applying `fun` on `var` the estimates for the bootstrap replicate will
 #' now use each of the corresponding new additional variables. So instead of
-#' \deqn{fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...}
+#' \deqn{fun(var,weights,...),fun(var,b.weights[1],...),
+#' fun(var,b.weights[2],...),...}
 #' the function `fun` will be applied in the way
-#' \deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...}
+#' \deqn{fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,
+#' b.weights[2],...),...}
 #'
 #' where `var.1`, `var.2`, `...` correspond to the estimates resulting from
 #' `fun.adjust.var` and `adjust.var`.
