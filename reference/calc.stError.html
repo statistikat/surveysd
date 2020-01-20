@@ -358,9 +358,11 @@ used as the second argument of <code>fun.adjust.var</code>).
 Thus creating i=1,...,<code><a href='https://rdrr.io/r/base/length.html'>length(b.weights)</a></code> additional variables.
 For applying <code>fun</code> on <code>var</code> the estimates for the bootstrap replicate will
 now use each of the corresponding new additional variables. So instead of
-$$fun(var,weights,...),fun(var,b.weights[1],...),fun(var,b.weights[2],...),...$$
+$$fun(var,weights,...),fun(var,b.weights[1],...),
+fun(var,b.weights[2],...),...$$
 the function <code>fun</code> will be applied in the way
-$$fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,b.weights[2],...),...$$</p>
+$$fun(var,weights,...),fun(var.1,b.weights[1],...),fun(var.2,
+b.weights[2],...),...$$</p>
 <p>where <code>var.1</code>, <code>var.2</code>, <code>...</code> correspond to the estimates resulting from
 <code>fun.adjust.var</code> and <code>adjust.var</code>.
 NOTE: This procedure is especially usefull if the <code>var</code> is dependent on

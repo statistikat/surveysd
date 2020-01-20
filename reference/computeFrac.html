@@ -194,10 +194,12 @@ factor when doing the actual update step (<code>w := f*w</code>). <code>computeL
 other hand calculates <code>f</code> as</p>
 <p><center> f<sub>i</sub> = a  &middot; x<sub>i</sub> + b </center></p>
 <p>where <code>a</code> and <code>b</code> are chosen, so f satisfies the following two equations.</p>
-<p><center>&sum; f<sub>i</sub> w<sub>i</sub> x<sub>i</sub> = target</center>
+<p><center>&sum; f<sub>i</sub> w<sub>i</sub>
+       x<sub>i</sub> = target</center>
 
 
-  <center>&sum; f<sub>i</sub> w<sub>i</sub> = &sum; w<sub>i</sub></center></p>
+  <center>&sum; f<sub>i</sub>
+       w<sub>i</sub> = &sum; w<sub>i</sub></center></p>
 <p><code>computeLinearG1</code> calculates <code>f</code> in the same way as <code>computeLinear</code>, but if
 <code>f_i*w_i&lt;1</code> <code>f_i</code> will be set to <code>1/w_i</code>.</p>
 

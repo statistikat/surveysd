@@ -318,7 +318,7 @@ The <code>dimnames</code> of those tables should match the names and levels of t
 corresponding columns in <code>dat</code>.</p>
 <p><code>maxIter</code>, <code>epsP</code> and <code>epsH</code> are the stopping criteria. <code>epsP</code> and <code>epsH</code>
 describe relative tolerances in the sense that
-\deqn{1-epsP < \frac{w_{i+1}}{w_i} < 1+epsP}{1-epsP < w(i+1)/w(i) < 1+epsP} 
+$$1-epsP &lt; \frac{w_{i+1}}{w_i} &lt; 1+epsP$$
 will be used as convergence criterium. Here i is the iteration step and wi is
 the weight of a specific person at step i.</p>
 <p>The algorithm

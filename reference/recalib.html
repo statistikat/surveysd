@@ -194,22 +194,26 @@ the sample period.</p></td>
     <tr>
       <th>conP.var</th>
       <td><p>character vector containig person-specific variables to which
-weights should be calibrated or a list of such character vectors. Contingency tables for the population are
-calculated per <code>period</code> using <code>weights</code>.</p></td>
+weights should be calibrated or a list of such character vectors.
+Contingency tables for the population are calculated per <code>period</code> using
+<code>weights</code>.</p></td>
     </tr>
     <tr>
       <th>conH.var</th>
       <td><p>character vector containig household-specific variables to
-which weights should be calibrated or a list of such character vectors. Contingency tables for the population
-are calculated per <code>period</code> using <code>weights</code>.</p></td>
+which weights should be calibrated or a list of such character vectors.
+Contingency tables for the population are calculated per <code>period</code> using
+<code>weights</code>.</p></td>
     </tr>
     <tr>
       <th>epsP</th>
-      <td><p>numeric value specifying the convergence limit for <code>conP.var</code> or <code>conP</code>, see <code><a href='ipf.html'>ipf()</a></code>.</p></td>
+      <td><p>numeric value specifying the convergence limit for <code>conP.var</code>
+or <code>conP</code>, see <code><a href='ipf.html'>ipf()</a></code>.</p></td>
     </tr>
     <tr>
       <th>epsH</th>
-      <td><p>numeric value specifying the convergence limit for <code>conH.var</code> or <code>conH</code>, see <code><a href='ipf.html'>ipf()</a></code>.</p></td>
+      <td><p>numeric value specifying the convergence limit for <code>conH.var</code>
+or <code>conH</code>, see <code><a href='ipf.html'>ipf()</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -273,9 +277,10 @@ proportional fitting.</p></div>
 <span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'>recalib</span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"age"</span>),
                           <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"hsize"</span>), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='co'># supply contingency tables directly                           </span>
+<span class='co'># supply contingency tables directly</span>
 <span class='no'>conP</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>age</span> + <span class='no'>gender</span> + <span class='no'>year</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>)
-<span class='no'>conH</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>hsize</span> + <span class='no'>region</span> + <span class='no'>year</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>db030</span>,<span class='no'>year</span>))])
+<span class='no'>conH</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>hsize</span> + <span class='no'>region</span> + <span class='no'>year</span>,
+              <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>db030</span>,<span class='no'>year</span>))])
 <span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'>recalib</span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
                           <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conP</span>),
                           <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conH</span>), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
