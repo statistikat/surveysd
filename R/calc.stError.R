@@ -384,6 +384,14 @@ calc.stError <- function(
     stop("Columns containing bootstrap replicates must be numeric")
 
   # check period
+  removeCols <- c()
+  periodNULL <- is.null(period)
+  if (periodNULL) {
+    period <- generateRandomName(20, colnames(dat))
+    dat[, c(period) := 1]
+    removeCols <- c(removeCols, period)
+  }
+  
   if (length(period) != 1)
     stop("period must have length 1")
 
@@ -600,6 +608,12 @@ calc.stError <- function(
   outx.names <- colnames(outx)
   outx.names <- outx.names[!outx.names %in% c("val", "est_type", "stE", "mean",
                                               "size", p.names)]
+  
+  # remove columns
+  if(length(removeCols)>0){
+    dat[,c(removeCols):=NULL]
+  }
+  
   # get meta data like stE_high - size - increase in effektive sample size
   # flag stE if values are especially high
   outx[, stE_high := ((stE / val) * 100) > cv.limit]
