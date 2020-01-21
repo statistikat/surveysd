@@ -125,7 +125,7 @@ recalib <- function(
     dat[, c(hid) := 1:.N]
     removeCols <- c(removeCols, hid)
   }
-  
+
   if (length(hid) != 1) {
     stop("hid must have length 1")
   }
@@ -165,7 +165,7 @@ recalib <- function(
   if (!all(unique(unlist(conH.var)) %in% c.names)) {
     stop("Not all elements in conH.var are column names in dat")
   }
-  
+
   # check period
   periodNULL <- is.null(period)
   if (periodNULL) {
@@ -365,8 +365,8 @@ recalib <- function(
       dt.eval("dat[,", vars[i], ":=as.character(", vars[i], ")]")
     }
   }
-  
-  if(periodNULL){
+
+  if (periodNULL) {
     period <- NULL
   }
 
