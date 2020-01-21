@@ -106,6 +106,7 @@ recalib <- function(
     bound <- maxiter <- meanHH <- check_hh_vars <- allPthenH <-
     returnNA <- conversion_messages <- maxIter <- NULL
 
+  removeCols <- c()
   ##########################################################
   # INPUT CHECKING
   if (is.data.frame(dat)) {
@@ -118,6 +119,13 @@ recalib <- function(
   c.names <- colnames(dat)
 
   # check hid
+  hidNULL <- is.null(hid)
+  if (hidNULL) {
+    hid <- generateRandomName(20, colnames(dat))
+    dat[, c(hid) := 1:.N]
+    removeCols <- c(removeCols, hid)
+  }
+  
   if (length(hid) != 1) {
     stop("hid must have length 1")
   }
@@ -157,7 +165,14 @@ recalib <- function(
   if (!all(unique(unlist(conH.var)) %in% c.names)) {
     stop("Not all elements in conH.var are column names in dat")
   }
+  
   # check period
+  periodNULL <- is.null(period)
+  if (periodNULL) {
+    period <- generateRandomName(20, colnames(dat))
+    dat[, c(period) := 1]
+    removeCols <- c(removeCols, period)
+  }
   if (length(period) != 1) {
     stop(paste0(period, " must have length 1"))
   }
@@ -349,6 +364,10 @@ recalib <- function(
     } else if (vars.class[i] == "character") {
       dt.eval("dat[,", vars[i], ":=as.character(", vars[i], ")]")
     }
+  }
+  
+  if(periodNULL){
+    period <- NULL
   }
 
   setattr(dat, "weights", weights)

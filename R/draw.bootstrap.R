@@ -215,7 +215,8 @@ draw.bootstrap <- function(
   }
 
   # check hid
-  if (is.null(hid)) {
+  hidNULL <- is.null(hid)
+  if (hidNULL) {
     hid <- generateRandomName(20, colnames(dat))
     dat[, c(hid) := 1:.N]
     removeCols <- c(removeCols, hid)
@@ -240,7 +241,8 @@ draw.bootstrap <- function(
   }
 
   # check period
-  if (is.null(period)) {
+  periodNULL <- is.null(period)
+  if (periodNULL) {
     period <- generateRandomName(20, colnames(dat))
     dat[, c(period) := 1]
     removeCols <- c(removeCols, period)
@@ -442,6 +444,14 @@ draw.bootstrap <- function(
     dat[, c(removeCols) := NULL]
   }
 
+
+  if(periodNULL){
+    period <- NULL
+  }
+  if(hidNULL){
+    hid <- NULL
+  }
+  
   setattr(dat, "weights", weights)
   setattr(dat, "period", period)
   setattr(dat, "b.rep", w.names)
