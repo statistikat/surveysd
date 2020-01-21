@@ -445,13 +445,13 @@ draw.bootstrap <- function(
   }
 
 
-  if(periodNULL){
+  if (periodNULL) {
     period <- NULL
   }
-  if(hidNULL){
+  if (hidNULL) {
     hid <- NULL
   }
-  
+
   setattr(dat, "weights", weights)
   setattr(dat, "period", period)
   setattr(dat, "b.rep", w.names)
