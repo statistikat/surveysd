@@ -73,7 +73,7 @@ print.surveysd <- function(x, ...) {
     x[["param"]][["period"]], unique(unlist(x[["param"]][["group"]])))]
   stEtoohigh <- as.matrix(subset(x[["cvHigh"]], select = stEtoohigh))
   if (sum(stEtoohigh, na.rm = TRUE) > 0) {
-    cat("Estimted standard error exceeds", x[["param"]][["cv.limit"]],
+    cat("Estimated standard error exceeds", x[["param"]][["cv.limit"]],
         "% of the the point estimate in", sum(stEtoohigh, na.rm = TRUE),
         "cases\n")
     cat("\n")
