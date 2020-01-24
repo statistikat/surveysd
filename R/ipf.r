@@ -78,14 +78,51 @@ boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4) {
   return(g1)
 }
 
-check_population_totals <- function(con, dat, type = "personal") {
-  # do not apply this check for numerical calibration
+check_population_totals <- function(con, dat, w = NULL, type = "personal") {
+  
+  # check weights
+  if(!is.null(w)){
+    if(!w%in%colnames(dat)){
+      stop("Base weight ",w," is not a column name in dat")
+    }
+    if(any(is.na(dat[[w]]))){
+      stop("Base weight ",w," contains missing values")
+    }
+    if(!is.numeric(dat[[w]])){
+      stop("Base weight ",w," must be a numeric column")
+    }
+  }
+  
+  # check constraints for non numerical calibration
+  # and numerical calibration
   if (is.null(names(con))) {
     ind <- seq_along(con)
+    indNum <- NULL
   } else {
     ind <- which(names(con) == "")
+    indNum <- which(names(con) != "")
   }
-
+  
+  
+  # check constraints for numerical calibration
+  if(!is.null(indNum)){
+    namesNum <- names(con)[indNum]
+    
+    if(any(!namesNum %in% colnames(dat))){
+      stop("Numerical constraints must be named by variables in dat")
+    }
+    
+    numNA <- dat[,lapply(.SD,function(z){any(is.na(z))}),.SDcols=c(namesNum)]
+    numNA <- unlist(numNA)
+    numNA <- names(numNA)[numNA]
+    if(length(numNA)>0){
+      mult <- (length(numNA)>1)+1
+      stop("Numeric variable",c(" ","s ")[mult],
+           paste(numNA,collapse=", "),
+           " contain",c("s "," ")[mult],"missing values")
+    }
+  }
+  
   # do not apply this check for constraints that only cover the population
   #   partially
   ind <- ind[vapply(
@@ -542,8 +579,8 @@ ipf <- function(
     computeLinear, check_hh_vars = TRUE, conversion_messages = FALSE,
   nameCalibWeight = "calibWeight") {
 
-  check_population_totals(conP, dat, "personal")
-  check_population_totals(conH, dat, "household")
+  check_population_totals(conP, dat, w = w, type = "personal")
+  check_population_totals(conH, dat, w = w, type = "household")
   variableKeepingTheBaseWeight <- w
   variableKeepingTheCalibWeight <- nameCalibWeight
   if ("variableKeepingTheBaseWeight" %in% names(dat))
