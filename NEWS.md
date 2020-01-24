@@ -1,8 +1,10 @@
 # surveysd 1.2
 
 * Add vignette about `ipf()`
+* Added additional check to `ipf()` so the procedure does not fail silently
 * Resolve bug that appeared if constraints contained only one household or only
   one person ([#17](https://github.com/statistikat/surveysd/issues/17))
+  
 
 # surveysd 1.1.1
 
