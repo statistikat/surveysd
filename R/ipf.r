@@ -79,20 +79,20 @@ boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4) {
 }
 
 check_population_totals <- function(con, dat, w = NULL, type = "personal") {
-  
+
   # check weights
-  if(!is.null(w)){
-    if(!w%in%colnames(dat)){
-      stop("Base weight ",w," is not a column name in dat")
+  if (!is.null(w)) {
+    if (!w %in% colnames(dat)) {
+      stop("Base weight ", w, " is not a column name in dat")
     }
-    if(any(is.na(dat[[w]]))){
-      stop("Base weight ",w," contains missing values")
+    if (any(is.na(dat[[w]]))) {
+      stop("Base weight ", w, " contains missing values")
     }
-    if(!is.numeric(dat[[w]])){
-      stop("Base weight ",w," must be a numeric column")
+    if (!is.numeric(dat[[w]])) {
+      stop("Base weight ", w, " must be a numeric column")
     }
   }
-  
+
   # check constraints for non numerical calibration
   # and numerical calibration
   if (is.null(names(con))) {
@@ -102,27 +102,31 @@ check_population_totals <- function(con, dat, w = NULL, type = "personal") {
     ind <- which(names(con) == "")
     indNum <- which(names(con) != "")
   }
-  
-  
+
+
   # check constraints for numerical calibration
-  if(!is.null(indNum)){
+  if (!is.null(indNum)) {
     namesNum <- names(con)[indNum]
-    
-    if(any(!namesNum %in% colnames(dat))){
+
+    if (any(!namesNum %in% colnames(dat))) {
       stop("Numerical constraints must be named by variables in dat")
     }
-    
-    numNA <- dat[,lapply(.SD,function(z){any(is.na(z))}),.SDcols=c(namesNum)]
+
+    numNA <- dat[, lapply(
+      .SD, function(z) {
+        any(is.na(z))
+      }),
+      .SDcols = c(namesNum)]
     numNA <- unlist(numNA)
     numNA <- names(numNA)[numNA]
-    if(length(numNA)>0){
-      mult <- (length(numNA)>1)+1
-      stop("Numeric variable",c(" ","s ")[mult],
-           paste(numNA,collapse=", "),
-           " contain",c("s "," ")[mult],"missing values")
+    if (length(numNA) > 0) {
+      mult <- (length(numNA) > 1) + 1
+      stop("Numeric variable", c(" ", "s ")[mult],
+           paste(numNA, collapse = ", "),
+           " contain", c("s ", " ")[mult], "missing values")
     }
   }
-  
+
   # do not apply this check for constraints that only cover the population
   #   partially
   ind <- ind[vapply(
