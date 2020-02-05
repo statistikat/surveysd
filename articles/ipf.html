@@ -132,7 +132,7 @@
 <a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(pWeight <span class="op">~</span><span class="st"> </span>gender, pop_sample)</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co">#&gt; gender</span></a>
 <a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">#&gt;   male female </span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co">#&gt;   7240   7580</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co">#&gt;   7010   7810</span></a></code></pre></div>
 <p>Due to random sampling (rather than stratified sampling), there are differences betweeen the gender distributions. We can pass <code>gender_distribution</code> as a parameter to <code><a href="../reference/ipf.html">ipf()</a></code> to obtain modified weights.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">pop_sample_c &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ipf.html">ipf</a></span>(pop_sample, <span class="dt">conP =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(gender_distribution), <span class="dt">w =</span> <span class="st">"pWeight"</span>)</a></code></pre></div>
 <p>The resulting dataset, <code>pop_sample_c</code> is similar to <code>pop_sample</code> but has an additional column with the adjusted weights.</p>
@@ -155,8 +155,8 @@
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="op">~</span><span class="st"> </span>calibWeight <span class="op">+</span><span class="st"> </span>gender, pop_sample_c)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt;                   gender</span></a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; calibWeight        male female</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt;   9.97361477572559    0    758</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt;   10.0372928176796  724      0</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt;   9.67989756722151    0    781</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt;   10.3666191155492  701      0</span></a></code></pre></div>
 <p>All females have been weighted down (<code>calibWeight &lt; 10</code>) to compensate for the overrepresentation in the sample.</p>
 </div>
 <div id="one-constraint-two-variables" class="section level2">
@@ -171,8 +171,8 @@
 <a class="sourceLine" id="cb7-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(pWeight <span class="op">~</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>age, pop_sample)</a>
 <a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">#&gt;         age</span></a>
 <a class="sourceLine" id="cb7-8" data-line-number="8"><span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="co">#&gt;   male        1560     750    2220    1770       940</span></a>
-<a class="sourceLine" id="cb7-10" data-line-number="10"><span class="co">#&gt;   female      1250     930    2240    1860      1300</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="co">#&gt;   male        1470     850    2080    1840       770</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"><span class="co">#&gt;   female      1440     900    2320    1840      1310</span></a></code></pre></div>
 <p>Again, we can see that those constraints are not met. Suppliying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">pop_sample_c2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ipf.html">ipf</a></span>(pop_sample, <span class="dt">conP =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(con_ga), <span class="dt">w =</span> <span class="st">"pWeight"</span>)</a>
 <a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(pWeight <span class="op">~</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>age, population)</a>
@@ -212,9 +212,9 @@
 <a class="sourceLine" id="cb10-18" data-line-number="18"><span class="kw"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(calibWeight <span class="op">~</span><span class="st"> </span>region, pop_sample_c2)</a>
 <a class="sourceLine" id="cb10-19" data-line-number="19"><span class="co">#&gt; region</span></a>
 <a class="sourceLine" id="cb10-20" data-line-number="20"><span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span></a>
-<a class="sourceLine" id="cb10-21" data-line-number="21"><span class="co">#&gt;      549.0001     1077.9999     2803.9996      924.0000     2294.9998 </span></a>
+<a class="sourceLine" id="cb10-21" data-line-number="21"><span class="co">#&gt;      549.0000     1077.9999     2804.0000      923.9999     2294.9999 </span></a>
 <a class="sourceLine" id="cb10-22" data-line-number="22"><span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span></a>
-<a class="sourceLine" id="cb10-23" data-line-number="23"><span class="co">#&gt;     1317.0002     2805.0001     2322.0002      733.0001</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-23" data-line-number="23"><span class="co">#&gt;     1316.9999     2805.0002     2322.0001      733.0001</span></a></code></pre></div>
 <p>this time, the constraints are not matched perfectly. That is, because we provided more than one constraint. therefore, the <code><a href="../reference/ipf.html">ipf()</a></code> algorithm had to work iteratively.</p>
 </div>
 <div id="household-constraints" class="section level2">
@@ -265,7 +265,7 @@
 <p>Lowering the tolerances will improve the match between the constraints and the contingency tables according to the calibrated weights. However, lower tolerances will also make it so more iterations are necessary until a convergence is met. If the constraints are too small, ipf will return with a warning that indicates that a convergence could not be reached.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/ipf.html">ipf</a></span>(pop_sample, <span class="dt">conP =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(con_ga, registry_table), <span class="dt">w =</span> <span class="st">"pWeight"</span>,</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">    <span class="dt">verbose =</span> <span class="ot">TRUE</span>, <span class="dt">epsP =</span> <span class="fl">0.01</span>)</a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co">#&gt; Convergence reached in 3 steps</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co">#&gt; Convergence reached in 2 steps</span></a>
 <a class="sourceLine" id="cb12-4" data-line-number="4"><span class="kw"><a href="../reference/ipf.html">ipf</a></span>(pop_sample, <span class="dt">conP =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(con_ga, registry_table), <span class="dt">w =</span> <span class="st">"pWeight"</span>,</a>
 <a class="sourceLine" id="cb12-5" data-line-number="5">    <span class="dt">verbose =</span> <span class="ot">TRUE</span>, <span class="dt">epsP =</span> <span class="fl">0.0001</span>)</a>
 <a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt; Convergence reached in 4 steps</span></a></code></pre></div>
