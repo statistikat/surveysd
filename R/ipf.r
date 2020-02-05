@@ -78,6 +78,24 @@ boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4) {
   return(g1)
 }
 
+check_eps <- function(con, eps, type){
+  l <- length(con)
+  if(is.list(eps)){
+    if(length(eps)!=l){
+      stop(paste("Provided",type,"eps argument does not fit",type,"constraints."))
+    }
+    for(i in 1:length(eps)){
+      if(is.array(eps[[i]])){
+        if(!identical(dim(eps[[i]]),dim(con[[i]]))){
+          stop(paste("Provided",type,"eps argument",i,"does not fit in dimension to ",type,"constraints",i,"."))
+        }
+      }
+    }
+  }else if(length(eps)>1){
+    stop("Individual eps arguments for each constraints must be defined as list.")
+  }
+}
+
 check_population_totals <- function(con, dat, type = "personal") {
   # do not apply this check for numerical calibration
   if (is.null(names(con))) {
@@ -544,6 +562,8 @@ ipf <- function(
 
   check_population_totals(conP, dat, "personal")
   check_population_totals(conH, dat, "household")
+  check_eps(conP, epsP, type = "personal")
+  check_eps(conH, epsH, type = "household")
   variableKeepingTheBaseWeight <- w
   variableKeepingTheCalibWeight <- nameCalibWeight
   if ("variableKeepingTheBaseWeight" %in% names(dat))

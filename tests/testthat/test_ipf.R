@@ -138,3 +138,25 @@ test_that("ipf works as expected calibWeight renamed", {
                   subset = !duplicated(hid)) - conH1) / conH1)))
   expect_true(err < .01)
 })
+
+test_that("ipf stops  as expected when dimensionality of eps does not fit", {
+  # with array epsP1, base weights and bound
+  expect_error(ipf(
+    eusilc, hid = "hid", conP = list(conP1, conP2), conH = list(conH1,conH1,conH1),
+    epsP = c(1e-06), epsH = list(epsH1,1e-06), w = "baseWeight", bound = 4,
+    verbose = FALSE, maxIter = 200),
+    regexp = "Provided household eps argument does not fit household constraints.")
+
+  expect_error(ipf(
+    eusilc, hid = "hid", conP = list(conP1, conP2), conH = list(conH1),
+    epsP = c(1e-06), epsH = list(epsH1[,1:8]), w = "baseWeight", bound = 4,
+    verbose = FALSE, maxIter = 200),
+    regexp = "Provided household eps argument 1 does not fit in dimension to  household constraints 1 .")
+
+    expect_error(ipf(
+    eusilc, hid = "hid", conP = list(conP1, conP2), conH = list(conH1,conH1,conH1),
+    epsP = c(1e-06,22), epsH = list(epsH1,1e-06,1e-6), w = "baseWeight", bound = 4,
+    verbose = FALSE, maxIter = 200),
+    regexp = "Individual eps arguments for each constraints must be defined as list.")
+
+})
