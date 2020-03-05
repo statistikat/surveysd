@@ -313,9 +313,6 @@ draw.bootstrap <- function(
       }
       strata_var_help <- generateRandomName(20, colnames(dat))
       dat[, c(strata_var_help) := do.call(paste, c(.SD, sep = "-")), ]
-      dt.eval("dat[,", strata_var_help, ":=paste(",
-              paste0(strata, collapse = ","),
-              ",sep='-')]")
       strata <- strata_var_help
       removeCols <- c(removeCols, strata)
     }
@@ -399,6 +396,15 @@ draw.bootstrap <- function(
       stop("Not all elements in totals are numeric columns in dat")
     }
   }
+  
+  # check for each stage that PSUs are not in mutiple strata
+  for(i in seq_along(strata)){
+    countMultiple <- dt.eval("dat[,uniqueN(",cluster[i],"),by=c(strata[i])][V1>1]")
+    if(nrow(countMultiple)>0){
+      stop("Some sampling units in ",cluster[i]," occur in multiple strata of ",strata[i])
+    }
+  }
+  
   ##########################################################
 
   # define sample design
