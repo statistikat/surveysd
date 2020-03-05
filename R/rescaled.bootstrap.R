@@ -176,6 +176,15 @@ rescaled.bootstrap <- function(
                 "Bootstrap replicates for single PSUs cases will be missing!")
       }
     }
+    
+    # check for each stage that PSUs are not in mutiple strata
+    for(i in seq_along(strata)){
+      countMultiple <- dt.eval("dat[,uniqueN(",cluster[i],"),by=c(strata[i])][V1>1]")
+      if(nrow(countMultiple)>0){
+        stop("Some sampling units in ",cluster[i]," occur in multiple strata of ",strata[i])
+      }
+    }
+    
   }
 
   # check if variable f, N, n are in data.table
