@@ -313,9 +313,6 @@ draw.bootstrap <- function(
       }
       strata_var_help <- generateRandomName(20, colnames(dat))
       dat[, c(strata_var_help) := do.call(paste, c(.SD, sep = "-")), ]
-      dt.eval("dat[,", strata_var_help, ":=paste(",
-              paste0(strata, collapse = ","),
-              ",sep='-')]")
       strata <- strata_var_help
       removeCols <- c(removeCols, strata)
     }
@@ -323,14 +320,10 @@ draw.bootstrap <- function(
 
   # check single.PSUs
   single.PSU <- single.PSU[1]
-  if (is.null(single.PSU)) {
-    warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
+  if (is.null(single.PSU) || !single.PSU %in% c("merge", "mean")) {
+    message("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
             " replicates for single PSUs cases will be missing!")
-  } else {
-    if (!single.PSU %in% c("merge", "mean")) {
-      warning("single.PSU was not set to either 'merge' or 'mean'!\n ",
-              "Bootstrap replicates for single PSUs cases will be missing!")
-    }
+    single.PSU <- FALSE
   }
 
   # check boot.names
@@ -399,6 +392,17 @@ draw.bootstrap <- function(
       stop("Not all elements in totals are numeric columns in dat")
     }
   }
+  
+  # check for each stage that PSUs are not in mutiple strata
+  for(i in seq_along(strata)){
+    if(!strata[i]%in%c("1","I")){
+      countMultiple <- dt.eval("dat[,uniqueN(",strata[i],"),by=c(cluster[i],period)][V1>1]")
+      if(nrow(countMultiple)>0){
+        stop("Some sampling units in ",cluster[i]," occur in multiple strata of ",strata[i])
+      }
+    }
+  }
+  
   ##########################################################
 
   # define sample design
@@ -411,7 +415,6 @@ draw.bootstrap <- function(
   } else{
     w.names <- paste0(boot.names, 1:REP)
   }
-
 
   # calculate bootstrap replicates
   dat[, c(w.names) := rescaled.bootstrap(

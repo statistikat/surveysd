@@ -167,15 +167,22 @@ rescaled.bootstrap <- function(
     }
 
     # check single.PSU
-    if (is.null(single.PSU)) {
-      warning("single.PSU was not set to either 'merge' or 'mean'!\n ",
-              "Bootstrap replicates for single PSUs cases will be missing!")
-    } else {
-      if (!single.PSU %in% c("merge", "mean")) {
-        warning("single.PSU was not set to either 'merge' or 'mean'!\n ",
-                "Bootstrap replicates for single PSUs cases will be missing!")
+    if (is.null(single.PSU) || !single.PSU %in% c("merge", "mean")) {
+      warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
+              " replicates for single PSUs cases will be missing!")
+      single.PSU <- FALSE
+    }
+    
+    # check for each stage that PSUs are not in mutiple strata
+    for(i in seq_along(strata)){
+      if(!strata[i]%in%c("1","I")){
+        countMultiple <- dt.eval("dat[,uniqueN(",strata[i],"),by=c(cluster[i])][V1>1]")
+        if(nrow(countMultiple)>0){
+          stop("Some sampling units in ",cluster[i]," occur in multiple strata of ",strata[i])
+        }
       }
     }
+    
   }
 
   # check if variable f, N, n are in data.table
@@ -240,7 +247,9 @@ rescaled.bootstrap <- function(
       #   with the smallest number of PSUs
       # if multiple smallest exist choose one per random draw
       higher.stages <- by.val[-length(by.val)]
-      if (length(higher.stages) == 0) {
+      by.val.tail <- tail(by.val,1)
+      firstStage <- length(higher.stages) == 0
+      if (firstStage) {
         higher.stages <- by.val
       }
       singles <- unique(subset(singles, select = higher.stages))
@@ -248,33 +257,47 @@ rescaled.bootstrap <- function(
         # save original PSU coding and fpc values to replace changed values
         #   bevore returning the data.table
         if (return.value == "data") {
-          dt.eval("dat[,", paste0(tail(by.val, 1), "_ORIGINALSINGLES"),
-                  ":=", tail(by.val, 1), "]")
+          dt.eval("dat[,", paste0(by.val.tail, "_ORIGINALSINGLES"),
+                  ":=", by.val.tail, "]")
           dt.eval("dat[,", paste0(fpc[i], "_ORIGINALSINGLES"),
                   ":=", fpc[i], "]")
         }
 
         setkeyv(dat, higher.stages)
+        
         next.PSU <- dt.eval("dat[singles,.(N=sum(!duplicated(", clust.val,
                             "))),by=c(by.val)]")
 
         new.var <- paste0(tail(by.val, 1), "_NEWVAR")
-        dt.eval("next.PSU[,c(new.var):=next_minimum(N,", tail(by.val, 1),
+        
+        dt.eval("next.PSU[,c(new.var):=next_minimum(N,", by.val.tail,
                 "),by=c(higher.stages)]")
-
-        next.PSU <- next.PSU[N == 1]
+        if(any(is.na(next.PSU[[new.var]]))){
+          if(firstStage){
+            dt.eval("next.PSU[is.na(",new.var,"),c(new.var):=head(",higher.stages,",1)]")
+          }else{
+            dt.eval("next.PSU[is.na(",new.var,"),c(new.var):=head(",by.val.tail,",1),by=c(higher.stages)]")
+          }
+        }
+        
+        # select singel PSUs and PSUs to join with
+        next.PSU <- dt.eval("next.PSU[N == 1 | ",new.var," == ",by.val.tail,"]")
         dat <- merge(dat, next.PSU[, mget(c(by.val, new.var))],
                      by = c(by.val), all.x = TRUE)
+        
         # sum over margins
-        dt.eval("dat[,", paste0(fpc[i], "_ADD"), ":=", fpc[i], "]")
+        fpc.i_ADD <- paste0(fpc[i], "_ADD")
+        dt.eval("dat[, c(fpc.i_ADD):=", fpc[i], "]")
+        dt.eval("dat[!is.na(",new.var,"),c(fpc.i_ADD) := 
+                sum(",fpc.i_ADD,"[!duplicated(",by.val.tail,")]),
+                by=c(new.var)]")
         # assign to new group
-        dt.eval("dat[!is.na(", new.var, "),c(tail(by.val,1)):=", new.var, "]")
+        dt.eval("dat[!is.na(", new.var, "),c(by.val.tail):=", new.var, "]")
+        
         dt.eval("dat[,", fpc[i], ":=", fpc[i], "[is.na(", new.var,
                 ")][1],by=c(by.val)]")
-        dt.eval("dat[!is.na(", new.var, "),", fpc[i], ":=", fpc[i], "+",
-                paste0(fpc[i], "_ADD"), "]")
-        dt.eval("dat[,", fpc[i], ":=max(", fpc[i], "),by=c(by.val)]")
-
+        dt.eval("dat[!is.na(", new.var, "),", fpc[i], ":=", fpc.i_ADD,"]")
+        
         dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
       } else if (single.PSU == "mean") {
         # if single.PSU="mean" flag the observation as well as the all the
@@ -292,9 +315,9 @@ rescaled.bootstrap <- function(
         dat[, SINGLE_BOOT_FLAG := NULL]
 
       } else {
-        warning("Single PSUs detected at the following stages:")
+        message("Single PSUs detected at the following stages:\n")
         print(dt.eval("dat[,sum(!duplicated(", clust.val,
-                      ")),by=c(by.val)][V1==1]"))
+                      ")),by=c(by.val)][V1==1,.(",paste(by.val,collapse=","),")]"))
       }
     }
 
@@ -404,10 +427,12 @@ rescaled.bootstrap <- function(
 select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
                          sum_prev = NULL, new.method) {
 
-  if (N == 1) {
+  if (n == 1) {
     # if only a single unit in strata
-    # then always select this unit
-    return(1.0)
+    # return missing
+    # if single units are
+    # not treated missing values are returned
+    return(1L)
   }
 
   if (!is.null(sum_prev)) {
@@ -443,16 +468,16 @@ calc.replicate <- function(n, N, n_draw, delta) {
   for (i in 1:p) {
     if (i == 1) {
       lambda <- sqrt(n_draw[, 1] *
-                       (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1] + 1))
+                       (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1]))
       rep_out <- 1 - lambda + lambda * n[, i] / n_draw[, i] * delta[, i, ]
     } else if (i == 2) {
-      lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i] + 1)
+      lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
       lambda <- sqrt((n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
       rep_out <- rep_out + lambda *
         (sqrt(n[, i - 1] / n_draw[, i - 1]) * delta[, i - 1, ]) *
         (n[, i] / n_draw[, i] * delta[, i, ] - 1)
     } else {
-      lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i] + 1)
+      lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
       lambda <- sqrt(rowProds(n[, 1:(i - 1)] / N[, 1:(i - 1)]) *
                        n_draw[, i] * lambda)
       prod_val <- matrix(0, ncol = dimdelta[3], nrow = dimdelta[1])
