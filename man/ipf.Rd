@@ -105,6 +105,10 @@ with similar inputs (for example bootstrapping)}
 
 \item{nameCalibWeight}{character defining the name of the variable for the
 newly generated calibrated weight.}
+
+\item{minMaxTrim}{numeric vector of length2, first element a minimum value
+for weights to be trimmed to, second element a maximum value for weights to
+be trimmed to.}
 }
 \value{
 The function will return the input data \code{dat} with the calibrated

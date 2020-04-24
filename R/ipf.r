@@ -49,18 +49,24 @@ kishFactor <- function(w) {
   n <- length(w)
   sqrt(n * sum(w ^ 2) / sum(w) ^ 2)
 }
-boundsFak <- function(g1, g0, f, bound = 4) {
+boundsFak <- function(g1, g0, f, bound = 4, minMaxTrim=NULL) {
   # Berechnet die neuen Gewichte (innerhalb 4, .25 Veraenderungsraten)
   g1 <- g1 * f
-  TF <- which((g1 / g0) > bound)
-  TF[is.na(TF)] <- FALSE
-  g1[TF] <- bound * g0[TF]
-  TF <- which((g1 / g0) < (1 / bound))
-  TF[is.na(TF)] <- FALSE
-  g1[TF] <- (1 / bound) * g0[TF]
+  if(!is.null(bound)){
+    TF <- which((g1 / g0) > bound)
+    TF[is.na(TF)] <- FALSE
+    g1[TF] <- bound * g0[TF]
+    TF <- which((g1 / g0) < (1 / bound))
+    TF[is.na(TF)] <- FALSE
+    g1[TF] <- (1 / bound) * g0[TF]
+  }
+  if(!is.null(minMaxTrim)){
+    g1[g1<minMaxTrim[1]] <- minMaxTrim[1]
+    g1[g1>minMaxTrim[2]] <- minMaxTrim[2]
+  }
   return(g1)
 }
-boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4) {
+boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4, minMaxTrim=NULL) {
   # Berechnet die neuen Gewichte fuer Unter- und Obergrenze (innerhalb 4,
   #   .25 Veraenderungsraten)
   u <- orig * (1 - eps)
@@ -70,11 +76,16 @@ boundsFakHH <- function(g1, g0, eps, orig, p, bound = 4) {
   psu <- which(p < u)
   g1[pbo] <- g1[pbo] * o[pbo] / p[pbo]
   g1[psu] <- g1[psu] * u[psu] / p[psu]
-
-  TF <- which((g1 / g0) > bound)
-  g1[TF] <- bound * g0[TF]
-  TF <- which((g1 / g0) < (1 / bound))
-  g1[TF] <- (1 / bound) * g0[TF]
+  if(!is.null(bound)){
+    TF <- which((g1 / g0) > bound)
+    g1[TF] <- bound * g0[TF]
+    TF <- which((g1 / g0) < (1 / bound))
+    g1[TF] <- (1 / bound) * g0[TF]
+  }
+  if(!is.null(minMaxTrim)){
+    g1[g1<minMaxTrim[1]] <- minMaxTrim[1]
+    g1[g1>minMaxTrim[2]] <- minMaxTrim[2]
+  }
   return(g1)
 }
 
@@ -143,7 +154,7 @@ check_population_totals <- function(con, dat, type = "personal") {
 }
 
 calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
-                   numericalWeighting, numericalWeightingVar, w, cw) {
+                   numericalWeighting, numericalWeightingVar, w, cw, minMaxTrim) {
   epsPcur <- maxFac <- OriginalSortingVariable <- V1 <-
     epsvalue <- fVariableForCalibrationIPF <- NULL
   temporary_hvar <- value <-
@@ -210,13 +221,13 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
         message("-----------------------------------------\n")
       }
     }
-    if (!is.null(bound)) {
+    if (!is.null(bound) || !is.null(minMaxTrim)) {
       dat[!is.na(fVariableForCalibrationIPF),
           c(variableKeepingTheCalibWeight) :=
             boundsFak(
               get(variableKeepingTheCalibWeight),
               get(variableKeepingTheBaseWeight), fVariableForCalibrationIPF,
-              bound = bound)]
+              bound = bound, minMaxTrim = minMaxTrim)]
       #,by=eval(pColNames[[i]])]
     } else {
       dat[!is.na(fVariableForCalibrationIPF),
@@ -232,7 +243,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
 }
 
 calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
-                   looseH, numericalWeighting, numericalWeightingVar, w, cw) {
+                   looseH, numericalWeighting, numericalWeightingVar, w, cw, minMaxTrim) {
   variableKeepingTheBaseWeight <- w
   variableKeepingTheCalibWeight <- cw
   epsHcur <- OriginalSortingVariable <- V1 <-
@@ -296,19 +307,19 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
         message("-----------------------------------------\n")
       }
     }
-    if (!is.null(bound)) {
+    if (!is.null(bound) || !is.null(minMaxTrim)) {
       if (!looseH) {
         set(dat, j = variableKeepingTheCalibWeight, value = boundsFak(
           g1 = dat[[variableKeepingTheCalibWeight]],
           g0 = dat[[variableKeepingTheBaseWeight]],
           f = dat[["fVariableForCalibrationIPF"]],
-          bound = bound))
+          bound = bound, minMaxTrim = minMaxTrim))
       }else{
         set(dat, j = variableKeepingTheCalibWeight, value = boundsFakHH(
           g1 = dat[[variableKeepingTheCalibWeight]],
           g0 = dat[[variableKeepingTheBaseWeight]],
           eps = dat[["epsHcur"]], orig = dat[["value"]],
-          p = dat[["wValue"]], bound = bound)
+          p = dat[["wValue"]], bound = bound, minMaxTrim = minMaxTrim)
         )
       }
     } else {
@@ -456,6 +467,9 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #'   weight trimming boundary if the change of the base weights should be
 #'   restricted, i.e. if the weights should stay between 1/`bound`*`w`
 #'   and `bound`*\code{w}.
+#' @param minMaxTrim numeric vector of length2, first element a minimum value
+#'   for weights to be trimmed to, second element a maximum value for weights to
+#'   be trimmed to.
 #' @param maxIter numeric value specifying the maximum number of iterations
 #' that should be performed.
 #' @param meanHH if TRUE, every person in a household is assigned the mean of
@@ -558,7 +572,7 @@ ipf <- function(
   verbose = FALSE, w = NULL, bound = 4, maxIter = 200, meanHH = TRUE,
   allPthenH = TRUE, returnNA = TRUE, looseH = FALSE, numericalWeighting =
     computeLinear, check_hh_vars = TRUE, conversion_messages = FALSE,
-  nameCalibWeight = "calibWeight") {
+  nameCalibWeight = "calibWeight", minMaxTrim = NULL) {
 
   check_population_totals(conP, dat, "personal")
   check_population_totals(conH, dat, "household")
@@ -569,7 +583,17 @@ ipf <- function(
   if ("variableKeepingTheBaseWeight" %in% names(dat))
     stop("The provided dataset must not have a column called",
          " 'variableKeepingTheBaseWeight'")
-
+  if(!is.null(minMaxTrim)){
+    if(length(minMaxTrim)!=2)
+      stop("minMaxTrim must have exactly 2 elements, a minimum and a maximum.")
+    if(!is.numeric(minMaxTrim)){
+      stop("minMaxTrim must be a numeric vector of length two.")
+    }
+    if(minMaxTrim[2]<minMaxTrim[1]){
+      stop("minMaxTrim must have a minimum as a first element and a maximum as a second element.
+           But in the input the second element is smaller than the first.")
+    }
+  }
   OriginalSortingVariable <- V1 <- epsvalue <-
     f <- temporary_hvar <-
     value <- wValue <- representativeHouseholdForCalibration <- ..hid <- NULL
@@ -743,7 +767,7 @@ ipf <- function(
           calIter = calIter, numericalWeighting = numericalWeighting,
           numericalWeightingVar = numericalWeightingTmp,
           w = variableKeepingTheBaseWeight,
-          cw = variableKeepingTheCalibWeight)
+          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
       }
 
       ## replace person weight with household average
@@ -763,7 +787,7 @@ ipf <- function(
           numericalWeighting = numericalWeighting,
           numericalWeightingVar = numericalWeightingTmp,
           w = variableKeepingTheBaseWeight,
-          cw = variableKeepingTheCalibWeight)
+          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
       }
     } else {
       ### Person calib
@@ -778,7 +802,7 @@ ipf <- function(
           calIter = calIter, numericalWeighting = numericalWeighting,
           numericalWeightingVar = numericalWeightingTmp,
           w = variableKeepingTheBaseWeight,
-          cw = variableKeepingTheCalibWeight)
+          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
 
         ## replace person weight with household average
         set(dat, j = variableKeepingTheCalibWeight,
@@ -796,7 +820,7 @@ ipf <- function(
             calIter = calIter, numericalWeighting = numericalWeighting,
             numericalWeightingVar = numericalWeightingTmp, looseH = looseH,
             w = variableKeepingTheBaseWeight,
-            cw = variableKeepingTheCalibWeight)
+            cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
         }
       }
     }
