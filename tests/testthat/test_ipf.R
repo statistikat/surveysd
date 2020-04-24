@@ -160,3 +160,38 @@ test_that("ipf stops  as expected when dimensionality of eps does not fit", {
     regexp = "Individual eps arguments for each constraints must be defined as list.")
 
 })
+
+
+test_that("ipf works as expected with minMaxTrim only P", {
+  # with array epsP1, base weights and bound
+  calibweights2 <- ipf(
+    eusilc, hid = "hid", conP = list(conP1, conP2),
+    epsP = 1e-06, w = "baseWeight", bound = 4,
+    verbose = FALSE, maxIter = 200, minMaxTrim = c(450,700))
+  err <- max(c(
+    max(abs(xtabs(calibWeight ~ age, data = calibweights2) - conP1) /
+          conP1),
+    max(
+      abs(xtabs(calibWeight ~ gender + region, data = calibweights2) - conP2) /
+        conP2)))
+  expect_true(err < .01)
+  expect_true(all(calibweights2$calibWeight<=700)&&all(calibweights2$calibWeight>=450))
+})
+
+test_that("ipf works as expected with minMaxTrim P and HH", {
+  # with array epsP1, base weights and bound
+  calibweights2 <- ipf(
+    eusilc, hid = "hid", conP = list(conP1, conP2), conH = list(conH1),
+    epsP = 1e-06, epsH = list(epsH1), w = "baseWeight", bound = 4,
+    verbose = FALSE, maxIter = 200, minMaxTrim = c(340,870))
+  err <- max(c(
+    max(abs(xtabs(calibWeight ~ age, data = calibweights2) - conP1) /
+          conP1),
+    max(
+      abs(xtabs(calibWeight ~ gender + region, data = calibweights2) - conP2) /
+        conP2),
+    max(abs(xtabs(calibWeight ~ hsize + region, data = calibweights2,
+                  subset = !duplicated(hid)) - conH1) / conH1)))
+  expect_true(err < .01)
+  expect_true(all(calibweights2$calibWeight<=870)&&all(calibweights2$calibWeight>=340))
+})
