@@ -186,7 +186,6 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
       head(wValue, 1), head(value, 1), get(numericalWeightingVar),
       get(variableKeepingTheCalibWeight)),
       by = eval(paste0("combined_factors_", i))]
-
   } else {
     # categorical variable to be calibrated
     set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(
@@ -199,9 +198,11 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
     if (verbose && calIter %% 10 == 0) {
       message(calIter, ":Not yet converged for P-Constraint", i, "\n")
       if (calIter %% 100 == 0) {
+        
+        dat[, selectGroupNotConverged := any(!is.na(fVariableForCalibrationIPF) &
+                                               (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur)), by= c(pColNames[[i]])]
         tmp <- dat[
-          !is.na(fVariableForCalibrationIPF) &
-            (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur),
+          selectGroupNotConverged == TRUE,
           list(
             maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
             epsP = head(epsPcur, 1),
@@ -215,8 +216,8 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
             },
             PopMargin = head(value, 1)),
           by = eval(pColNames[[i]])]
-
-
+        dat[, selectGroupNotConverged := NULL]
+      
         print(tmp[order(maxFac, decreasing = TRUE), ])
         message("-----------------------------------------\n")
       }
@@ -753,7 +754,7 @@ ipf <- function(
   calIter <- 1
   while (error && calIter <= maxIter) {
     error <- FALSE
-
+  
     if (allPthenH) {
       ### Person calib
       for (i in seq_along(conP)) {
@@ -769,7 +770,6 @@ ipf <- function(
           w = variableKeepingTheBaseWeight,
           cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
       }
-
       ## replace person weight with household average
       set(dat, j = variableKeepingTheCalibWeight,
           value = meanfun(dat[[variableKeepingTheCalibWeight]], dat[[hid]]))
@@ -824,7 +824,7 @@ ipf <- function(
         }
       }
     }
-
+    
     if (verbose && !error) {
       message("Convergence reached in ", calIter, " steps \n")
     } else if (maxIter == calIter) {

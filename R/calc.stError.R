@@ -850,7 +850,7 @@ help.stError <- function(
 
     var.est <- melt(var.est, id.vars = c(period, z, "n", "N"),
                     measure.vars = res.names, value.name = "V1")
-    var.est[, c("est", "ID") := tstrsplit(variable, "\\.")]
+    var.est[, c("est", "ID") := tstrsplit(variable, "\\.(?=[^\\.]+$)", perl=TRUE)]
     var.est[, est_type := "norm"]
     var.est[, variable := NULL]
 
