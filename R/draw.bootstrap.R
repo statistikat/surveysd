@@ -321,7 +321,7 @@ draw.bootstrap <- function(
   # check single.PSUs
   single.PSU <- single.PSU[1]
   if (is.null(single.PSU) || !single.PSU %in% c("merge", "mean")) {
-    message("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
+    warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
             " replicates for single PSUs cases will be missing!")
     single.PSU <- FALSE
   }
@@ -395,7 +395,7 @@ draw.bootstrap <- function(
   
   # check for each stage that PSUs are not in mutiple strata
   for(i in seq_along(strata)){
-    if(!strata[i]%in%c("1","I")){
+    if(!strata[i]%in%c("1","I") & !cluster[i]%in%c("1","I")){
       countMultiple <- dt.eval("dat[,uniqueN(",strata[i],"),by=c(cluster[i],period)][V1>1]")
       if(nrow(countMultiple)>0){
         stop("Some sampling units in ",cluster[i]," occur in multiple strata of ",strata[i])
