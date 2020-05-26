@@ -198,7 +198,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
     if (verbose && calIter %% 10 == 0) {
       message(calIter, ":Not yet converged for P-Constraint", i, "\n")
       if (calIter %% 100 == 0) {
-        
+
         dat[, selectGroupNotConverged := any(!is.na(fVariableForCalibrationIPF) &
                                                (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur)), by= c(pColNames[[i]])]
         tmp <- dat[
@@ -217,7 +217,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
             PopMargin = head(value, 1)),
           by = eval(pColNames[[i]])]
         dat[, selectGroupNotConverged := NULL]
-      
+
         print(tmp[order(maxFac, decreasing = TRUE), ])
         message("-----------------------------------------\n")
       }
@@ -355,42 +355,62 @@ getFormulas <- function(con, w) {
 ## enrich dat_original with the calibrated weights and assign attributes
 
 addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
-                                    maxIter, calIter, returnNA, cw) {
+                                    maxIter, calIter, returnNA, cw, verbose) {
   variableKeepingTheCalibWeight <- cw
   representativeHouseholdForCalibration <- OriginalSortingVariable <-
     outTable <- copy(dat_original)
-
-  # add calibrated weights. Use setkey to make sure the indexes match
-  setkey(dat, OriginalSortingVariable)
-
-  if ((maxIter < calIter) & returnNA) {
-    outTable[, c(variableKeepingTheCalibWeight) := NA]
-  } else {
-    outTable[, c(variableKeepingTheCalibWeight) :=
-               dat[[variableKeepingTheCalibWeight]]]
-  }
-
 
   formP <- getFormulas(conP, w = variableKeepingTheCalibWeight)
   formH <- getFormulas(conH, w = variableKeepingTheCalibWeight)
 
   # general information
-  setattr(outTable, "converged", (maxIter >= calIter))
   setattr(outTable, "iterations", min(maxIter, calIter))
-  # return maxIter in case of no convergence
 
   # input constraints
   setattr(outTable, "conP", conP)
   setattr(outTable, "conH", conH)
 
   # adjusted constraints (conP, conH according to the calibrated weights)
-  setattr(outTable, "conP_adj", lapply(formP, xtabs, dat))
-  setattr(outTable, "conH_adj", lapply(
-    formH, xtabs, dat[representativeHouseholdForCalibration == 1]))
+  conP_adj <- lapply(formP, xtabs, dat)
+  conH_adj <- lapply(
+    formH, xtabs, dat[representativeHouseholdForCalibration == 1])
+  setattr(outTable, "conP_adj", conP_adj)
+  setattr(outTable, "conH_adj", conH_adj)
 
   # tolerances
   setattr(outTable, "epsP", epsP)
   setattr(outTable, "epsH", epsH)
+
+  setkey(dat, OriginalSortingVariable)
+
+
+  # convergence
+  conP_converged <- sapply(seq_along(conP), function(i) {
+    epsP_current <- switch(is.list(epsP) + 1, epsP, epsP[[i]])
+    all(abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]])
+  })
+  conH_converged <- sapply(seq_along(conH), function(i) {
+    epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
+    all(abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]])
+  })
+  converged <- all(conP_converged) && all(conH_converged)
+  setattr(outTable, "converged", converged)
+  if (verbose) {
+    if (converged)
+      message("Convergence reached")
+    else
+      message("No convergence reached")
+  }
+
+  # add calibrated weights. Use setkey to make sure the indexes match
+  setkey(dat, OriginalSortingVariable)
+
+  if (!converged & returnNA) {
+    outTable[, c(variableKeepingTheCalibWeight) := NA]
+  } else {
+    outTable[, c(variableKeepingTheCalibWeight) :=
+               dat[[variableKeepingTheCalibWeight]]]
+  }
 
   # formulas
   setattr(outTable, "formP", formP)
@@ -754,7 +774,7 @@ ipf <- function(
   calIter <- 1
   while (error && calIter <= maxIter) {
     error <- FALSE
-  
+
     if (allPthenH) {
       ### Person calib
       for (i in seq_along(conP)) {
@@ -824,11 +844,11 @@ ipf <- function(
         }
       }
     }
-    
+
     if (verbose && !error) {
-      message("Convergence reached in ", calIter, " steps \n")
+      message("Iteration stopped after ", calIter, " steps")
     } else if (maxIter == calIter) {
-      warning("Not converged in ", maxIter, " steps \n")
+      warning("Not converged in ", maxIter, " steps")
     }
     calIter <- calIter + 1
   }
@@ -836,5 +856,6 @@ ipf <- function(
   fVariableForCalibrationIPF <- NULL
   dat[, fVariableForCalibrationIPF := NULL]
   addWeightsAndAttributes(dat, conP, conH, epsP, epsH, dat_original, maxIter,
-                          calIter, returnNA, variableKeepingTheCalibWeight)
+                          calIter, returnNA, variableKeepingTheCalibWeight,
+                          verbose)
 }
