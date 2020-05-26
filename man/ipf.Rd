@@ -22,7 +22,8 @@ ipf(
   numericalWeighting = computeLinear,
   check_hh_vars = TRUE,
   conversion_messages = FALSE,
-  nameCalibWeight = "calibWeight"
+  nameCalibWeight = "calibWeight",
+  minMaxTrim = NULL
 )
 }
 \arguments{
