@@ -28,7 +28,6 @@
 #' * `povertyRisk`. Logical variable determining whether a respondent is at risk
 #'   of poverty
 #'
-#' @importFrom dplyr recode
 #' @examples
 #' demo.eusilc(n = 1, prettyNames = TRUE)[, c(1:8, 26, 28:30)]
 #' @export
@@ -71,9 +70,10 @@ demo.eusilc <- function(n = 8, prettyNames = FALSE) {
     data.table::setnames(eusilc, "rb090", "gender")
     data.table::setnames(eusilc, "pb220a", "citizenship")
     data.table::setnames(eusilc, "pl030", "ecoStat")
-    eusilc[, ecoStat := dplyr::recode(
-      ecoStat, `1` = "full time", `2` = "part time", `3` = "unemployed",
-      `4` = "education", `5` = "retired", `6` = "disabled", `7` = "domestic")]
+    eusilc[, ecoStat := factor(ecoStat, labels = c(
+      "full time", "part time", "unemployed",
+      "education", "retired", "disabled", "domestic"
+    ))]
     data.table::setnames(eusilc, "rb050", "pWeight")
     data.table::setnames(eusilc, "povmd60", "povertyRisk")
     eusilc[, povertyRisk := as.logical(povertyRisk)]
