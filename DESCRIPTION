@@ -15,7 +15,7 @@ Description: Calculate point estimates and their standard errors in complex hous
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.12),data.table,matrixStats, ggplot2, laeken, methods, dplyr
+Imports: Rcpp (>= 0.12.12),data.table,ggplot2,laeken,methods
 LinkingTo: Rcpp
 URL: https://github.com/statistikat/surveysd
 BugReports: https://github.com/statistikat/surveysd/issues
