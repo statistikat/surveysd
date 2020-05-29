@@ -17,23 +17,27 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -49,7 +53,6 @@
 bootstrap for stratified multistage sampling, presented by Preston, J.
 (2009)." />
 <meta property="og:image" content="/logo.png" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -67,7 +70,7 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -81,7 +84,7 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.2</span>
       </span>
     </div>
 
@@ -123,7 +126,7 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/statistikat/surveysd">
+  <a href="https://github.com/statistikat/surveysd/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -256,6 +259,9 @@ spaces they should be renamed before calling this procedure!</p>
 
     <p>Preston, J. (2009). Rescaled bootstrap for stratified multistage
 sampling. Survey Methodology. 35. 227-234.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Johannes Gussenbauer, Statistics Austria</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>eusilc</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"laeken"</span>)
@@ -299,7 +305,7 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017</div><div class='input'><span class='no'>eusilc.bootstrap</span> <span class='kw'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='no'>eusilc</span>,<span class='kw'>REP</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>strata</span><span class='kw'>=</span><span class='st'>"db040"</span>,
                                        <span class='kw'>cluster</span><span class='kw'>=</span><span class='st'>"db030"</span>,<span class='kw'>fpc</span><span class='kw'>=</span><span class='st'>"N.households"</span>)
 
-<span class='no'>eusilc</span>[,<span class='no'>new_strata</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>db040</span>,<span class='no'>rb090</span>,<span class='kw'>sep</span><span class='kw'>=</span><span class='st'>"_"</span>)]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
+<span class='no'>eusilc</span>[,<span class='no'>new_strata</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>db040</span>,<span class='no'>hsize</span>,<span class='kw'>sep</span><span class='kw'>=</span><span class='st'>"_"</span>)]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
 #&gt;     1:     1     3         Tyrol    101  34 female     2     AT  9756.25      0
 #&gt;     2:     1     3         Tyrol    102  39   male     1  Other 12471.60      0
 #&gt;     3:     1     3         Tyrol    103   2   male  &lt;NA&gt;   &lt;NA&gt;       NA     NA
@@ -335,18 +341,18 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14825: 120.65      0      0      0  1.0 14805.83 679.7288 679.7288       279017
 #&gt; 14826:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017
 #&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017
-#&gt;                  new_strata
-#&gt;     1:         Tyrol_female
-#&gt;     2:           Tyrol_male
-#&gt;     3:           Tyrol_male
-#&gt;     4:         Tyrol_female
-#&gt;     5:           Tyrol_male
-#&gt;    ---                     
-#&gt; 14823: Lower Austria_female
-#&gt; 14824: Upper Austria_female
-#&gt; 14825:           Tyrol_male
-#&gt; 14826:           Tyrol_male
-#&gt; 14827:         Tyrol_female</div><div class='input'><span class='no'>eusilc</span>[,<span class='no'>N.housholds</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>db090</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)]),<span class='kw'>by</span><span class='kw'>=</span><span class='no'>new_strata</span>]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
+#&gt;             new_strata
+#&gt;     1:         Tyrol_3
+#&gt;     2:         Tyrol_3
+#&gt;     3:         Tyrol_3
+#&gt;     4:         Tyrol_4
+#&gt;     5:         Tyrol_4
+#&gt;    ---                
+#&gt; 14823: Lower Austria_4
+#&gt; 14824: Upper Austria_1
+#&gt; 14825:         Tyrol_1
+#&gt; 14826:         Tyrol_2
+#&gt; 14827:         Tyrol_2</div><div class='input'><span class='no'>eusilc</span>[,<span class='no'>N.housholds</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>db090</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)]),<span class='kw'>by</span><span class='kw'>=</span><span class='no'>new_strata</span>]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
 #&gt;     1:     1     3         Tyrol    101  34 female     2     AT  9756.25      0
 #&gt;     2:     1     3         Tyrol    102  39   male     1  Other 12471.60      0
 #&gt;     3:     1     3         Tyrol    103   2   male  &lt;NA&gt;   &lt;NA&gt;       NA     NA
@@ -382,35 +388,24 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14825: 120.65      0      0      0  1.0 14805.83 679.7288 679.7288       279017
 #&gt; 14826:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017
 #&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017
-#&gt;                  new_strata N.housholds
-#&gt;     1:         Tyrol_female    255109.6
-#&gt;     2:           Tyrol_male    209870.8
-#&gt;     3:           Tyrol_male    209870.8
-#&gt;     4:         Tyrol_female    255109.6
-#&gt;     5:           Tyrol_male    209870.8
-#&gt;    ---                                 
-#&gt; 14823: Lower Austria_female    553540.4
-#&gt; 14824: Upper Austria_female    503015.2
-#&gt; 14825:           Tyrol_male    209870.8
-#&gt; 14826:           Tyrol_male    209870.8
-#&gt; 14827:         Tyrol_female    255109.6</div><div class='input'><span class='no'>eusilc.bootstrap</span> <span class='kw'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='no'>eusilc</span>,<span class='kw'>REP</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>strata</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
-                                       <span class='kw'>cluster</span><span class='kw'>=</span><span class='st'>"db030"</span>,<span class='kw'>fpc</span><span class='kw'>=</span><span class='st'>"N.households"</span>)
-
-<span class='no'>eusilc.bootstrap</span> <span class='kw'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='no'>eusilc</span>,<span class='kw'>REP</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>strata</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
+#&gt;             new_strata N.housholds
+#&gt;     1:         Tyrol_3       39861
+#&gt;     2:         Tyrol_3       39861
+#&gt;     3:         Tyrol_3       39861
+#&gt;     4:         Tyrol_4       50325
+#&gt;     5:         Tyrol_4       50325
+#&gt;    ---                            
+#&gt; 14823: Lower Austria_4       94036
+#&gt; 14824: Upper Austria_1      168533
+#&gt; 14825:         Tyrol_1       80208
+#&gt; 14826:         Tyrol_2       84506
+#&gt; 14827:         Tyrol_2       84506</div><div class='input'><span class='no'>eusilc.bootstrap</span> <span class='kw'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='no'>eusilc</span>,<span class='kw'>REP</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>strata</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
                                        <span class='kw'>cluster</span><span class='kw'>=</span><span class='st'>"db030"</span>,<span class='kw'>fpc</span><span class='kw'>=</span><span class='st'>"N.households"</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#references">References</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Johannes Gussenbauer, Statistics Austria</p>
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -421,7 +416,7 @@ sampling. Survey Methodology. 35. 227-234.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

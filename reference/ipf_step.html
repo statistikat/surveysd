@@ -17,23 +17,27 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -49,7 +53,6 @@
 are assumed to be one dimensional in the ipf_step functions. combine_factors aggregates several vectors of
 type factor into a single one to allow multidimensional ipu-steps. See examples." />
 <meta property="og:image" content="/logo.png" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -67,7 +70,7 @@ type factor into a single one to allow multidimensional ipu-steps. See examples.
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -81,7 +84,7 @@ type factor into a single one to allow multidimensional ipu-steps. See examples.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.2</span>
       </span>
     </div>
 
@@ -123,7 +126,7 @@ type factor into a single one to allow multidimensional ipu-steps. See examples.
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/statistikat/surveysd">
+  <a href="https://github.com/statistikat/surveysd/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -200,32 +203,32 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
   <span class='kw'>household</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>classLabels</span>, <span class='no'>nobs</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 )
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  0.6640834         c
-#&gt; 2  5.1397911         b
-#&gt; 3  1.2591308         a
-#&gt; 4  0.6516811         c
-#&gt; 5  0.9171716         b
-#&gt; 6  2.1896192         a
-#&gt; 7  0.4860760         c
-#&gt; 8  3.0053915         c
-#&gt; 9  5.6514550         a
-#&gt; 10 0.5395121         c</div><div class='input'>
+#&gt; 1  5.1397911         a
+#&gt; 2  1.2591308         c
+#&gt; 3  0.6516811         b
+#&gt; 4  0.9171716         a
+#&gt; 5  2.1896192         c
+#&gt; 6  0.4860760         c
+#&gt; 7  3.0053915         a
+#&gt; 8  5.6514550         c
+#&gt; 9  0.5395121         a
+#&gt; 10 0.5593388         b</div><div class='input'>
 <span class='co'>## create targets (same lenght as classLabels!)</span>
 <span class='no'>targets</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>5</span>
 
 <span class='co'>## calculate weights</span>
 <span class='no'>new_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>new_weight</span>)</div><div class='output co'>#&gt;       weight household new_weight
-#&gt; 1  0.6640834         c  0.6210167
-#&gt; 2  5.1397911         b  3.3943026
-#&gt; 3  1.2591308         a  0.4150887
-#&gt; 4  0.6516811         c  0.6094186
-#&gt; 5  0.9171716         b  0.6056974
-#&gt; 6  2.1896192         a  0.7218362
-#&gt; 7  0.4860760         c  0.4545532
-#&gt; 8  3.0053915         c  2.8104875
-#&gt; 9  5.6514550         a  1.8630751
-#&gt; 10 0.5395121         c  0.5045239</div><div class='input'>
+#&gt; 1  5.1397911         a  1.6058725
+#&gt; 2  1.2591308         c  0.6567358
+#&gt; 3  0.6516811         b  2.1525032
+#&gt; 4  0.9171716         a  0.2865604
+#&gt; 5  2.1896192         c  1.1420587
+#&gt; 6  0.4860760         c  0.2535269
+#&gt; 7  3.0053915         a  0.9390023
+#&gt; 8  5.6514550         c  2.9476786
+#&gt; 9  0.5395121         a  0.1685648
+#&gt; 10 0.5593388         b  1.8474968</div><div class='input'>
 <span class='co'>## check solution</span>
 <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>new_weight</span> ~ <span class='no'>dat</span>$<span class='no'>household</span>)</div><div class='output co'>#&gt; dat$household
 #&gt; a b c 
@@ -233,16 +236,16 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class='co'>## calculate weights "by reference"</span>
 <span class='fu'>ipf_step_ref</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
 <span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  0.6210167         c
-#&gt; 2  3.3943026         b
-#&gt; 3  0.4150887         a
-#&gt; 4  0.6094186         c
-#&gt; 5  0.6056974         b
-#&gt; 6  0.7218362         a
-#&gt; 7  0.4545532         c
-#&gt; 8  2.8104875         c
-#&gt; 9  1.8630751         a
-#&gt; 10 0.5045239         c</div><div class='input'>
+#&gt; 1  1.6058725         a
+#&gt; 2  0.6567358         c
+#&gt; 3  2.1525032         b
+#&gt; 4  0.2865604         a
+#&gt; 5  1.1420587         c
+#&gt; 6  0.2535269         c
+#&gt; 7  0.9390023         a
+#&gt; 8  2.9476786         c
+#&gt; 9  0.1685648         a
+#&gt; 10 1.8474968         b</div><div class='input'>
 <span class='co'>############# multidimensional ipu ##############</span>
 
 <span class='co'>## load data</span>
@@ -255,15 +258,15 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class='no'>con</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(~<span class='no'>.</span>, <span class='no'>tips</span>)
 <span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'>combine_factors</span>(<span class='no'>tips</span>, <span class='no'>con</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>tips</span>, <span class='no'>cf</span>)[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>tips</span>), <span class='fl'>10</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),]</div><div class='output co'>#&gt;       time    sex smoker day cf
-#&gt; 1   Dinner Female     No Sun  9
 #&gt; 2    Lunch   Male    Yes Mon  8
-#&gt; 2.1  Lunch   Male    Yes Mon  8
 #&gt; 3    Lunch   Male     No Tue 20
+#&gt; 2.1  Lunch   Male    Yes Mon  8
+#&gt; 1   Dinner Female     No Sun  9
 #&gt; 2.2  Lunch   Male    Yes Mon  8
 #&gt; 1.1 Dinner Female     No Sun  9
-#&gt; 2.3  Lunch   Male    Yes Mon  8
-#&gt; 1.2 Dinner Female     No Sun  9
 #&gt; 3.1  Lunch   Male     No Tue 20
+#&gt; 2.3  Lunch   Male    Yes Mon  8
+#&gt; 3.2  Lunch   Male     No Tue 20
 #&gt; 2.4  Lunch   Male    Yes Mon  8</div><div class='input'>
 <span class='co'>## adjust weights</span>
 <span class='no'>weight</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>tips</span>)) + <span class='fl'>5</span>
@@ -275,13 +278,9 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -292,7 +291,7 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
