@@ -10,7 +10,7 @@
 #' @importFrom "methods" "formalArgs"
 #' @useDynLib surveysd
 
-rowProds <- function(x) {
+rowProds <- function(x, na.rm = FALSE) {
   n <- nrow(x)
   y <- double(length = n)
   for (ii in seq_len(n)) {
