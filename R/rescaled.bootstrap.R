@@ -78,9 +78,6 @@
 #' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
 #'                                        cluster="db030",fpc="N.households")
 #'
-#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
-#'                                        cluster="db030",fpc="N.households")
-#'
 #'
 
 
