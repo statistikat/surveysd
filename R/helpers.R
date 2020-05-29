@@ -6,12 +6,18 @@
 #' @importFrom "graphics" "plot"
 #' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd" "xtabs" "formula"
 #' @importFrom "utils" "data" "find" "tail" "head"
-#' @importFrom "matrixStats" "rowProds"
 #' @importFrom "laeken" "weightedMedian"
 #' @importFrom "methods" "formalArgs"
 #' @useDynLib surveysd
 
-
+rowProds <- function(x) {
+  n <- nrow(x)
+  y <- double(length = n)
+  for (ii in seq_len(n)) {
+    y[ii] <- prod(x[ii, , drop = TRUE], na.rm = na.rm)
+  }
+  y
+}
 
 
 dt.eval <- function(..., env = parent.frame()) {
