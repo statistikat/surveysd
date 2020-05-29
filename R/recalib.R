@@ -213,6 +213,7 @@ recalib <- function(
   conHnamesNumeric <- conPnamesNumeric <- NULL
   if(!is.null(names(conP))){
     conPnamesNumeric <- unique(names(conP))
+    conPnamesNumeric <- conPnamesNumeric[conPnamesNumeric!=""]
   }
   conHnames <- lapply(conH, function(z) {
     z <- names(dimnames(z))
@@ -220,6 +221,7 @@ recalib <- function(
   })
     if(!is.null(names(conH))){
       conHnamesNumeric <- unique(names(conH))
+      conHnamesNumeric <- conHnamesNumeric[conHnamesNumeric!=""]
   }
 
   if (!all(unlist(conPnames) %in% c.names)) {
