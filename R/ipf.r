@@ -155,7 +155,7 @@ check_population_totals <- function(con, dat, type = "personal") {
 
 calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
                    numericalWeighting, numericalWeightingVar, w, cw, minMaxTrim) {
-  epsPcur <- maxFac <- OriginalSortingVariable <- V1 <-
+  selectGroupNotConverged <- epsPcur <- maxFac <- OriginalSortingVariable <- V1 <-
     epsvalue <- fVariableForCalibrationIPF <- NULL
   temporary_hvar <- value <-
     wValue <- representativeHouseholdForCalibration <- NULL
