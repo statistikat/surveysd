@@ -1,7 +1,8 @@
-# surveysd 1.2.2
+# surveysd 1.3
 
 * new parameter minMaxTrim in `ipf()` to trim weights
 * fix bug for numericalWeighting reported "converged" when it did not converge
+* fix bug when checking cluster and strata for bootstrapping
 
 
 # surveysd 1.2
