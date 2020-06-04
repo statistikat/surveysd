@@ -1,6 +1,8 @@
 # surveysd 1.2.2
 
 * new parameter minMaxTrim in `ipf()` to trim weights
+* fix bug for numericalWeighting reported "converged" when it did not converge
+
 
 # surveysd 1.2
 
