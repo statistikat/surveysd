@@ -1,3 +1,7 @@
+# surveysd 1.2.2
+
+* new parameter minMaxTrim in `ipf()` to trim weights
+
 # surveysd 1.2
 
 * Add vignette about `ipf()`
