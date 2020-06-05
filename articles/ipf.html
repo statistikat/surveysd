@@ -132,7 +132,7 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="no">pWeight</span> ~ <span class="no">gender</span>, <span class="no">pop_sample</span>)
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
-<span class="co">#&gt;   7440   7380</span></pre></body></html></div>
+<span class="co">#&gt;   6910   7910</span></pre></body></html></div>
 <p>Due to random sampling (rather than stratified sampling), there are differences betweeen the gender distributions. We can pass <code>gender_distribution</code> as a parameter to <code><a href="../reference/ipf.html">ipf()</a></code> to obtain modified weights.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">pop_sample_c</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="no">pop_sample</span>, <span class="kw">conP</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">gender_distribution</span>), <span class="kw">w</span> <span class="kw">=</span> <span class="st">"pWeight"</span>)</pre></body></html></div>
 <p>The resulting dataset, <code>pop_sample_c</code> is similar to <code>pop_sample</code> but has an additional column with the adjusted weights.</p>
@@ -155,9 +155,9 @@
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(~ <span class="no">calibWeight</span> + <span class="no">gender</span>, <span class="no">pop_sample_c</span>)
 <span class="co">#&gt;                   gender</span>
 <span class="co">#&gt; calibWeight        male female</span>
-<span class="co">#&gt;   9.76747311827957  744      0</span>
-<span class="co">#&gt;   10.2439024390244    0    738</span></pre></body></html></div>
-<p>All males have been weighted down (<code>calibWeight &lt; 10</code>) to compensate for the overrepresentation in the sample.</p>
+<span class="co">#&gt;   9.55752212389381    0    791</span>
+<span class="co">#&gt;   10.5166425470333  691      0</span></pre></body></html></div>
+<p>All females have been weighted down (<code>calibWeight &lt; 10</code>) to compensate for the overrepresentation in the sample.</p>
 </div>
 <div id="one-constraint-two-variables" class="section level2">
 <h2 class="hasAnchor">
@@ -171,8 +171,8 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="no">pWeight</span> ~ <span class="no">gender</span> + <span class="no">age</span>, <span class="no">pop_sample</span>)
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1680     630    2160    1960      1010</span>
-<span class="co">#&gt;   female      1390     910    2130    1750      1200</span></pre></body></html></div>
+<span class="co">#&gt;   male        1440     870    1940    1780       880</span>
+<span class="co">#&gt;   female      1490     830    2300    2070      1220</span></pre></body></html></div>
 <p>Again, we can see that those constraints are not met. Suppliying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">pop_sample_c2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="no">pop_sample</span>, <span class="kw">conP</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">con_ga</span>), <span class="kw">w</span> <span class="kw">=</span> <span class="st">"pWeight"</span>)
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="no">pWeight</span> ~ <span class="no">gender</span> + <span class="no">age</span>, <span class="no">population</span>)
@@ -212,9 +212,9 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="no">calibWeight</span> ~ <span class="no">region</span>, <span class="no">pop_sample_c2</span>)
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
-<span class="co">#&gt;      549.0001     1077.9998     2803.9993      924.0000     2295.0003 </span>
+<span class="co">#&gt;      549.0000     1078.0001     2803.9997      923.9998     2295.0003 </span>
 <span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span>
-<span class="co">#&gt;     1317.0007     2804.9999     2321.9994      733.0006</span></pre></body></html></div>
+<span class="co">#&gt;     1317.0004     2805.0000     2321.9997      733.0000</span></pre></body></html></div>
 <p>this time, the constraints are not matched perfectly. That is, because we provided more than one constraint. therefore, the <code><a href="../reference/ipf.html">ipf()</a></code> algorithm had to work iteratively.</p>
 </div>
 <div id="household-constraints" class="section level2">
