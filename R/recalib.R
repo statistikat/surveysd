@@ -259,7 +259,7 @@ recalib <- function(
   vars <- c(period, unique(unlist(c(conP.var, conH.var, conPnames, conHnames))))
   vars.class <- unlist(lapply(dat[, mget(vars)], function(z) {
     z.class <- class(z)
-    if (z.class[1] == "labelled") {
+    if (z.class[1] %in% c("labelled", "haven_labelled")) {
       z.class <- "factor"
     }
     return(z.class)
