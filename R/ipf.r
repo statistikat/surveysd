@@ -645,6 +645,15 @@ ipf <- function(
     dat[, hid := as.factor(seq_len(nrow(dat)))]
     dat[, representativeHouseholdForCalibration := 1]
   } else {
+    
+    if(!hid%in%colnames(dat)){
+      stop("dat does not contain column ",hid)
+    }
+    
+    if(any(is.na(dat[[hid]]))){
+      stop("hid contains missing values")
+    }
+    
     if (!is.factor(dat[[hid]]))
       data.table::set(dat, NULL, hid, as.factor(dat[[hid]]))
     dat[, representativeHouseholdForCalibration :=
