@@ -156,30 +156,30 @@ weights.</h1>
 
     <div class="ref-description">
     <p>Calculate point estimates as well as standard errors of variables in surveys.
-Standard errors are estimated using bootstrap weights (see <a href='draw.bootstrap.html'>draw.bootstrap</a>
-and <a href='recalib.html'>recalib</a>). In addition the standard error of an estimate can be
+Standard errors are estimated using bootstrap weights (see draw.bootstrap
+and recalib). In addition the standard error of an estimate can be
 calcualted using the survey data for 3 or more consecutive periods, which
 results in a reduction of the standard error.</p>
     </div>
 
     <pre class="usage"><span class='fu'>calc.stError</span>(
-  <span class='no'>dat</span>,
-  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"weights"</span>),
-  <span class='kw'>b.weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"b.rep"</span>),
-  <span class='kw'>period</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>dat</span>, <span class='st'>"period"</span>),
-  <span class='no'>var</span>,
-  <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-  <span class='kw'>national</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>bias</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>size.limit</span> <span class='kw'>=</span> <span class='fl'>20</span>,
-  <span class='kw'>cv.limit</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>p</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>add.arg</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>dat</span>,
+  weights = <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='kw'>dat</span>, <span class='st'>"weights"</span>),
+  b.weights = <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='kw'>dat</span>, <span class='st'>"b.rep"</span>),
+  period = <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='kw'>dat</span>, <span class='st'>"period"</span>),
+  <span class='kw'>var</span>,
+  fun = <span class='kw'>weightedRatio</span>,
+  national = <span class='fl'>FALSE</span>,
+  group = <span class='kw'>NULL</span>,
+  fun.adjust.var = <span class='kw'>NULL</span>,
+  adjust.var = <span class='kw'>NULL</span>,
+  period.diff = <span class='kw'>NULL</span>,
+  period.mean = <span class='kw'>NULL</span>,
+  bias = <span class='fl'>FALSE</span>,
+  size.limit = <span class='fl'>20</span>,
+  cv.limit = <span class='fl'>10</span>,
+  p = <span class='kw'>NULL</span>,
+  add.arg = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -190,7 +190,7 @@ results in a reduction of the standard error.</p>
       <td><p>either data.frame or data.table containing the survey data.
 Surveys can be a panel survey or rotating panel survey, but does not need
 to be. For rotating panel survey bootstrap weights can be created using
-<a href='draw.bootstrap.html'>draw.bootstrap</a> and <a href='recalib.html'>recalib</a>.</p></td>
+draw.bootstrap and recalib.</p></td>
     </tr>
     <tr>
       <th>weights</th>
@@ -215,7 +215,7 @@ shall be applied for each sample period.</p></td>
     <tr>
       <th>fun</th>
       <td><p>function which will be applied on <code>var</code> for each sample period.
-Predefined functions are <a href='PointEstimates.html'>weightedRatio</a>, <a href='PointEstimates.html'>weightedSum</a>, but can also take
+Predefined functions are weightedRatio, weightedSum, but can also take
 any other function which returns a double or integer and uses weights as
 its second argument.</p></td>
     </tr>
@@ -317,7 +317,7 @@ should at least contain the following columns:</p><ul>
 <li><p>Column indicating the sample period;</p></li>
 <li><p>Column indicating the household ID;</p></li>
 <li><p>Column containing the household sample weights;</p></li>
-<li><p>Columns which contain the bootstrap weights (see output of <a href='recalib.html'>recalib</a>);</p></li>
+<li><p>Columns which contain the bootstrap weights (see output of recalib);</p></li>
 <li><p>Columns listed in <code>var</code> as well as in <code>group</code></p></li>
 </ul>
 
@@ -424,8 +424,8 @@ point estimates converges with a factor \(1/\sqrt{n}\) against the true
 standard error \(\sigma\).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='draw.bootstrap.html'>draw.bootstrap</a> <br />
-<a href='recalib.html'>recalib</a></p></div>
+    <div class='dont-index'><p>draw.bootstrap <br />
+recalib</p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Johannes Gussenbauer, Alexander Kowarik, Statistics Austria</p>
@@ -434,15 +434,15 @@ standard error \(\sigma\).</p>
     <pre class="examples"><div class='input'><span class='co'># Import data and calibrate</span>
 
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1234</span>)
-<span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>4</span>,<span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>dat_boot</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='draw.bootstrap.html'>draw.bootstrap</a></span>(<span class='no'>eusilc</span>, <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"hid"</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='st'>"pWeight"</span>,
-                           <span class='kw'>strata</span> <span class='kw'>=</span> <span class='st'>"region"</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>)
-<span class='no'>dat_boot_calib</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='no'>dat_boot</span>, <span class='kw'>conP.var</span> <span class='kw'>=</span> <span class='st'>"gender"</span>, <span class='kw'>conH.var</span> <span class='kw'>=</span> <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 2 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='input'>
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'>demo.eusilc</span>(n = <span class='fl'>4</span>,prettyNames = <span class='fl'>TRUE</span>)
+<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>3</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
+                           strata = <span class='st'>"region"</span>, period = <span class='st'>"year"</span>)
+<span class='kw'>dat_boot_calib</span> <span class='op'>&lt;-</span> <span class='fu'>recalib</span>(<span class='kw'>dat_boot</span>, conP.var = <span class='st'>"gender"</span>, conH.var = <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 2 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
-                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,
+                        fun = <span class='kw'>weightedRatio</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1: 2010 14827 8182222        14.44422       1.0561405
 #&gt; 2: 2011 14827 8182222        14.77393       1.0159153
 #&gt; 3: 2012 14827 8182222        15.04515       1.1458727
@@ -450,7 +450,7 @@ standard error \(\sigma\).</p>
 <span class='co'># calculate weightedRatio for povertyRisk and fraction of one-person</span>
 <span class='co'># households per period</span>
 
-<span class='no'>dat_boot_calib</span>[, <span class='no'>onePerson</span> <span class='kw'>:=</span> <span class='no'>.N</span> <span class='kw'>==</span> <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>year</span>, <span class='no'>hid</span>)]</div><div class='output co'>#&gt;          hid hsize        region     pid       age gender   ecoStat citizenship
+<span class='kw'>dat_boot_calib</span>[, <span class='kw'>onePerson</span> <span class='op'>:=</span> <span class='kw'>.N</span> <span class='op'>==</span> <span class='fl'>1</span>, by = <span class='fu'>.</span>(<span class='kw'>year</span>, <span class='kw'>hid</span>)]</div><div class='output co'>#&gt;          hid hsize        region     pid       age gender   ecoStat citizenship
 #&gt;     1:     1 (2,3]         Tyrol     101   (25,45] female part time          AT
 #&gt;     2:     1 (2,3]         Tyrol     102   (25,45]   male full time       Other
 #&gt;     3:     1 (2,3]         Tyrol     103 (-Inf,16]   male      &lt;NA&gt;        &lt;NA&gt;
@@ -509,9 +509,9 @@ standard error \(\sigma\).</p>
 #&gt; 59305:     FALSE
 #&gt; 59306:     FALSE
 #&gt; 59307:     FALSE
-#&gt; 59308:      TRUE</div><div class='input'><span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>),
-                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
+#&gt; 59308:      TRUE</div><div class='input'><span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"povertyRisk"</span>, <span class='st'>"onePerson"</span>),
+                        fun = <span class='kw'>weightedRatio</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
 #&gt; 1: 2010 14827 8182222        14.44422       1.0561405      14.85737
 #&gt; 2: 2011 14827 8182222        14.77393       1.0159153      14.85737
 #&gt; 3: 2012 14827 8182222        15.04515       1.1458727      14.85737
@@ -523,10 +523,10 @@ standard error \(\sigma\).</p>
 #&gt; 4:    0.03895766</div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender</span>
 
-<span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='st'>"gender"</span>
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
-                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;     year     n       N gender val_povertyRisk stE_povertyRisk
+<span class='kw'>group</span> <span class='op'>&lt;-</span> <span class='st'>"gender"</span>
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,
+                        fun = <span class='kw'>weightedRatio</span>, group = <span class='kw'>group</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;     year     n       N gender val_povertyRisk stE_povertyRisk
 #&gt;  1: 2010  7267 3979572   male        12.02660       1.2626307
 #&gt;  2: 2010  7560 4202650 female        16.73351       0.9334663
 #&gt;  3: 2010 14827 8182222   &lt;NA&gt;        14.44422       1.0561405
@@ -542,10 +542,10 @@ standard error \(\sigma\).</p>
 <span class='co'># estimate weightedRatio for povertyRisk per period and gender, region and</span>
 <span class='co'># combination of both</span>
 
-<span class='no'>group</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
-                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
+<span class='kw'>group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,
+                        fun = <span class='kw'>weightedRatio</span>, group = <span class='kw'>group</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524       1.8440173
 #&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598       1.5084922
 #&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259       3.2756373
@@ -559,9 +559,9 @@ standard error \(\sigma\).</p>
 #&gt; 120: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.890134       0.9472434</div><div class='input'>
 <span class='co'># use average over 3 periods for standard error estimation</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>,
-                        <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,
+                        fun = <span class='kw'>weightedRatio</span>, period.mean = <span class='fl'>3</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1:           2010 14827 8182222        14.44422       1.0561405
 #&gt; 2: 2010_2011_2012 14827 8182222        14.75443       1.0655681
 #&gt; 3:           2011 14827 8182222        14.77393       1.0159153
@@ -570,11 +570,11 @@ standard error \(\sigma\).</p>
 #&gt; 6:           2013 14827 8182222        14.89013       0.9472434</div><div class='input'>
 <span class='co'># get estimate for difference of period 2011 and 2012</span>
 
-<span class='no'>period.diff</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"2012-2011"</span>)
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
-  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>,
-  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
+<span class='kw'>period.diff</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"2012-2011"</span>)
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>, fun = <span class='kw'>weightedRatio</span>,
+  period.diff = <span class='kw'>period.diff</span>, period.mean = <span class='fl'>3</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;              year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1:           2010 14827 8182222      14.4442182      1.05614046
 #&gt; 2: 2010_2011_2012 14827 8182222      14.7544308      1.06556810
 #&gt; 3:           2011 14827 8182222      14.7739255      1.01591526
@@ -584,40 +584,40 @@ standard error \(\sigma\).</p>
 #&gt; 7: 2012-2011_mean 14827 8182222       0.1486385      0.04551717
 #&gt; 8:           2013 14827 8182222      14.8901335      0.94724335</div><div class='input'>
 <span class='co'># use add.arg-argument</span>
-<span class='no'>fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>, <span class='no'>b</span>) {
-  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>x</span>*<span class='no'>w</span>*<span class='no'>b</span>)
+<span class='kw'>fun</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>x</span>, <span class='kw'>w</span>, <span class='kw'>b</span>) {
+  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>x</span><span class='op'>*</span><span class='kw'>w</span><span class='op'>*</span><span class='kw'>b</span>)
 }
-<span class='no'>add.arg</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>b</span><span class='kw'>=</span><span class='st'>"onePerson"</span>)
+<span class='kw'>add.arg</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(b=<span class='st'>"onePerson"</span>)
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>fun</span>,
-                        <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>add.arg</span><span class='kw'>=</span><span class='no'>add.arg</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>, fun = <span class='kw'>fun</span>,
+                        period.mean = <span class='fl'>0</span>, add.arg=<span class='kw'>add.arg</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;    year     n       N val_povertyRisk stE_povertyRisk
 #&gt; 1: 2010 14827 8182222        273683.9        6134.092
 #&gt; 2: 2011 14827 8182222        261883.6        6785.949
 #&gt; 3: 2012 14827 8182222        243083.9        3261.701
 #&gt; 4: 2013 14827 8182222        238004.4       16875.434</div><div class='input'><span class='co'># compare with direkt computation</span>
-<span class='no'>compare.value</span> <span class='kw'>&lt;-</span> <span class='no'>dat_boot_calib</span>[,<span class='fu'>fun</span>(<span class='no'>povertyRisk</span>,<span class='no'>pWeight</span>,<span class='kw'>b</span><span class='kw'>=</span><span class='no'>onePerson</span>),
-                                 <span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"year"</span>)]
-<span class='fu'><a href='https://rdrr.io/r/base/all.html'>all</a></span>((<span class='no'>compare.value</span>$<span class='no'>V1</span>-<span class='no'>err.est</span>$<span class='no'>Estimates</span>$<span class='no'>val_povertyRisk</span>)<span class='kw'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+<span class='kw'>compare.value</span> <span class='op'>&lt;-</span> <span class='kw'>dat_boot_calib</span>[,<span class='fu'>fun</span>(<span class='kw'>povertyRisk</span>,<span class='kw'>pWeight</span>,b=<span class='kw'>onePerson</span>),
+                                 by=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"year"</span>)]
+<span class='fu'><a href='https://rdrr.io/r/base/all.html'>all</a></span>((<span class='kw'>compare.value</span><span class='op'>$</span><span class='kw'>V1</span><span class='op'>-</span><span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span><span class='op'>$</span><span class='kw'>val_povertyRisk</span>)<span class='op'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 <span class='co'># use a function from an other package that has sampling weights as its</span>
 <span class='co'># second argument</span>
 <span class='co'># for example gini() from laeken</span>
 
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>laeken</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>laeken</span>)
 
 <span class='co'>## set up help function that returns only the gini index</span>
-<span class='no'>help_gini</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>) {
- <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/laeken/man/gini.html'>gini</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)$<span class='no'>value</span>)
+<span class='kw'>help_gini</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>x</span>, <span class='kw'>w</span>) {
+ <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/laeken/man/gini.html'>gini</a></span>(<span class='kw'>x</span>, <span class='kw'>w</span>)<span class='op'>$</span><span class='kw'>value</span>)
 }
 
 <span class='co'>## make sure povertyRisk get coerced to a numeric in order to work with the</span>
 <span class='co'>## external functions</span>
-<span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='no'>dat_boot_calib</span>[, <span class='no'>povertyRisk</span> <span class='kw'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='no'>povertyRisk</span>)])
+<span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='kw'>dat_boot_calib</span>[, <span class='kw'>povertyRisk</span> <span class='op'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='kw'>povertyRisk</span>)])
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
-  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>help_gini</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
-  <span class='kw'>period.diff</span> <span class='kw'>=</span> <span class='no'>period.diff</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>, fun = <span class='kw'>help_gini</span>, group = <span class='kw'>group</span>,
+  period.diff = <span class='kw'>period.diff</span>, period.mean = <span class='fl'>3</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland        82.58548       1.8440173
 #&gt;   2: 2010   288  137822.2 female    Burgenland        78.56740       1.5084922
 #&gt;   3: 2010   359  182732.9   male    Vorarlberg        87.02674       3.2756373
@@ -635,20 +635,20 @@ standard error \(\sigma\).</p>
 
 <span class='co'># this function estimates the povmd60 indicator with x as income vector</span>
 <span class='co'># and w as weight vector</span>
-<span class='no'>povmd</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>) {
- <span class='no'>md</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>laeken</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/laeken/man/weightedMedian.html'>weightedMedian</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)*<span class='fl'>0.6</span>
- <span class='no'>pmd60</span> <span class='kw'>&lt;-</span> <span class='no'>x</span> <span class='kw'>&lt;</span> <span class='no'>md</span>
- <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='no'>pmd60</span>))
+<span class='kw'>povmd</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>x</span>, <span class='kw'>w</span>) {
+ <span class='kw'>md</span> <span class='op'>&lt;-</span> <span class='kw'>laeken</span>::<span class='fu'><a href='https://rdrr.io/pkg/laeken/man/weightedMedian.html'>weightedMedian</a></span>(<span class='kw'>x</span>, <span class='kw'>w</span>)<span class='op'>*</span><span class='fl'>0.6</span>
+ <span class='kw'>pmd60</span> <span class='op'>&lt;-</span> <span class='kw'>x</span> <span class='op'>&lt;</span> <span class='kw'>md</span>
+ <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span>(<span class='kw'>pmd60</span>))
 }
 
 <span class='co'># set adjust.var="eqIncome" so the income vector ist used to estimate</span>
 <span class='co'># the povmd60 indicator for each bootstrap weight</span>
 <span class='co'># and the resultung indicators are passed to function weightedRatio</span>
 
-<span class='no'>err.est</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
-  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"povertyRisk"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>weightedRatio</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
-  <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='no'>povmd</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>err.est</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>, fun = <span class='kw'>weightedRatio</span>, group = <span class='kw'>group</span>,
+  fun.adjust.var = <span class='kw'>povmd</span>, adjust.var = <span class='st'>"eqIncome"</span>, period.mean = <span class='fl'>3</span>)
+<span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_povertyRisk stE_povertyRisk
 #&gt;   1: 2010   261  122741.8   male    Burgenland       17.414524        1.844017
 #&gt;   2: 2010   288  137822.2 female    Burgenland       21.432598        1.252953
 #&gt;   3: 2010   359  182732.9   male    Vorarlberg       12.973259        3.275637
@@ -665,20 +665,20 @@ standard error \(\sigma\).</p>
 <span class='co'># and set fun.adjust.var=NULL,adjust.var=NULL</span>
 <span class='co'># and set fun = povmd, var = "eqIncome"</span>
 
-<span class='no'>povmd2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>, <span class='no'>w</span>) {
- <span class='no'>md</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>laeken</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/laeken/man/weightedMedian.html'>weightedMedian</a></span>(<span class='no'>x</span>, <span class='no'>w</span>)*<span class='fl'>0.6</span>
- <span class='no'>pmd60</span> <span class='kw'>&lt;-</span> <span class='no'>x</span> <span class='kw'>&lt;</span> <span class='no'>md</span>
+<span class='kw'>povmd2</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>x</span>, <span class='kw'>w</span>) {
+ <span class='kw'>md</span> <span class='op'>&lt;-</span> <span class='kw'>laeken</span>::<span class='fu'><a href='https://rdrr.io/pkg/laeken/man/weightedMedian.html'>weightedMedian</a></span>(<span class='kw'>x</span>, <span class='kw'>w</span>)<span class='op'>*</span><span class='fl'>0.6</span>
+ <span class='kw'>pmd60</span> <span class='op'>&lt;-</span> <span class='kw'>x</span> <span class='op'>&lt;</span> <span class='kw'>md</span>
  <span class='co'># weighted ratio is directly estimated inside my function</span>
- <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>w</span>[<span class='no'>pmd60</span>])/<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>w</span>)*<span class='fl'>100</span>)
+ <span class='fu'><a href='https://rdrr.io/r/base/function.html'>return</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>w</span>[<span class='kw'>pmd60</span>])<span class='op'>/</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>w</span>)<span class='op'>*</span><span class='fl'>100</span>)
 }
 
 <span class='co'># but this results in different results in subgroups</span>
 <span class='co'># compared to using fun.adjust.var and adjust.var</span>
 
-<span class='no'>err.est.different</span> <span class='kw'>&lt;-</span> <span class='fu'>calc.stError</span>(
-  <span class='no'>dat_boot_calib</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"eqIncome"</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>povmd2</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='no'>group</span>,
-  <span class='kw'>fun.adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adjust.var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>period.mean</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>err.est.different</span>$<span class='no'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_eqIncome stE_eqIncome
+<span class='kw'>err.est.different</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(
+  <span class='kw'>dat_boot_calib</span>, var = <span class='st'>"eqIncome"</span>, fun = <span class='kw'>povmd2</span>, group = <span class='kw'>group</span>,
+  fun.adjust.var = <span class='kw'>NULL</span>, adjust.var = <span class='kw'>NULL</span>, period.mean = <span class='fl'>3</span>)
+<span class='kw'>err.est.different</span><span class='op'>$</span><span class='kw'>Estimates</span></div><div class='output co'>#&gt;      year     n         N gender        region val_eqIncome stE_eqIncome
 #&gt;   1: 2010   261  122741.8   male    Burgenland     18.61871    1.9754854
 #&gt;   2: 2010   288  137822.2 female    Burgenland     18.12804    3.4270516
 #&gt;   3: 2010   359  182732.9   male    Vorarlberg     14.10553    3.1759133
@@ -691,14 +691,13 @@ standard error \(\sigma\).</p>
 #&gt; 179: 2013  7560 4202650.3 female          &lt;NA&gt;     14.88139    1.1991456
 #&gt; 180: 2013 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;     14.89013    1.0367907</div><div class='input'>
 <span class='co'>## results are equal for yearly estimates</span>
-<span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span>(<span class='no'>err.est.different</span>$<span class='no'>Estimates</span>[<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>region</span>)],
-          <span class='no'>err.est</span>$<span class='no'>Estimates</span>[<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>gender</span>)<span class='kw'>&amp;</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>region</span>)],
-          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span>(<span class='kw'>err.est.different</span><span class='op'>$</span><span class='kw'>Estimates</span>[<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>gender</span>) <span class='op'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>region</span>)],
+          <span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span>[<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>gender</span>)<span class='op'>&amp;</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>region</span>)],
+          check.attributes = <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 <span class='co'>## but for subgroups (gender, region) results vary</span>
-<span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span>(<span class='no'>err.est.different</span>$<span class='no'>Estimates</span>[!(<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>region</span>))],
-          <span class='no'>err.est</span>$<span class='no'>Estimates</span>[!(<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>gender</span>) <span class='kw'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='no'>region</span>))],
-          <span class='kw'>check.attributes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Column 'val_eqIncome': Mean relative difference: 0.08000699"</div><div class='input'>
-</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span>(<span class='kw'>err.est.different</span><span class='op'>$</span><span class='kw'>Estimates</span>[<span class='op'>!</span>(<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>gender</span>) <span class='op'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>region</span>))],
+          <span class='kw'>err.est</span><span class='op'>$</span><span class='kw'>Estimates</span>[<span class='op'>!</span>(<span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>gender</span>) <span class='op'>&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span>(<span class='kw'>region</span>))],
+          check.attributes = <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; [1] "Column 'val_eqIncome': Mean relative difference: 0.08000699"</div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

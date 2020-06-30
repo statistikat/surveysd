@@ -101,7 +101,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to surveysd</h1>
             
-            <h4 class="date">2020-06-10</h4>
+            <h4 class="date">2020-06-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/surveysd.Rmd"><code>vignettes/surveysd.Rmd</code></a></small>
       <div class="hidden name"><code>surveysd.Rmd</code></div>
@@ -115,12 +115,14 @@
 <h3 class="hasAnchor">
 <a href="#load-dummy-data" class="anchor"></a>Load dummy data</h3>
 <p>A test data set based on <code><a href="https://rdrr.io/r/utils/data.html">data(eusilc, package = "laeken")</a></code> can be created with <code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code></p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">surveysd</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/statistikat/surveysd">surveysd</a></span>)
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">1234</span>)
-<span class="no">eusilc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">prettyNames</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="kw">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span>(n = <span class="fl">2</span>, prettyNames = <span class="fl">TRUE</span>)
 
-<span class="no">eusilc</span>[<span class="fl">1</span>:<span class="fl">5</span>, <span class="fu">.</span>(<span class="no">year</span>, <span class="no">povertyRisk</span>, <span class="no">gender</span>, <span class="no">pWeight</span>)]</pre></body></html></div>
+<span class="kw">eusilc</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span>(<span class="kw">year</span>, <span class="kw">povertyRisk</span>, <span class="kw">gender</span>, <span class="kw">pWeight</span>)]
+</pre></div>
 <pre><code>##    year povertyRisk gender  pWeight
 ## 1: 2010       FALSE female 504.5696
 ## 2: 2010       FALSE   male 504.5696
@@ -132,15 +134,19 @@
 <h3 class="hasAnchor">
 <a href="#draw-bootstrap-replicates" class="anchor"></a>Draw bootstrap replicates</h3>
 <p>Use stratified resampling without replacement to generate 10 samples. Those samples are consistent with respect to the reference periods.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">dat_boot</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span>(<span class="no">eusilc</span>, <span class="kw">REP</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">hid</span> <span class="kw">=</span> <span class="st">"hid"</span>, <span class="kw">weights</span> <span class="kw">=</span> <span class="st">"pWeight"</span>,
-                           <span class="kw">strata</span> <span class="kw">=</span> <span class="st">"region"</span>, <span class="kw">period</span> <span class="kw">=</span> <span class="st">"year"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span>(<span class="kw">eusilc</span>, REP = <span class="fl">10</span>, hid = <span class="st">"hid"</span>, weights = <span class="st">"pWeight"</span>, 
+                           strata = <span class="st">"region"</span>, period = <span class="st">"year"</span>)
+</pre></div>
 </div>
 <div id="calibrate-bootstrap-replicates" class="section level3">
 <h3 class="hasAnchor">
 <a href="#calibrate-bootstrap-replicates" class="anchor"></a>Calibrate bootstrap replicates</h3>
 <p>Calibrate each sample according to the distribution of <code>gender</code> (on a personal level) and <code>region</code> (on a household level).</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">dat_boot_calib</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span>(<span class="no">dat_boot</span>, <span class="kw">conP.var</span> <span class="kw">=</span> <span class="st">"gender"</span>, <span class="kw">conH.var</span> <span class="kw">=</span> <span class="st">"region"</span>,
-                          <span class="kw">epsP</span> <span class="kw">=</span> <span class="fl">1e-2</span>, <span class="kw">epsH</span> <span class="kw">=</span> <span class="fl">2.5e-2</span>, <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="kw">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span>(<span class="kw">dat_boot</span>, conP.var = <span class="st">"gender"</span>, conH.var = <span class="st">"region"</span>,
+                          epsP = <span class="fl">1e-2</span>, epsH = <span class="fl">2.5e-2</span>, verbose = <span class="fl">TRUE</span>)
+</pre></div>
 <pre><code>## Iteration stopped after 3 steps</code></pre>
 <pre><code>## Convergence reached</code></pre>
 <pre><code>## Iteration stopped after 3 steps</code></pre>
@@ -161,7 +167,9 @@
 <pre><code>## Convergence reached</code></pre>
 <pre><code>## Iteration stopped after 2 steps</code></pre>
 <pre><code>## Convergence reached</code></pre>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">dat_boot_calib</span>[<span class="fl">1</span>:<span class="fl">5</span>, <span class="fu">.</span>(<span class="no">year</span>, <span class="no">povertyRisk</span>, <span class="no">gender</span>, <span class="no">pWeight</span>, <span class="no">w1</span>, <span class="no">w2</span>, <span class="no">w3</span>, <span class="no">w4</span>)]</pre></body></html></div>
+<div class="sourceCode" id="cb25"><pre class="downlit">
+<span class="kw">dat_boot_calib</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span>(<span class="kw">year</span>, <span class="kw">povertyRisk</span>, <span class="kw">gender</span>, <span class="kw">pWeight</span>, <span class="kw">w1</span>, <span class="kw">w2</span>, <span class="kw">w3</span>, <span class="kw">w4</span>)]
+</pre></div>
 <pre><code>##    year povertyRisk gender  pWeight       w1        w2        w3        w4
 ## 1: 2010       FALSE female 504.5696 1025.360 0.4581938 0.4456302 0.4520549
 ## 2: 2010       FALSE   male 504.5696 1025.360 0.4581938 0.4456302 0.4520549
@@ -173,8 +181,10 @@
 <h3 class="hasAnchor">
 <a href="#estimate-with-respect-to-a-grouping-variable" class="anchor"></a>Estimate with respect to a grouping variable</h3>
 <p>Estimate relative amount of persons at risk of poverty per period and <code>gender</code>.</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">err.est</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="no">dat_boot_calib</span>, <span class="kw">var</span> <span class="kw">=</span> <span class="st">"povertyRisk"</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="no">weightedRatio</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"gender"</span>)
-<span class="no">err.est</span>$<span class="no">Estimates</span></pre></body></html></div>
+<div class="sourceCode" id="cb27"><pre class="downlit">
+<span class="kw">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, group = <span class="st">"gender"</span>)
+<span class="kw">err.est</span><span class="op">$</span><span class="kw">Estimates</span>
+</pre></div>
 <pre><code>##    year     n       N gender val_povertyRisk stE_povertyRisk
 ## 1: 2010  7267 3979572   male        12.02660       0.5882841
 ## 2: 2010  7560 4202650 female        16.73351       0.7473909
@@ -188,9 +198,11 @@
 <h3 class="hasAnchor">
 <a href="#estimate-with-respect-to-several-variables" class="anchor"></a>Estimate with respect to several variables</h3>
 <p>Estimate relative amount of persons at risk of poverty per period for each <code>region</code>, <code>gender</code>, and combination of both.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">group</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
-<span class="no">err.est</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="no">dat_boot_calib</span>, <span class="kw">var</span> <span class="kw">=</span> <span class="st">"povertyRisk"</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="no">weightedRatio</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">group</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">err.est</span>$<span class="no">Estimates</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb29"><pre class="downlit">
+<span class="kw">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
+<span class="kw">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, group = <span class="kw">group</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw">err.est</span><span class="op">$</span><span class="kw">Estimates</span>)
+</pre></div>
 <pre><code>##    year   n        N gender     region val_povertyRisk stE_povertyRisk
 ## 1: 2010 261 122741.8   male Burgenland       17.414524        3.831697
 ## 2: 2010 288 137822.2 female Burgenland       21.432598        3.243412
@@ -198,7 +210,9 @@
 ## 4: 2010 374 194622.1 female Vorarlberg       19.883637        3.112974
 ## 5: 2010 440 253143.7   male   Salzburg        9.156964        1.809600
 ## 6: 2010 484 282307.3 female   Salzburg       17.939382        2.587059</code></pre>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="co">## skipping 54 more rows</span></pre></body></html></div>
+<div class="sourceCode" id="cb31"><pre class="downlit">
+<span class="co">## skipping 54 more rows</span>
+</pre></div>
 </div>
   </div>
 

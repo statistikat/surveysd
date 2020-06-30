@@ -168,7 +168,7 @@ different time steps and a houshold ID, a new houshold ID is assigned to the
 original and the split household.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>generate.HHID</span>(<span class='no'>dat</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"RB010"</span>, <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"RB030"</span>, <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"DB030"</span>)</pre>
+    <pre class="usage"><span class='fu'>generate.HHID</span>(<span class='kw'>dat</span>, period = <span class='st'>"RB010"</span>, pid = <span class='st'>"RB030"</span>, hid = <span class='st'>"DB030"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,42 +202,43 @@ households is now named <code>hid</code> and the original household ID has a
 trailing "_orig".</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>surveysd</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>laeken</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>data.table</span>)
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='https://github.com/statistikat/surveysd'>surveysd</a></span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>laeken</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://r-datatable.com'>data.table</a></span>)
 
-<span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>surveysd</span><span class='kw ns'>:::</span><span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>4</span>)
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='kw'>surveysd</span>:::<span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/demo.eusilc.html'>demo.eusilc</a></span>(n=<span class='fl'>4</span>)
 
 <span class='co'># create spit households</span>
-<span class='no'>eusilc</span>[,<span class='no'>rb030split</span><span class='kw'>:=</span><span class='no'>rb030</span>]
-<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[,<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>unique</a></span>(<span class='no'>year</span>)]
-<span class='no'>year</span> <span class='kw'>&lt;-</span> <span class='no'>year</span>[-<span class='fl'>1</span>]
-<span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
-<span class='kw'>for</span>(<span class='no'>y</span> <span class='kw'>in</span> <span class='no'>year</span>) {
-  <span class='no'>split.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>-<span class='fl'>1</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
-                         <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>)]
-  <span class='no'>overwrite.person</span> <span class='kw'>&lt;-</span> <span class='no'>eusilc</span>[<span class='no'>year</span><span class='kw'>==</span>(<span class='no'>y</span>)<span class='kw'>&amp;</span>!<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)<span class='kw'>&amp;</span>!<span class='no'>db030</span><span class='kw'>%in%</span><span class='no'>leaf_out</span>,
-                             <span class='fu'>.</span>(<span class='kw'>rb030</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>rb030</span>,<span class='fl'>20</span>))]
-  <span class='no'>overwrite.person</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rb030split"</span>,<span class='st'>"year_curr"</span>)<span class='kw'>:=</span><span class='fu'>.</span>(<span class='no'>split.person</span>,<span class='no'>y</span>)]
+<span class='kw'>eusilc</span>[,<span class='kw'>rb030split</span><span class='op'>:=</span><span class='kw'>rb030</span>]
+<span class='kw'>year</span> <span class='op'>&lt;-</span> <span class='kw'>eusilc</span>[,<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>unique</a></span>(<span class='kw'>year</span>)]
+<span class='kw'>year</span> <span class='op'>&lt;-</span> <span class='kw'>year</span>[<span class='op'>-</span><span class='fl'>1</span>]
+<span class='kw'>leaf_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
+<span class='co'>for</span>(<span class='kw'>y</span> <span class='co'>in</span> <span class='kw'>year</span>) {
+  <span class='kw'>split.person</span> <span class='op'>&lt;-</span> <span class='kw'>eusilc</span>[<span class='kw'>year</span><span class='op'>==</span>(<span class='kw'>y</span><span class='op'>-</span><span class='fl'>1</span>)<span class='op'>&amp;</span><span class='op'>!</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='kw'>db030</span>)<span class='op'>&amp;</span><span class='op'>!</span><span class='kw'>db030</span><span class='op'>%in%</span><span class='kw'>leaf_out</span>,
+                         <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='kw'>rb030</span>,<span class='fl'>20</span>)]
+  <span class='kw'>overwrite.person</span> <span class='op'>&lt;-</span> <span class='kw'>eusilc</span>[<span class='kw'>year</span><span class='op'>==</span>(<span class='kw'>y</span>)<span class='op'>&amp;</span><span class='op'>!</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='kw'>db030</span>)<span class='op'>&amp;</span><span class='op'>!</span><span class='kw'>db030</span><span class='op'>%in%</span><span class='kw'>leaf_out</span>,
+                             <span class='fu'>.</span>(rb030=<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='kw'>rb030</span>,<span class='fl'>20</span>))]
+  <span class='kw'>overwrite.person</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rb030split"</span>,<span class='st'>"year_curr"</span>)<span class='op'>:=</span><span class='fu'>.</span>(<span class='kw'>split.person</span>,<span class='kw'>y</span>)]
 
-  <span class='no'>eusilc</span>[<span class='no'>overwrite.person</span>,
-         <span class='no'>rb030split</span><span class='kw'>:=</span><span class='no'>i.rb030split</span>,<span class='kw'>on</span><span class='kw'>=</span><span class='fu'>.</span>(<span class='no'>rb030</span>,<span class='no'>year</span><span class='kw'>&gt;=</span><span class='no'>year_curr</span>)]
-  <span class='no'>leaf_out</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
-    <span class='no'>leaf_out</span>,
-    <span class='no'>eusilc</span>[<span class='no'>rb030</span><span class='kw'>%in%</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>overwrite.person</span>$<span class='no'>rb030</span>,<span class='no'>overwrite.person</span>$<span class='no'>rb030split</span>),
-    <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>unique</a></span>(<span class='no'>db030</span>)])
+  <span class='kw'>eusilc</span>[<span class='kw'>overwrite.person</span>,
+         <span class='kw'>rb030split</span><span class='op'>:=</span><span class='kw'>i.rb030split</span>,on=<span class='fu'>.</span>(<span class='kw'>rb030</span>,<span class='kw'>year</span><span class='op'>&gt;=</span><span class='kw'>year_curr</span>)]
+  <span class='kw'>leaf_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
+    <span class='kw'>leaf_out</span>,
+    <span class='kw'>eusilc</span>[<span class='kw'>rb030</span><span class='op'>%in%</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>overwrite.person</span><span class='op'>$</span><span class='kw'>rb030</span>,<span class='kw'>overwrite.person</span><span class='op'>$</span><span class='kw'>rb030split</span>),
+    <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>unique</a></span>(<span class='kw'>db030</span>)])
 }
 
 <span class='co'># pid which are in split households</span>
-<span class='no'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
+<span class='kw'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='kw'>db030</span>)),by=<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>rb030split</span>)][<span class='kw'>V1</span><span class='op'>&gt;</span><span class='fl'>1</span>]
 
-<span class='no'>eusilc.new</span> <span class='kw'>&lt;-</span> <span class='fu'>generate.HHID</span>(<span class='no'>eusilc</span>, <span class='kw'>period</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>pid</span> <span class='kw'>=</span> <span class='st'>"rb030split"</span>,
-                            <span class='kw'>hid</span> <span class='kw'>=</span> <span class='st'>"db030"</span>)
+<span class='kw'>eusilc.new</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/generate.HHID.html'>generate.HHID</a></span>(<span class='kw'>eusilc</span>, period = <span class='st'>"year"</span>, pid = <span class='st'>"rb030split"</span>,
+                            hid = <span class='st'>"db030"</span>)
 
 <span class='co'># no longer any split households in the data</span>
-<span class='no'>eusilc.new</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='no'>db030</span>)),<span class='kw'>by</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>rb030split</span>)][<span class='no'>V1</span><span class='kw'>&gt;</span><span class='fl'>1</span>]
-}</div></pre>
+<span class='kw'>eusilc.new</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='kw'>db030</span>)),by=<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>rb030split</span>)][<span class='kw'>V1</span><span class='op'>&gt;</span><span class='fl'>1</span>]
+}
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -155,16 +155,16 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
 (2009).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rescaled.bootstrap</span>(
-  <span class='no'>dat</span>,
-  <span class='kw'>REP</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='st'>"DB050&gt;1"</span>,
-  <span class='kw'>cluster</span> <span class='kw'>=</span> <span class='st'>"DB060&gt;DB030"</span>,
-  <span class='kw'>fpc</span> <span class='kw'>=</span> <span class='st'>"N.cluster&gt;N.households"</span>,
-  <span class='kw'>single.PSU</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>),
-  <span class='kw'>return.value</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"data"</span>, <span class='st'>"replicates"</span>),
-  <span class='kw'>check.input</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>new.method</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/rescaled.bootstrap.html'>rescaled.bootstrap</a></span>(
+  <span class='kw'>dat</span>,
+  REP = <span class='fl'>1000</span>,
+  strata = <span class='st'>"DB050&gt;1"</span>,
+  cluster = <span class='st'>"DB060&gt;DB030"</span>,
+  fpc = <span class='st'>"N.cluster&gt;N.households"</span>,
+  single.PSU = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>),
+  return.value = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"data"</span>, <span class='st'>"replicates"</span>),
+  check.input = <span class='fl'>TRUE</span>,
+  new.method = <span class='fl'>FALSE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -264,10 +264,10 @@ sampling. Survey Methodology. 35. 227-234.</p>
     <p>Johannes Gussenbauer, Statistics Austria</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>eusilc</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"laeken"</span>)
-<span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='no'>eusilc</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>eusilc</span>, package = <span class='st'>"laeken"</span>)
+<span class='kw'>data.table</span>::<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span>(<span class='kw'>eusilc</span>)
 
-<span class='no'>eusilc</span>[,<span class='no'>N.households</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>db090</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)]),<span class='kw'>by</span><span class='kw'>=</span><span class='no'>db040</span>]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
+<span class='kw'>eusilc</span>[,<span class='kw'>N.households</span><span class='op'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>db090</span>[<span class='op'>!</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='kw'>db030</span>)]),by=<span class='kw'>db040</span>]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
 #&gt;     1:     1     3         Tyrol    101  34 female     2     AT  9756.25      0
 #&gt;     2:     1     3         Tyrol    102  39   male     1  Other 12471.60      0
 #&gt;     3:     1     3         Tyrol    103   2   male  &lt;NA&gt;   &lt;NA&gt;       NA     NA
@@ -302,10 +302,10 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14824: 424.85      0      0      0  1.0 14387.41 643.2557 643.2557       567011
 #&gt; 14825: 120.65      0      0      0  1.0 14805.83 679.7288 679.7288       279017
 #&gt; 14826:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017
-#&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017</div><div class='input'><span class='no'>eusilc.bootstrap</span> <span class='kw'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='no'>eusilc</span>,<span class='kw'>REP</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>strata</span><span class='kw'>=</span><span class='st'>"db040"</span>,
-                                       <span class='kw'>cluster</span><span class='kw'>=</span><span class='st'>"db030"</span>,<span class='kw'>fpc</span><span class='kw'>=</span><span class='st'>"N.households"</span>)
+#&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017</div><div class='input'><span class='kw'>eusilc.bootstrap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/rescaled.bootstrap.html'>rescaled.bootstrap</a></span>(<span class='kw'>eusilc</span>,REP=<span class='fl'>100</span>,strata=<span class='st'>"db040"</span>,
+                                       cluster=<span class='st'>"db030"</span>,fpc=<span class='st'>"N.households"</span>)
 
-<span class='no'>eusilc</span>[,<span class='no'>new_strata</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='no'>db040</span>,<span class='no'>hsize</span>,<span class='kw'>sep</span><span class='kw'>=</span><span class='st'>"_"</span>)]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
+<span class='kw'>eusilc</span>[,<span class='kw'>new_strata</span><span class='op'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='kw'>db040</span>,<span class='kw'>hsize</span>,sep=<span class='st'>"_"</span>)]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
 #&gt;     1:     1     3         Tyrol    101  34 female     2     AT  9756.25      0
 #&gt;     2:     1     3         Tyrol    102  39   male     1  Other 12471.60      0
 #&gt;     3:     1     3         Tyrol    103   2   male  &lt;NA&gt;   &lt;NA&gt;       NA     NA
@@ -352,7 +352,7 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14824: Upper Austria_1
 #&gt; 14825:         Tyrol_1
 #&gt; 14826:         Tyrol_2
-#&gt; 14827:         Tyrol_2</div><div class='input'><span class='no'>eusilc</span>[,<span class='no'>N.housholds</span><span class='kw'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>db090</span>[!<span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='no'>db030</span>)]),<span class='kw'>by</span><span class='kw'>=</span><span class='no'>new_strata</span>]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
+#&gt; 14827:         Tyrol_2</div><div class='input'><span class='kw'>eusilc</span>[,<span class='kw'>N.housholds</span><span class='op'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>db090</span>[<span class='op'>!</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>duplicated</a></span>(<span class='kw'>db030</span>)]),by=<span class='kw'>new_strata</span>]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
 #&gt;     1:     1     3         Tyrol    101  34 female     2     AT  9756.25      0
 #&gt;     2:     1     3         Tyrol    102  39   male     1  Other 12471.60      0
 #&gt;     3:     1     3         Tyrol    103   2   male  &lt;NA&gt;   &lt;NA&gt;       NA     NA
@@ -399,8 +399,10 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14824: Upper Austria_1      168533
 #&gt; 14825:         Tyrol_1       80208
 #&gt; 14826:         Tyrol_2       84506
-#&gt; 14827:         Tyrol_2       84506</div><div class='input'><span class='no'>eusilc.bootstrap</span> <span class='kw'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='no'>eusilc</span>,<span class='kw'>REP</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>strata</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
-                                       <span class='kw'>cluster</span><span class='kw'>=</span><span class='st'>"db030"</span>,<span class='kw'>fpc</span><span class='kw'>=</span><span class='st'>"N.households"</span>)</div></pre>
+#&gt; 14827:         Tyrol_2       84506</div><div class='input'><span class='kw'>eusilc.bootstrap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/rescaled.bootstrap.html'>rescaled.bootstrap</a></span>(<span class='kw'>eusilc</span>,REP=<span class='fl'>100</span>,strata=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
+                                       cluster=<span class='st'>"db030"</span>,fpc=<span class='st'>"N.households"</span>)
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

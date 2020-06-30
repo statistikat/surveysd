@@ -153,26 +153,26 @@ individual level constraints." />
 individual level constraints.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ipf</span>(
-  <span class='no'>dat</span>,
-  <span class='kw'>hid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>conP</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>conH</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>,
-  <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>w</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>maxIter</span> <span class='kw'>=</span> <span class='fl'>200</span>,
-  <span class='kw'>meanHH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>allPthenH</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>returnNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>looseH</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>numericalWeighting</span> <span class='kw'>=</span> <span class='no'>computeLinear</span>,
-  <span class='kw'>check_hh_vars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>conversion_messages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>nameCalibWeight</span> <span class='kw'>=</span> <span class='st'>"calibWeight"</span>,
-  <span class='kw'>minMaxTrim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf.html'>ipf</a></span>(
+  <span class='kw'>dat</span>,
+  hid = <span class='kw'>NULL</span>,
+  conP = <span class='kw'>NULL</span>,
+  conH = <span class='kw'>NULL</span>,
+  epsP = <span class='fl'>1e-06</span>,
+  epsH = <span class='fl'>0.01</span>,
+  verbose = <span class='fl'>FALSE</span>,
+  w = <span class='kw'>NULL</span>,
+  bound = <span class='fl'>4</span>,
+  maxIter = <span class='fl'>200</span>,
+  meanHH = <span class='fl'>TRUE</span>,
+  allPthenH = <span class='fl'>TRUE</span>,
+  returnNA = <span class='fl'>TRUE</span>,
+  looseH = <span class='fl'>FALSE</span>,
+  numericalWeighting = <span class='kw'>computeLinear</span>,
+  check_hh_vars = <span class='fl'>TRUE</span>,
+  conversion_messages = <span class='fl'>FALSE</span>,
+  nameCalibWeight = <span class='st'>"calibWeight"</span>,
+  minMaxTrim = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -276,7 +276,7 @@ calibrated. They are however not calibrated against the actual constraints
     </tr>
     <tr>
       <th>numericalWeighting</th>
-      <td><p>See <a href='computeFrac.html'>numericalWeighting</a></p></td>
+      <td><p>See <a href='https://rdrr.io/pkg/surveysd/man/computeFrac.html'>numericalWeighting</a></p></td>
     </tr>
     <tr>
       <th>check_hh_vars</th>
@@ -324,7 +324,7 @@ as well as the following.</p><table class='table'>
     <p>This function implements the weighting procedure described
 <a href='https://doi.org/10.17713/ajs.v45i3.120'>here</a>.
 Usage examples can be found in the corresponding vignette
-(<code><a href='../articles/ipf.html'>vignette("ipf")</a></code>).</p>
+(<code>vignette("ipf")</code>).</p>
 <p><code>conP</code> and <code>conH</code> are contingency tables, which can be created with <code>xtabs</code>.
 The <code>dimnames</code> of those tables should match the names and levels of the
 corresponding columns in <code>dat</code>.</p>
@@ -344,57 +344,57 @@ incease the performance of the scheme.</p>
     <p>Alexander Kowarik, Gregor de Cillia</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 
 <span class='co'># load data</span>
-<span class='no'>eusilc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>prettyNames</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/demo.eusilc.html'>demo.eusilc</a></span>(n = <span class='fl'>1</span>, prettyNames = <span class='fl'>TRUE</span>)
 
 <span class='co'># personal constraints</span>
-<span class='no'>conP1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>age</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>)
-<span class='no'>conP2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>gender</span> + <span class='no'>region</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>)
-<span class='no'>conP3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span>*<span class='no'>eqIncome</span> ~ <span class='no'>gender</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>)
+<span class='kw'>conP1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>pWeight</span> <span class='op'>~</span> <span class='kw'>age</span>, data = <span class='kw'>eusilc</span>)
+<span class='kw'>conP2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>pWeight</span> <span class='op'>~</span> <span class='kw'>gender</span> <span class='op'>+</span> <span class='kw'>region</span>, data = <span class='kw'>eusilc</span>)
+<span class='kw'>conP3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>pWeight</span><span class='op'>*</span><span class='kw'>eqIncome</span> <span class='op'>~</span> <span class='kw'>gender</span>, data = <span class='kw'>eusilc</span>)
 
 <span class='co'># household constraints</span>
-<span class='no'>conH1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>pWeight</span> ~ <span class='no'>hsize</span> + <span class='no'>region</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>eusilc</span>)
+<span class='kw'>conH1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>pWeight</span> <span class='op'>~</span> <span class='kw'>hsize</span> <span class='op'>+</span> <span class='kw'>region</span>, data = <span class='kw'>eusilc</span>)
 
 <span class='co'># simple usage ------------------------------------------</span>
 
-<span class='no'>calibweights1</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf</span>(
-  <span class='no'>eusilc</span>,
-  <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>, <span class='kw'>eqIncome</span> <span class='kw'>=</span> <span class='no'>conP3</span>),
-  <span class='kw'>bound</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+<span class='kw'>calibweights1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf.html'>ipf</a></span>(
+  <span class='kw'>eusilc</span>,
+  conP = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>conP1</span>, <span class='kw'>conP2</span>, eqIncome = <span class='kw'>conP3</span>),
+  bound = <span class='kw'>NULL</span>,
+  verbose = <span class='fl'>TRUE</span>
 )
 
 <span class='co'># compare personal weight with the calibweigth</span>
-<span class='no'>calibweights1</span>[, <span class='fu'>.</span>(<span class='no'>hid</span>, <span class='no'>pWeight</span>, <span class='no'>calibWeight</span>)]
+<span class='kw'>calibweights1</span>[, <span class='fu'>.</span>(<span class='kw'>hid</span>, <span class='kw'>pWeight</span>, <span class='kw'>calibWeight</span>)]
 
 <span class='co'># advanced usage ----------------------------------------</span>
 
 <span class='co'># use an array of tolerances</span>
-<span class='no'>epsH1</span> <span class='kw'>&lt;-</span> <span class='no'>conH1</span>
-<span class='no'>epsH1</span>[<span class='fl'>1</span>:<span class='fl'>4</span>, ] <span class='kw'>&lt;-</span> <span class='fl'>0.005</span>
-<span class='no'>epsH1</span>[<span class='fl'>5</span>, ] <span class='kw'>&lt;-</span> <span class='fl'>0.2</span>
+<span class='kw'>epsH1</span> <span class='op'>&lt;-</span> <span class='kw'>conH1</span>
+<span class='kw'>epsH1</span>[<span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, ] <span class='op'>&lt;-</span> <span class='fl'>0.005</span>
+<span class='kw'>epsH1</span>[<span class='fl'>5</span>, ] <span class='op'>&lt;-</span> <span class='fl'>0.2</span>
 
 <span class='co'># create an initial weight for the calibration</span>
-<span class='no'>eusilc</span>[, <span class='no'>regSamp</span> <span class='kw'>:=</span> <span class='no'>.N</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>region</span>]
-<span class='no'>eusilc</span>[, <span class='no'>regPop</span> <span class='kw'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>pWeight</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>region</span>]
-<span class='no'>eusilc</span>[, <span class='no'>baseWeight</span> <span class='kw'>:=</span> <span class='no'>regPop</span>/<span class='no'>regSamp</span>]
+<span class='kw'>eusilc</span>[, <span class='kw'>regSamp</span> <span class='op'>:=</span> <span class='kw'>.N</span>, by = <span class='kw'>region</span>]
+<span class='kw'>eusilc</span>[, <span class='kw'>regPop</span> <span class='op'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>pWeight</span>), by = <span class='kw'>region</span>]
+<span class='kw'>eusilc</span>[, <span class='kw'>baseWeight</span> <span class='op'>:=</span> <span class='kw'>regPop</span><span class='op'>/</span><span class='kw'>regSamp</span>]
 
-<span class='no'>calibweights2</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf</span>(
-  <span class='no'>eusilc</span>,
-  <span class='kw'>conP</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conP1</span>, <span class='no'>conP2</span>),
-  <span class='kw'>conH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>conH1</span>),
-  <span class='kw'>epsP</span> <span class='kw'>=</span> <span class='fl'>1e-6</span>,
-  <span class='kw'>epsH</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='no'>epsH1</span>),
-  <span class='kw'>bound</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>w</span> <span class='kw'>=</span> <span class='st'>"baseWeight"</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+<span class='kw'>calibweights2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf.html'>ipf</a></span>(
+  <span class='kw'>eusilc</span>,
+  conP = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>conP1</span>, <span class='kw'>conP2</span>),
+  conH = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>conH1</span>),
+  epsP = <span class='fl'>1e-6</span>,
+  epsH = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>epsH1</span>),
+  bound = <span class='fl'>4</span>,
+  w = <span class='st'>"baseWeight"</span>,
+  verbose = <span class='fl'>TRUE</span>
 )
 
 <span class='co'># show an adjusted version of conP and the original</span>
-<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP_adj"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>calibweights2</span>, <span class='st'>"conP"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='kw'>calibweights2</span>, <span class='st'>"conP_adj"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='kw'>calibweights2</span>, <span class='st'>"conP"</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

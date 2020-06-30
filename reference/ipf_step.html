@@ -155,13 +155,13 @@ are assumed to be one dimensional in the <code>ipf_step</code> functions. <code>
 type factor into a single one to allow multidimensional ipu-steps. See examples.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ipf_step_ref</span>(<span class='no'>w</span>, <span class='no'>classes</span>, <span class='no'>targets</span>)
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>ipf_step_ref</a></span>(<span class='kw'>w</span>, <span class='kw'>classes</span>, <span class='kw'>targets</span>)
 
-<span class='fu'>ipf_step</span>(<span class='no'>w</span>, <span class='no'>classes</span>, <span class='no'>targets</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>ipf_step</a></span>(<span class='kw'>w</span>, <span class='kw'>classes</span>, <span class='kw'>targets</span>)
 
-<span class='fu'>ipf_step_f</span>(<span class='no'>w</span>, <span class='no'>classes</span>, <span class='no'>targets</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>ipf_step_f</a></span>(<span class='kw'>w</span>, <span class='kw'>classes</span>, <span class='kw'>targets</span>)
 
-<span class='fu'>combine_factors</span>(<span class='no'>dat</span>, <span class='no'>targets</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>combine_factors</a></span>(<span class='kw'>dat</span>, <span class='kw'>targets</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -196,86 +196,85 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class='co'>############# one-dimensional ipu ##############</span>
 
 <span class='co'>## create random data</span>
-<span class='no'>nobs</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
-<span class='no'>classLabels</span> <span class='kw'>&lt;-</span> <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>3</span>]
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
-  <span class='kw'>weight</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>nobs</span>)),
-  <span class='kw'>household</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='no'>classLabels</span>, <span class='no'>nobs</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+<span class='kw'>nobs</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
+<span class='kw'>classLabels</span> <span class='op'>&lt;-</span> <span class='kw'>letters</span>[<span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>]
+<span class='kw'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
+  weight = <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>nobs</span>)),
+  household = <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='kw'>classLabels</span>, <span class='kw'>nobs</span>, replace = <span class='fl'>TRUE</span>))
 )
-<span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  5.1397911         a
-#&gt; 2  1.2591308         c
-#&gt; 3  0.6516811         b
-#&gt; 4  0.9171716         a
-#&gt; 5  2.1896192         c
-#&gt; 6  0.4860760         c
-#&gt; 7  3.0053915         a
-#&gt; 8  5.6514550         c
-#&gt; 9  0.5395121         a
-#&gt; 10 0.5593388         b</div><div class='input'>
+<span class='kw'>dat</span></div><div class='output co'>#&gt;       weight household
+#&gt; 1  0.6640834         c
+#&gt; 2  5.1397911         b
+#&gt; 3  1.2591308         a
+#&gt; 4  0.6516811         c
+#&gt; 5  0.9171716         b
+#&gt; 6  2.1896192         a
+#&gt; 7  0.4860760         c
+#&gt; 8  3.0053915         c
+#&gt; 9  5.6514550         a
+#&gt; 10 0.5395121         c</div><div class='input'>
 <span class='co'>## create targets (same lenght as classLabels!)</span>
-<span class='no'>targets</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>5</span>
+<span class='kw'>targets</span> <span class='op'>&lt;-</span> <span class='fl'>3</span><span class='op'>:</span><span class='fl'>5</span>
 
 <span class='co'>## calculate weights</span>
-<span class='no'>new_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>dat</span>, <span class='no'>new_weight</span>)</div><div class='output co'>#&gt;       weight household new_weight
-#&gt; 1  5.1397911         a  1.6058725
-#&gt; 2  1.2591308         c  0.6567358
-#&gt; 3  0.6516811         b  2.1525032
-#&gt; 4  0.9171716         a  0.2865604
-#&gt; 5  2.1896192         c  1.1420587
-#&gt; 6  0.4860760         c  0.2535269
-#&gt; 7  3.0053915         a  0.9390023
-#&gt; 8  5.6514550         c  2.9476786
-#&gt; 9  0.5395121         a  0.1685648
-#&gt; 10 0.5593388         b  1.8474968</div><div class='input'>
+<span class='kw'>new_weight</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>ipf_step</a></span>(<span class='kw'>dat</span><span class='op'>$</span><span class='kw'>weight</span>, <span class='kw'>dat</span><span class='op'>$</span><span class='kw'>household</span>, <span class='kw'>targets</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='kw'>dat</span>, <span class='kw'>new_weight</span>)</div><div class='output co'>#&gt;       weight household new_weight
+#&gt; 1  0.6640834         c  0.6210167
+#&gt; 2  5.1397911         b  3.3943026
+#&gt; 3  1.2591308         a  0.4150887
+#&gt; 4  0.6516811         c  0.6094186
+#&gt; 5  0.9171716         b  0.6056974
+#&gt; 6  2.1896192         a  0.7218362
+#&gt; 7  0.4860760         c  0.4545532
+#&gt; 8  3.0053915         c  2.8104875
+#&gt; 9  5.6514550         a  1.8630751
+#&gt; 10 0.5395121         c  0.5045239</div><div class='input'>
 <span class='co'>## check solution</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>new_weight</span> ~ <span class='no'>dat</span>$<span class='no'>household</span>)</div><div class='output co'>#&gt; dat$household
+<span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>new_weight</span> <span class='op'>~</span> <span class='kw'>dat</span><span class='op'>$</span><span class='kw'>household</span>)</div><div class='output co'>#&gt; dat$household
 #&gt; a b c 
 #&gt; 3 4 5 </div><div class='input'>
 <span class='co'>## calculate weights "by reference"</span>
-<span class='fu'>ipf_step_ref</span>(<span class='no'>dat</span>$<span class='no'>weight</span>, <span class='no'>dat</span>$<span class='no'>household</span>, <span class='no'>targets</span>)
-<span class='no'>dat</span></div><div class='output co'>#&gt;       weight household
-#&gt; 1  1.6058725         a
-#&gt; 2  0.6567358         c
-#&gt; 3  2.1525032         b
-#&gt; 4  0.2865604         a
-#&gt; 5  1.1420587         c
-#&gt; 6  0.2535269         c
-#&gt; 7  0.9390023         a
-#&gt; 8  2.9476786         c
-#&gt; 9  0.1685648         a
-#&gt; 10 1.8474968         b</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>ipf_step_ref</a></span>(<span class='kw'>dat</span><span class='op'>$</span><span class='kw'>weight</span>, <span class='kw'>dat</span><span class='op'>$</span><span class='kw'>household</span>, <span class='kw'>targets</span>)
+<span class='kw'>dat</span></div><div class='output co'>#&gt;       weight household
+#&gt; 1  0.6210167         c
+#&gt; 2  3.3943026         b
+#&gt; 3  0.4150887         a
+#&gt; 4  0.6094186         c
+#&gt; 5  0.6056974         b
+#&gt; 6  0.7218362         a
+#&gt; 7  0.4545532         c
+#&gt; 8  2.8104875         c
+#&gt; 9  1.8630751         a
+#&gt; 10 0.5045239         c</div><div class='input'>
 <span class='co'>############# multidimensional ipu ##############</span>
 
 <span class='co'>## load data</span>
-<span class='no'>factors</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"time"</span>, <span class='st'>"sex"</span>, <span class='st'>"smoker"</span>, <span class='st'>"day"</span>)
-<span class='no'>tips</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>sex</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Female"</span>,<span class='st'>"Male"</span>,<span class='st'>"Male"</span>), <span class='kw'>day</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Sun"</span>,<span class='st'>"Mon"</span>,<span class='st'>"Tue"</span>),
-<span class='kw'>time</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Dinner"</span>,<span class='st'>"Lunch"</span>,<span class='st'>"Lunch"</span>), <span class='kw'>smoker</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"No"</span>,<span class='st'>"Yes"</span>,<span class='st'>"No"</span>))
-<span class='no'>tips</span> <span class='kw'>&lt;-</span> <span class='no'>tips</span>[<span class='no'>factors</span>]
+<span class='kw'>factors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"time"</span>, <span class='st'>"sex"</span>, <span class='st'>"smoker"</span>, <span class='st'>"day"</span>)
+<span class='kw'>tips</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(sex=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Female"</span>,<span class='st'>"Male"</span>,<span class='st'>"Male"</span>), day=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Sun"</span>,<span class='st'>"Mon"</span>,<span class='st'>"Tue"</span>),
+time=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Dinner"</span>,<span class='st'>"Lunch"</span>,<span class='st'>"Lunch"</span>), smoker=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"No"</span>,<span class='st'>"Yes"</span>,<span class='st'>"No"</span>))
+<span class='kw'>tips</span> <span class='op'>&lt;-</span> <span class='kw'>tips</span>[<span class='kw'>factors</span>]
 
 <span class='co'>## combine factors</span>
-<span class='no'>con</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(~<span class='no'>.</span>, <span class='no'>tips</span>)
-<span class='no'>cf</span> <span class='kw'>&lt;-</span> <span class='fu'>combine_factors</span>(<span class='no'>tips</span>, <span class='no'>con</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='no'>tips</span>, <span class='no'>cf</span>)[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>tips</span>), <span class='fl'>10</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),]</div><div class='output co'>#&gt;       time    sex smoker day cf
-#&gt; 2    Lunch   Male    Yes Mon  8
-#&gt; 3    Lunch   Male     No Tue 20
-#&gt; 2.1  Lunch   Male    Yes Mon  8
+<span class='kw'>con</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='op'>~</span><span class='kw'>.</span>, <span class='kw'>tips</span>)
+<span class='kw'>cf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>combine_factors</a></span>(<span class='kw'>tips</span>, <span class='kw'>con</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='kw'>tips</span>, <span class='kw'>cf</span>)[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>tips</span>), <span class='fl'>10</span>, replace = <span class='fl'>TRUE</span>),]</div><div class='output co'>#&gt;       time    sex smoker day cf
 #&gt; 1   Dinner Female     No Sun  9
+#&gt; 2    Lunch   Male    Yes Mon  8
+#&gt; 2.1  Lunch   Male    Yes Mon  8
+#&gt; 3    Lunch   Male     No Tue 20
 #&gt; 2.2  Lunch   Male    Yes Mon  8
 #&gt; 1.1 Dinner Female     No Sun  9
-#&gt; 3.1  Lunch   Male     No Tue 20
 #&gt; 2.3  Lunch   Male    Yes Mon  8
-#&gt; 3.2  Lunch   Male     No Tue 20
+#&gt; 1.2 Dinner Female     No Sun  9
+#&gt; 3.1  Lunch   Male     No Tue 20
 #&gt; 2.4  Lunch   Male    Yes Mon  8</div><div class='input'>
 <span class='co'>## adjust weights</span>
-<span class='no'>weight</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>tips</span>)) + <span class='fl'>5</span>
-<span class='no'>adjusted_weight</span> <span class='kw'>&lt;-</span> <span class='fu'>ipf_step</span>(<span class='no'>weight</span>, <span class='no'>cf</span>, <span class='no'>con</span>)
+<span class='kw'>weight</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>tips</span>)) <span class='op'>+</span> <span class='fl'>5</span>
+<span class='kw'>adjusted_weight</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf_step.html'>ipf_step</a></span>(<span class='kw'>weight</span>, <span class='kw'>cf</span>, <span class='kw'>con</span>)
 
 <span class='co'>## check outputs</span>
-<span class='no'>con2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='no'>adjusted_weight</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>tips</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>((<span class='no'>con</span> - <span class='no'>con2</span>)^<span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] 0</div><div class='input'>
-</div></pre>
+<span class='kw'>con2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>adjusted_weight</span> <span class='op'>~</span> <span class='kw'>.</span>, data = <span class='kw'>tips</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>((<span class='kw'>con</span> <span class='op'>-</span> <span class='kw'>con2</span>)<span class='op'>^</span><span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] 0</div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
