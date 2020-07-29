@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette explains the usage of the `ipf()` function, which has been used for calibrating the labour force survey of austria for several years.
+This vignette explains the usage of the `ipf()` function, which has been used for calibrating the labour force survey of Austria for several years.
 It is based on the Iterative Proportional Fitting algorithm and gives some flexibility about the details of the implementation. See [@mekogu2016] or `vignette("methodology")` for more details.
 
 ## Setup
@@ -45,7 +45,7 @@ We can see that this is currently not the case.
 xtabs(pWeight ~ gender, pop_sample)
 ```
 
-Due to random sampling (rather than stratified sampling), there are differences betweeen the gender distributions.
+Due to random sampling (rather than stratified sampling), there are differences between the gender distributions.
 We can pass `gender_distribution` as a parameter to `ipf()` to obtain modified weights.
 
 ```{r}
@@ -92,7 +92,7 @@ xtabs(pWeight ~ gender + age, pop_sample)
 ```
 
 Again, we can see that those constraints are not met.
-Suppliying the contingency table `con_ga` to `ipf()` will again resolve this.
+Supplying the contingency table `con_ga` to `ipf()` will again resolve this.
 
 ```{r}
 pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga), w = "pWeight")
