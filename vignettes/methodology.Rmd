@@ -114,7 +114,7 @@ For ease of readability we will drop the subindices regarding strata $h$ and clu
 
 The uncalibrated bootstrap weights $\tilde{b}_j^{i}$ computed through the rescaled bootstrap procedure yields population statistics that differ from the known population margins of specified sociodemographic variables for which the base weights $w_j$ have been calibrated. To adjust for this the bootstrap weights $\tilde{b}_{j}^{i}$ can be recalibrated using iterative proportional fitting as described in [@mekogu2016].
 
-Let the original weight $w_{j}$ be calibrated for $n=n_P+n_H$ sociodemographic variables which are divided into the sets $\mathcal{P}:=\{p_{c}, c=1 \ldots,n_P\}$ and $\mathcal{H}:=\{h_{c}, c=1 \ldots,n_H\}$. $\mathcal{P}$ and $\mathcal{H}$ correspond to personal, for example gender or age, or household variables, like region or households size, respectively. Each variable in either $\mathcal{P}$ or $\mathcal{H}$ can take on $P_{c}$ or $H_{c}$ values with and $N^{p_c}_v$, $v=1,\ldots,P_c$, or $N^{h_c}_v$, $v=1,\ldots,H_c$, as the corresponding population margins. Starting with $k=0$ the iterative proportional fitting procedure is applied on each $\tilde{b}_j^{i}$, $i=1,\ldots, B$ seperately. The weights are first updated for personal and afterwards updated for household variables. If constraints regarding the populations margins are not met $k$ is raised by 1 and the procedure starts from the beginning. For the following denote as starting weight $\tilde{b}_j^{[0]}:=\tilde{b}_j^{i}$ for fixed $i$.
+Let the original weight $w_{j}$ be calibrated for $n=n_P+n_H$ sociodemographic variables which are divided into the sets $\mathcal{P}:=\{p_{c}, c=1 \ldots,n_P\}$ and $\mathcal{H}:=\{h_{c}, c=1 \ldots,n_H\}$. $\mathcal{P}$ and $\mathcal{H}$ correspond to personal, for example gender or age, or household variables, like region or households size, respectively. Each variable in either $\mathcal{P}$ or $\mathcal{H}$ can take on $P_{c}$ or $H_{c}$ values with and $N^{p_c}_v$, $v=1,\ldots,P_c$, or $N^{h_c}_v$, $v=1,\ldots,H_c$, as the corresponding population margins. Starting with $k=0$ the iterative proportional fitting procedure is applied on each $\tilde{b}_j^{i}$, $i=1,\ldots, B$ separately. The weights are first updated for personal and afterwards updated for household variables. If constraints regarding the populations margins are not met $k$ is raised by 1 and the procedure starts from the beginning. For the following denote as starting weight $\tilde{b}_j^{[0]}:=\tilde{b}_j^{i}$ for fixed $i$.
 
 ### Adjustment and trimming for $\mathcal{P}$
 
@@ -132,7 +132,7 @@ Since the sociodemographic variables $p_1,\ldots,p_{n_c}$ include person-specifi
 $$
   \tilde{b}_j^{[(n+1)k+n_p+1]} = \frac{{\sum\limits_{l\in a}} {\tilde{b}_l^{[(n+1)k+n_p]}}}{h_a}
 $$
-This can result in losing the population structure performed in the previouse subsection.
+This can result in losing the population structure performed in the previous subsection.
 
 ###  Adjustment and trimming for $\mathcal{H}$
 
@@ -160,7 +160,7 @@ $$
 \frac{N^{h_c}_v}{{\sum\limits_l} {\tilde{b}}_l^{[(n+1)k+j]}} \in ((1-\epsilon_h)N^{h_c}_v,(1+\epsilon_h)N^{h_c}_v)
 $$
 are verified, where the sum in the denominator expands over all observations which have the same value for variables $h_c$ or $p_c$.
-If these contraints hold true the algorithm reaches convergence, otherwise $k$ is raised by 1 and the procedure repeats itself.
+If these constraints hold true the algorithm reaches convergence, otherwise $k$ is raised by 1 and the procedure repeats itself.
 
 The above described calibration procedure is applied on each year $y_t$ of EU-SILC separately, $t=1,\ldots n_y$, thus resulting in so called calibrated bootstrap sample weights $b_{j}^{(i,{y_t})}$, $i=1,\ldots,B$ for each year $y$ and each household $j$.
 
