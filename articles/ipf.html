@@ -184,8 +184,8 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample</span>)
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1780     860    2110    1890       720</span>
-<span class="co">#&gt;   female      1270     800    2270    1850      1270</span>
+<span class="co">#&gt;   male        1740     830    2120    1740       930</span>
+<span class="co">#&gt;   female      1300     830    2140    1990      1200</span>
 </pre></div>
 <p>Again, we can see that those constraints are not met. Suppliying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
@@ -231,9 +231,9 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">pop_sample_c2</span>)
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
-<span class="co">#&gt;      548.9999     1078.0001     2803.9992      924.0001     2295.0003 </span>
+<span class="co">#&gt;      548.9998     1077.9999     2803.9998      923.9999     2295.0006 </span>
 <span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span>
-<span class="co">#&gt;     1317.0003     2805.0002     2321.9996      733.0002</span>
+<span class="co">#&gt;     1317.0003     2805.0002     2321.9999      732.9999</span>
 </pre></div>
 <p>this time, the constraints are not matched perfectly. That is, because we provided more than one constraint. therefore, the <code><a href="../reference/ipf.html">ipf()</a></code> algorithm had to work iteratively.</p>
 </div>
@@ -264,20 +264,20 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">hsize</span> <span class="op">+</span> <span class="kw">region</span>, data = <span class="kw">pop_sample_hh</span>[<span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">duplicated</a></span>(<span class="kw">hid</span>)])
 <span class="co">#&gt;          region</span>
 <span class="co">#&gt; hsize     Burgenland Carinthia Lower Austria Salzburg Styria Tyrol</span>
-<span class="co">#&gt;   (0,1]           58       117           325      103    264   118</span>
-<span class="co">#&gt;   (1,2]           82       126           345      102    260   149</span>
-<span class="co">#&gt;   (2,3]           37        80           189       55    187    79</span>
-<span class="co">#&gt;   (3,4]           33        63           169       71    122   102</span>
-<span class="co">#&gt;   (4,5]           14        22            82       18     49    37</span>
-<span class="co">#&gt;   (5,Inf]          2        17            21       12     34    11</span>
+<span class="co">#&gt;   (0,1]            0         0             0        0      0     0</span>
+<span class="co">#&gt;   (1,2]            0         0             0        0      0     0</span>
+<span class="co">#&gt;   (2,3]            0         0             0        0      0     0</span>
+<span class="co">#&gt;   (3,4]            0         0             0        0      0     0</span>
+<span class="co">#&gt;   (4,5]            0         0             0        0      0     0</span>
+<span class="co">#&gt;   (5,Inf]          0         0             0        0      0     0</span>
 <span class="co">#&gt;          region</span>
 <span class="co">#&gt; hsize     Upper Austria Vienna Vorarlberg</span>
-<span class="co">#&gt;   (0,1]             262    431         67</span>
-<span class="co">#&gt;   (1,2]             321    355         72</span>
-<span class="co">#&gt;   (2,3]             203    175         44</span>
-<span class="co">#&gt;   (3,4]             168     96         53</span>
-<span class="co">#&gt;   (4,5]              79     35         27</span>
-<span class="co">#&gt;   (5,Inf]            35     15          7</span>
+<span class="co">#&gt;   (0,1]               0      0          0</span>
+<span class="co">#&gt;   (1,2]               0      0          0</span>
+<span class="co">#&gt;   (2,3]               0      0          0</span>
+<span class="co">#&gt;   (3,4]               0      0          0</span>
+<span class="co">#&gt;   (4,5]               0      0          0</span>
+<span class="co">#&gt;   (5,Inf]             0      0          0</span>
 </pre></div>
 </div>
 <div id="tolerances" class="section level2">
@@ -288,7 +288,7 @@
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
     verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.01</span>)
-<span class="co">#&gt; Iteration stopped after 2 steps</span>
+<span class="co">#&gt; Iteration stopped after 3 steps</span>
 <span class="co">#&gt; Convergence reached</span>
 <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
     verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.0001</span>)
