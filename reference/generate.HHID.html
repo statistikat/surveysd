@@ -207,7 +207,7 @@ trailing "_orig".</p>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>laeken</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://r-datatable.com'>data.table</a></span>)
 
-<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='kw'>surveysd</span>:::<span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/demo.eusilc.html'>demo.eusilc</a></span>(n=<span class='fl'>4</span>)
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='kw'>surveysd</span>:::<span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(n=<span class='fl'>4</span>)
 
 <span class='co'># create spit households</span>
 <span class='kw'>eusilc</span>[,<span class='kw'>rb030split</span><span class='op'>:=</span><span class='kw'>rb030</span>]
@@ -232,7 +232,7 @@ trailing "_orig".</p>
 <span class='co'># pid which are in split households</span>
 <span class='kw'>eusilc</span>[,<span class='fu'>.</span>(<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='kw'>db030</span>)),by=<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>rb030split</span>)][<span class='kw'>V1</span><span class='op'>&gt;</span><span class='fl'>1</span>]
 
-<span class='kw'>eusilc.new</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/generate.HHID.html'>generate.HHID</a></span>(<span class='kw'>eusilc</span>, period = <span class='st'>"year"</span>, pid = <span class='st'>"rb030split"</span>,
+<span class='kw'>eusilc.new</span> <span class='op'>&lt;-</span> <span class='fu'>generate.HHID</span>(<span class='kw'>eusilc</span>, period = <span class='st'>"year"</span>, pid = <span class='st'>"rb030split"</span>,
                             hid = <span class='st'>"db030"</span>)
 
 <span class='co'># no longer any split households in the data</span>

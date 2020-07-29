@@ -148,7 +148,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Plot results of <code><a href='https://rdrr.io/pkg/surveysd/man/calc.stError.html'>calc.stError()</a></code></p>
+    <p>Plot results of <code><a href='calc.stError.html'>calc.stError()</a></code></p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for surveysd</span>
@@ -166,7 +166,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>object of class 'surveysd' output of function <a href='https://rdrr.io/pkg/surveysd/man/calc.stError.html'>calc.stError</a></p></td>
+      <td><p>object of class 'surveysd' output of function <a href='calc.stError.html'>calc.stError</a></p></td>
     </tr>
     <tr>
       <th>variable</th>
@@ -195,7 +195,7 @@ for the combination of <code>groups[1]</code> and <code>groups[2]</code>.</p></t
 <code>type='grouping'</code>. Default is <code>"dot"</code>
 For <code>sd.type='dot'</code> point estimates are plotted and flagged if the
 corresponding standard error and/or the standard error using the mean over
-k-periods exceeded the value <code>cv.limit</code> (see <a href='https://rdrr.io/pkg/surveysd/man/calc.stError.html'>calc.stError</a>).
+k-periods exceeded the value <code>cv.limit</code> (see <a href='calc.stError.html'>calc.stError</a>).
 For <code>sd.type='ribbon'</code> the point estimates including ribbons, defined by
 point estimate +- estimated standard error are plotted.
 The calculated standard errors using the mean over k periods are plotted
@@ -215,16 +215,16 @@ coloured grey.</p></td>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>laeken</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='http://r-datatable.com'>data.table</a></span>)
 
-<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/demo.eusilc.html'>demo.eusilc</a></span>(n = <span class='fl'>4</span>, prettyNames = <span class='fl'>TRUE</span>)
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(n = <span class='fl'>4</span>, prettyNames = <span class='fl'>TRUE</span>)
 
-<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/draw.bootstrap.html'>draw.bootstrap</a></span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>3</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
+<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='draw.bootstrap.html'>draw.bootstrap</a></span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>3</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
                            strata = <span class='st'>"region"</span>, period = <span class='st'>"year"</span>)
 
 <span class='co'># calibrate weight for bootstrap replicates</span>
-<span class='kw'>dat_boot_calib</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/recalib.html'>recalib</a></span>(<span class='kw'>dat_boot</span>, conP.var = <span class='st'>"gender"</span>, conH.var = <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='input'>
+<span class='kw'>dat_boot_calib</span> <span class='op'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='kw'>dat_boot</span>, conP.var = <span class='st'>"gender"</span>, conH.var = <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povmd60 per period</span>
 <span class='kw'>group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"region"</span>))
-<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/calc.stError.html'>calc.stError</a></span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,
+<span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='calc.stError.html'>calc.stError</a></span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,
                         fun = <span class='kw'>weightedRatio</span>,
                         group = <span class='kw'>group</span> , period.mean = <span class='kw'>NULL</span>)
 

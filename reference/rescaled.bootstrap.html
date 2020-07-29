@@ -155,7 +155,7 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
 (2009).</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/rescaled.bootstrap.html'>rescaled.bootstrap</a></span>(
+    <pre class="usage"><span class='fu'>rescaled.bootstrap</span>(
   <span class='kw'>dat</span>,
   REP = <span class='fl'>1000</span>,
   strata = <span class='st'>"DB050&gt;1"</span>,
@@ -302,7 +302,7 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14824: 424.85      0      0      0  1.0 14387.41 643.2557 643.2557       567011
 #&gt; 14825: 120.65      0      0      0  1.0 14805.83 679.7288 679.7288       279017
 #&gt; 14826:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017
-#&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017</div><div class='input'><span class='kw'>eusilc.bootstrap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/rescaled.bootstrap.html'>rescaled.bootstrap</a></span>(<span class='kw'>eusilc</span>,REP=<span class='fl'>100</span>,strata=<span class='st'>"db040"</span>,
+#&gt; 14827:   0.00      0      0      0  1.5 16288.30 567.1544 567.1544       279017</div><div class='input'><span class='kw'>eusilc.bootstrap</span> <span class='op'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='kw'>eusilc</span>,REP=<span class='fl'>100</span>,strata=<span class='st'>"db040"</span>,
                                        cluster=<span class='st'>"db030"</span>,fpc=<span class='st'>"N.households"</span>)
 
 <span class='kw'>eusilc</span>[,<span class='kw'>new_strata</span><span class='op'>:=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='kw'>db040</span>,<span class='kw'>hsize</span>,sep=<span class='st'>"_"</span>)]</div><div class='output co'>#&gt;        db030 hsize         db040  rb030 age  rb090 pl030 pb220a   py010n py050n
@@ -399,7 +399,7 @@ sampling. Survey Methodology. 35. 227-234.</p>
 #&gt; 14824: Upper Austria_1      168533
 #&gt; 14825:         Tyrol_1       80208
 #&gt; 14826:         Tyrol_2       84506
-#&gt; 14827:         Tyrol_2       84506</div><div class='input'><span class='kw'>eusilc.bootstrap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/rescaled.bootstrap.html'>rescaled.bootstrap</a></span>(<span class='kw'>eusilc</span>,REP=<span class='fl'>100</span>,strata=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
+#&gt; 14827:         Tyrol_2       84506</div><div class='input'><span class='kw'>eusilc.bootstrap</span> <span class='op'>&lt;-</span> <span class='fu'>rescaled.bootstrap</span>(<span class='kw'>eusilc</span>,REP=<span class='fl'>100</span>,strata=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"new_strata"</span>),
                                        cluster=<span class='st'>"db030"</span>,fpc=<span class='st'>"N.households"</span>)
 
 </div></pre>

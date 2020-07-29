@@ -156,8 +156,8 @@ weights.</h1>
 
     <div class="ref-description">
     <p>Calculate point estimates as well as standard errors of variables in surveys.
-Standard errors are estimated using bootstrap weights (see draw.bootstrap
-and recalib). In addition the standard error of an estimate can be
+Standard errors are estimated using bootstrap weights (see <a href='draw.bootstrap.html'>draw.bootstrap</a>
+and <a href='recalib.html'>recalib</a>). In addition the standard error of an estimate can be
 calcualted using the survey data for 3 or more consecutive periods, which
 results in a reduction of the standard error.</p>
     </div>
@@ -190,7 +190,7 @@ results in a reduction of the standard error.</p>
       <td><p>either data.frame or data.table containing the survey data.
 Surveys can be a panel survey or rotating panel survey, but does not need
 to be. For rotating panel survey bootstrap weights can be created using
-draw.bootstrap and recalib.</p></td>
+<a href='draw.bootstrap.html'>draw.bootstrap</a> and <a href='recalib.html'>recalib</a>.</p></td>
     </tr>
     <tr>
       <th>weights</th>
@@ -215,7 +215,7 @@ shall be applied for each sample period.</p></td>
     <tr>
       <th>fun</th>
       <td><p>function which will be applied on <code>var</code> for each sample period.
-Predefined functions are weightedRatio, weightedSum, but can also take
+Predefined functions are <a href='PointEstimates.html'>weightedRatio</a>, <a href='PointEstimates.html'>weightedSum</a>, but can also take
 any other function which returns a double or integer and uses weights as
 its second argument.</p></td>
     </tr>
@@ -317,7 +317,7 @@ should at least contain the following columns:</p><ul>
 <li><p>Column indicating the sample period;</p></li>
 <li><p>Column indicating the household ID;</p></li>
 <li><p>Column containing the household sample weights;</p></li>
-<li><p>Columns which contain the bootstrap weights (see output of recalib);</p></li>
+<li><p>Columns which contain the bootstrap weights (see output of <a href='recalib.html'>recalib</a>);</p></li>
 <li><p>Columns listed in <code>var</code> as well as in <code>group</code></p></li>
 </ul>
 
@@ -424,8 +424,8 @@ point estimates converges with a factor \(1/\sqrt{n}\) against the true
 standard error \(\sigma\).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>draw.bootstrap <br />
-recalib</p></div>
+    <div class='dont-index'><p><a href='draw.bootstrap.html'>draw.bootstrap</a> <br />
+<a href='recalib.html'>recalib</a></p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Johannes Gussenbauer, Alexander Kowarik, Statistics Austria</p>
@@ -434,10 +434,10 @@ recalib</p></div>
     <pre class="examples"><div class='input'><span class='co'># Import data and calibrate</span>
 
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1234</span>)
-<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'>demo.eusilc</span>(n = <span class='fl'>4</span>,prettyNames = <span class='fl'>TRUE</span>)
-<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>3</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(n = <span class='fl'>4</span>,prettyNames = <span class='fl'>TRUE</span>)
+<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'><a href='draw.bootstrap.html'>draw.bootstrap</a></span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>3</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
                            strata = <span class='st'>"region"</span>, period = <span class='st'>"year"</span>)
-<span class='kw'>dat_boot_calib</span> <span class='op'>&lt;-</span> <span class='fu'>recalib</span>(<span class='kw'>dat_boot</span>, conP.var = <span class='st'>"gender"</span>, conH.var = <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 2 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='input'>
+<span class='kw'>dat_boot_calib</span> <span class='op'>&lt;-</span> <span class='fu'><a href='recalib.html'>recalib</a></span>(<span class='kw'>dat_boot</span>, conP.var = <span class='st'>"gender"</span>, conH.var = <span class='st'>"region"</span>)</div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 2 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='output co'>#&gt; <span class='message'>Iteration stopped after 3 steps</span></div><div class='output co'>#&gt; <span class='message'>Convergence reached</span></div><div class='input'>
 <span class='co'># estimate weightedRatio for povertyRisk per period</span>
 
 <span class='kw'>err.est</span> <span class='op'>&lt;-</span> <span class='fu'>calc.stError</span>(<span class='kw'>dat_boot_calib</span>, var = <span class='st'>"povertyRisk"</span>,

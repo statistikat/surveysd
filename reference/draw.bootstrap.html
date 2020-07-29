@@ -314,7 +314,7 @@ where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without
 stratification.</p>
 <p>Bootstrap replicates are drawn for each survey period (<code>period</code>) using the
-function rescaled.bootstrap.
+function <a href='rescaled.bootstrap.html'>rescaled.bootstrap</a>.
 Afterwards the bootstrap replicates for each household are carried forward
 from the first period the household enters the survey to all the censecutive
 periods it stays in the survey.</p>
@@ -339,7 +339,7 @@ data.table objects.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'>demo.eusilc</span>(prettyNames = <span class='fl'>TRUE</span>)
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(prettyNames = <span class='fl'>TRUE</span>)
 
 <span class='co'>## draw sample without stratification or clustering</span>
 <span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>10</span>, weights = <span class='st'>"pWeight"</span>,

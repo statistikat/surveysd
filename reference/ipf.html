@@ -153,7 +153,7 @@ individual level constraints." />
 individual level constraints.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf.html'>ipf</a></span>(
+    <pre class="usage"><span class='fu'>ipf</span>(
   <span class='kw'>dat</span>,
   hid = <span class='kw'>NULL</span>,
   conP = <span class='kw'>NULL</span>,
@@ -276,7 +276,7 @@ calibrated. They are however not calibrated against the actual constraints
     </tr>
     <tr>
       <th>numericalWeighting</th>
-      <td><p>See <a href='https://rdrr.io/pkg/surveysd/man/computeFrac.html'>numericalWeighting</a></p></td>
+      <td><p>See <a href='computeLinear.html'>numericalWeighting</a></p></td>
     </tr>
     <tr>
       <th>check_hh_vars</th>
@@ -324,7 +324,7 @@ as well as the following.</p><table class='table'>
     <p>This function implements the weighting procedure described
 <a href='https://doi.org/10.17713/ajs.v45i3.120'>here</a>.
 Usage examples can be found in the corresponding vignette
-(<code>vignette("ipf")</code>).</p>
+(<code><a href='../articles/ipf.html'>vignette("ipf")</a></code>).</p>
 <p><code>conP</code> and <code>conH</code> are contingency tables, which can be created with <code>xtabs</code>.
 The <code>dimnames</code> of those tables should match the names and levels of the
 corresponding columns in <code>dat</code>.</p>
@@ -347,7 +347,7 @@ incease the performance of the scheme.</p>
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 
 <span class='co'># load data</span>
-<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/demo.eusilc.html'>demo.eusilc</a></span>(n = <span class='fl'>1</span>, prettyNames = <span class='fl'>TRUE</span>)
+<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(n = <span class='fl'>1</span>, prettyNames = <span class='fl'>TRUE</span>)
 
 <span class='co'># personal constraints</span>
 <span class='kw'>conP1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/xtabs.html'>xtabs</a></span>(<span class='kw'>pWeight</span> <span class='op'>~</span> <span class='kw'>age</span>, data = <span class='kw'>eusilc</span>)
@@ -359,7 +359,7 @@ incease the performance of the scheme.</p>
 
 <span class='co'># simple usage ------------------------------------------</span>
 
-<span class='kw'>calibweights1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf.html'>ipf</a></span>(
+<span class='kw'>calibweights1</span> <span class='op'>&lt;-</span> <span class='fu'>ipf</span>(
   <span class='kw'>eusilc</span>,
   conP = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>conP1</span>, <span class='kw'>conP2</span>, eqIncome = <span class='kw'>conP3</span>),
   bound = <span class='kw'>NULL</span>,
@@ -381,7 +381,7 @@ incease the performance of the scheme.</p>
 <span class='kw'>eusilc</span>[, <span class='kw'>regPop</span> <span class='op'>:=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>pWeight</span>), by = <span class='kw'>region</span>]
 <span class='kw'>eusilc</span>[, <span class='kw'>baseWeight</span> <span class='op'>:=</span> <span class='kw'>regPop</span><span class='op'>/</span><span class='kw'>regSamp</span>]
 
-<span class='kw'>calibweights2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/surveysd/man/ipf.html'>ipf</a></span>(
+<span class='kw'>calibweights2</span> <span class='op'>&lt;-</span> <span class='fu'>ipf</span>(
   <span class='kw'>eusilc</span>,
   conP = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>conP1</span>, <span class='kw'>conP2</span>),
   conH = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>conH1</span>),
