@@ -135,7 +135,7 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span>, <span class="kw">pop_sample</span>)
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
-<span class="co">#&gt;   7570   7250</span>
+<span class="co">#&gt;   7490   7330</span>
 </pre></div>
 <p>Due to random sampling (rather than stratified sampling), there are differences between the gender distributions. We can pass <code>gender_distribution</code> as a parameter to <code><a href="../reference/ipf.html">ipf()</a></code> to obtain modified weights.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
@@ -166,8 +166,8 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="op">~</span> <span class="kw">calibWeight</span> <span class="op">+</span> <span class="kw">gender</span>, <span class="kw">pop_sample_c</span>)
 <span class="co">#&gt;                   gender</span>
 <span class="co">#&gt; calibWeight        male female</span>
-<span class="co">#&gt;   9.5997357992074   757      0</span>
-<span class="co">#&gt;   10.4275862068966    0    725</span>
+<span class="co">#&gt;   9.7022696929239   749      0</span>
+<span class="co">#&gt;   10.3137789904502    0    733</span>
 </pre></div>
 <p>All males have been weighted down (<code>calibWeight &lt; 10</code>) to compensate for the overrepresentation in the sample.</p>
 </div>
@@ -184,8 +184,8 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample</span>)
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1690     820    2090    1900      1070</span>
-<span class="co">#&gt;   female      1410     840    2010    1830      1160</span>
+<span class="co">#&gt;   male        1480    1090    2300    1700       920</span>
+<span class="co">#&gt;   female      1350     870    2030    1990      1090</span>
 </pre></div>
 <p>Again, we can see that those constraints are not met. Supplying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
@@ -219,9 +219,9 @@
 <span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample_c2</span>)
 <span class="co">#&gt;         age</span>
-<span class="co">#&gt; gender   (-Inf,16]   (16,25]   (25,45]   (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male   1528.0009  855.0002 2165.0006 1821.9996  896.9998</span>
-<span class="co">#&gt;   female 1375.0001  847.9994 2254.9994 1845.0002 1236.9999</span>
+<span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
+<span class="co">#&gt;   male        1528     855    2165    1822       897</span>
+<span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">population</span>)
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
@@ -231,9 +231,9 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">pop_sample_c2</span>)
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
-<span class="co">#&gt;           549          1078          2804           924          2295 </span>
+<span class="co">#&gt;      548.9996     1078.0000     2803.9997      924.0001     2295.0001 </span>
 <span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span>
-<span class="co">#&gt;          1317          2805          2322           733</span>
+<span class="co">#&gt;     1317.0001     2805.0003     2321.9996      733.0003</span>
 </pre></div>
 <p>this time, the constraints are not matched perfectly. That is, because we provided more than one constraint. therefore, the <code><a href="../reference/ipf.html">ipf()</a></code> algorithm had to work iteratively.</p>
 </div>
@@ -288,11 +288,11 @@
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
     verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.01</span>)
-<span class="co">#&gt; Iteration stopped after 2 steps</span>
+<span class="co">#&gt; Iteration stopped after 3 steps</span>
 <span class="co">#&gt; Convergence reached</span>
 <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
     verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.0001</span>)
-<span class="co">#&gt; Iteration stopped after 3 steps</span>
+<span class="co">#&gt; Iteration stopped after 4 steps</span>
 <span class="co">#&gt; Convergence reached</span>
 </pre></div>
 <p>We see that changing the tolerances from <code>0.01</code> (one percent) to <code>0.0001</code> increases the number of required iterations.</p>

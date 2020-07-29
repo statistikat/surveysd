@@ -145,29 +145,7 @@
 <p>Calibrate each sample according to the distribution of <code>gender</code> (on a personal level) and <code>region</code> (on a household level).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span>(<span class="kw">dat_boot</span>, conP.var = <span class="st">"gender"</span>, conH.var = <span class="st">"region"</span>,
-                          epsP = <span class="fl">1e-2</span>, epsH = <span class="fl">2.5e-2</span>, verbose = <span class="fl">TRUE</span>)
-</pre></div>
-<pre><code>## Iteration stopped after 3 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 3 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 2 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 2 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 3 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 3 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 2 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 3 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 2 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<pre><code>## Iteration stopped after 2 steps</code></pre>
-<pre><code>## Convergence reached</code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit">
+                          epsP = <span class="fl">1e-2</span>, epsH = <span class="fl">2.5e-2</span>, verbose = <span class="fl">FALSE</span>)
 <span class="kw">dat_boot_calib</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span>(<span class="kw">year</span>, <span class="kw">povertyRisk</span>, <span class="kw">gender</span>, <span class="kw">pWeight</span>, <span class="kw">w1</span>, <span class="kw">w2</span>, <span class="kw">w3</span>, <span class="kw">w4</span>)]
 </pre></div>
 <pre><code>##    year povertyRisk gender  pWeight       w1        w2        w3        w4
@@ -181,7 +159,7 @@
 <h3 class="hasAnchor">
 <a href="#estimate-with-respect-to-a-grouping-variable" class="anchor"></a>Estimate with respect to a grouping variable</h3>
 <p>Estimate relative amount of persons at risk of poverty per period and <code>gender</code>.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit">
+<div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="kw">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, group = <span class="st">"gender"</span>)
 <span class="kw">err.est</span><span class="op">$</span><span class="kw">Estimates</span>
 </pre></div>
@@ -198,7 +176,7 @@
 <h3 class="hasAnchor">
 <a href="#estimate-with-respect-to-several-variables" class="anchor"></a>Estimate with respect to several variables</h3>
 <p>Estimate relative amount of persons at risk of poverty per period for each <code>region</code>, <code>gender</code>, and combination of both.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit">
+<div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="kw">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
 <span class="kw">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, group = <span class="kw">group</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw">err.est</span><span class="op">$</span><span class="kw">Estimates</span>)
@@ -210,7 +188,7 @@
 ## 4: 2010 374 194622.1 female Vorarlberg       19.883637        3.112974
 ## 5: 2010 440 253143.7   male   Salzburg        9.156964        1.809600
 ## 6: 2010 484 282307.3 female   Salzburg       17.939382        2.587059</code></pre>
-<div class="sourceCode" id="cb31"><pre class="downlit">
+<div class="sourceCode" id="cb10"><pre class="downlit">
 <span class="co">## skipping 54 more rows</span>
 </pre></div>
 </div>
