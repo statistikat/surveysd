@@ -35,7 +35,7 @@ eusilc <- demo.eusilc(prettyNames = TRUE)
 dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
-                          epsP = 1e-2, epsH = 2.5e-2, verbose = TRUE)
+                          epsP = 1e-2, epsH = 2.5e-2, verbose = FALSE)
 dat_boot_calib[, onePerson := nrow(.SD) == 1, by = .(year, hid)]
 
 ## print part of the dataset
@@ -55,8 +55,8 @@ povertyRate <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedR
 totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum)
 ```
 
-Those functions calculate the ratio of persons at risk of povery (in percent) and the total income.
-By default, the results are calculated seperately for each reference period.
+Those functions calculate the ratio of persons at risk of poverty (in percent) and the total income.
+By default, the results are calculated separately for each reference period.
 
 ```{r}
 povertyRate$Estimates
@@ -117,7 +117,7 @@ for (att  in c("period", "weights", "b.rep"))
   attr(dat2, att) <- attr(dat_boot_calib, att)
 ```
 
-To calculate the ratio of persons at risk of poverty for each federal state of austria, 
+To calculate the ratio of persons at risk of poverty for each federal state of Austria, 
 `group = "region"` can be used.
 
 ```{r}
@@ -153,7 +153,7 @@ povertyRates$Estimates
 
 #### Option 2: All combinations of `state` and `gender`
 
-Split the data by all cobinations of the two grouping variables. This will result in a larger 
+Split the data by all combinations of the two grouping variables. This will result in a larger 
 output-table of the size
 
 $$n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.$$
