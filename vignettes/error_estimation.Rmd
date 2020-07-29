@@ -125,7 +125,7 @@ povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, gro
 povertyRates$Estimates
 ```
 
-The last column with `region = NA` denotes the aggregate over all regions. Note that the
+The last row with `region = NA` denotes the aggregate over all regions. Note that the
 columns `N` and `n` now show the weighted and unweighted number of persons in each region.
 
 ### Several grouping variables

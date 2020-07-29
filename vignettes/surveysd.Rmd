@@ -62,7 +62,7 @@ err.est$Estimates
 ```
 
 The output contains estimates (`val_povertyRisk`) as well as standard errors (`stE_povertyRisk`)
-measured in percent.
+measured in percent. The rows with `gender = NA` denotes the aggregate over all genders for the corresponding year.
 
 ### Estimate with respect to several variables
 
