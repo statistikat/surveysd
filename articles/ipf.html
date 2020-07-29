@@ -110,7 +110,7 @@
 
     
     
-<p>This vignette explains the usage of the <code><a href="../reference/ipf.html">ipf()</a></code> function, which has been used for calibrating the labour force survey of austria for several years. It is based on the Iterative Proportional Fitting algorithm and gives some flexibility about the details of the implementation. See <span class="citation">(Meraner, Gumprecht, and Kowarik 2016)</span> or <code><a href="../articles/methodology.html">vignette("methodology")</a></code> for more details.</p>
+<p>This vignette explains the usage of the <code><a href="../reference/ipf.html">ipf()</a></code> function, which has been used for calibrating the labour force survey of Austria for several years. It is based on the Iterative Proportional Fitting algorithm and gives some flexibility about the details of the implementation. See <span class="citation">(Meraner, Gumprecht, and Kowarik 2016)</span> or <code><a href="../articles/methodology.html">vignette("methodology")</a></code> for more details.</p>
 <div id="setup" class="section level2">
 <h2 class="hasAnchor">
 <a href="#setup" class="anchor"></a>Setup</h2>
@@ -135,9 +135,9 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span>, <span class="kw">pop_sample</span>)
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
-<span class="co">#&gt;   7360   7460</span>
+<span class="co">#&gt;   7570   7250</span>
 </pre></div>
-<p>Due to random sampling (rather than stratified sampling), there are differences betweeen the gender distributions. We can pass <code>gender_distribution</code> as a parameter to <code><a href="../reference/ipf.html">ipf()</a></code> to obtain modified weights.</p>
+<p>Due to random sampling (rather than stratified sampling), there are differences between the gender distributions. We can pass <code>gender_distribution</code> as a parameter to <code><a href="../reference/ipf.html">ipf()</a></code> to obtain modified weights.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="kw">pop_sample_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">gender_distribution</span>), w = <span class="st">"pWeight"</span>)
 </pre></div>
@@ -166,8 +166,8 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="op">~</span> <span class="kw">calibWeight</span> <span class="op">+</span> <span class="kw">gender</span>, <span class="kw">pop_sample_c</span>)
 <span class="co">#&gt;                   gender</span>
 <span class="co">#&gt; calibWeight        male female</span>
-<span class="co">#&gt;   9.87364130434783  736      0</span>
-<span class="co">#&gt;   10.1340482573727    0    746</span>
+<span class="co">#&gt;   9.5997357992074   757      0</span>
+<span class="co">#&gt;   10.4275862068966    0    725</span>
 </pre></div>
 <p>All males have been weighted down (<code>calibWeight &lt; 10</code>) to compensate for the overrepresentation in the sample.</p>
 </div>
@@ -184,10 +184,10 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample</span>)
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1740     830    2120    1740       930</span>
-<span class="co">#&gt;   female      1300     830    2140    1990      1200</span>
+<span class="co">#&gt;   male        1690     820    2090    1900      1070</span>
+<span class="co">#&gt;   female      1410     840    2010    1830      1160</span>
 </pre></div>
-<p>Again, we can see that those constraints are not met. Suppliying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
+<p>Again, we can see that those constraints are not met. Supplying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="kw">pop_sample_c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>), w = <span class="st">"pWeight"</span>)
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">population</span>)
@@ -219,9 +219,9 @@
 <span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample_c2</span>)
 <span class="co">#&gt;         age</span>
-<span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1528     855    2165    1822       897</span>
-<span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
+<span class="co">#&gt; gender   (-Inf,16]   (16,25]   (25,45]   (45,65] (65, Inf]</span>
+<span class="co">#&gt;   male   1528.0009  855.0002 2165.0006 1821.9996  896.9998</span>
+<span class="co">#&gt;   female 1375.0001  847.9994 2254.9994 1845.0002 1236.9999</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">population</span>)
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
@@ -231,9 +231,9 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">pop_sample_c2</span>)
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
-<span class="co">#&gt;      548.9998     1077.9999     2803.9998      923.9999     2295.0006 </span>
+<span class="co">#&gt;           549          1078          2804           924          2295 </span>
 <span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span>
-<span class="co">#&gt;     1317.0003     2805.0002     2321.9999      732.9999</span>
+<span class="co">#&gt;          1317          2805          2322           733</span>
 </pre></div>
 <p>this time, the constraints are not matched perfectly. That is, because we provided more than one constraint. therefore, the <code><a href="../reference/ipf.html">ipf()</a></code> algorithm had to work iteratively.</p>
 </div>
@@ -264,20 +264,20 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">hsize</span> <span class="op">+</span> <span class="kw">region</span>, data = <span class="kw">pop_sample_hh</span>[<span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">duplicated</a></span>(<span class="kw">hid</span>)])
 <span class="co">#&gt;          region</span>
 <span class="co">#&gt; hsize     Burgenland Carinthia Lower Austria Salzburg Styria Tyrol</span>
-<span class="co">#&gt;   (0,1]            0         0             0        0      0     0</span>
-<span class="co">#&gt;   (1,2]            0         0             0        0      0     0</span>
-<span class="co">#&gt;   (2,3]            0         0             0        0      0     0</span>
-<span class="co">#&gt;   (3,4]            0         0             0        0      0     0</span>
-<span class="co">#&gt;   (4,5]            0         0             0        0      0     0</span>
-<span class="co">#&gt;   (5,Inf]          0         0             0        0      0     0</span>
+<span class="co">#&gt;   (0,1]           58       117           325      103    264   118</span>
+<span class="co">#&gt;   (1,2]           82       126           345      102    260   149</span>
+<span class="co">#&gt;   (2,3]           37        80           189       55    187    79</span>
+<span class="co">#&gt;   (3,4]           33        63           169       71    122   102</span>
+<span class="co">#&gt;   (4,5]           14        22            82       18     49    37</span>
+<span class="co">#&gt;   (5,Inf]          2        17            21       12     34    11</span>
 <span class="co">#&gt;          region</span>
 <span class="co">#&gt; hsize     Upper Austria Vienna Vorarlberg</span>
-<span class="co">#&gt;   (0,1]               0      0          0</span>
-<span class="co">#&gt;   (1,2]               0      0          0</span>
-<span class="co">#&gt;   (2,3]               0      0          0</span>
-<span class="co">#&gt;   (3,4]               0      0          0</span>
-<span class="co">#&gt;   (4,5]               0      0          0</span>
-<span class="co">#&gt;   (5,Inf]             0      0          0</span>
+<span class="co">#&gt;   (0,1]             262    431         67</span>
+<span class="co">#&gt;   (1,2]             321    355         72</span>
+<span class="co">#&gt;   (2,3]             203    175         44</span>
+<span class="co">#&gt;   (3,4]             168     96         53</span>
+<span class="co">#&gt;   (4,5]              79     35         27</span>
+<span class="co">#&gt;   (5,Inf]            35     15          7</span>
 </pre></div>
 </div>
 <div id="tolerances" class="section level2">
@@ -288,11 +288,11 @@
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
     verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.01</span>)
-<span class="co">#&gt; Iteration stopped after 3 steps</span>
+<span class="co">#&gt; Iteration stopped after 2 steps</span>
 <span class="co">#&gt; Convergence reached</span>
 <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
     verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.0001</span>)
-<span class="co">#&gt; Iteration stopped after 4 steps</span>
+<span class="co">#&gt; Iteration stopped after 3 steps</span>
 <span class="co">#&gt; Convergence reached</span>
 </pre></div>
 <p>We see that changing the tolerances from <code>0.01</code> (one percent) to <code>0.0001</code> increases the number of required iterations.</p>
