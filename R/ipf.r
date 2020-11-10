@@ -335,7 +335,7 @@ getFormulas <- function(con, w) {
 ## enrich dat_original with the calibrated weights and assign attributes
 
 addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
-                                    maxIter, calIter, returnNA, cw, verbose) {
+                                    maxIter, calIter, returnNA, cw, verbose, looseH) {
   variableKeepingTheCalibWeight <- cw
   representativeHouseholdForCalibration <- OriginalSortingVariable <-
     outTable <- copy(dat_original)
@@ -369,10 +369,22 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
     epsP_current <- switch(is.list(epsP) + 1, epsP, epsP[[i]])
     all(abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]])
   })
-  conH_converged <- sapply(seq_along(conH), function(i) {
-    epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
-    all(abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]])
-  })
+  if(looseH){
+    if(verbose){
+      message("For looseH=TRUE epsH+epsH/100 is allowed as tolerance for the convergence.")
+    }
+
+    conH_converged <- sapply(seq_along(conH), function(i) {
+      epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
+      all(abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= epsH_current + epsH_current/100)
+
+    })
+  }else{
+    conH_converged <- sapply(seq_along(conH), function(i) {
+      epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
+      all(abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]])
+    })
+  }
   converged <- all(conP_converged) && all(conH_converged)
   setattr(outTable, "converged", converged)
   if (verbose) {
@@ -625,15 +637,15 @@ ipf <- function(
     dat[, hid := as.factor(seq_len(nrow(dat)))]
     dat[, representativeHouseholdForCalibration := 1]
   } else {
-    
+
     if(!hid%in%colnames(dat)){
       stop("dat does not contain column ",hid)
     }
-    
+
     if(any(is.na(dat[[hid]]))){
       stop("hid contains missing values")
     }
-    
+
     if (!is.factor(dat[[hid]]))
       data.table::set(dat, NULL, hid, as.factor(dat[[hid]]))
     dat[, representativeHouseholdForCalibration :=
@@ -846,5 +858,5 @@ ipf <- function(
   dat[, fVariableForCalibrationIPF := NULL]
   addWeightsAndAttributes(dat, conP, conH, epsP, epsH, dat_original, maxIter,
                           calIter, returnNA, variableKeepingTheCalibWeight,
-                          verbose)
+                          verbose, looseH)
 }
