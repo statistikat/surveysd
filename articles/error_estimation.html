@@ -46,12 +46,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/surveysd.html">Get started</a>
 </li>
 <li>
@@ -101,7 +95,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Error estimation</h1>
             
-            <h4 class="date">2020-07-29</h4>
+            <h4 class="date">2020-11-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd"><code>vignettes/error_estimation.Rmd</code></a></small>
       <div class="hidden name"><code>error_estimation.Rmd</code></div>
@@ -115,20 +109,19 @@
 <h2 class="hasAnchor">
 <a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
 <p>In order to use a dataset with <code><a href="../reference/calc.stError.html">calc.stError()</a></code>, several weight columns have to be present. Each weight column corresponds to a bootstrap sample. In the following examples, we will use the data from <code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code> and attach the bootstrap weights using <code><a href="../reference/draw.bootstrap.html">draw.bootstrap()</a></code> and <code><a href="../reference/recalib.html">recalib()</a></code>. Please refer to the documentation of those functions for more detail.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/statistikat/surveysd">surveysd</a></span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statistikat/surveysd">surveysd</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">1234</span>)
-<span class="kw">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span>(prettyNames = <span class="fl">TRUE</span>)
-<span class="kw">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span>(<span class="kw">eusilc</span>, REP = <span class="fl">10</span>, hid = <span class="st">"hid"</span>, weights = <span class="st">"pWeight"</span>,
-                           strata = <span class="st">"region"</span>, period = <span class="st">"year"</span>)
-<span class="kw">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span>(<span class="kw">dat_boot</span>, conP.var = <span class="st">"gender"</span>, conH.var = <span class="st">"region"</span>,
-                          epsP = <span class="fl">1e-2</span>, epsH = <span class="fl">2.5e-2</span>, verbose = <span class="fl">FALSE</span>)
-<span class="kw">dat_boot_calib</span>[, <span class="kw">onePerson</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="kw">.SD</span>) <span class="op">==</span> <span class="fl">1</span>, by = <span class="fu">.</span>(<span class="kw">year</span>, <span class="kw">hid</span>)]
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
+<span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">10</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,
+                           strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span>
+<span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span>,
+                          epsP <span class="op">=</span> <span class="fl">1e-2</span>, epsH <span class="op">=</span> <span class="fl">2.5e-2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">dat_boot_calib</span><span class="op">[</span>, <span class="va">onePerson</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">hid</span><span class="op">)</span><span class="op">]</span>
 
 <span class="co">## print part of the dataset</span>
-<span class="kw">dat_boot_calib</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span>(<span class="kw">year</span>, <span class="kw">povertyRisk</span>, <span class="kw">eqIncome</span>, <span class="kw">onePerson</span>, <span class="kw">pWeight</span>, <span class="kw">w1</span>, <span class="kw">w2</span>, <span class="kw">w3</span>, <span class="kw">w4</span>, <span class="kw">w5</span>)]
-</pre></div>
+<span class="va">dat_boot_calib</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">povertyRisk</span>, <span class="va">eqIncome</span>, <span class="va">onePerson</span>, <span class="va">pWeight</span>, <span class="va">w1</span>, <span class="va">w2</span>, <span class="va">w3</span>, <span class="va">w4</span>, <span class="va">w5</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <pre><code>##    year povertyRisk eqIncome onePerson  pWeight        w1        w2        w3
 ## 1: 2010       FALSE 16090.69     FALSE 504.5696 0.4477743 1007.5651 0.4466992
 ## 2: 2010       FALSE 16090.69     FALSE 504.5696 0.4477743 1007.5651 0.4466992
@@ -146,14 +139,12 @@
 <h2 class="hasAnchor">
 <a href="#estimator-functions" class="anchor"></a>Estimator functions</h2>
 <p>The parameters <code>fun</code> and <code>var</code> in <code><a href="../reference/calc.stError.html">calc.stError()</a></code> define the estimator to be used in the error analysis. There are two built-in estimator functions <code><a href="../reference/PointEstimates.html">weightedSum()</a></code> and <code><a href="../reference/PointEstimates.html">weightedRatio()</a></code> which can be used as follows.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">povertyRate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>)
-<span class="kw">totalIncome</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"eqIncome"</span>, fun = <span class="kw">weightedSum</span>)
-</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">povertyRate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span>
+<span class="va">totalIncome</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">weightedSum</span><span class="op">)</span></code></pre></div>
 <p>Those functions calculate the ratio of persons at risk of poverty (in percent) and the total income. By default, the results are calculated separately for each reference period.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">povertyRate</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">povertyRate</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##    year     n       N val_povertyRisk stE_povertyRisk
 ## 1: 2010 14827 8182222        14.44422       0.5838199
 ## 2: 2011 14827 8182222        14.77393       0.6771848
@@ -163,9 +154,8 @@
 ## 6: 2015 14827 8182222        15.53640       0.4808834
 ## 7: 2016 14827 8182222        15.08315       0.3566648
 ## 8: 2017 14827 8182222        15.42019       0.5592589</code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw">totalIncome</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##    year     n       N val_eqIncome stE_eqIncome
 ## 1: 2010 14827 8182222 162750998071    960851034
 ## 2: 2011 14827 8182222 161926931417    901915958
@@ -182,16 +172,15 @@
 <h3 class="hasAnchor">
 <a href="#custom-estimators" class="anchor"></a>Custom estimators</h3>
 <p>In order to define a custom estimator function to be used in <code>fun</code>, the function needs to have two arguments like the example below.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="co">## define custom estimator</span>
-<span class="kw">myWeightedSum</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>, <span class="kw">w</span>) {
-  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw">x</span><span class="op">*</span><span class="kw">w</span>)
-}
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## define custom estimator</span>
+<span class="va">myWeightedSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">w</span><span class="op">)</span>
+<span class="op">}</span>
 
 <span class="co">## check if results are equal to the one using `suveysd::weightedSum()`</span>
-<span class="kw">totalIncome2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="st">"eqIncome"</span>, fun = <span class="kw">myWeightedSum</span>)
-<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span>(<span class="kw">totalIncome</span><span class="op">$</span><span class="kw">Estimates</span>, <span class="kw">totalIncome2</span><span class="op">$</span><span class="kw">Estimates</span>)
-</pre></div>
+<span class="va">totalIncome2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">myWeightedSum</span><span class="op">)</span>
+<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span><span class="op">(</span><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span>, <span class="va">totalIncome2</span><span class="op">$</span><span class="va">Estimates</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>The parameters <code>x</code> and <code>w</code> can be assumed to be vectors with equal length with <code>w</code> being numeric and <code>x</code> being the column defined in the <code>var</code> argument. It will be called once for each period (in this case <code>year</code>) and for each weight column (in this case <code>pWeight</code>, <code>w1</code>, <code>w2</code>, …, <code>w10</code>).</p>
 </div>
@@ -199,10 +188,9 @@
 <h3 class="hasAnchor">
 <a href="#multiple-estimators" class="anchor"></a>Multiple estimators</h3>
 <p>In case an estimator should be applied to several columns of the dataset, <code>var</code> can be set to a vector containing all necessary columns.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="kw">multipleRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat_boot_calib</span>, var = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span>), fun = <span class="kw">weightedRatio</span>)
-<span class="kw">multipleRates</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">multipleRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span>
+<span class="va">multipleRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
 ## 1: 2010 14827 8182222        14.44422       0.5838199      14.85737
 ## 2: 2011 14827 8182222        14.77393       0.6771848      14.85737
@@ -228,16 +216,14 @@
 <h2 class="hasAnchor">
 <a href="#grouping" class="anchor"></a>Grouping</h2>
 <p>The <code>groups</code> argument can be used to calculate estimators for different subsets of the data. This argument can take the grouping variable as a string that refers to a column name (usually a factor) in <code>dat</code>. If set, all estimators are not only split by the reference period but also by the grouping variable. For simplicity, only one reference period of the above data is used.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="kw">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="kw">dat_boot_calib</span>, <span class="kw">year</span> <span class="op">==</span> <span class="fl">2010</span>)
-<span class="co">for</span> (<span class="kw">att</span>  <span class="co">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span>))
-  <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span>(<span class="kw">dat2</span>, <span class="kw">att</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span>(<span class="kw">dat_boot_calib</span>, <span class="kw">att</span>)
-</pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2010</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">att</span>  <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="va">att</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">att</span><span class="op">)</span></code></pre></div>
 <p>To calculate the ratio of persons at risk of poverty for each federal state of Austria, <code>group = "region"</code> can be used.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="kw">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat2</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, group = <span class="st">"region"</span>)
-<span class="kw">povertyRates</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, group <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span>
+<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##     year     n       N        region val_povertyRisk stE_povertyRisk
 ##  1: 2010   549  260564    Burgenland        19.53984       1.8042764
 ##  2: 2010   733  377355    Vorarlberg        16.53731       3.2896891
@@ -260,11 +246,10 @@
 <p>Calculate the point estimate and standard error for each region and each gender. The number of rows in the output is therefore</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.\]</span></p>
 <p>The last row is again the estimate for the whole period.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit">
-<span class="kw">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat2</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, 
-                             group = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>))
-<span class="kw">povertyRates</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, 
+                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##     year     n       N gender        region val_povertyRisk stE_povertyRisk
 ##  1: 2010   549  260564   &lt;NA&gt;    Burgenland        19.53984       1.8042764
 ##  2: 2010   733  377355   &lt;NA&gt;    Vorarlberg        16.53731       3.2896891
@@ -285,11 +270,10 @@
 </h4>
 <p>Split the data by all combinations of the two grouping variables. This will result in a larger output-table of the size</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.\]</span></p>
-<div class="sourceCode" id="cb17"><pre class="downlit">
-<span class="kw">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat2</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, 
-                             group = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))
-<span class="kw">povertyRates</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, 
+                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##     year     n         N gender        region val_povertyRisk stE_povertyRisk
 ##  1: 2010   261  122741.8   male    Burgenland       17.414524       2.2332286
 ##  2: 2010   288  137822.2 female    Burgenland       21.432598       2.0899871
@@ -322,11 +306,10 @@
 </ul>
 <p>The number of rows in the output is therefore</p>
 <p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.\]</span></p>
-<div class="sourceCode" id="cb19"><pre class="downlit">
-<span class="kw">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span>(<span class="kw">dat2</span>, var = <span class="st">"povertyRisk"</span>, fun = <span class="kw">weightedRatio</span>, 
-                             group = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gender"</span>, <span class="st">"region"</span>)))
-<span class="kw">povertyRates</span><span class="op">$</span><span class="kw">Estimates</span>
-</pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, 
+                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
 <pre><code>##     year     n         N gender        region val_povertyRisk stE_povertyRisk
 ##  1: 2010   261  122741.8   male    Burgenland       17.414524       2.2332286
 ##  2: 2010   288  137822.2 female    Burgenland       21.432598       2.0899871
@@ -379,7 +362,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

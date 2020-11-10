@@ -46,12 +46,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/surveysd.html">Get started</a>
 </li>
 <li>
@@ -115,134 +109,124 @@
 <h2 class="hasAnchor">
 <a href="#setup" class="anchor"></a>Setup</h2>
 <p>We will assume the output of <code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code> is our population. From this population, a sample without replacement is drawn. The sample covers 10 percent of the population. We assign a weight of one for all observations of the population and a weight of ten for all observations of the sample.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/statistikat/surveysd">surveysd</a></span>)
-<span class="kw">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span>(<span class="fl">1</span>, prettyNames = <span class="fl">TRUE</span>)
-<span class="kw">population</span>[, <span class="kw">pWeight</span> <span class="op">:=</span> <span class="fl">1</span>]
-<span class="kw">pop_sample</span> <span class="op">&lt;-</span> <span class="kw">population</span>[<span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fl">1</span><span class="op">:</span><span class="kw">.N</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span>(<span class="kw">.N</span><span class="op">*</span><span class="fl">0.10</span>)), ]
-<span class="kw">pop_sample</span>[, <span class="kw">pWeight</span> <span class="op">:=</span> <span class="fl">10</span>]
-</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statistikat/surveysd">surveysd</a></span><span class="op">)</span>
+<span class="va">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span><span class="fl">1</span>, prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">population</span><span class="op">[</span>, <span class="va">pWeight</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">]</span>
+<span class="va">pop_sample</span> <span class="op">&lt;-</span> <span class="va">population</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">.N</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="va">.N</span><span class="op">*</span><span class="fl">0.10</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span>
+<span class="va">pop_sample</span><span class="op">[</span>, <span class="va">pWeight</span> <span class="op">:=</span> <span class="fl">10</span><span class="op">]</span></code></pre></div>
 </div>
 <div id="one-constraint-one-variable" class="section level2">
 <h2 class="hasAnchor">
 <a href="#one-constraint-one-variable" class="anchor"></a>One constraint, one variable</h2>
 <p>We will start with an example where we want to adapt the weights of <code>pop_sample</code> such that the weighted number of males and females matches the ones of <code>population</code>. We can see that this is currently not the case.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-(<span class="kw">gender_distribution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span>, <span class="kw">population</span>))
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">gender_distribution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span>, <span class="va">population</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
 <span class="co">#&gt;   7267   7560</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span>, <span class="kw">pop_sample</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span>, <span class="va">pop_sample</span><span class="op">)</span>
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
-<span class="co">#&gt;   7490   7330</span>
-</pre></div>
+<span class="co">#&gt;   7330   7490</span></code></pre></div>
 <p>Due to random sampling (rather than stratified sampling), there are differences between the gender distributions. We can pass <code>gender_distribution</code> as a parameter to <code><a href="../reference/ipf.html">ipf()</a></code> to obtain modified weights.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">pop_sample_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">gender_distribution</span>), w = <span class="st">"pWeight"</span>)
-</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pop_sample_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span><span class="op">(</span><span class="va">pop_sample</span>, conP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">gender_distribution</span><span class="op">)</span>, w <span class="op">=</span> <span class="st">"pWeight"</span><span class="op">)</span></code></pre></div>
 <p>The resulting dataset, <code>pop_sample_c</code> is similar to <code>pop_sample</code> but has an additional column with the adjusted weights.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">pop_sample</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">pop_sample</span><span class="op">)</span>
 <span class="co">#&gt; [1] 1482   30</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">pop_sample_c</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">pop_sample_c</span><span class="op">)</span>
 <span class="co">#&gt; [1] 1482   31</span>
-<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setops.html">setdiff</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">pop_sample_c</span>), <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">pop_sample</span>))
-<span class="co">#&gt; [1] "calibWeight"</span>
-</pre></div>
+<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setops.html">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">pop_sample_c</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">pop_sample</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "calibWeight"</span></code></pre></div>
 <p>We can now calculate the weighted number of males and females according to this new weight. This will result in a match for the constraints.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">gender</span>, <span class="kw">pop_sample_c</span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">calibWeight</span> <span class="op">~</span> <span class="va">gender</span>, <span class="va">pop_sample_c</span><span class="op">)</span>
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
 <span class="co">#&gt;   7267   7560</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span>, <span class="kw">population</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span>, <span class="va">population</span><span class="op">)</span>
 <span class="co">#&gt; gender</span>
 <span class="co">#&gt;   male female </span>
-<span class="co">#&gt;   7267   7560</span>
-</pre></div>
+<span class="co">#&gt;   7267   7560</span></code></pre></div>
 <p>In this simple case, <code>ipf</code> just performs a post stratification step. This means, that all males and all females have the same weight.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="op">~</span> <span class="kw">calibWeight</span> <span class="op">+</span> <span class="kw">gender</span>, <span class="kw">pop_sample_c</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">calibWeight</span> <span class="op">+</span> <span class="va">gender</span>, <span class="va">pop_sample_c</span><span class="op">)</span>
 <span class="co">#&gt;                   gender</span>
 <span class="co">#&gt; calibWeight        male female</span>
-<span class="co">#&gt;   9.7022696929239   749      0</span>
-<span class="co">#&gt;   10.3137789904502    0    733</span>
-</pre></div>
+<span class="co">#&gt;   9.91405184174625  733      0</span>
+<span class="co">#&gt;   10.0934579439252    0    749</span></code></pre></div>
 <p>All males have been weighted down (<code>calibWeight &lt; 10</code>) to compensate for the overrepresentation in the sample.</p>
 </div>
 <div id="one-constraint-two-variables" class="section level2">
 <h2 class="hasAnchor">
 <a href="#one-constraint-two-variables" class="anchor"></a>One constraint, two variables</h2>
 <p>Let’s now assume that we want to put constraints on the number of males and females for each age group. The numbers from the original population can be obtained with <code><a href="https://rdrr.io/r/stats/xtabs.html">xtabs()</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-(<span class="kw">con_ga</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">population</span>))
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">con_ga</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">age</span>, <span class="va">population</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
 <span class="co">#&gt;   male        1528     855    2165    1822       897</span>
 <span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">age</span>, <span class="va">pop_sample</span><span class="op">)</span>
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1480    1090    2300    1700       920</span>
-<span class="co">#&gt;   female      1350     870    2030    1990      1090</span>
-</pre></div>
+<span class="co">#&gt;   male        1560    1000    2130    1820       820</span>
+<span class="co">#&gt;   female      1310     770    2280    2030      1100</span></code></pre></div>
 <p>Again, we can see that those constraints are not met. Supplying the contingency table <code>con_ga</code> to <code><a href="../reference/ipf.html">ipf()</a></code> will again resolve this.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="kw">pop_sample_c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>), w = <span class="st">"pWeight"</span>)
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">population</span>)
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pop_sample_c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span><span class="op">(</span><span class="va">pop_sample</span>, conP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">con_ga</span><span class="op">)</span>, w <span class="op">=</span> <span class="st">"pWeight"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">age</span>, <span class="va">population</span><span class="op">)</span>
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
 <span class="co">#&gt;   male        1528     855    2165    1822       897</span>
 <span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample_c2</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">calibWeight</span> <span class="op">~</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">age</span>, <span class="va">pop_sample_c2</span><span class="op">)</span>
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
 <span class="co">#&gt;   male        1528     855    2165    1822       897</span>
-<span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
-</pre></div>
+<span class="co">#&gt;   female      1375     848    2255    1845      1237</span></code></pre></div>
 </div>
 <div id="two-constraints" class="section level2">
 <h2 class="hasAnchor">
 <a href="#two-constraints" class="anchor"></a>Two constraints</h2>
 <p>Now we assume that we know the number of persons living in each nuts2 region from registry data.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">registry_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">population</span>)
-</pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">registry_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">region</span>, <span class="va">population</span><span class="op">)</span></code></pre></div>
 <p>However, those registry data does not provide any information about age or <code>gender</code>. Therefore, the two contingency tables (<code>con_ga</code> and <code>registry_table</code>) have to be specified independently. This can be done by supplying a list to <code>conP</code></p>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="kw">pop_sample_c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>)
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">population</span>)
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pop_sample_c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span><span class="op">(</span><span class="va">pop_sample</span>, conP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">con_ga</span>, <span class="va">registry_table</span><span class="op">)</span>, w <span class="op">=</span> <span class="st">"pWeight"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">age</span>, <span class="va">population</span><span class="op">)</span>
 <span class="co">#&gt;         age</span>
 <span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
 <span class="co">#&gt;   male        1528     855    2165    1822       897</span>
 <span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">gender</span> <span class="op">+</span> <span class="kw">age</span>, <span class="kw">pop_sample_c2</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">calibWeight</span> <span class="op">~</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">age</span>, <span class="va">pop_sample_c2</span><span class="op">)</span>
 <span class="co">#&gt;         age</span>
-<span class="co">#&gt; gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]</span>
-<span class="co">#&gt;   male        1528     855    2165    1822       897</span>
-<span class="co">#&gt;   female      1375     848    2255    1845      1237</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">population</span>)
+<span class="co">#&gt; gender   (-Inf,16]   (16,25]   (25,45]   (45,65] (65, Inf]</span>
+<span class="co">#&gt;   male   1527.9997  855.0001 2165.0004 1822.0000  897.0001</span>
+<span class="co">#&gt;   female 1374.9996  848.0000 2255.0002 1845.0002 1236.9998</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">region</span>, <span class="va">population</span><span class="op">)</span>
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
 <span class="co">#&gt;           549          1078          2804           924          2295 </span>
 <span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span>
 <span class="co">#&gt;          1317          2805          2322           733</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">region</span>, <span class="kw">pop_sample_c2</span>)
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">calibWeight</span> <span class="op">~</span> <span class="va">region</span>, <span class="va">pop_sample_c2</span><span class="op">)</span>
 <span class="co">#&gt; region</span>
 <span class="co">#&gt;    Burgenland     Carinthia Lower Austria      Salzburg        Styria </span>
-<span class="co">#&gt;      548.9996     1078.0000     2803.9997      924.0001     2295.0001 </span>
+<span class="co">#&gt;           549          1078          2804           924          2295 </span>
 <span class="co">#&gt;         Tyrol Upper Austria        Vienna    Vorarlberg </span>
-<span class="co">#&gt;     1317.0001     2805.0003     2321.9996      733.0003</span>
-</pre></div>
+<span class="co">#&gt;          1317          2805          2322           733</span></code></pre></div>
 <p>this time, the constraints are not matched perfectly. That is, because we provided more than one constraint. therefore, the <code><a href="../reference/ipf.html">ipf()</a></code> algorithm had to work iteratively.</p>
 </div>
 <div id="household-constraints" class="section level2">
 <h2 class="hasAnchor">
 <a href="#household-constraints" class="anchor"></a>Household Constraints</h2>
 <p>If the dataset has a household structure, household constraints can be passed via the parameter <code>conH</code>. If this parameter is used, it is also necessary to supply <code>hid</code>, which defines the column names that contains household ids.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-(<span class="kw">conH1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">pWeight</span> <span class="op">~</span> <span class="kw">hsize</span> <span class="op">+</span> <span class="kw">region</span>, data = <span class="kw">population</span>[<span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">duplicated</a></span>(<span class="kw">hid</span>)]))
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">conH1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">pWeight</span> <span class="op">~</span> <span class="va">hsize</span> <span class="op">+</span> <span class="va">region</span>, data <span class="op">=</span> <span class="va">population</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">hid</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;          region</span>
 <span class="co">#&gt; hsize     Burgenland Carinthia Lower Austria Salzburg Styria Tyrol</span>
 <span class="co">#&gt;   (0,1]           58       117           325      103    264   118</span>
@@ -259,9 +243,9 @@
 <span class="co">#&gt;   (3,4]             168     96         53</span>
 <span class="co">#&gt;   (4,5]              79     35         27</span>
 <span class="co">#&gt;   (5,Inf]            35     15          7</span>
-<span class="kw">pop_sample_hh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, hid = <span class="st">"hid"</span>, conH = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">conH1</span>), w = <span class="st">"pWeight"</span>,
-                     bound = <span class="fl">10</span>)
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span>(<span class="kw">calibWeight</span> <span class="op">~</span> <span class="kw">hsize</span> <span class="op">+</span> <span class="kw">region</span>, data = <span class="kw">pop_sample_hh</span>[<span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">duplicated</a></span>(<span class="kw">hid</span>)])
+<span class="va">pop_sample_hh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipf.html">ipf</a></span><span class="op">(</span><span class="va">pop_sample</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, conH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">conH1</span><span class="op">)</span>, w <span class="op">=</span> <span class="st">"pWeight"</span>,
+                     bound <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="va">calibWeight</span> <span class="op">~</span> <span class="va">hsize</span> <span class="op">+</span> <span class="va">region</span>, data <span class="op">=</span> <span class="va">pop_sample_hh</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">hid</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
 <span class="co">#&gt;          region</span>
 <span class="co">#&gt; hsize     Burgenland Carinthia Lower Austria Salzburg Styria Tyrol</span>
 <span class="co">#&gt;   (0,1]           58       117           325      103    264   118</span>
@@ -277,24 +261,22 @@
 <span class="co">#&gt;   (2,3]             203    175         44</span>
 <span class="co">#&gt;   (3,4]             168     96         53</span>
 <span class="co">#&gt;   (4,5]              79     35         27</span>
-<span class="co">#&gt;   (5,Inf]            35     15          7</span>
-</pre></div>
+<span class="co">#&gt;   (5,Inf]            35     15          7</span></code></pre></div>
 </div>
 <div id="tolerances" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tolerances" class="anchor"></a>Tolerances</h2>
 <p>If <code>conP</code> or <code>conH</code> contain several contingency tables or if <code>conP</code> and <code>conH</code> are used at the same time, the ipf algorithm will operate iteratively. This means that the calibrated dataset will satisfy the constraints only approximately. The default tolerances of the approximation can be overwritten using the parameters <code>conP</code> and <code>conH</code>.</p>
 <p>Lowering the tolerances will improve the match between the constraints and the contingency tables according to the calibrated weights. However, lower tolerances will also make it so more iterations are necessary until a convergence is met. If the constraints are too small, ipf will return with a warning that indicates that a convergence could not be reached.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
-    verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.01</span>)
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/ipf.html">ipf</a></span><span class="op">(</span><span class="va">pop_sample</span>, conP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">con_ga</span>, <span class="va">registry_table</span><span class="op">)</span>, w <span class="op">=</span> <span class="st">"pWeight"</span>,
+    verbose <span class="op">=</span> <span class="cn">TRUE</span>, epsP <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>
 <span class="co">#&gt; Iteration stopped after 3 steps</span>
 <span class="co">#&gt; Convergence reached</span>
-<span class="fu"><a href="../reference/ipf.html">ipf</a></span>(<span class="kw">pop_sample</span>, conP = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">con_ga</span>, <span class="kw">registry_table</span>), w = <span class="st">"pWeight"</span>,
-    verbose = <span class="fl">TRUE</span>, epsP = <span class="fl">0.0001</span>)
+<span class="fu"><a href="../reference/ipf.html">ipf</a></span><span class="op">(</span><span class="va">pop_sample</span>, conP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">con_ga</span>, <span class="va">registry_table</span><span class="op">)</span>, w <span class="op">=</span> <span class="st">"pWeight"</span>,
+    verbose <span class="op">=</span> <span class="cn">TRUE</span>, epsP <span class="op">=</span> <span class="fl">0.0001</span><span class="op">)</span>
 <span class="co">#&gt; Iteration stopped after 4 steps</span>
-<span class="co">#&gt; Convergence reached</span>
-</pre></div>
+<span class="co">#&gt; Convergence reached</span></code></pre></div>
 <p>We see that changing the tolerances from <code>0.01</code> (one percent) to <code>0.0001</code> increases the number of required iterations.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
@@ -323,7 +305,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

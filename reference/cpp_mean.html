@@ -92,12 +92,6 @@ overwritten by the updated weights. See examples." />
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/surveysd.html">Get started</a>
 </li>
 <li>
@@ -157,7 +151,7 @@ observation. <code>geometric_mean_reference</code> returns the same value by ref
 overwritten by the updated weights. See examples.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>geometric_mean_reference</span>(<span class='kw'>w</span>, <span class='kw'>classes</span>)</pre>
+    <pre class="usage"><span class='fu'>geometric_mean_reference</span><span class='op'>(</span><span class='va'>w</span>, <span class='va'>classes</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -175,29 +169,30 @@ overwritten by the updated weights. See examples.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 
 <span class='co'>## create random data</span>
-<span class='kw'>nobs</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
-<span class='kw'>classLabels</span> <span class='op'>&lt;-</span> <span class='kw'>letters</span>[<span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>]
-<span class='kw'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
-  weight = <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>nobs</span>)),
-  household = <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='kw'>classLabels</span>, <span class='kw'>nobs</span>, replace = <span class='fl'>TRUE</span>))
-)
-<span class='kw'>dat</span>
+<span class='va'>nobs</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
+<span class='va'>classLabels</span> <span class='op'>&lt;-</span> <span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>]</span>
+<span class='va'>dat</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  weight <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>nobs</span><span class='op'>)</span><span class='op'>)</span>,
+  household <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='va'>classLabels</span>, <span class='va'>nobs</span>, replace <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>dat</span>
 
 <span class='co'>## calculate weights with geometric_mean</span>
-<span class='kw'>geom_weight</span> <span class='op'>&lt;-</span> <span class='fu'>geometric_mean</span>(<span class='kw'>dat</span><span class='op'>$</span><span class='kw'>weight</span>, <span class='kw'>dat</span><span class='op'>$</span><span class='kw'>household</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='kw'>dat</span>, <span class='kw'>geom_weight</span>)
+<span class='va'>geom_weight</span> <span class='op'>&lt;-</span> <span class='fu'>geometric_mean</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>weight</span>, <span class='va'>dat</span><span class='op'>$</span><span class='va'>household</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>dat</span>, <span class='va'>geom_weight</span><span class='op'>)</span>
 
 <span class='co'>## calculate weights with arithmetic_mean</span>
-<span class='kw'>arith_weight</span> <span class='op'>&lt;-</span> <span class='fu'>arithmetic_mean</span>(<span class='kw'>dat</span><span class='op'>$</span><span class='kw'>weight</span>, <span class='kw'>dat</span><span class='op'>$</span><span class='kw'>household</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='kw'>dat</span>, <span class='kw'>arith_weight</span>)
+<span class='va'>arith_weight</span> <span class='op'>&lt;-</span> <span class='fu'>arithmetic_mean</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>weight</span>, <span class='va'>dat</span><span class='op'>$</span><span class='va'>household</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>dat</span>, <span class='va'>arith_weight</span><span class='op'>)</span>
 
 <span class='co'>## calculate weights "by reference"</span>
-<span class='fu'>geometric_mean_reference</span>(<span class='kw'>dat</span><span class='op'>$</span><span class='kw'>weight</span>, <span class='kw'>dat</span><span class='op'>$</span><span class='kw'>household</span>)
-<span class='kw'>dat</span>
-}</div></pre>
+<span class='fu'>geometric_mean_reference</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>weight</span>, <span class='va'>dat</span><span class='op'>$</span><span class='va'>household</span><span class='op'>)</span>
+<span class='va'>dat</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -213,7 +208,7 @@ overwritten by the updated weights. See examples.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

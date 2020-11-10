@@ -92,12 +92,6 @@ bootstraping." />
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/surveysd.html">Get started</a>
 </li>
 <li>
@@ -157,21 +151,21 @@ totals per strata, should be specified to ensure meaningfull survey
 bootstraping.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>draw.bootstrap</span>(
-  <span class='kw'>dat</span>,
-  REP = <span class='fl'>1000</span>,
-  hid = <span class='kw'>NULL</span>,
-  <span class='kw'>weights</span>,
-  period = <span class='kw'>NULL</span>,
-  strata = <span class='kw'>NULL</span>,
-  cluster = <span class='kw'>NULL</span>,
-  totals = <span class='kw'>NULL</span>,
-  single.PSU = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"merge"</span>, <span class='st'>"mean"</span>),
-  boot.names = <span class='kw'>NULL</span>,
-  split = <span class='fl'>FALSE</span>,
-  pid = <span class='kw'>NULL</span>,
-  new.method = <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>draw.bootstrap</span><span class='op'>(</span>
+  <span class='va'>dat</span>,
+  REP <span class='op'>=</span> <span class='fl'>1000</span>,
+  hid <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>weights</span>,
+  period <span class='op'>=</span> <span class='cn'>NULL</span>,
+  strata <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cluster <span class='op'>=</span> <span class='cn'>NULL</span>,
+  totals <span class='op'>=</span> <span class='cn'>NULL</span>,
+  single.PSU <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"merge"</span>, <span class='st'>"mean"</span><span class='op'>)</span>,
+  boot.names <span class='op'>=</span> <span class='cn'>NULL</span>,
+  split <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pid <span class='op'>=</span> <span class='cn'>NULL</span>,
+  new.method <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -338,56 +332,57 @@ data.table objects.</p></div>
     <p>Johannes Gussenbauer, Alexander Kowarik, Statistics Austria</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span>(prettyNames = <span class='fl'>TRUE</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>eusilc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='demo.eusilc.html'>demo.eusilc</a></span><span class='op'>(</span>prettyNames <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='co'>## draw sample without stratification or clustering</span>
-<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(<span class='kw'>eusilc</span>, REP = <span class='fl'>10</span>, weights = <span class='st'>"pWeight"</span>,
-                           period = <span class='st'>"year"</span>)
+<span class='va'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span><span class='op'>(</span><span class='va'>eusilc</span>, REP <span class='op'>=</span> <span class='fl'>10</span>, weights <span class='op'>=</span> <span class='st'>"pWeight"</span>,
+                           period <span class='op'>=</span> <span class='st'>"year"</span><span class='op'>)</span>
 
 <span class='co'>## use stratification w.r.t. region and clustering w.r.t. households</span>
-<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
-  <span class='kw'>eusilc</span>, REP = <span class='fl'>10</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
-  strata = <span class='st'>"region"</span>, period = <span class='st'>"year"</span>)
+<span class='va'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span><span class='op'>(</span>
+  <span class='va'>eusilc</span>, REP <span class='op'>=</span> <span class='fl'>10</span>, hid <span class='op'>=</span> <span class='st'>"hid"</span>, weights <span class='op'>=</span> <span class='st'>"pWeight"</span>,
+  strata <span class='op'>=</span> <span class='st'>"region"</span>, period <span class='op'>=</span> <span class='st'>"year"</span><span class='op'>)</span>
 
 <span class='co'>## use multi-level clustering</span>
-<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
-  <span class='kw'>eusilc</span>, REP = <span class='fl'>10</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
-  strata = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), period = <span class='st'>"year"</span>)
+<span class='va'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span><span class='op'>(</span>
+  <span class='va'>eusilc</span>, REP <span class='op'>=</span> <span class='fl'>10</span>, hid <span class='op'>=</span> <span class='st'>"hid"</span>, weights <span class='op'>=</span> <span class='st'>"pWeight"</span>,
+  strata <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"region"</span>, <span class='st'>"age"</span><span class='op'>)</span>, period <span class='op'>=</span> <span class='st'>"year"</span><span class='op'>)</span>
 
 
 <span class='co'># create spit households</span>
-<span class='kw'>eusilc</span>[, <span class='kw'>pidsplit</span> <span class='op'>:=</span> <span class='kw'>pid</span>]
-<span class='kw'>year</span> <span class='op'>&lt;-</span> <span class='kw'>eusilc</span>[, <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='kw'>year</span>)]
-<span class='kw'>year</span> <span class='op'>&lt;-</span> <span class='kw'>year</span>[<span class='op'>-</span><span class='fl'>1</span>]
-<span class='kw'>leaf_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>()
-<span class='co'>for</span>(<span class='kw'>y</span> <span class='co'>in</span> <span class='kw'>year</span>) {
-  <span class='kw'>split.person</span> <span class='op'>&lt;-</span> <span class='kw'>eusilc</span>[
-    <span class='kw'>year</span> <span class='op'>==</span> (<span class='kw'>y</span><span class='op'>-</span><span class='fl'>1</span>) <span class='op'>&amp;</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='kw'>hid</span>) <span class='op'>&amp;</span> <span class='op'>!</span>(<span class='kw'>hid</span> <span class='op'>%in%</span> <span class='kw'>leaf_out</span>),
-    <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='kw'>pid</span>, <span class='fl'>20</span>)
-  ]
-  <span class='kw'>overwrite.person</span> <span class='op'>&lt;-</span> <span class='kw'>eusilc</span>[
-    (<span class='kw'>year</span> <span class='op'>==</span> (<span class='kw'>y</span>)) <span class='op'>&amp;</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span>(<span class='kw'>hid</span>) <span class='op'>&amp;</span> <span class='op'>!</span>(<span class='kw'>hid</span> <span class='op'>%in%</span> <span class='kw'>leaf_out</span>),
-    <span class='fu'>.</span>(pid = <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='kw'>pid</span>, <span class='fl'>20</span>))
-  ]
-  <span class='kw'>overwrite.person</span>[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"pidsplit"</span>, <span class='st'>"year_curr"</span>) <span class='op'>:=</span> <span class='fu'>.</span>(<span class='kw'>split.person</span>, <span class='kw'>y</span>)]
+<span class='va'>eusilc</span><span class='op'>[</span>, <span class='va'>pidsplit</span> <span class='op'>:=</span> <span class='va'>pid</span><span class='op'>]</span>
+<span class='va'>year</span> <span class='op'>&lt;-</span> <span class='va'>eusilc</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>year</span><span class='op'>)</span><span class='op'>]</span>
+<span class='va'>year</span> <span class='op'>&lt;-</span> <span class='va'>year</span><span class='op'>[</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>]</span>
+<span class='va'>leaf_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='kw'>for</span><span class='op'>(</span><span class='va'>y</span> <span class='kw'>in</span> <span class='va'>year</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>split.person</span> <span class='op'>&lt;-</span> <span class='va'>eusilc</span><span class='op'>[</span>
+    <span class='va'>year</span> <span class='op'>==</span> <span class='op'>(</span><span class='va'>y</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>)</span> <span class='op'>&amp;</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span><span class='op'>(</span><span class='va'>hid</span><span class='op'>)</span> <span class='op'>&amp;</span> <span class='op'>!</span><span class='op'>(</span><span class='va'>hid</span> <span class='op'>%in%</span> <span class='va'>leaf_out</span><span class='op'>)</span>,
+    <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='va'>pid</span>, <span class='fl'>20</span><span class='op'>)</span>
+  <span class='op'>]</span>
+  <span class='va'>overwrite.person</span> <span class='op'>&lt;-</span> <span class='va'>eusilc</span><span class='op'>[</span>
+    <span class='op'>(</span><span class='va'>year</span> <span class='op'>==</span> <span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>&amp;</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span><span class='op'>(</span><span class='va'>hid</span><span class='op'>)</span> <span class='op'>&amp;</span> <span class='op'>!</span><span class='op'>(</span><span class='va'>hid</span> <span class='op'>%in%</span> <span class='va'>leaf_out</span><span class='op'>)</span>,
+    <span class='fu'>.</span><span class='op'>(</span>pid <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='va'>pid</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='op'>]</span>
+  <span class='va'>overwrite.person</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pidsplit"</span>, <span class='st'>"year_curr"</span><span class='op'>)</span> <span class='op'>:=</span> <span class='fu'>.</span><span class='op'>(</span><span class='va'>split.person</span>, <span class='va'>y</span><span class='op'>)</span><span class='op'>]</span>
 
-  <span class='kw'>eusilc</span>[<span class='kw'>overwrite.person</span>, <span class='kw'>pidsplit</span> <span class='op'>:=</span> <span class='kw'>i.pidsplit</span>,
-         on = <span class='fu'>.</span>(<span class='kw'>pid</span>, <span class='kw'>year</span> <span class='op'>&gt;=</span> <span class='kw'>year_curr</span>)]
-  <span class='kw'>leaf_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>leaf_out</span>,
-                <span class='kw'>eusilc</span>[<span class='kw'>pid</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>overwrite.person</span><span class='op'>$</span><span class='kw'>pid</span>,
-                                  <span class='kw'>overwrite.person</span><span class='op'>$</span><span class='kw'>pidsplit</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='kw'>hid</span>)])
-}
+  <span class='va'>eusilc</span><span class='op'>[</span><span class='va'>overwrite.person</span>, <span class='va'>pidsplit</span> <span class='op'>:=</span> <span class='va'>i.pidsplit</span>,
+         on <span class='op'>=</span> <span class='fu'>.</span><span class='op'>(</span><span class='va'>pid</span>, <span class='va'>year</span> <span class='op'>&gt;=</span> <span class='va'>year_curr</span><span class='op'>)</span><span class='op'>]</span>
+  <span class='va'>leaf_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>leaf_out</span>,
+                <span class='va'>eusilc</span><span class='op'>[</span><span class='va'>pid</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>overwrite.person</span><span class='op'>$</span><span class='va'>pid</span>,
+                                  <span class='va'>overwrite.person</span><span class='op'>$</span><span class='va'>pidsplit</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>hid</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
+<span class='op'>}</span>
 
-<span class='kw'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span>(
-  <span class='kw'>eusilc</span>, REP = <span class='fl'>10</span>, hid = <span class='st'>"hid"</span>, weights = <span class='st'>"pWeight"</span>,
-  strata = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"age"</span>), period = <span class='st'>"year"</span>, split = <span class='fl'>TRUE</span>,
-  pid = <span class='st'>"pidsplit"</span>)
+<span class='va'>dat_boot</span> <span class='op'>&lt;-</span> <span class='fu'>draw.bootstrap</span><span class='op'>(</span>
+  <span class='va'>eusilc</span>, REP <span class='op'>=</span> <span class='fl'>10</span>, hid <span class='op'>=</span> <span class='st'>"hid"</span>, weights <span class='op'>=</span> <span class='st'>"pWeight"</span>,
+  strata <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"region"</span>, <span class='st'>"age"</span><span class='op'>)</span>, period <span class='op'>=</span> <span class='st'>"year"</span>, split <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  pid <span class='op'>=</span> <span class='st'>"pidsplit"</span><span class='op'>)</span>
 <span class='co'># split households were considered e.g. household and</span>
 <span class='co'># split household were both selected or not selected</span>
-<span class='kw'>dat_boot</span>[, <span class='kw'>data.table</span>::<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span>(<span class='kw'>w1</span>), by = <span class='kw'>pidsplit</span>][<span class='kw'>V1</span> <span class='op'>&gt;</span> <span class='fl'>1</span>]
-}
+<span class='va'>dat_boot</span><span class='op'>[</span>, <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/duplicated.html'>uniqueN</a></span><span class='op'>(</span><span class='va'>w1</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='va'>pidsplit</span><span class='op'>]</span><span class='op'>[</span><span class='va'>V1</span> <span class='op'>&gt;</span> <span class='fl'>1</span><span class='op'>]</span>
+<span class='op'>}</span>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -404,7 +399,7 @@ data.table objects.</p></div>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

@@ -91,12 +91,6 @@ documentation page of the original data for details about the variables." />
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/surveysd.html">Get started</a>
 </li>
 <li>
@@ -155,7 +149,7 @@ the <code>surveysd</code> package based on <a href='https://rdrr.io/pkg/laeken/m
 documentation page of the original data for details about the variables.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>demo.eusilc</span>(n = <span class='fl'>8</span>, prettyNames = <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>demo.eusilc</span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>8</span>, prettyNames <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -194,7 +188,8 @@ of poverty</p></li>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>demo.eusilc</span>(n = <span class='fl'>1</span>, prettyNames = <span class='fl'>TRUE</span>)[, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span>, <span class='fl'>26</span>, <span class='fl'>28</span><span class='op'>:</span><span class='fl'>30</span>)]</div><div class='output co'>#&gt;         hid hsize        region    pid       age gender   ecoStat citizenship
+    <pre class="examples"><div class='input'><span class='fu'>demo.eusilc</span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>1</span>, prettyNames <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span>, <span class='fl'>26</span>, <span class='fl'>28</span><span class='op'>:</span><span class='fl'>30</span><span class='op'>)</span><span class='op'>]</span>
+</div><div class='output co'>#&gt;         hid hsize        region    pid       age gender   ecoStat citizenship
 #&gt;     1:    1 (2,3]         Tyrol    101   (25,45] female part time          AT
 #&gt;     2:    1 (2,3]         Tyrol    102   (25,45]   male full time       Other
 #&gt;     3:    1 (2,3]         Tyrol    103 (-Inf,16]   male      &lt;NA&gt;        &lt;NA&gt;
@@ -233,7 +228,7 @@ of poverty</p></li>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
