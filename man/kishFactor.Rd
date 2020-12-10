@@ -13,7 +13,7 @@ kishFactor(w)
 The function will return the the kish factor
 }
 \description{
-Compute the design according to unequal weighting.
+Compute the design effect due to unequal weighting.
 }
 \details{
 The factor is computed acording to 'Weighting for Unequal P_i', Leslie Kish, Journal of Official Statistics, Vol. 8. No. 2, 1992
