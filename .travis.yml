@@ -11,10 +11,10 @@ matrix:
   include:
     - r: devel
     - r: release
-      r_github_packages:
-      - r-lib/covr
-      - jimhester/lintr
-      - r-lib/pkgdown
+      r_packages:
+      - covr
+      - lintr
+      - pkgdown
       after_success:
       - R CMD INSTALL $PKG_TARBALL
       - Rscript -e 'covr::coveralls()'
