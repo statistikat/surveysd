@@ -370,13 +370,17 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
     all(abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]])
   })
   if(looseH){
-    if(verbose){
-      message("For looseH=TRUE epsH+epsH/100 is allowed as tolerance for the convergence.")
+
+    inc <- function(x){
+      10^(floor(log10(x))-1) * 9.99
     }
 
     conH_converged <- sapply(seq_along(conH), function(i) {
       epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
-      all(abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= epsH_current + epsH_current/100)
+      if(verbose){
+        message(paste("For looseH=TRUE epsH+",inc(epsH_current),"is allowed as tolerance for the convergence."))
+      }
+      all(abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= (epsH_current + inc(epsH_current)))
 
     })
   }else{
