@@ -853,7 +853,7 @@ help.stError <- function(
     var.est[, c("est", "ID") := tstrsplit(variable, "\\.(?=[^\\.]+$)", perl=TRUE)]
     var.est[, est_type := "norm"]
     var.est[, variable := NULL]
-
+    setkeyv(var.est,c("ID",period,z,"est"))
     # add groups which are not in var.est
     # because they were not present in sample
     if (!is.null(period.mean) | period.diff.b) {

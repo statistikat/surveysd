@@ -12,18 +12,18 @@
 #' other hand calculates `f` as
 #'
 #' \ifelse{html}{
-#'   \out{<center> f<sub>i</sub> = a  &middot; x<sub>i</sub> + b </center>}
+#'   \out{<div style="text-align: center;"> f<sub>i</sub> = a  &middot; x<sub>i</sub> + b </div>}
 #' }{\deqn{f_i = ax_i+b}}
 #'
 #' where `a` and `b` are chosen, so f satisfies the following two equations.
 #'
 #' \ifelse{html}{
-#'   \out{<center>&sum; f<sub>i</sub> w<sub>i</sub>
-#'        x<sub>i</sub> = target</center>}
+#'   \out{<div style="text-align: center;">&sum; f<sub>i</sub> w<sub>i</sub>
+#'        x<sub>i</sub> = target</div>}
 #' }{\deqn{\sum f_i * w_i * x_i = target}}
 #' \ifelse{html}{
-#'   \out{<center>&sum; f<sub>i</sub>
-#'        w<sub>i</sub> = &sum; w<sub>i</sub></center>}
+#'   \out{<div style="text-align: center;">&sum; f<sub>i</sub>
+#'        w<sub>i</sub> = &sum; w<sub>i</sub></div>}
 #' }{\deqn{\sum f_i * w_i = \sum w_i}}
 #'
 # \eqn{\sum}\out{f<sub>i</sub> w<sub>i</sub> x<sub>i</sub>} = `target`
