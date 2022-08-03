@@ -5,6 +5,7 @@
 #'
 #' @name kishFactor
 #' @param w a numeric vector with weights
+#' @param na.rm a logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @return The function will return the the kish factor
 #' @author Alexander Kowarik
 #' @export kishFactor
@@ -15,9 +16,12 @@
 #' @examples
 #' kishFactor(rep(1,10))
 #' kishFactor(rlnorm(10))
-kishFactor <- function(w) {
+kishFactor <- function(w, na.rm = FALSE) {
   if (!is.numeric(w)) {
     stop("The input must be a numeric vector")
+  }
+  if(na.rm){
+    w <- na.omit(w)
   }
   n <- length(w)
   sqrt(n * sum(w ^ 2) / sum(w) ^ 2)
