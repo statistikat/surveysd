@@ -4,10 +4,12 @@
 \alias{kishFactor}
 \title{Kish Factor}
 \usage{
-kishFactor(w)
+kishFactor(w, na.rm = FALSE)
 }
 \arguments{
 \item{w}{a numeric vector with weights}
+
+\item{na.rm}{a logical value indicating whether NA values should be stripped before the computation proceeds.}
 }
 \value{
 The function will return the the kish factor
