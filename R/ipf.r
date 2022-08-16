@@ -335,7 +335,8 @@ getFormulas <- function(con, w) {
 ## enrich dat_original with the calibrated weights and assign attributes
 
 addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
-                                    maxIter, calIter, returnNA, cw, verbose, looseH) {
+                                    maxIter, calIter, returnNA, cw, bw,verbose, looseH, hidVar = NULL) {
+
   variableKeepingTheCalibWeight <- cw
   representativeHouseholdForCalibration <- OriginalSortingVariable <-
     outTable <- copy(dat_original)
@@ -411,9 +412,10 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
   # formulas
   setattr(outTable, "formP", formP)
   setattr(outTable, "formH", formH)
-
+  setattr(outTable, "baseweight", bw)
+  setattr(outTable, "hid", hidVar)
   # not used yet
-  #class(outTable) <- c("ipf", class(outTable))
+  #class(outTable) <- c(class(outTable),"ipf")
 
   invisible(outTable)
 }
@@ -861,6 +863,6 @@ ipf <- function(
   fVariableForCalibrationIPF <- NULL
   dat[, fVariableForCalibrationIPF := NULL]
   addWeightsAndAttributes(dat, conP, conH, epsP, epsH, dat_original, maxIter,
-                          calIter, returnNA, variableKeepingTheCalibWeight,
-                          verbose, looseH)
+                          calIter, returnNA, variableKeepingTheCalibWeight,variableKeepingTheBaseWeight,
+                          verbose, looseH, hid)
 }
