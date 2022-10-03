@@ -422,20 +422,30 @@ draw.bootstrap <- function(
     fpc = totals, single.PSU = single.PSU, return.value = "replicates",
     check.input = FALSE, new.method = new.method), by = c(period)]
 
-  # keep bootstrap replicates of first period for each household
+  # respect split households
   if (split) {
     dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
   }
 
-  dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid)]")
-  select.first.occurence <- paste0(c(hid, w.names), collapse = ",")
+  # keep bootstrap replicates of first period for each household
+  # if households drops out of survey and re-enters survey at a later stage
+  # -> treat as different instances
+  help_survey_grouping <- function(x){
+    x_holes <- which(diff(x)>1)
+    x_groups <- diff(c(0,x_holes,length(x)))
+    x_groups <- rep(1:length(x_groups),times=x_groups)
+    return(x_groups)
+  }
+  dt.eval("dat[,hid_survey_segment_help:=help_survey_grouping(", period, "),by=c(hid)]")
+  dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid,'hid_survey_segment_help')]")
+  select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
   dat.first.occurence <- unique(
     dt.eval("dat[", period, "==occurence_first_period,.(",
             select.first.occurence, ")]"
-    ), by = hid)
+    ), by = c(hid,"hid_survey_segment_help"))
   dat[, c(w.names) := NULL]
-  dat <- merge(dat, dat.first.occurence, by = hid, all.x = TRUE)
-  dat[, occurence_first_period := NULL]
+  dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
+  dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
 
 
   # remove columns

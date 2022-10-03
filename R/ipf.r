@@ -425,7 +425,7 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #' individual level constraints.
 #'
 #' This function implements the weighting procedure described
-#' [here](https://doi.org/10.17713/ajs.v45i3.120).
+#' here: \doi{10.17713/ajs.v45i3.120}.
 #' Usage examples can be found in the corresponding vignette
 #' (`vignette("ipf")`).
 #'
