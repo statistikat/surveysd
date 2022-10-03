@@ -12,6 +12,8 @@ recalib(
   period = attr(dat, "period"),
   conP.var = NULL,
   conH.var = NULL,
+  conP = NULL,
+  conH = NULL,
   epsP = 0.01,
   epsH = 0.02,
   ...
@@ -42,6 +44,20 @@ Contingency tables for the population are calculated per \code{period} using
 which weights should be calibrated or a list of such character vectors.
 Contingency tables for the population are calculated per \code{period} using
 \code{weights}.}
+
+\item{conP}{list or (partly) named list defining the constraints on person
+level.  The list elements are contingency tables in array representation
+with dimnames corresponding to the names of the relevant calibration
+variables in \code{dat}. If a numerical variable is to be calibrated, the
+respective list element has to be named with the name of that numerical
+variable. Otherwise the list element shoud NOT be named.}
+
+\item{conH}{list or (partly) named list defining the constraints on
+household level.  The list elements are contingency tables in array
+representation with dimnames corresponding to the names of the relevant
+calibration variables in \code{dat}. If a numerical variable is to be
+calibrated, the respective list element has to be named with the name of
+that numerical variable. Otherwise the list element shoud NOT be named.}
 
 \item{epsP}{numeric value specifying the convergence limit for \code{conP.var}
 or \code{conP}, see \code{\link[=ipf]{ipf()}}.}

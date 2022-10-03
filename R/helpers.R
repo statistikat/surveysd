@@ -44,10 +44,10 @@ getEllipsis <- function(element, default, ell) {
 }
 getEllipsis2 <- function(element, default, ell) {
 
-  if (is.null(ell[[element]])) {
-    return(default)
-  }else{
+  if (element %in% names(ell)) {
     return(ell[[element]])
+  }else{
+    return(default)
   }
 }
 
