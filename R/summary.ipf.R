@@ -3,10 +3,34 @@
 #' @param x object of class ipf
 #' @param extraExport additional exports to compute
 #'
-#' @return
+#' @author Laura Gruber
+#' @return a list of the following outputs
 #' @export
 #'
 #' @examples
+#'
+#' \dontrun{
+#' # load data
+#' eusilc <- demo.eusilc(n = 1, prettyNames = TRUE)
+#'
+#' # personal constraints
+#' conP1 <- xtabs(pWeight ~ age, data = eusilc)
+#' conP2 <- xtabs(pWeight ~ gender + region, data = eusilc)
+#' conP3 <- xtabs(pWeight*eqIncome ~ gender, data = eusilc)
+#'
+#' # household constraints
+#' conH1 <- xtabs(pWeight ~ hsize + region, data = eusilc)
+#'
+#' # simple usage ------------------------------------------
+#'
+#' calibweights1 <- ipf(
+#'   eusilc,
+#'   conP = list(conP1, conP2, eqIncome = conP3),
+#'   bound = NULL,
+#'   verbose = TRUE
+#' )
+#' summary.ipf(calibweights1)
+#' }
 summary.ipf <- function(x,extraExport = NULL){
   w <- av$baseweight
   hid <- av$hid
@@ -69,8 +93,8 @@ summary.ipf <- function(x,extraExport = NULL){
   setcolorder(dist_gew,c("variable",paste0("value",1:length(i)),"cv","min","max","quotient"))
 
   cols <- c(which(colnames(x) %in% c(hid,vars,w,calibWeightName,extraExport)))
-  names(output)[1] <- "Daten gewichtet"
-  output[[1]] <- subset(x,,cols)
+  names(output)[1] <- "weighted data"
+  output[[1]] <- subset(x,select=cols)
 
 
   #beinhaltet ebenfalls formP und formH
@@ -78,10 +102,10 @@ summary.ipf <- function(x,extraExport = NULL){
   formulaOutput$Verteilungen[seq_along(formulas)] <- formulas
 
   ##Speichern der Tabellen
-  names(output)[2] <- "Kalibrierungsvorgaben"
+  names(output)[2] <- "margin tables"
   output[[2]] <- formulaOutput
 
-  names(output)[3] <- "VerteilungGewichte"
+  names(output)[3] <- "distribution of the weights"
   output[[3]] <- dist_gew
 
   #### ---- ####
