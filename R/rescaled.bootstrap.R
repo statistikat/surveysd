@@ -66,17 +66,20 @@
 #' @author Johannes Gussenbauer, Statistics Austria
 #'
 #' @examples
-#' data(eusilc, package = "laeken")
-#' data.table::setDT(eusilc)
-#'
-#' eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
-#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",
-#'                                        cluster="db030",fpc="N.households")
-#'
-#' eusilc[,new_strata:=paste(db040,hsize,sep="_")]
-#' eusilc[,N.housholds:=sum(db090[!duplicated(db030)]),by=new_strata]
-#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
-#'                                        cluster="db030",fpc="N.households")
+#' 
+#' library(surveysd)
+#' library(data.table)
+#' set.seed(1234)
+#' eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
+#' 
+#' eusilc[,N.households:=uniqueN(hid),by=region]
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region",
+#'                                        cluster="hid",fpc="N.households")
+#' 
+#' eusilc[,new_strata:=paste(region,hsize,sep="_")]
+#' eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
+#'                                        cluster="hid",fpc="N.households")
 #'
 #'
 

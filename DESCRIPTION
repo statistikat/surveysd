@@ -19,7 +19,7 @@ Imports: Rcpp (>= 0.12.12),data.table,ggplot2,laeken,methods
 LinkingTo: Rcpp
 URL: https://github.com/statistikat/surveysd
 BugReports: https://github.com/statistikat/surveysd/issues
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 Suggests: 
     testthat,
     knitr,
