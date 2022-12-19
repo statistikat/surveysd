@@ -239,8 +239,6 @@ standard error \eqn{\sigma}.
 \examples{
 # Import data and calibrate
 
-library(surveysd)
-library(data.table)
 set.seed(1234)
 eusilc <- demo.eusilc(n = 4,prettyNames = TRUE)
 dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
@@ -261,7 +259,7 @@ err.est <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"),
                         fun = weightedRatio)
 err.est$Estimates
 
-
+\dontrun{
 # estimate weightedRatio for povertyRisk per period and gender and
 # period x region x gender 
 
@@ -279,7 +277,7 @@ err.est <- calc.stError(
   period.diff = period.diff,  # <- take difference of periods 2012 and 2011
   period.mean = 3)  # <- average over 3 periods
 err.est$Estimates
-
+}
 # for more examples see https://statistikat.github.io/surveysd/articles/error_estimation.html
 
 }
