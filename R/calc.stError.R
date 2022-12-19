@@ -200,6 +200,7 @@
 #' @examples
 #' # Import data and calibrate
 #'
+#'\dontrun{
 #' set.seed(1234)
 #' eusilc <- demo.eusilc(n = 4,prettyNames = TRUE)
 #' dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
@@ -220,7 +221,7 @@
 #'                         fun = weightedRatio)
 #' err.est$Estimates
 #'
-#'\dontrun{
+#'
 #' # estimate weightedRatio for povertyRisk per period and gender and
 #' # period x region x gender 
 #' 
