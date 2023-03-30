@@ -106,11 +106,14 @@ previously calcualted contingency tables. In this process the columns of the
 bootstrap replicates are overwritten by the calibrated weights.\cr
 }
 \examples{
-\dontrun{
 
+library(surveysd)
+library(data.table)
+setDTthreads(1)
+set.seed(1234)
 eusilc <- demo.eusilc(prettyNames = TRUE)
 
-dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid",
+dat_boot <- draw.bootstrap(eusilc, REP = 1, hid = "hid",
                            weights = "pWeight",
                            strata = "region", period = "year")
 
@@ -130,7 +133,7 @@ conH <- xtabs(pWeight ~ hsize + region + year,
 dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
                           conH.var = NULL, conP = list(conP),
                           conH = list(conH), verbose = TRUE)
-}
+
 
 }
 \seealso{

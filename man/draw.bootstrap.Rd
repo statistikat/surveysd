@@ -161,21 +161,25 @@ People who enter already existing households will also get the same bootstrap
 replicate as the other households members had in the previous periods.
 }
 \examples{
-\dontrun{
+
+library(surveysd)
+library(data.table)
+setDTthreads(1)
+set.seed(1234)
 eusilc <- demo.eusilc(prettyNames = TRUE)
 
 ## draw sample without stratification or clustering
-dat_boot <- draw.bootstrap(eusilc, REP = 10, weights = "pWeight",
+dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
                            period = "year")
 
 ## use stratification w.r.t. region and clustering w.r.t. households
 dat_boot <- draw.bootstrap(
-  eusilc, REP = 10, hid = "hid", weights = "pWeight",
+  eusilc, REP = 1, hid = "hid", weights = "pWeight",
   strata = "region", period = "year")
 
 ## use multi-level clustering
 dat_boot <- draw.bootstrap(
-  eusilc, REP = 10, hid = "hid", weights = "pWeight",
+  eusilc, REP = 1, hid = "hid", weights = "pWeight",
   strata = c("region", "age"), period = "year")
 
 
@@ -204,13 +208,13 @@ for(y in year) {
 }
 
 dat_boot <- draw.bootstrap(
-  eusilc, REP = 10, hid = "hid", weights = "pWeight",
+  eusilc, REP = 1, hid = "hid", weights = "pWeight",
   strata = c("region", "age"), period = "year", split = TRUE,
   pid = "pidsplit")
 # split households were considered e.g. household and
 # split household were both selected or not selected
 dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
-}
+
 
 }
 \seealso{

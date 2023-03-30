@@ -69,6 +69,7 @@
 #' 
 #' library(surveysd)
 #' library(data.table)
+#' setDTthreads(1)
 #' set.seed(1234)
 #' eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 #' 
