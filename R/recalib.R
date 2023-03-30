@@ -81,11 +81,14 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#' \dontrun{
-#'
+#' 
+#' library(surveysd)
+#' library(data.table)
+#' setDTthreads(1)
+#' set.seed(1234)
 #' eusilc <- demo.eusilc(prettyNames = TRUE)
 #'
-#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid",
+#' dat_boot <- draw.bootstrap(eusilc, REP = 1, hid = "hid",
 #'                            weights = "pWeight",
 #'                            strata = "region", period = "year")
 #'
@@ -105,7 +108,7 @@
 #' dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
 #'                           conH.var = NULL, conP = list(conP),
 #'                           conH = list(conH), verbose = TRUE)
-#' }
+#' 
 #'
 #' @export recalib
 #'
@@ -143,7 +146,6 @@ recalib <- function(
     ellipsisNames,
     ellipsisContent, sep = "<-"
   )))
-  
   
   ##########################################################
   # INPUT CHECKING
@@ -352,6 +354,7 @@ recalib <- function(
           w = g, bound = bound, maxIter = maxIter, meanHH = meanHH,
           hid = "hidfactor", check_hh_vars = check_hh_vars,
           allPthenH = allPthenH, returnNA = returnNA,
+          numericalWeighting = numericalWeighting,
           conversion_messages = conversion_messages
         )[, calibWeight])
         if (dat[, any(is.na(get(g)))]) {

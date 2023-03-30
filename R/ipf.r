@@ -134,7 +134,8 @@ check_population_totals <- function(con, dat, type = "personal") {
 }
 
 calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
-                   numericalWeighting, numericalWeightingVar, w, cw, minMaxTrim) {
+                   numericalWeighting, numericalWeightingVar, w,
+                   cw, minMaxTrim, print_every_n) {
   selectGroupNotConverged <- epsPcur <- maxFac <- OriginalSortingVariable <- V1 <-
     epsvalue <- fVariableForCalibrationIPF <- NULL
   temporary_hvar <- value <-
@@ -146,7 +147,6 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
   setnames(dat, paste0("epsP_", i), "epsPcur")
   tmp <- data.table(x = factor(levels(combined_factors)))
   setnames(tmp, "x", paste0("combined_factors_", i))
-  paste0("combined_factors_h_", i)
   con_current <- dat[tmp, on = paste0("combined_factors_", i),
                      mult = "first", value]
 
@@ -166,21 +166,25 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
       head(wValue, 1), head(value, 1), get(numericalWeightingVar),
       get(variableKeepingTheCalibWeight)),
       by = eval(paste0("combined_factors_", i))]
+    dat[value==0,fVariableForCalibrationIPF:=1]
   } else {
     # categorical variable to be calibrated
     set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(
       dat[[variableKeepingTheCalibWeight]], combined_factors, con_current))
+    set(dat, j = "wValue", value = dat[["value"]] /
+          dat[["fVariableForCalibrationIPF"]])
   }
-  if (dat[!is.na(fVariableForCalibrationIPF),
-          any(abs(1 / fVariableForCalibrationIPF - 1) > epsPcur)]) {
+  
+  dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsPcur]
+  dat[is.na(selectGroupNotConverged),selectGroupNotConverged:=FALSE]
+  
+  if (dat[,any(selectGroupNotConverged)]) {
     ## sicherheitshalber abs(epsPcur)? Aber es wird schon niemand negative eps
     ##   Werte uebergeben??
     if (verbose && calIter %% 10 == 0) {
       message(calIter, ":Not yet converged for P-Constraint", i, "\n")
-      if (calIter %% 100 == 0) {
+      if (calIter %% print_every_n == 0) {
 
-        dat[, selectGroupNotConverged := any(!is.na(fVariableForCalibrationIPF) &
-                                               (abs(1 / fVariableForCalibrationIPF - 1) > epsPcur)), by= c(pColNames[[i]])]
         tmp <- dat[
           selectGroupNotConverged == TRUE,
           list(
@@ -224,7 +228,8 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
 }
 
 calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
-                   looseH, numericalWeighting, numericalWeightingVar, w, cw, minMaxTrim) {
+                   looseH, numericalWeighting, numericalWeightingVar,
+                   w, cw, minMaxTrim, print_every_n) {
   variableKeepingTheBaseWeight <- w
   variableKeepingTheCalibWeight <- cw
   epsHcur <- OriginalSortingVariable <- V1 <-
@@ -257,7 +262,7 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
       head(wValue, 1), head(value, 1), get(numericalWeightingVar),
       get(variableKeepingTheCalibWeight)),
       by = eval(paste0("combined_factors_h_", i))]
-
+    dat[value==0,fVariableForCalibrationIPF:=1]
   } else {
     # categorical variable to be calibrated
     set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(
@@ -269,14 +274,14 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
   set(dat, j = "wValue", value = dat[["value"]] /
         dat[["fVariableForCalibrationIPF"]])
 
-  if (dat[!is.na(fVariableForCalibrationIPF),
-          any(abs(1 / fVariableForCalibrationIPF - 1) > epsHcur)]) {
+  dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsPcur]
+  dat[is.na(selectGroupNotConverged),selectGroupNotConverged:=FALSE]
+  
+  if (dat[,any(selectGroupNotConverged)]) {
     if (verbose && calIter %% 10 == 0) {
       message(calIter, ":Not yet converged for H-Constraint", i, "\n")
-      if (calIter %% 100 == 0) {
-        tmp <- dat[
-          !is.na(fVariableForCalibrationIPF) &
-            (abs(1 / fVariableForCalibrationIPF - 1) > epsHcur),
+      if (calIter %% print_every_n == 0) {
+        tmp <- dat[selectGroupNotConverged == TRUE,
           list(maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
                epsH = head(epsHcur, 1),
                sumCalibWeight = sum(get(variableKeepingTheCalibWeight) *
@@ -367,7 +372,9 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
   # convergence
   conP_converged <- sapply(seq_along(conP), function(i) {
     epsP_current <- switch(is.list(epsP) + 1, epsP, epsP[[i]])
-    all(abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]])
+    conP_zero <- conP[[i]]==0
+    cond1 <- abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]]
+    all(conP_zero==TRUE | cond1==TRUE)
   })
   if(looseH){
 
@@ -380,13 +387,16 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
       if(verbose){
         message(paste("For looseH=TRUE epsH+",inc(epsH_current),"is allowed as tolerance for the convergence."))
       }
-      all(abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= (epsH_current + inc(epsH_current)))
-
+      condH_zero <- conH[[i]] ==0
+      cond1 <- abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= (epsH_current + inc(epsH_current))
+      all(conH_zero==TRUE | cond1==TRUE)
     })
   }else{
     conH_converged <- sapply(seq_along(conH), function(i) {
       epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
-      all(abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]])
+      condH_zero <- conH[[i]] ==0
+      cond1 <- abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]]
+      all(conH_zero==TRUE | cond1==TRUE)
     })
   }
   converged <- all(conP_converged) && all(conH_converged)
@@ -514,6 +524,9 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #'   with similar inputs (for example bootstrapping)
 #' @param nameCalibWeight character defining the name of the variable for the
 #'   newly generated calibrated weight.
+#' @param print_every_n number of interation steps after which a summary table
+#'   is printed. The summary table shows all constraints which are not yet
+#'   reached according to `epsP` and `epsH`
 #' @return The function will return the input data `dat` with the calibrated
 #'   weights `calibWeight` as an additional column as well as attributes. If no
 #'   convergence has been reached in `maxIter` steps, and `returnNA` is `TRUE`
@@ -589,7 +602,7 @@ ipf <- function(
   verbose = FALSE, w = NULL, bound = 4, maxIter = 200, meanHH = TRUE,
   allPthenH = TRUE, returnNA = TRUE, looseH = FALSE, numericalWeighting =
     computeLinear, check_hh_vars = TRUE, conversion_messages = FALSE,
-  nameCalibWeight = "calibWeight", minMaxTrim = NULL) {
+  nameCalibWeight = "calibWeight", minMaxTrim = NULL, print_every_n = 100) {
 
   check_population_totals(conP, dat, "personal")
   check_population_totals(conH, dat, "household")
@@ -793,7 +806,8 @@ ipf <- function(
           calIter = calIter, numericalWeighting = numericalWeighting,
           numericalWeightingVar = numericalWeightingTmp,
           w = variableKeepingTheBaseWeight,
-          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
+          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim,
+          print_every_n = print_every_n)
       }
       ## replace person weight with household average
       set(dat, j = variableKeepingTheCalibWeight,
@@ -812,7 +826,8 @@ ipf <- function(
           numericalWeighting = numericalWeighting,
           numericalWeightingVar = numericalWeightingTmp,
           w = variableKeepingTheBaseWeight,
-          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
+          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim,
+          print_every_n = print_every_n)
       }
     } else {
       ### Person calib
@@ -827,7 +842,8 @@ ipf <- function(
           calIter = calIter, numericalWeighting = numericalWeighting,
           numericalWeightingVar = numericalWeightingTmp,
           w = variableKeepingTheBaseWeight,
-          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
+          cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim,
+          print_every_n = print_every_n)
 
         ## replace person weight with household average
         set(dat, j = variableKeepingTheCalibWeight,
@@ -845,7 +861,8 @@ ipf <- function(
             calIter = calIter, numericalWeighting = numericalWeighting,
             numericalWeightingVar = numericalWeightingTmp, looseH = looseH,
             w = variableKeepingTheBaseWeight,
-            cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim)
+            cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim,
+            print_every_n = print_every_n)
         }
       }
     }

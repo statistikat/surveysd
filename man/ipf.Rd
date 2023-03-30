@@ -23,7 +23,8 @@ ipf(
   check_hh_vars = TRUE,
   conversion_messages = FALSE,
   nameCalibWeight = "calibWeight",
-  minMaxTrim = NULL
+  minMaxTrim = NULL,
+  print_every_n = 100
 )
 }
 \arguments{
@@ -110,6 +111,10 @@ newly generated calibrated weight.}
 \item{minMaxTrim}{numeric vector of length2, first element a minimum value
 for weights to be trimmed to, second element a maximum value for weights to
 be trimmed to.}
+
+\item{print_every_n}{number of interation steps after which a summary table
+is printed. The summary table shows all constraints which are not yet
+reached according to \code{epsP} and \code{epsH}}
 }
 \value{
 The function will return the input data \code{dat} with the calibrated
