@@ -9,20 +9,14 @@ computeLinear <- function(curValue, target, x, w, boundLinear = 10) {
 
 #' @rdname computeFrac
 #' @export
-computeLinearShift <- function(curValue, target, x, w, boundLinear = 10) {
-    .Call('_surveysd_computeLinearShift', PACKAGE = 'surveysd', curValue, target, x, w, boundLinear)
+computeLinearG1_old <- function(curValue, target, x, w, boundLinear = 10) {
+    .Call('_surveysd_computeLinearG1_old', PACKAGE = 'surveysd', curValue, target, x, w, boundLinear)
 }
 
 #' @rdname computeFrac
 #' @export
 computeLinearG1 <- function(curValue, target, x, w, boundLinear = 10) {
     .Call('_surveysd_computeLinearG1', PACKAGE = 'surveysd', curValue, target, x, w, boundLinear)
-}
-
-#' @rdname computeFrac
-#' @export
-computeLinearShiftG1 <- function(curValue, target, x, w, boundLinear = 10) {
-    .Call('_surveysd_computeLinearShiftG1', PACKAGE = 'surveysd', curValue, target, x, w, boundLinear)
 }
 
 #' Calculate mean by factors

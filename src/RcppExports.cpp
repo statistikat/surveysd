@@ -25,9 +25,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// computeLinearShift
-NumericVector computeLinearShift(double curValue, double target, const NumericVector& x, const NumericVector& w, double boundLinear);
-RcppExport SEXP _surveysd_computeLinearShift(SEXP curValueSEXP, SEXP targetSEXP, SEXP xSEXP, SEXP wSEXP, SEXP boundLinearSEXP) {
+// computeLinearG1_old
+NumericVector computeLinearG1_old(double curValue, double target, const NumericVector& x, const NumericVector& w, double boundLinear);
+RcppExport SEXP _surveysd_computeLinearG1_old(SEXP curValueSEXP, SEXP targetSEXP, SEXP xSEXP, SEXP wSEXP, SEXP boundLinearSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,7 +36,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type w(wSEXP);
     Rcpp::traits::input_parameter< double >::type boundLinear(boundLinearSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeLinearShift(curValue, target, x, w, boundLinear));
+    rcpp_result_gen = Rcpp::wrap(computeLinearG1_old(curValue, target, x, w, boundLinear));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -52,21 +52,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type w(wSEXP);
     Rcpp::traits::input_parameter< double >::type boundLinear(boundLinearSEXP);
     rcpp_result_gen = Rcpp::wrap(computeLinearG1(curValue, target, x, w, boundLinear));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeLinearShiftG1
-NumericVector computeLinearShiftG1(double curValue, double target, const NumericVector& x, const NumericVector& w, double boundLinear);
-RcppExport SEXP _surveysd_computeLinearShiftG1(SEXP curValueSEXP, SEXP targetSEXP, SEXP xSEXP, SEXP wSEXP, SEXP boundLinearSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type curValue(curValueSEXP);
-    Rcpp::traits::input_parameter< double >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< double >::type boundLinear(boundLinearSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeLinearShiftG1(curValue, target, x, w, boundLinear));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -196,9 +181,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_surveysd_computeLinear", (DL_FUNC) &_surveysd_computeLinear, 5},
-    {"_surveysd_computeLinearShift", (DL_FUNC) &_surveysd_computeLinearShift, 5},
+    {"_surveysd_computeLinearG1_old", (DL_FUNC) &_surveysd_computeLinearG1_old, 5},
     {"_surveysd_computeLinearG1", (DL_FUNC) &_surveysd_computeLinearG1, 5},
-    {"_surveysd_computeLinearShiftG1", (DL_FUNC) &_surveysd_computeLinearShiftG1, 5},
     {"_surveysd_geometric_mean_reference", (DL_FUNC) &_surveysd_geometric_mean_reference, 2},
     {"_surveysd_geometric_mean", (DL_FUNC) &_surveysd_geometric_mean, 2},
     {"_surveysd_arithmetic_mean", (DL_FUNC) &_surveysd_arithmetic_mean, 2},
