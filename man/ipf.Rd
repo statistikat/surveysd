@@ -171,7 +171,7 @@ conP2 <- xtabs(pWeight ~ gender + region, data = eusilc)
 conP3 <- xtabs(pWeight*eqIncome ~ gender, data = eusilc)
 
 # household constraints
-conH1 <- xtabs(pWeight ~ hsize + region, data = eusilc)
+conH1 <- xtabs(pWeight ~ hsize + region, data = eusilc[!duplicated(hid)])
 
 # simple usage ------------------------------------------
 

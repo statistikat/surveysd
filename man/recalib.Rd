@@ -38,12 +38,16 @@ the sample period.}
 \item{conP.var}{character vector containig person-specific variables to which
 weights should be calibrated or a list of such character vectors.
 Contingency tables for the population are calculated per \code{period} using
-\code{weights}.}
+\code{weights}. If a vector is supplied contingency tables will be calculated
+for each vector entry. If a list is supplied contingency tables will be
+calculated for each list entry. See examples for more details.}
 
 \item{conH.var}{character vector containig household-specific variables to
 which weights should be calibrated or a list of such character vectors.
 Contingency tables for the population are calculated per \code{period} using
-\code{weights}.}
+\code{weights}. If a vector is supplied contingency tables will be calculated
+for each vector entry. If a list is supplied contingency tables will be
+calculated for each list entry. See examples for more details.}
 
 \item{conP}{list or (partly) named list defining the constraints on person
 level.  The list elements are contingency tables in array representation
@@ -111,7 +115,7 @@ library(surveysd)
 library(data.table)
 setDTthreads(1)
 set.seed(1234)
-eusilc <- demo.eusilc(prettyNames = TRUE)
+eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 
 dat_boot <- draw.bootstrap(eusilc, REP = 1, hid = "hid",
                            weights = "pWeight",
@@ -127,14 +131,31 @@ dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
                           conH.var = c("region", "hsize"), verbose = TRUE)
 
 # supply contingency tables directly
-conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
-conH <- xtabs(pWeight ~ hsize + region + year,
-              data = eusilc[!duplicated(paste(db030,year))])
+conP1 <- xtabs(pWeight ~ age + year, data = eusilc)
+conP2 <- xtabs(pWeight ~ gender + year, data = eusilc)
+conH1 <- xtabs(pWeight ~ region + year,
+               data = eusilc[!duplicated(paste(hid,year))])
+conH2 <- xtabs(pWeight ~ hsize + year,
+               data = eusilc[!duplicated(paste(hid,year))])
+
+conP <- list(conP1,conP2)
+conH <- list(conH1,conH2)
 dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
-                          conH.var = NULL, conP = list(conP),
-                          conH = list(conH), verbose = TRUE)
+                          conH.var = NULL, conP = conP,
+                          conH = conH, verbose = TRUE)
 
 
+# calibrate on gender x age
+dat_boot_calib <- recalib(dat_boot, conP.var = list(c("gender", "age")),
+                          conH.var = NULL, verbose = TRUE)
+
+# identical
+conP1 <- xtabs(pWeight ~ age + gender + year, data = eusilc)
+conP <- list(conP1)
+dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
+                          conH.var = NULL, conP = conP,
+                          conH = NULL, verbose = TRUE)
+                                                     
 }
 \seealso{
 \code{\link[=ipf]{ipf()}} for more information on iterative
