@@ -196,6 +196,8 @@ test_that("test return", {
   expect_true(ncol(dat.boot) == (2 + ncol(eusilc)))
   dat.unique <- unique(dat.boot[, mget(c("db030", paste0("w", 1:2)))])
   expect_true(nrow(dat.unique[, .N, by = db030][N > 2]) == 0)
+  
+  # check if any value is infinite
   expect_false(any(unlist(
     dat.boot[, lapply(
       .SD,
@@ -204,6 +206,24 @@ test_that("test return", {
       }),
       .SDcols = c(paste0("w", 1:2))
       ])))
+  
+  # check if sum of weights equals
+  # numer of sampling units per strata
+  tab_sums <- dat.boot[, lapply(
+    .SD,
+    function(w,db030) {
+      s1 <- sum(w[!duplicated(db030)])
+      s2 <- uniqueN(db030)
+      abs(s1-s2)>1e-10
+    },db030=db030),by=.(year,db040),
+    .SDcols = c(paste0("w", 1:2))
+  ]
+  expect_false(any(unlist(tab_sums[,.SD,.SDcols=paste0("w", 1:2)])))
+  
   expect_false(any(is.na(dat.boot[, .SD, .SDcols = c(paste0("w", 1:2))])))
   expect_true(all(dat.boot[, .SD, .SDcols = c(paste0("w", 1:2))] > 0))
 })
+
+
+
+

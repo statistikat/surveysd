@@ -48,11 +48,8 @@
 #'   for more information see Details.
 #' @param pid column in `dat` specifying the personal identifier. This
 #'   identifier needs to be unique for each person throught the whole data set.
-#' @param new.method logical, if TRUE bootstrap replicates will never be
-#'   negative even if in some strata the whole population is in the sample.
-#'   WARNING: This is still experimental and resulting standard errors might be
-#'   underestimated! Use this if for some strata the whole population is in the
-#'   sample!
+#' @param new.method if `TRUE` bootstrap replicates will be more consistent over time;
+#'   this parameter will be deleted after testing.
 #'
 #' @return the survey data with the number of REP bootstrap replicates added as
 #'   columns.
@@ -107,7 +104,7 @@
 #' actual sample units.
 #'
 #' If `split` ist set to `TRUE` and `pid` is specified, the bootstrap replicates
-#' are carried forward using the personal identifiers instead of the houshold
+#' are carried forward using the personal identifiers instead of the household
 #' identifier.
 #' This takes into account the issue of a houshold splitting up.
 #' Any person in this new split household will get the same bootstrap replicate
@@ -134,7 +131,7 @@
 #' library(data.table)
 #' setDTthreads(1)
 #' set.seed(1234)
-#' eusilc <- demo.eusilc(prettyNames = TRUE)
+#' eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 #'
 #' ## draw sample without stratification or clustering
 #' dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
@@ -148,7 +145,7 @@
 #' ## use multi-level clustering
 #' dat_boot <- draw.bootstrap(
 #'   eusilc, REP = 1, hid = "hid", weights = "pWeight",
-#'   strata = c("region", "age"), period = "year")
+#'   strata = c("region", "hsize"), period = "year")
 #'
 #'
 #' # create spit households
@@ -177,7 +174,7 @@
 #'
 #' dat_boot <- draw.bootstrap(
 #'   eusilc, REP = 1, hid = "hid", weights = "pWeight",
-#'   strata = c("region", "age"), period = "year", split = TRUE,
+#'   strata = c("region", "hsize"), period = "year", split = TRUE,
 #'   pid = "pidsplit")
 #' # split households were considered e.g. household and
 #' # split household were both selected or not selected
@@ -191,7 +188,7 @@
 draw.bootstrap <- function(
   dat, REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
   cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
-    NULL, split = FALSE, pid = NULL, new.method = FALSE) {
+    NULL, split = FALSE, pid = NULL, new.method = TRUE) {
 
   occurence_first_period <- NULL
 
@@ -316,7 +313,7 @@ draw.bootstrap <- function(
              " sampling design\n none of them can be '1' or 'I'.")
       }
       strata_var_help <- generateRandomName(20, colnames(dat))
-      dat[, c(strata_var_help) := do.call(paste, c(.SD, sep = "-")), ]
+      dat[, c(strata_var_help) := do.call(paste, c(.SD, sep = "-")), .SDcols=c(strata)]
       strata <- strata_var_help
       removeCols <- c(removeCols, strata)
     }
@@ -421,42 +418,87 @@ draw.bootstrap <- function(
   }
 
   # calculate bootstrap replicates
-  dat[, c(w.names) := rescaled.bootstrap(
-    dat = copy(.SD), REP = REP, strata = strata, cluster = cluster,
-    fpc = totals, single.PSU = single.PSU, return.value = "replicates",
-    check.input = FALSE, new.method = new.method), by = c(period)]
+  if(new.method==TRUE){
+    dat[, c(w.names) := rescaled.bootstrap(
+      dat = copy(.SD), REP = REP, strata = strata, cluster = cluster,
+      fpc = totals, single.PSU = single.PSU, return.value = "replicates",
+      check.input = FALSE, period = period)]
+    
+    # respect split households
+    if (split) {
+      dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
+      
+      # keep bootstrap replicates of first period for each household
+      # if households drops out of survey and re-enters survey at a later stage
+      # -> treat as different instances
+      help_survey_grouping <- function(x){
+        x_holes <- which(diff(x)>1)
+        x_groups <- diff(c(0,x_holes,length(x)))
+        x_groups <- rep(1:length(x_groups),times=x_groups)
+        return(x_groups)
+      }
+      dt.eval("dat[,hid_survey_segment_help:=help_survey_grouping(", period, "),by=c(hid)]")
+      dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid,'hid_survey_segment_help')]")
+      select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
+      dat.first.occurence <- unique(
+        dt.eval("dat[", period, "==occurence_first_period,.(",
+                select.first.occurence, ")]"
+        ), by = c(hid,"hid_survey_segment_help"))
+      dat[, c(w.names) := NULL]
+      dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
+      dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
+      dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
+      dat[, c(paste0(hid, "_orig")) := NULL]
+    }
+    
+  }else{
+    
+    dat[, c(w.names) := rescaled.bootstrap_old(
+      dat = copy(.SD), REP = REP, strata = strata, cluster = cluster,
+      fpc = totals, single.PSU = single.PSU, return.value = "replicates",
+      check.input = FALSE, new.method = new.method), by = c(period)]
 
-  # respect split households
-  if (split) {
-    dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
+    # respect split households
+
+    if (split) {
+      dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
+    }
+
+    
+    # keep bootstrap replicates of first period for each household
+    # if households drops out of survey and re-enters survey at a later stage
+    # -> treat as different instances
+
+    help_survey_grouping <- function(x){
+
+      x_holes <- which(diff(x)>1)
+      x_groups <- diff(c(0,x_holes,length(x)))
+      x_groups <- rep(1:length(x_groups),times=x_groups)
+      return(x_groups)
+
+    }
+    dt.eval("dat[,hid_survey_segment_help:=help_survey_grouping(", period, "),by=c(hid)]")
+    dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid,'hid_survey_segment_help')]")
+    select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
+   
+    dat.first.occurence <- unique(
+      dt.eval("dat[", period, "==occurence_first_period,.(",
+              select.first.occurence, ")]"
+      ), by = c(hid,"hid_survey_segment_help"))
+    dat[, c(w.names) := NULL]
+
+    
+    dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
+    dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
+
+
+    if (split) {
+      dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
+      dat[, c(paste0(hid, "_orig")) := NULL]
+    }
+    
   }
 
-  # keep bootstrap replicates of first period for each household
-  # if households drops out of survey and re-enters survey at a later stage
-  # -> treat as different instances
-  help_survey_grouping <- function(x){
-    x_holes <- which(diff(x)>1)
-    x_groups <- diff(c(0,x_holes,length(x)))
-    x_groups <- rep(1:length(x_groups),times=x_groups)
-    return(x_groups)
-  }
-  dt.eval("dat[,hid_survey_segment_help:=help_survey_grouping(", period, "),by=c(hid)]")
-  dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid,'hid_survey_segment_help')]")
-  select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
-  dat.first.occurence <- unique(
-    dt.eval("dat[", period, "==occurence_first_period,.(",
-            select.first.occurence, ")]"
-    ), by = c(hid,"hid_survey_segment_help"))
-  dat[, c(w.names) := NULL]
-  dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
-  dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-
-
-  # remove columns
-  if (split) {
-    dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
-    dat[, c(paste0(hid, "_orig")) := NULL]
-  }
   if (length(removeCols) > 0) {
     dat[, c(removeCols) := NULL]
   }
