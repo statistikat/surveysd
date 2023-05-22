@@ -17,7 +17,7 @@ draw.bootstrap(
   boot.names = NULL,
   split = FALSE,
   pid = NULL,
-  new.method = FALSE
+  new.method = TRUE
 )
 }
 \arguments{
@@ -76,11 +76,8 @@ for more information see Details.}
 \item{pid}{column in \code{dat} specifying the personal identifier. This
 identifier needs to be unique for each person throught the whole data set.}
 
-\item{new.method}{logical, if TRUE bootstrap replicates will never be
-negative even if in some strata the whole population is in the sample.
-WARNING: This is still experimental and resulting standard errors might be
-underestimated! Use this if for some strata the whole population is in the
-sample!}
+\item{new.method}{if \code{TRUE} bootstrap replicates will be more consistent over time;
+this parameter will be deleted after testing.}
 }
 \value{
 the survey data with the number of REP bootstrap replicates added as
@@ -152,7 +149,7 @@ sampled households, making the bootstrap replicates more comparable to the
 actual sample units.
 
 If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates
-are carried forward using the personal identifiers instead of the houshold
+are carried forward using the personal identifiers instead of the household
 identifier.
 This takes into account the issue of a houshold splitting up.
 Any person in this new split household will get the same bootstrap replicate
@@ -166,7 +163,7 @@ library(surveysd)
 library(data.table)
 setDTthreads(1)
 set.seed(1234)
-eusilc <- demo.eusilc(prettyNames = TRUE)
+eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 
 ## draw sample without stratification or clustering
 dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
@@ -180,7 +177,7 @@ dat_boot <- draw.bootstrap(
 ## use multi-level clustering
 dat_boot <- draw.bootstrap(
   eusilc, REP = 1, hid = "hid", weights = "pWeight",
-  strata = c("region", "age"), period = "year")
+  strata = c("region", "hsize"), period = "year")
 
 
 # create spit households
@@ -209,7 +206,7 @@ for(y in year) {
 
 dat_boot <- draw.bootstrap(
   eusilc, REP = 1, hid = "hid", weights = "pWeight",
-  strata = c("region", "age"), period = "year", split = TRUE,
+  strata = c("region", "hsize"), period = "year", split = TRUE,
   pid = "pidsplit")
 # split households were considered e.g. household and
 # split household were both selected or not selected

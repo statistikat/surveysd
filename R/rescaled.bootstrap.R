@@ -16,6 +16,10 @@
 #'   For multistage sampling multiple column names can be specified
 #'   by `cluster=c("cluster1>cluster2>cluster3")`.
 #' See Details for more information.
+#' @param period optional character specifying the name of the column in `dat`
+#'   containing he sample periods. This column must be a factor where the factor
+#'   levels determine the order of the values in column `period`. See details for
+#'   more information
 #' @param fpc string specifying the column name in `dat` that contains the
 #'   number of PSUs at the first stage. For multistage sampling the number of
 #'   PSUs at each stage must be specified by `strata=c("fpc1>fpc2>fpc3")`.
@@ -31,11 +35,6 @@
 #'   as `data.table`.
 #' @param check.input logical, if TRUE the input will be checked before applying
 #'   the bootstrap procedure
-#' @param new.method logical, if TRUE bootstrap replicates will never be
-#'   negative even if in some strata the whole population is in the sample.
-#'   WARNING: This is still experimental and resulting standard errors might be
-#'   underestimated! Use this if for some strata the whole population is in the
-#'   sample!
 #'
 #' @details For specifying multistage sampling designs the column names in
 #' `strata`,`cluster` and `fpc` need to seperated by ">".\cr
@@ -53,7 +52,16 @@
 #' For single stage sampling using stratification this can usually be done by
 #' adding over all sample weights of each PSU by each strata-code.\cr
 #' Spaces in each of the strings will be removed, so if column names contain
-#' spaces they should be renamed before calling this procedure!
+#' spaces they should be renamed before calling this procedure!\cr 
+#' If `period` is supplied the sampling of bootstrap replicates for each period
+#' will follow the method proposed by Preston, J. (2009) with the condition
+#' that records drawn at the previous period are automatically selected.
+#' This can result in more than halve of the records selected
+#' for a specific `period`, `strata` and `cluster`. In that case
+#' records will be de-selected such that `floor(n/2)` records, with `n` as the 
+#' total number of records, are selected for each `period`, `strata` and `cluster`. 
+#' If `NULL` (the default), it is assumed that all observations belong#
+#' to the same period and this parameter will be ignored.
 #'
 #' @return returns the complete data set including the bootstrap replicates or
 #'   just the bootstrap replicates, depending on `return.value="data"` or
@@ -88,13 +96,25 @@
 rescaled.bootstrap <- function(
   dat, REP = 1000, strata = "DB050>1", cluster = "DB060>DB030", fpc =
     "N.cluster>N.households", single.PSU = c("merge", "mean"), return.value =
-    c("data", "replicates"), check.input = TRUE, new.method = FALSE) {
+    c("data", "replicates"), check.input = TRUE, period = NULL) {
 
   InitialOrder <- N <- SINGLE_BOOT_FLAG <- SINGLE_BOOT_FLAG_FINAL <- f <-
     n_prev <- n_draw_prev <- sum_prev <- n_draw <- NULL
 
   dat <- copy(dat)
-
+  
+  if (!is.logical(check.input)) {
+    stop("check.input can only be logical")
+  }
+  if (check.input) {
+    # check input data
+    if (!is.data.table(dat) & !is.data.frame(dat)) {
+      stop("dat needs to be a data frame or data table")
+    } else {
+      dat <- data.table(dat)
+    }
+  }
+  
   # prepare input
   removeCols <- c()
   if (is.null(cluster)) {
@@ -107,7 +127,12 @@ rescaled.bootstrap <- function(
     removeCols <- c(removeCols, strata)
     dat[, c(strata) := 1]
   }
-
+  if( is.null(period) ){
+    period <- generateRandomName(20, colnames(dat))
+    removeCols <- c(removeCols, period)
+    dat[,c(period):=1]
+  }
+  
   input <- c(strata, cluster, fpc)
   input <- gsub("\\s", "", input)
   input <- strsplit(input, ">")
@@ -120,18 +145,9 @@ rescaled.bootstrap <- function(
   return.value <- return.value[1]
 
 
-  if (!is.logical(check.input)) {
-    stop("check.input can only be logical")
-  }
-  # check input
+  # continue input checks
   if (check.input) {
-    # check input data
-    if (!is.data.table(dat) & !is.data.frame(dat)) {
-      stop("dat needs to be a data frame or data table")
-    } else {
-      dat <- data.table(dat)
-    }
-
+    
     # check REP
     if (!is.numeric(REP)) {
       stop("REP needs to be numeric")
@@ -206,6 +222,9 @@ rescaled.bootstrap <- function(
 
   # calculate bootstrap replicates
   stages <- length(strata)
+  
+
+  time_steps <- sort(unique(dat[[period]]))
   n <- nrow(dat)
   # define values for final calculation
   n.calc <- matrix(0, nrow = n, ncol = stages)
@@ -214,173 +233,213 @@ rescaled.bootstrap <- function(
   delta.calc <- array(0, dim = c(n, stages, REP))
 
 
-
-  for (i in 1:stages) {
-
-    # define by.val
-    if (i > 1) {
-      by.val <- c(strata[1:(i - 1)], cluster[1:(i - 1)], strata[i])
-    } else{
-      by.val <- strata[1:i]
-    }
-    by.val <- by.val[!by.val %in% c("1", "I")]
-
-    # define cluster value
-    clust.val <- cluster[i]
-    if (clust.val %in% c("1", "I")) {
-      clust.val <- paste0("ID_help_", i)
-      dat[, c(clust.val) := .I, by = c(by.val)]
-    }
-    # check of fpc[i] is well defined
-    # fpc[i] can not have different values per each by.val
-    check.fpc <- dt.eval("dat[,uniqueN(", fpc[i], "),by=c(by.val)][V1>1]")
-    if (nrow(check.fpc) > 0) {
-      stop("values in ", fpc[i], " do vary in some strata-cluster ",
-           "combinations at stage ", i)
+  for(t in seq_along(time_steps)){
+    
+    # iterate over time steps
+    index_t <-  dt.eval("dat[",period,"==time_steps[t],which=TRUE]")
+    dat_t <- dat[index_t,]
+    
+    if(t==1){
+      # save selected deltas for next period
+      dati_prev <- list()
     }
 
-    singles <- dt.eval("dat[", fpc[i], ">1,sum(!duplicated(", clust.val,
-                       ")),by=c(by.val)][V1==1]")
-    if (nrow(singles) > 0) {
-      # if singel.PSU=="merge" change the coding of the current stage of the
-      #   single PSU
-      # to the coding in the same subgroup, according the next higher stage,
-      #   with the smallest number of PSUs
-      # if multiple smallest exist choose one per random draw
-      higher.stages <- by.val[-length(by.val)]
-      by.val.tail <- tail(by.val,1)
-      firstStage <- length(higher.stages) == 0
-      if (firstStage) {
-        higher.stages <- by.val
+    for (i in 1:stages) {
+      # iterate over sampling stages
+      
+      # define by.val
+      if (i > 1) {
+        by.val <- c(strata[1:(i - 1)], cluster[1:(i - 1)], strata[i])
+      } else{
+        by.val <- strata[1:i]
       }
-      singles <- unique(subset(singles, select = higher.stages))
-      if (single.PSU == "merge") {
-        # save original PSU coding and fpc values to replace changed values
-        #   bevore returning the data.table
-        if (return.value == "data") {
-          dt.eval("dat[,", paste0(by.val.tail, "_ORIGINALSINGLES"),
-                  ":=", by.val.tail, "]")
-          dt.eval("dat[,", paste0(fpc[i], "_ORIGINALSINGLES"),
-                  ":=", fpc[i], "]")
+      by.val <- by.val[!by.val %in% c("1", "I")]
+      
+      # define cluster value
+      clust.val <- cluster[i]
+      if (clust.val %in% c("1", "I")) {
+        clust.val <- paste0("ID_help_", i)
+        dat_t[, c(clust.val) := .I, by = c(by.val)]
+      }
+      # check of fpc[i] is well defined
+      # fpc[i] can not have different values per each by.val
+      check.fpc <- dt.eval("dat_t[,uniqueN(", fpc[i], "),by=c(by.val)][V1>1]")
+      if (nrow(check.fpc) > 0) {
+        stop("values in ", fpc[i], " do vary in some strata-cluster ",
+             "combinations at sampling stage ", i)
+      }
+      
+      singles <- dt.eval("dat_t[", fpc[i], ">1,sum(!duplicated(", clust.val,
+                         ")),by=c(by.val)][V1==1]")
+      if (nrow(singles) > 0) {
+        # if singel.PSU=="merge" change the coding of the current stage of the
+        #   single PSU
+        # to the coding in the same subgroup, according the next higher stage,
+        #   with the smallest number of PSUs
+        # if multiple smallest exist choose one per random draw
+        higher.stages <- by.val[-length(by.val)]
+        by.val.tail <- tail(by.val,1)
+        firstStage <- length(higher.stages) == 0
+        if (firstStage) {
+          higher.stages <- by.val
         }
-
-        setkeyv(dat, higher.stages)
-        
-        next.PSU <- dt.eval("dat[singles,.(N=sum(!duplicated(", clust.val,
-                            "))),by=c(by.val)]")
-
-        new.var <- paste0(tail(by.val, 1), "_NEWVAR")
-        
-        dt.eval("next.PSU[,c(new.var):=next_minimum(N,", by.val.tail,
-                "),by=c(higher.stages)]")
-        if(any(is.na(next.PSU[[new.var]]))){
-          if(firstStage){
-            dt.eval("next.PSU[is.na(",new.var,"),c(new.var):=head(",higher.stages,",1)]")
-          }else{
-            dt.eval("next.PSU[is.na(",new.var,"),c(new.var):=head(",by.val.tail,",1),by=c(higher.stages)]")
+        singles <- unique(subset(singles, select = higher.stages))
+        if (single.PSU == "merge") {
+          # save original PSU coding and fpc values to replace changed values
+          #   bevore returning the data.table
+          if (return.value == "data") {
+            dt.eval("dat_t[,", paste0(by.val.tail, "_ORIGINALSINGLES"),
+                    ":=", by.val.tail, "]")
+            dt.eval("dat_t[,", paste0(fpc[i], "_ORIGINALSINGLES"),
+                    ":=", fpc[i], "]")
           }
-        }
-        
-        # select singel PSUs and PSUs to join with
-        next.PSU <- dt.eval("next.PSU[N == 1 | ",new.var," == ",by.val.tail,"]")
-        dat <- merge(dat, next.PSU[, mget(c(by.val, new.var))],
-                     by = c(by.val), all.x = TRUE)
-        
-        # sum over margins
-        fpc.i_ADD <- paste0(fpc[i], "_ADD")
-        dt.eval("dat[, c(fpc.i_ADD):=", fpc[i], "]")
-        dt.eval("dat[!is.na(",new.var,"),c(fpc.i_ADD) := 
+          
+          setkeyv(dat_t, higher.stages)
+          
+          next.PSU <- dt.eval("dat_t[singles,.(N=sum(!duplicated(", clust.val,
+                              "))),by=c(by.val)]")
+          
+          new.var <- paste0(tail(by.val, 1), "_NEWVAR")
+          
+          dt.eval("next.PSU[,c(new.var):=next_minimum(N,", by.val.tail,
+                  "),by=c(higher.stages)]")
+          if(any(is.na(next.PSU[[new.var]]))){
+            if(firstStage){
+              dt.eval("next.PSU[is.na(",new.var,"),c(new.var):=head(",higher.stages,",1)]")
+            }else{
+              dt.eval("next.PSU[is.na(",new.var,"),c(new.var):=head(",by.val.tail,",1),by=c(higher.stages)]")
+            }
+          }
+          
+          # select singel PSUs and PSUs to join with
+          next.PSU <- dt.eval("next.PSU[N == 1 | ",new.var," == ",by.val.tail,"]")
+          dat_t <- merge(dat_t, next.PSU[, mget(c(by.val, new.var))],
+                       by = c(by.val), all.x = TRUE)
+          
+          # sum over margins
+          fpc.i_ADD <- paste0(fpc[i], "_ADD")
+          dt.eval("dat_t[, c(fpc.i_ADD):=", fpc[i], "]")
+          dt.eval("dat_t[!is.na(",new.var,"),c(fpc.i_ADD) := 
                 sum(",fpc.i_ADD,"[!duplicated(",by.val.tail,")]),
                 by=c(new.var)]")
-        # assign to new group
-        dt.eval("dat[!is.na(", new.var, "),c(by.val.tail):=", new.var, "]")
-        
-        dt.eval("dat[,", fpc[i], ":=", fpc[i], "[is.na(", new.var,
-                ")][1],by=c(by.val)]")
-        dt.eval("dat[!is.na(", new.var, "),", fpc[i], ":=", fpc.i_ADD,"]")
-        
-        dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
-      } else if (single.PSU == "mean") {
-        # if single.PSU="mean" flag the observation as well as the all the
-        #   observations in the higher group
-        singles[, SINGLE_BOOT_FLAG := paste(higher.stages, .GRP, sep = "-"),
-                by = c(higher.stages)]
-
-        dat <- merge(dat, singles, by = c(higher.stages), all.x = TRUE)
-        if (!"SINGLE_BOOT_FLAG_FINAL" %in% colnames(dat)) {
-          dat[, SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
+          # assign to new group
+          dt.eval("dat_t[!is.na(", new.var, "),c(by.val.tail):=", new.var, "]")
+          
+          dt.eval("dat_t[,", fpc[i], ":=", fpc[i], "[is.na(", new.var,
+                  ")][1],by=c(by.val)]")
+          dt.eval("dat_t[!is.na(", new.var, "),", fpc[i], ":=", fpc.i_ADD,"]")
+          
+          dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
+        } else if (single.PSU == "mean") {
+          # if single.PSU="mean" flag the observation as well as the all the
+          #   observations in the higher group
+          singles[, SINGLE_BOOT_FLAG := paste(higher.stages, .GRP, sep = "-"),
+                  by = c(higher.stages)]
+          
+          dat_t <- merge(dat_t, singles, by = c(higher.stages), all.x = TRUE)
+          if (!"SINGLE_BOOT_FLAG_FINAL" %in% colnames(dat_t)) {
+            dat_t[, SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
+          } else {
+            dat_t[is.na(SINGLE_BOOT_FLAG_FINAL),
+                SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
+          }
+          dat_t[, SINGLE_BOOT_FLAG := NULL]
+          
         } else {
-          dat[is.na(SINGLE_BOOT_FLAG_FINAL),
-              SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
+          message("Single PSUs detected at the following stages:\n")
+          print(dt.eval("dat_t[,sum(!duplicated(", clust.val,
+                        ")),by=c(by.val)][V1==1,.(",paste(by.val,collapse=","),")]"))
         }
-        dat[, SINGLE_BOOT_FLAG := NULL]
-
-      } else {
-        message("Single PSUs detected at the following stages:\n")
-        print(dt.eval("dat[,sum(!duplicated(", clust.val,
-                      ")),by=c(by.val)][V1==1,.(",paste(by.val,collapse=","),")]"))
       }
+      
+      # get Stage
+      if (i == 1) {
+        dati <- dt.eval(
+          "dat_t[,.(N=", fpc[i], "[1],", clust.val, "=unique(",
+          clust.val, "),f=1,n_prev=1,n_draw_prev=1,sum_prev=1),by=list(",
+          paste(by.val, collapse = ","), ")]")
+      } else {
+        dati <- dt.eval(
+          "dat_t[,.(N=", fpc[i], "[1],", clust.val, "=unique(", clust.val,
+          "),f=f[1],n_prev=n_prev[1],n_draw_prev=n_draw_prev[1],",
+          "sum_prev=sum_prev[1]),by=list(", paste(by.val, collapse = ","), ")]")
+        dat_t[,c("f","n_prev","n_draw_prev","sum_prev") := NULL]
+
+      }
+      
+      deltai <- paste0("delta_", i, "_", 1:REP)
+      dati[, n := .N, by = c(by.val)]
+      # determin number of psu to be drawn
+      # dati[, n_draw := select.nstar(
+      #   n[1], N[1], f[1], n_prev[1], n_draw_prev[1], sum_prev = NULL,
+      #   new.method = new.method), by = c(by.val)]
+      dati[,n_draw:=floor(n/2),by = c(by.val)]
+      
+      if (nrow(dati[n_draw == 0]) > 0) {
+        stop("Resampling 0 PSUs should not be possible! Please report bug in ",
+             "https://github.com/statistikat/surveysd")
+      }
+      # do bootstrap for i-th stage
+      
+      if(t == 1){
+        # do simple sampling without replacement for first period
+        dati[, c(deltai) := as.data.table(
+          replicate(REP, draw.without.replacement(n[1], n_draw[1]),
+                    simplify = FALSE)),
+          by = c(by.val)]
+      }else{
+        # sample without replacement
+        # but consider already selected units from previos period
+        dati_selected <- dati_prev[[i]][,.SD,.SDcols=c(by.val,clust.val,deltai)]
+        dati[dati_selected,c(deltai):=mget(deltai),on=c(by.val,clust.val)]
+        dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){
+          draw.without.replacement(n[1],n_draw[1],delta=delta)
+        },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)]
+        
+        dati_check <- dati[,lapply(.SD,function(z,n_draw){
+          sum(z)==n_draw[1]
+        },n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)]
+        
+        if(any(!dati_check[,.SD,.SDcols=c(deltai)])){
+          stop("Wrong number of units selected! Please report bug in ",
+               "https://github.com/statistikat/surveysd")
+        }
+      }
+
+      
+      # merge with data
+      dat_t <- merge(dat_t,dati,by=c(by.val,clust.val))
+      setorder(dat_t,InitialOrder)
+      # extract information from data.table and remove again from data table
+      # (less memory intensive)
+      # only matrices and arrays needed for final calculation
+      n.calc[index_t, i] <- dat_t[, n]
+      N.calc[index_t, i] <- dat_t[, N]
+      n_draw.calc[index_t, i] <- dat_t[, n_draw]
+      delta.calc[index_t, i, ] <- as.matrix(dat_t[, mget(deltai)])
+      
+      # dat_t[, sum_prev := sum_prev +
+      #       (sqrt(n_draw * f * (1 - n / N) / (n - n_draw)) *
+      #          sqrt(n_prev / n_draw_prev) * (n / n_draw - 1))]
+      dat_t[, f := n / N * f]
+      dat_t[, n_prev := n * n_prev]
+      dat_t[, n_draw_prev := n_draw * n_draw_prev]
+      
+      dat_t[, c("n", "N", deltai, "n_draw") := NULL]
+      
+      # save selected deltas for next period
+      if(t==1){
+        # at first time step build dati_prev
+        dati_prev <- c(dati_prev,list(dati))
+      }else{
+        # later update dati_prev with previous results
+        dati_prev[[i]] <- dati
+      }
+
+      rm(dati);gc()
     }
-
-    # get Stage
-    if (i == 1) {
-      dati <- dt.eval(
-        "dat[,.(N=", fpc[i], "[1],", clust.val, "=unique(",
-        clust.val, "),f=1,n_prev=1,n_draw_prev=1,sum_prev=1),by=list(",
-        paste(by.val, collapse = ","), ")]")
-    } else {
-      dati <- dt.eval(
-        "dat[,.(N=", fpc[i], "[1],", clust.val, "=unique(", clust.val,
-        "),f=f[1],n_prev=n_prev[1],n_draw_prev=n_draw_prev[1],",
-        "sum_prev=sum_prev[1]),by=list(", paste(by.val, collapse = ","), ")]")
-      dat[, f := NULL]
-      dat[, n_prev := NULL]
-      dat[, n_draw_prev := NULL]
-      dat[, sum_prev := NULL]
-    }
-
-    deltai <- paste0("delta_", i, "_", 1:REP)
-    dati[, n := .N, by = c(by.val)]
-    # determin number of psu to be drawn
-    dati[, n_draw := select.nstar(
-      n[1], N[1], f[1], n_prev[1], n_draw_prev[1], sum_prev = NULL,
-      new.method = new.method), by = c(by.val)]
-    # dati[,n_draw_old:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],
-    #   sum_prev=NULL,new.method=FALSE),by=c(by.val)]
-    # dati[,n_draw_new:=select.nstar(n[1],N[1],f[1],n_prev[1],n_draw_prev[1],
-    #   sum_prev=sum_prev[1],new.method=FALSE),by=c(by.val)]
-    if (nrow(dati[n_draw == 0]) > 0) {
-      stop("Resampling 0 PSUs should not be possible! Please report bug in ",
-           "https://github.com/statistikat/surveysd")
-    }
-    # do bootstrap for i-th stage
-
-    dati[, c(deltai) := as.data.table(
-      replicate(REP, draw.without.replacement(n[1], n_draw[1]),
-                simplify = FALSE)),
-      by = c(by.val)]
-
-    # merge with data
-    dat <- merge(dat, dati, by = c(by.val, clust.val))
-
-    # extract information from data.table and remove again from data table
-    # (less memory intensive)
-    # only matrices and arrays needed for final calculation
-    n.calc[, i] <- dat[, n]
-    N.calc[, i] <- dat[, N]
-    n_draw.calc[, i] <- dat[, n_draw]
-    delta.calc[, i, ] <- as.matrix(dat[, mget(deltai)])
-
-    dat[, sum_prev := sum_prev +
-          (sqrt(n_draw * f * (1 - n / N) / (n - n_draw)) *
-             sqrt(n_prev / n_draw_prev) * (n / n_draw - 1))]
-    dat[, f := n / N * f]
-    dat[, n_prev := n * n_prev]
-    dat[, n_draw_prev := n_draw * n_draw_prev]
-
-    dat[, c("n", "N", deltai, "n_draw") := NULL]
-
   }
+ 
 
   bootRep <- paste0("bootRep", 1:REP)
   dat[, c(bootRep) := as.data.table(calc.replicate(
@@ -396,7 +455,6 @@ rescaled.bootstrap <- function(
   }
 
   setkey(dat, InitialOrder)
-
   if (length(removeCols) > 0) {
     dat[, c(removeCols) := NULL]
   }
@@ -413,7 +471,7 @@ rescaled.bootstrap <- function(
         setnames(dat, c(c.names), drop.names)
       }
     }
-    dat[, c("f", "n_prev", "n_draw_prev", "InitialOrder", "sum_prev") := NULL]
+    dat[, c("InitialOrder") := NULL]
     # get original col values
     if (length(overwrite.names) > 0) {
       setnames(dat, overwrite.names.new, overwrite.names)
@@ -452,10 +510,40 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
   return(n_draw)
 }
 
-draw.without.replacement <- function(n, n_draw) {
-  delta <- rep(c(1.0, 0.0), c(n_draw, n - n_draw))
-  if (length(delta) > 1) {
-    delta <- sample(delta)
+draw.without.replacement <- function(n, n_draw, delta = NULL) {
+  
+  # if no units have been selected prior
+  if(is.null(delta)){
+    delta <- rep(c(1.0, 0.0), c(n_draw, n - n_draw))
+    if (length(delta) > 1) {
+      delta <- sample(delta)
+    }
+  }else{
+    # if units have already been selected
+    n_selected <- sum(delta,na.rm=TRUE)
+    delta_new_unit <- is.na(delta)
+    if(n_draw<n_selected){
+      # if more entries have been selected than actually possible
+      # due to selection in previous period
+      # deselect units
+      delta_rest <-  rep(c(1.0, 0.0), c(n_draw, n_selected - n_draw))
+      if (length(delta_rest) > 1) {
+        delta_rest <- sample(delta_rest)
+      }
+      
+      # reselect n_draw units 
+      # from already selected units
+      # ~ delta is not missing
+      delta[delta_new_unit==FALSE] <- delta_rest
+      delta[delta_new_unit==TRUE] <- 0 
+    }else{
+      n_draw <- n_draw - n_selected
+      delta_rest <- rep(c(1.0, 0.0), c(n_draw, sum(delta_new_unit)-n_draw))
+      if (length(delta_rest) > 1) {
+        delta_rest <- sample(delta_rest)
+      }
+      delta[delta_new_unit==TRUE] <- delta_rest
+    }
   }
   return(delta)
 }
