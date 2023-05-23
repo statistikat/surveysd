@@ -526,7 +526,7 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {
       # if more entries have been selected than actually possible
       # due to selection in previous period
       # deselect units
-      delta_rest <-  rep(c(1.0, 0.0), c(n_draw, n_selected - n_draw))
+      delta_rest <-  rep(c(1.0, 0.0), c(n_draw, sum(delta_new_unit==FALSE) - n_draw))
       if (length(delta_rest) > 1) {
         delta_rest <- sample(delta_rest)
       }
@@ -538,6 +538,20 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {
       delta[delta_new_unit==TRUE] <- 0 
     }else{
       n_draw <- n_draw - n_selected
+      
+      # n_draw can be > sum(delta_new_unit)
+      # -> then already assigned 0s need to be 
+      # changed to 1s
+      change_zero <- max(0,n_draw-sum(delta_new_unit))
+      if(change_zero >0){
+        n_draw <- min(n_draw,sum(delta_new_unit))
+        delta_zero <- which(delta_new_unit==FALSE & delta==0)
+        if(length(delta_zero)>1){
+          delta_zero <- sample(delta_zero,change_zero)
+        }
+        delta[delta_zero] <- 1
+      }
+      
       delta_rest <- rep(c(1.0, 0.0), c(n_draw, sum(delta_new_unit)-n_draw))
       if (length(delta_rest) > 1) {
         delta_rest <- sample(delta_rest)

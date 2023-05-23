@@ -96,7 +96,7 @@
 #' Bootstrap replicates are drawn for each survey period consecutively (`period`) using the
 #' function [rescaled.bootstrap].
 #' Bootstrap replicates are drawn consistently in the way that in each `period` and
-#' sampling stage always \floor{n/2} clusters are selected in each strata.
+#' sampling stage always \eqn{\floor{n/2}} clusters are selected in each strata.
 #'
 #' This ensures that the bootstrap replicates follow the same logic as the
 #' sampled households, making the bootstrap replicates more comparable to the
