@@ -414,8 +414,8 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
   setattr(outTable, "formH", formH)
   setattr(outTable, "baseweight", bw)
   setattr(outTable, "hid", hidVar)
-  # not used yet
-  #class(outTable) <- c(class(outTable),"ipf")
+  # for the summary
+  class(outTable) <- c("ipf",class(outTable))
 
   invisible(outTable)
 }
