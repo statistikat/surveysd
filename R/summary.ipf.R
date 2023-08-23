@@ -114,20 +114,20 @@ summary.ipf <- function(x, ...){
   output[[3]] <- dist_gew
 
   #### ---- ####
-  if(any(names(av) == "conP")){
-    output4 <- vector(mode = "list", length = length(av$conP)*5)
-    for(i in seq_along(av$conP)){
-      j <- ((i-1)*5)+1
-      names(output4)[(j):(j+4)] <- c(paste0("conP_",i),paste0("conP_",i,"_adjusted"),paste0("conP_",i,"_original"),
-                                     paste0("conP_",i,"_rel_diff_original"),paste0("conP_",i,"_rel_diff_calib"))
-      output4[[j]] <- as.data.table(av$conP[[i]]) #conP_i
-      output4[[j+1]] <- as.data.table(av$conP_adj[[i]]) #conP_i_adjusted
-      output4[[j+2]] <- as.data.table(xtabs(formPBase[[i]],data=x)) #conP_i_original
-      output4[[j+3]] <- as.data.table(round(100*(av$conP[[i]]-xtabs(formPBase[[i]],data=x))
-                                            /av$conP[[i]],2)) #conP_i_rel_diff_original
-      output4[[j+4]] <- as.data.table(round(100*(av$conP[[i]]-av$conP_adj[[i]])/av$conP[[i]],2)) #conP_i__rel_diff_calib
+  if (any(names(av) == "conP")) {
+    for (i in seq_along(av$conP)) {
+      output4 <- list(
+        "conP_%i" = as.data.table(av$conP[[i]]),
+        "conP_%i_adjusted" = as.data.table(av$conP_adj[[i]]),
+        "conP_%i_original" = as.data.table(xtabs(formPBase[[i]], data = x)),
+        "conP_%i_rel_diff_original" = as.data.table(round(
+          100*(av$conP[[i]] - xtabs(formPBase[[i]], data = x)) / av$conP[[i]], 2)),
+        "conP_%i_rel_diff_calib" = as.data.table(round(
+          100*(av$conP[[i]] - av$conP_adj[[i]]) / av$conP[[i]], 2))
+      )
+      names(output4) <- sprintf(names(output4), i)
+      output <- append(output, output4)
     }
-    output <- append(output,output4)
   }
 
 
