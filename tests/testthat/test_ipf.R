@@ -202,7 +202,7 @@ test_that("summary.ipf", {
     eusilc, hid = "hid", conP = list(conP1, conP2), conH = list(conH1),
     epsP = 1e-06, epsH = list(epsH1), w = "baseWeight", bound = 4,
     verbose = FALSE, maxIter = 200, minMaxTrim = c(340,870))
-  summary.ipf(calibweights2)
+  summary(calibweights2)
 
 })
 

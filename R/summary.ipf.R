@@ -1,7 +1,7 @@
 #' Generate summary output for a ipf calibration
 #'
 #' @param x object of class ipf
-#' @param extraExport additional exports to compute
+#' @param ... an argument extraExport can be used to create additional exports
 #'
 #' @author Laura Gruber
 #' @return a list of the following outputs
@@ -29,9 +29,14 @@
 #'   bound = NULL,
 #'   verbose = TRUE
 #' )
-#' summary.ipf(calibweights1)
+#' output <- summary(calibweights1)
+#' # the output can easily be exported to an Excel file, e.g. with
+#' # library(openxlsx)
+#' # write.xlsx(output, "SummaryIPF.xlsx")
 #' }
-summary.ipf <- function(x,extraExport = NULL){
+summary.ipf <- function(x, ...){
+  terms <- variable <- output55 <- NULL
+  av <- attributes(x)
   w <- av$baseweight
   hid <- av$hid
   output <- vector(mode = "list", length = 3)
@@ -80,7 +85,7 @@ summary.ipf <- function(x,extraExport = NULL){
   dist_gew <- list()
 
   for(i in vars){
-    part_i <- x[,.(cv=sd(get(w))/mean(get(w)),
+    part_i <- x[,list(cv=sd(get(w))/mean(get(w)),
                            min=min(get(w)),
                            max=max(get(w)),
                            quotient=min(get(w))/max(get(w))),keyby=c(i)]
@@ -113,10 +118,10 @@ summary.ipf <- function(x,extraExport = NULL){
     output4 <- vector(mode = "list", length = length(av$conP)*5)
     for(i in seq_along(av$conP)){
       j <- ((i-1)*5)+1
-      names(output4)[(j):(j+4)] <- c(paste0("conP_",i),paste0("conP_",i,"_erreicht"),paste0("conP_",i,"_original"),
+      names(output4)[(j):(j+4)] <- c(paste0("conP_",i),paste0("conP_",i,"_adjusted"),paste0("conP_",i,"_original"),
                                      paste0("conP_",i,"_rel_diff_original"),paste0("conP_",i,"_rel_diff_calib"))
       output4[[j]] <- as.data.table(av$conP[[i]]) #conP_i
-      output4[[j+1]] <- as.data.table(av$conP_adj[[i]]) #conP_i_erreicht
+      output4[[j+1]] <- as.data.table(av$conP_adj[[i]]) #conP_i_adjusted
       output4[[j+2]] <- as.data.table(xtabs(formPBase[[i]],data=x)) #conP_i_original
       output4[[j+3]] <- as.data.table(round(100*(av$conP[[i]]-xtabs(formPBase[[i]],data=x))
                                             /av$conP[[i]],2)) #conP_i_rel_diff_original
@@ -130,10 +135,10 @@ summary.ipf <- function(x,extraExport = NULL){
     output5 <- vector(mode = "list", length = length(av$conH)*5)
     for(i in seq_along(av$conH)){
       j <- ((i-1)*5)+1
-      names(output5)[(j):(j+4)] <- c(paste0("conH_",i),paste0("conH_",i,"_erreicht"),paste0("conH_",i,"_original"),
+      names(output5)[(j):(j+4)] <- c(paste0("conH_",i),paste0("conH_",i,"_adjusted"),paste0("conH_",i,"_original"),
                                      paste0("conH_",i,"_rel_diff_original"),paste0("conH_",i,"_rel_diff_calib"))
       output5[[j]] <- as.data.table(av$conH[[i]]) #conH_i
-      output5[[j+1]] <- as.data.table(av$conH_adj[[i]]) #conH_i_erreicht
+      output5[[j+1]] <- as.data.table(av$conH_adj[[i]]) #conH_i_adjusted
       output5[[j+2]] <- as.data.table(xtabs(formHBase[[i]],data=x)) #conH_i_original
       output5[[j+3]] <- as.data.table(round(100*(av$conH[[i]]-xtabs(formHBase[[i]],data=x))/av$conH[[i]],2)) #conH_i_rel_diff_original
       output5[[j+4]] <- as.data.table(round(100*(av$conH[[i]]-av$conH_adj[[i]])/av$conH[[i]],2)) #conH_i__rel_diff_calib
@@ -144,8 +149,4 @@ summary.ipf <- function(x,extraExport = NULL){
   }
 
   return(output)
-  #ODER
-  # In Excel speichern ##
-  #library(openxlsx)
-  #write.xlsx(output, "SummaryIPF.xlsx")
 }
