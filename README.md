@@ -6,7 +6,7 @@ status](https://img.shields.io/travis/statistikat/surveysd.svg?logo=travis)](htt
 [![Coverage
 Status](https://img.shields.io/coveralls/github/statistikat/surveysd.svg?colorB=red&logo=codecov)](https://coveralls.io/github/statistikat/surveysd?branch=master)
 [![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-maturing-blue.svg?logo=github)](https://www.tidyverse.org/lifecycle/#stable)
+stable](https://img.shields.io/badge/lifecycle-maturing-blue.svg?logo=github)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![GitHub last
 commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd/commits/master)
 [![GitHub code size in

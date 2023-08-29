@@ -69,12 +69,12 @@ test_that("test para - strata, cluster and fpc", {
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "I", cluster = "db030", fpc = "N.households"),
     paste0("values in N.households do vary in some strata-cluster ",
-           "combinations at stage 1"))
+           "combinations at sampling stage 1"))
   expect_error(
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "1", cluster = "db030", fpc = "N.households"),
     paste0("values in N.households do vary in some strata-cluster ",
-           "combinations at stage 1"))
+           "combinations at sampling stage 1"))
   expect_error(
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "db040", cluster = "db030",

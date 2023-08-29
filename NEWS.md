@@ -1,3 +1,10 @@
+# surveysd 1.3.2
+
+* `rescaled.bootstrap()` has additional parameter `period` which is identical to the one in `draw.bootstrap`. If `period` is not `NULL` the boostraps will be drawn such that in each period and strata/cluster only $\floor{\frac{n}{2}}$ records are drawn. This produces more consisten results and should make calibration afterwards easier.
+* Improved numerical weighting with `computeLinearG1` for use with `ipf()`. `computeLinearG1` is now more stable when only numerical variables are used for weighting.
+* parameter `numericalWeighting` can be passed to `recalib` and will correctly be passed along to function `ipf`
+
+
 # surveysd 1.3
 
 * new parameter minMaxTrim in `ipf()` to trim weights

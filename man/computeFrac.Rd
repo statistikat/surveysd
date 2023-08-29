@@ -2,12 +2,15 @@
 % Please edit documentation in R/RcppExports.R, R/computeFrac.R
 \name{computeLinear}
 \alias{computeLinear}
+\alias{computeLinearG1_old}
 \alias{computeLinearG1}
 \alias{computeFrac}
 \alias{numericalWeighting}
 \title{Numerical weighting functions}
 \usage{
 computeLinear(curValue, target, x, w, boundLinear = 10)
+
+computeLinearG1_old(curValue, target, x, w, boundLinear = 10)
 
 computeLinearG1(curValue, target, x, w, boundLinear = 10)
 

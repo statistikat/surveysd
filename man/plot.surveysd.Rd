@@ -50,10 +50,9 @@ Plot results of \code{calc.stError()}
 \examples{
 
 library(surveysd)
-library(laeken)
-library(data.table)
 
-eusilc <- demo.eusilc(n = 4, prettyNames = TRUE)
+set.seed(1234)
+eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 
 dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
                            strata = "region", period = "year")
@@ -74,14 +73,10 @@ plot(err.est)
 # dotted line is the result on the national level
 plot(err.est, type = "grouping", groups = "gender")
 
-# plot results for gender
-# with standard errors as ribbons
-plot(err.est, type = "grouping", groups = "gender", sd.type = "ribbon")
 
 # plot results for rb090 in each db040
-plot(err.est, type = "grouping", groups = c("gender", "region"))
+# with standard errors as ribbons
+plot(err.est, type = "grouping", groups = c("gender", "region"), sd.type = "ribbon")
 
-# plot results for db040 in each rb090 with standard errors as ribbons
-plot(err.est,type = "grouping", groups = c("gender", "region"))
 
 }

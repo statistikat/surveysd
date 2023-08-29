@@ -13,6 +13,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -75,7 +76,7 @@ persons.
 ### Custom estimators
 
 In order to define a custom estimator function to be used in `fun`, the function needs to have
-two arguments like the example below.
+at least two arguments like the example below.
 
 ```{r}
 ## define custom estimator
@@ -83,14 +84,94 @@ myWeightedSum <- function(x, w) {
   sum(x*w)
 }
 
-## check if results are equal to the one using `suveysd::weightedSum()`
+## check if results are equal to the one using `surveysd::weightedSum()`
 totalIncome2 <- calc.stError(dat_boot_calib, var = "eqIncome", fun = myWeightedSum)
 all.equal(totalIncome$Estimates, totalIncome2$Estimates)
 ```
 
-The parameters `x` and `w` can be assumed to be vectors with equal length with `w` being numeric and
-`x` being the column defined in the `var` argument. It will be called once for each period (in this
-case `year`) and for each weight column (in this case `pWeight`, `w1`, `w2`, ..., `w10`).
+The parameters `x` and `w` can be assumed to be vectors with equal length with `w` being numeric
+weight vector and `x` being the column defined in the `var` argument. It will be called once
+for each period (in this case `year`) and for each weight column (in this case `pWeight`, `w1`, `w2`, ..., `w10`).
+
+Custom estimators using additional parameters can also be supplied and parameter `add.arg` can be used
+to set the additional arguments for the custom estimator.
+
+```{r}
+## use add.arg-argument
+fun <- function(x, w, b) {
+  sum(x*w*b)
+}
+add.arg = list(b="onePerson")
+
+err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = fun,
+                        period.mean = 0, add.arg=add.arg)
+err.est$Estimates
+
+# compare with direct computation
+compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),
+                                 by=c("year")]
+all((compare.value$V1-err.est$Estimates$val_povertyRisk)==0)
+```
+
+The above chunk computes the weighted poverty ratio for single person households.
+
+### Adjust variable depending on bootstrap weights
+
+In our example the variable `povertyRisk` is a boolean and is `TRUE` if the income is less
+than 60% of the weighted median income. Thus it directly depends on the original weight vector
+`pWeight`. To further reduce the estimated error one should calculate for each bootstrap replicate
+weight $w$ the weighted median income $medIncome_{w}$ and then define $povertyRisk_w$ as
+
+$$
+povertyRisk_w = \cases{1 \quad\text{if Income}<0.6\cdot medIncome_{w}\\
+                     0 \quad\text{else}}
+$$
+
+The estimator can then be applied to the new variable $povertyRisk_w$.
+This can be realized using a custom estimator function.
+
+```{r}
+# custom estimator to first derive poverty threshold 
+# and then estimate a weighted ratio
+povmd <- function(x, w) {
+ md <- laeken::weightedMedian(x, w)*0.6
+ pmd60 <- x < md
+ # weighted ratio is directly estimated inside the function
+ return(sum(w[pmd60])/sum(w)*100)
+}
+
+err.est <- calc.stError(
+  dat_boot_calib, var = "povertyRisk", fun = weightedRatio,
+  fun.adjust.var = povmd, adjust.var = "eqIncome")
+err.est$Estimates
+
+```
+
+
+The approach shown above is only valid if not grouping variables are supplied (parameter `group`).
+If grouping variables are supplied one should use parameters `fun.adjust.var` and `adjust.var` such that
+the $povertyRisk_w$ is first calculated for each `period` and then used for each grouping in `group`.
+
+
+```{r}
+# using fun.adjust.var and adjust.var to estimate povmd60 indicator
+# for each period and bootstrap weight before applying the weightedRatio
+povmd2 <- function(x, w) {
+ md <- laeken::weightedMedian(x, w)*0.6
+ pmd60 <- x < md
+ return(as.integer(pmd60))
+}
+
+# set adjust.var="eqIncome" so the income vector is used to estimate
+# the povmd60 indicator for each bootstrap weight
+# and the resulting indicators are passed to function weightedRatio
+group <- "gender"
+err.est <- calc.stError(
+  dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = "gender",
+  fun.adjust.var = povmd2, adjust.var = "eqIncome")
+err.est$Estimates
+```
+
 
 ### Multiple estimators
 
