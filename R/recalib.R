@@ -43,11 +43,28 @@
 #' @param conP.var character vector containig person-specific variables to which
 #'   weights should be calibrated or a list of such character vectors.
 #'   Contingency tables for the population are calculated per `period` using
-#'   `weights`.
+#'   `weights`. If a vector is supplied contingency tables will be calculated
+#'   for each vector entry. If a list is supplied contingency tables will be
+#'   calculated for each list entry. See examples for more details.
 #' @param conH.var character vector containig household-specific variables to
 #'   which weights should be calibrated or a list of such character vectors.
 #'   Contingency tables for the population are calculated per `period` using
-#'   `weights`.
+#'   `weights`. If a vector is supplied contingency tables will be calculated
+#'   for each vector entry. If a list is supplied contingency tables will be
+#'   calculated for each list entry. See examples for more details.
+#' @param conP list or (partly) named list defining the constraints on person
+#'   level.  The list elements are contingency tables in array representation
+#'   with dimnames corresponding to the names of the relevant calibration
+#'   variables in `dat`. If a numerical variable is to be calibrated, the
+#'   respective list element has to be named with the name of that numerical
+#'   variable. Otherwise the list element shoud NOT be named.
+#' @param conH list or (partly) named list defining the constraints on
+#'   household level.  The list elements are contingency tables in array
+#'   representation with dimnames corresponding to the names of the relevant
+#'   calibration variables in `dat`. If a numerical variable is to be
+#'   calibrated, the respective list element has to be named with the name of
+#'   that numerical variable. Otherwise the list element shoud NOT be named.
+
 #' @param epsP numeric value specifying the convergence limit for `conP.var`
 #'   or `conP`, see [ipf()].
 #' @param epsH numeric value specifying the convergence limit for `conH.var`
@@ -68,11 +85,14 @@
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
-#' \dontrun{
+#' 
+#' library(surveysd)
+#' library(data.table)
+#' setDTthreads(1)
+#' set.seed(1234)
+#' eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 #'
-#' eusilc <- demo.eusilc(prettyNames = TRUE)
-#'
-#' dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid",
+#' dat_boot <- draw.bootstrap(eusilc, REP = 1, hid = "hid",
 #'                            weights = "pWeight",
 #'                            strata = "region", period = "year")
 #'
@@ -86,27 +106,68 @@
 #'                           conH.var = c("region", "hsize"), verbose = TRUE)
 #'
 #' # supply contingency tables directly
-#' conP <- xtabs(pWeight ~ age + gender + year, data = eusilc)
-#' conH <- xtabs(pWeight ~ hsize + region + year,
-#'               data = eusilc[!duplicated(paste(db030,year))])
+#' conP1 <- xtabs(pWeight ~ age + year, data = eusilc)
+#' conP2 <- xtabs(pWeight ~ gender + year, data = eusilc)
+#' conH1 <- xtabs(pWeight ~ region + year,
+#'                data = eusilc[!duplicated(paste(hid,year))])
+#' conH2 <- xtabs(pWeight ~ hsize + year,
+#'                data = eusilc[!duplicated(paste(hid,year))])
+#' 
+#' conP <- list(conP1,conP2)
+#' conH <- list(conH1,conH2)
 #' dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
-#'                           conH.var = NULL, conP = list(conP),
-#'                           conH = list(conH), verbose = TRUE)
-#' }
+#'                           conH.var = NULL, conP = conP,
+#'                           conH = conH, verbose = TRUE)
+#' 
 #'
+#' # calibrate on gender x age
+#' dat_boot_calib <- recalib(dat_boot, conP.var = list(c("gender", "age")),
+#'                           conH.var = NULL, verbose = TRUE)
+#' 
+#' # identical
+#' conP1 <- xtabs(pWeight ~ age + gender + year, data = eusilc)
+#' conP <- list(conP1)
+#' dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
+#'                           conH.var = NULL, conP = conP,
+#'                           conH = NULL, verbose = TRUE)
+#'                                                      
 #' @export recalib
 #'
 
 recalib <- function(
   dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"), b.rep =
     attr(dat, "b.rep"), period = attr(dat, "period"), conP.var = NULL,
-  conH.var = NULL, epsP = 1e-2, epsH = 2e-2, ...) {
+  conH.var = NULL, conP = NULL, conH = NULL, epsP = 1e-2, epsH = 2e-2, ...) {
 
   hidfactor <- calibWeight <- FirstPersonInHousehold_ <- verbose <-
     bound <- maxiter <- meanHH <- check_hh_vars <- allPthenH <-
-    returnNA <- conversion_messages <- maxIter <- NULL
+    returnNA <- numericalWeighting <- conversion_messages <- maxIter <- NULL
 
   removeCols <- c()
+  
+  ##########################################################
+  # define default values for ipf
+  ipfDefaults <- formals(ipf)
+  ipfDefaults <- ipfDefaults[!names(ipfDefaults) %in% names(formals(recalib))]
+  ellipsis <- list(...)
+  # set these to FALSE by default
+  ellipsis[["check_hh_vars"]] <- getEllipsis2("check_hh_vars",
+                                              FALSE, ellipsis)
+  ellipsis[["conversion_messages"]] <- getEllipsis2("conversion_messages",
+                                                    FALSE, ellipsis)
+  ellipsis[["verbose"]] <- getEllipsis2("verbose", TRUE, ellipsis)
+  ellipsis <- lapply(names(ipfDefaults), function(z) {
+    getEllipsis2(z, ipfDefaults[[z]], ellipsis)
+  })
+  names(ellipsis) <- names(ipfDefaults)
+  
+  ellipsisNames <- names(ellipsis)
+  ellipsisContent <- paste0("ellipsis[['", ellipsisNames, "']]")
+  eval(parse(text = paste(
+    ellipsisNames,
+    ellipsisContent, sep = "<-"
+  )))
+  
   ##########################################################
   # INPUT CHECKING
   if (is.data.frame(dat)) {
@@ -163,6 +224,9 @@ recalib <- function(
 
   # check conH.var
   if (!all(unique(unlist(conH.var)) %in% c.names)) {
+    print(all(unique(unlist(conH.var)) %in% c.names))
+    print(unique(unlist(conH.var)))
+    print(c.names[1:30])
     stop("Not all elements in conH.var are column names in dat")
   }
 
@@ -182,28 +246,6 @@ recalib <- function(
 
 
   ##########################################################
-
-  # define default values for ipf
-  ipfDefaults <- formals(ipf)
-  ipfDefaults <- ipfDefaults[!names(ipfDefaults) %in% names(formals(recalib))]
-  ellipsis <- list(...)
-  # set these to FALSE by default
-  ellipsis[["check_hh_vars"]] <- getEllipsis2("check_hh_vars",
-                                             FALSE, ellipsis)
-  ellipsis[["conversion_messages"]] <- getEllipsis2("conversion_messages",
-                                                   FALSE, ellipsis)
-  ellipsis[["verbose"]] <- getEllipsis2("verbose", TRUE, ellipsis)
-  ellipsis <- lapply(names(ipfDefaults), function(z) {
-    getEllipsis2(z, ipfDefaults[[z]], ellipsis)
-  })
-  names(ellipsis) <- names(ipfDefaults)
-
-  ellipsisNames <- names(ellipsis)
-  ellipsisContent <- paste0("ellipsis[['", ellipsisNames, "']]")
-  eval(parse(text = paste(
-    ellipsisNames,
-    ellipsisContent, sep = "<-"
-  )))
 
   # check conP and conH
   conPnames <- lapply(conP, function(z) {
@@ -299,8 +341,9 @@ recalib <- function(
     }
   }
   # define new Index
-  dat[, hidfactor := factor(do.call(paste0, .SD)), .SDcols = c(hid, period)]
-
+  dat[, hidfactor := .GRP, by = c(hid, period)]
+  dat[, hidfactor := factor(hidfactor)]
+  
   # calibrate weights to conP and conH
   select.var <- unique(c("hidfactor", weights, period,
                          unlist(c(conP.var, conH.var, conPnames, conHnames,
@@ -332,6 +375,7 @@ recalib <- function(
           w = g, bound = bound, maxIter = maxIter, meanHH = meanHH,
           hid = "hidfactor", check_hh_vars = check_hh_vars,
           allPthenH = allPthenH, returnNA = returnNA,
+          numericalWeighting = numericalWeighting,
           conversion_messages = conversion_messages
         )[, calibWeight])
         if (dat[, any(is.na(get(g)))]) {

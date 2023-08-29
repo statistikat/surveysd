@@ -25,6 +25,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// computeLinearG1_old
+NumericVector computeLinearG1_old(double curValue, double target, const NumericVector& x, const NumericVector& w, double boundLinear);
+RcppExport SEXP _surveysd_computeLinearG1_old(SEXP curValueSEXP, SEXP targetSEXP, SEXP xSEXP, SEXP wSEXP, SEXP boundLinearSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type curValue(curValueSEXP);
+    Rcpp::traits::input_parameter< double >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< double >::type boundLinear(boundLinearSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeLinearG1_old(curValue, target, x, w, boundLinear));
+    return rcpp_result_gen;
+END_RCPP
+}
 // computeLinearG1
 NumericVector computeLinearG1(double curValue, double target, const NumericVector& x, const NumericVector& w, double boundLinear);
 RcppExport SEXP _surveysd_computeLinearG1(SEXP curValueSEXP, SEXP targetSEXP, SEXP xSEXP, SEXP wSEXP, SEXP boundLinearSEXP) {
@@ -166,6 +181,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_surveysd_computeLinear", (DL_FUNC) &_surveysd_computeLinear, 5},
+    {"_surveysd_computeLinearG1_old", (DL_FUNC) &_surveysd_computeLinearG1_old, 5},
     {"_surveysd_computeLinearG1", (DL_FUNC) &_surveysd_computeLinearG1, 5},
     {"_surveysd_geometric_mean_reference", (DL_FUNC) &_surveysd_geometric_mean_reference, 2},
     {"_surveysd_geometric_mean", (DL_FUNC) &_surveysd_geometric_mean, 2},

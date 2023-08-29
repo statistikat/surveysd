@@ -13,7 +13,7 @@ rescaled.bootstrap(
   single.PSU = c("merge", "mean"),
   return.value = c("data", "replicates"),
   check.input = TRUE,
-  new.method = FALSE
+  period = NULL
 )
 }
 \arguments{
@@ -52,11 +52,10 @@ as \code{data.table}.}
 \item{check.input}{logical, if TRUE the input will be checked before applying
 the bootstrap procedure}
 
-\item{new.method}{logical, if TRUE bootstrap replicates will never be
-negative even if in some strata the whole population is in the sample.
-WARNING: This is still experimental and resulting standard errors might be
-underestimated! Use this if for some strata the whole population is in the
-sample!}
+\item{period}{optional character specifying the name of the column in \code{dat}
+containing he sample periods. This column must be a factor where the factor
+levels determine the order of the values in column \code{period}. See details for
+more information}
 }
 \value{
 returns the complete data set including the bootstrap replicates or
@@ -85,20 +84,33 @@ specified for any sampling design.
 For single stage sampling using stratification this can usually be done by
 adding over all sample weights of each PSU by each strata-code.\cr
 Spaces in each of the strings will be removed, so if column names contain
-spaces they should be renamed before calling this procedure!
+spaces they should be renamed before calling this procedure!\cr
+If \code{period} is supplied the sampling of bootstrap replicates for each period
+will follow the method proposed by Preston, J. (2009) with the condition
+that records drawn at the previous period are automatically selected.
+This can result in more than halve of the records selected
+for a specific \code{period}, \code{strata} and \code{cluster}. In that case
+records will be de-selected such that \code{floor(n/2)} records, with \code{n} as the
+total number of records, are selected for each \code{period}, \code{strata} and \code{cluster}.
+If \code{NULL} (the default), it is assumed that all observations belong#
+to the same period and this parameter will be ignored.
 }
 \examples{
-data(eusilc, package = "laeken")
-data.table::setDT(eusilc)
 
-eusilc[,N.households:=sum(db090[!duplicated(db030)]),by=db040]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata="db040",
-                                       cluster="db030",fpc="N.households")
+library(surveysd)
+library(data.table)
+setDTthreads(1)
+set.seed(1234)
+eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 
-eusilc[,new_strata:=paste(db040,hsize,sep="_")]
-eusilc[,N.housholds:=sum(db090[!duplicated(db030)]),by=new_strata]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=100,strata=c("new_strata"),
-                                       cluster="db030",fpc="N.households")
+eusilc[,N.households:=uniqueN(hid),by=region]
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region",
+                                       cluster="hid",fpc="N.households")
+
+eusilc[,new_strata:=paste(region,hsize,sep="_")]
+eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
+                                       cluster="hid",fpc="N.households")
 
 
 }

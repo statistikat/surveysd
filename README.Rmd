@@ -6,7 +6,7 @@ output: github_document
 
  [![Travis build status](https://img.shields.io/travis/statistikat/surveysd.svg?logo=travis)](https://travis-ci.org/statistikat/surveysd)
 [![Coverage Status](https://img.shields.io/coveralls/github/statistikat/surveysd.svg?colorB=red&logo=codecov)](https://coveralls.io/github/statistikat/surveysd?branch=master)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-maturing-blue.svg?logo=github)](https://www.tidyverse.org/lifecycle/#stable)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-maturing-blue.svg?logo=github)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![GitHub last commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd/commits/master)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd)
 [![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
