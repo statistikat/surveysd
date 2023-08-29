@@ -4,12 +4,12 @@
 \alias{summary.ipf}
 \title{Generate summary output for a ipf calibration}
 \usage{
-\method{summary}{ipf}(x, extraExport = NULL)
+\method{summary}{ipf}(object, ...)
 }
 \arguments{
-\item{x}{object of class ipf}
+\item{...}{additional arguments}
 
-\item{extraExport}{additional exports to compute}
+\item{x}{object of class ipf}
 }
 \value{
 a list of the following outputs
@@ -39,7 +39,10 @@ calibweights1 <- ipf(
   bound = NULL,
   verbose = TRUE
 )
-summary.ipf(calibweights1)
+output <- summary(calibweights1)
+# the output can easily be exported to an Excel file, e.g. with
+# library(openxlsx)
+# write.xlsx(output, "SummaryIPF.xlsx")
 }
 }
 \author{

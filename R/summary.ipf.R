@@ -1,7 +1,7 @@
 #' Generate summary output for a ipf calibration
 #'
 #' @param x object of class ipf
-#' @param ... an argument extraExport can be used to create additional exports
+#' @param ... additional arguments
 #'
 #' @author Laura Gruber
 #' @return a list of the following outputs
@@ -34,8 +34,10 @@
 #' # library(openxlsx)
 #' # write.xlsx(output, "SummaryIPF.xlsx")
 #' }
-summary.ipf <- function(x, ...){
-  terms <- variable <- output55 <- NULL
+summary.ipf <- function(object, ...){
+  terms <- variable <- NULL
+  dots <- list(...)
+  extraExport <- dots$extraExport
   av <- attributes(x)
   w <- av$baseweight
   hid <- av$hid
@@ -83,19 +85,22 @@ summary.ipf <- function(x, ...){
   vars <- as.list(unique(vars))
 
   dist_gew <- list()
-
-  for(i in vars){
-    part_i <- x[,list(cv=sd(get(w))/mean(get(w)),
-                           min=min(get(w)),
-                           max=max(get(w)),
-                           quotient=min(get(w))/max(get(w))),keyby=c(i)]
-    setnames(part_i,i,paste0("value",1:length(i)))
-    part_i[,variable:=paste(i,collapse=" x ")]
-    setcolorder(part_i,c("variable",paste0("value",1:length(i)),"cv","min","max","quotient"))
-    dist_gew <- c(dist_gew,list(part_i))
+  if(!is.null(w)){
+    for(i in vars){
+      part_i <- x[,list(cv=sd(get(w))/mean(get(w)),
+                        min=min(get(w)),
+                        max=max(get(w)),
+                        quotient=min(get(w))/max(get(w))),keyby=c(i)]
+      setnames(part_i,i,paste0("value",1:length(i)))
+      part_i[,variable:=paste(i,collapse=" x ")]
+      setcolorder(part_i,c("variable",paste0("value",1:length(i)),"cv","min","max","quotient"))
+      dist_gew <- c(dist_gew,list(part_i))
+    }  
+    dist_gew <- rbindlist(dist_gew,use.names=TRUE,fill=TRUE)
+    setcolorder(dist_gew,c("variable",paste0("value",1:length(i)),"cv","min","max","quotient"))
   }
-  dist_gew <- rbindlist(dist_gew,use.names=TRUE,fill=TRUE)
-  setcolorder(dist_gew,c("variable",paste0("value",1:length(i)),"cv","min","max","quotient"))
+  
+  
 
   cols <- c(which(colnames(x) %in% c(hid,vars,w,calibWeightName,extraExport)))
   names(output)[1] <- "weighted data"
@@ -143,10 +148,9 @@ summary.ipf <- function(x, ...){
       output5[[j+3]] <- as.data.table(round(100*(av$conH[[i]]-xtabs(formHBase[[i]],data=x))/av$conH[[i]],2)) #conH_i_rel_diff_original
       output5[[j+4]] <- as.data.table(round(100*(av$conH[[i]]-av$conH_adj[[i]])/av$conH[[i]],2)) #conH_i__rel_diff_calib
 
-      output5[[i]] <- output55
     }
     output <- append(output,output5)
   }
-
+  
   return(output)
 }
