@@ -69,6 +69,8 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 void ipf_step_ref(NumericVector w, IntegerVector classes, NumericVector targets) {
+  if(!classes.hasAttribute("levels"))
+    stop("the classes vector should be a factor.");
   CharacterVector levels(classes.attr("levels"));
   int nclasses = levels.size();
   if(targets.length() != nclasses)
@@ -101,6 +103,8 @@ NumericVector ipf_step(NumericVector w, IntegerVector classes, NumericVector tar
 //' @export
 // [[Rcpp::export]]
 NumericVector ipf_step_f(NumericVector w, IntegerVector classes, NumericVector targets){
+  if(!classes.hasAttribute("levels"))
+    stop("the classes vector should be a factor.");
   CharacterVector levels(classes.attr("levels"));
   int nclasses = levels.size();
   if(targets.length() != nclasses)
