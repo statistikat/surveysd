@@ -28,6 +28,7 @@ reference:
     - kishFactor
     - cpp_mean
     - computeLinear
+    - summary.ipf
 
 development:
   mode: release
