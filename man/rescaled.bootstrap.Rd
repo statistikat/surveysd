@@ -69,7 +69,7 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
 }
 \details{
 For specifying multistage sampling designs the column names in
-\code{strata},\code{cluster} and \code{fpc} need to seperated by ">".\cr
+\code{strata},\code{cluster} and \code{fpc} need to be seperated by ">".\cr
 For multistage sampling the strings are read from left to right meaning that
 the column name before the first ">" is taken as the column for
 stratification/clustering/number of PSUs at the first and the column after
