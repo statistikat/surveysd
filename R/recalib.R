@@ -149,6 +149,7 @@ recalib <- function(
   # define default values for ipf
   ipfDefaults <- formals(ipf)
   ipfDefaults <- ipfDefaults[!names(ipfDefaults) %in% names(formals(recalib))]
+  ipfDefaults$numericalWeighting <- eval(parse(text = ipfDefaults$numericalWeighting))
   ellipsis <- list(...)
   # set these to FALSE by default
   ellipsis[["check_hh_vars"]] <- getEllipsis2("check_hh_vars",
