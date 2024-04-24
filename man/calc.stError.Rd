@@ -10,7 +10,7 @@ calc.stError(
   weights = attr(dat, "weights"),
   b.weights = attr(dat, "b.rep"),
   period = attr(dat, "period"),
-  var,
+  var = NULL,
   fun = weightedRatio,
   national = FALSE,
   group = NULL,
@@ -22,7 +22,8 @@ calc.stError(
   size.limit = 20,
   cv.limit = 10,
   p = NULL,
-  add.arg = NULL
+  add.arg = NULL,
+  new_method = FALSE
 )
 }
 \arguments{
