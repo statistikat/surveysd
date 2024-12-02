@@ -9,12 +9,14 @@ NumericVector computeLinear(double curValue,
                             const NumericVector& x,
                             const NumericVector& w,
                             double boundLinear = 10) {
-  NumericVector f(x.size());
+  NumericVector f(x.size(), 1.0);
   if(x.size()!=w.size()){
     stop("x and w of different length!");
   }
   if(x.size()==1){
     f[0] = w[0]/curValue*target;
+    return f;
+  }else if(fabs(curValue-target)<1e-8){
     return f;
   }else{
     double h = 0.0;
@@ -29,7 +31,10 @@ NumericVector computeLinear(double curValue,
 
     double b = (target-N*j/h)/(h-N*j/h);
     double a = (N-b*N)/h;
-
+    if(std::isinf(a) || std::isinf(b)){
+      return(f);
+    }
+    //    Rprintf("coeff a %f und coeff b %f",a,b);
 
     for(int i = 0; i < x.size(); i++)
       f[i] = a*x[i] + b;
@@ -59,7 +64,7 @@ NumericVector computeLinearG1_old(double curValue,
                               double boundLinear = 10) {
   NumericVector f(x.size());
   f=computeLinear(curValue,target,x,w,boundLinear);
-  
+
   for(int i = 0; i < x.size(); i++){
     if (f[i]*w[i] < 1.0){
       f[i]=1/w[i];
@@ -79,34 +84,34 @@ NumericVector computeLinearG1(double curValue,
                               double boundLinear = 10) {
   NumericVector f(x.size());
   f=computeLinear(curValue,target,x,w,boundLinear);
-  
+
   // check if any updated weight will be smaller than 1
   LogicalVector is_smaller = f*w-1.0 < -1e-10;
   LogicalVector is_larger = f*w-1.0 > 1e-10;
   bool cond1 = is_true(any(is_smaller));
   bool adjust_larger = true;
-  
+
   // calculate share of weights and x*w which will be added by truncating at 1
   // and redistribute difference to rest
   // int steps = 0; // number of iteration for update
   while(cond1 == true){
-    
+
     NumericVector f_smaller = f[is_smaller==true];
     NumericVector x_smaller = x[is_smaller==true];
     NumericVector w_smaller = w[is_smaller==true];
 
     // all elements of x and w where f*x ist greater 1
     NumericVector x_larger = x[is_larger == true];
-    
+
     // weighted sum of x that is added if f[i] are truncated by 1
     double target_new = sum((1.0-f_smaller*w_smaller)*x_smaller);
 
     // sum of w that is added if f[i] are truncated by 1
     double sum_w_smaller = sum(1.0-f_smaller*w_smaller);
-    NumericVector w_new = Rcpp::rep(sum_w_smaller/x_larger.size(),x_larger.size()); 
+    NumericVector w_new = Rcpp::rep(sum_w_smaller/x_larger.size(),x_larger.size());
     double curValue_new = sum(w_new*x_larger);
     NumericVector f_new = computeLinear(curValue_new,target_new,x_larger,w_new,0.0);
- 
+
     //update vector
     // check if any weight will be negativ
     // this can happen due to instability
@@ -127,8 +132,8 @@ NumericVector computeLinearG1(double curValue,
         j = j + 1;
       }
     }
-     
- 
+
+
      // if resulting weights will be negaitve break routine
      // and return current result
      if(adjust_larger == false){
