@@ -170,14 +170,20 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
     set(dat, j = "wValue", value = dat[["value"]] /
           dat[["fVariableForCalibrationIPF"]])
 
-    # try to divide the weight between units with larger/smaller value in the
+    # try to divide the weight between units with larger/smaller values in the
     #   numerical variable linear
     set(dat, j="fVariableForCalibrationIPF", value=1)
     dat[!is.na(value) & value!=0, fVariableForCalibrationIPF := numericalWeighting(
       head(wValue, 1), head(value, 1), get(numericalWeightingVar),
       get(variableKeepingTheCalibWeight)),
-      by = eval(paste0("combined_factors_", i))]
+      by=c(paste0("combined_factors_", i))]
+  
+    # adjust weights to hit target 
+    # weights might shift due applying boundary limits in numerialWeighting()
+    dat[!is.na(value) & value!=0, fVariableForCalibrationIPF := fVariableForCalibrationIPF*value/sum(fVariableForCalibrationIPF*get(numericalWeightingVar)*get(variableKeepingTheCalibWeight)), by=c(paste0("combined_factors_", i))]
     
+    # result after applying factor 
+    # dat[!is.na(value) & value!=0, wValue:=sum(fVariableForCalibrationIPF*get(variableKeepingTheCalibWeight)*get(numericalWeightingVar)), by = c(paste0("combined_factors_", i))]
   } else {
     # categorical variable to be calibrated
     set(dat, j = "fVariableForCalibrationIPF", value = ipf_step_f(
@@ -185,6 +191,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
     set(dat, j = "wValue", value = dat[["value"]] /
           dat[["fVariableForCalibrationIPF"]])
   }
+  
   
   dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsPcur]
   dat[is.na(selectGroupNotConverged),selectGroupNotConverged:=FALSE]
@@ -828,6 +835,7 @@ ipf <- function(
       ### Person calib
       
       for (i in seq_along(conP)) {
+        
         numericalWeightingTmp <- NULL
         if (isTRUE(names(conP)[i] != "")) {
           numericalWeightingTmp <- names(conP)[i]
@@ -862,6 +870,7 @@ ipf <- function(
           w = variableKeepingTheBaseWeight,
           cw = variableKeepingTheCalibWeight, minMaxTrim = minMaxTrim,
           print_every_n = print_every_n)
+        
       }
     } else {
       ### Person calib
