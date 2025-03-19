@@ -17,6 +17,7 @@ draw.bootstrap(
   boot.names = NULL,
   split = FALSE,
   pid = NULL,
+  seed = NULL,
   new.method = TRUE
 )
 }

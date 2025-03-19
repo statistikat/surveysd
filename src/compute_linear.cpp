@@ -31,15 +31,16 @@ NumericVector computeLinear(double curValue,
 
     double b = (target-N*j/h)/(h-N*j/h);
     double a = (N-b*N)/h;
+    // Rprintf("coeff a %f und coeff b %f",a,b);
     if(std::isinf(a) || std::isinf(b)){
       return(f);
     }
-    //    Rprintf("coeff a %f und coeff b %f",a,b);
+    
 
     for(int i = 0; i < x.size(); i++)
       f[i] = a*x[i] + b;
 
-    //apply bounds
+    // apply bounds
     if(boundLinear > 0){
       for(int i = 0; i < x.size(); i++){
         if (f[i] < 1.0/boundLinear)

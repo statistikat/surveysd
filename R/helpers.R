@@ -122,3 +122,41 @@ generateRandomName <- function(nchar = 20, existingNames) {
 
   return(newName)
 }
+
+# input checking function
+check.input <- function(input, input.name, input.length=NULL, 
+                        input.type = NULL, decimal.possible = NULL, 
+                        c.names = NULL, dat = NULL, dat.column.type = NULL){
+  
+  if(!is.null(input.length)){
+    if(length(input) != 1){
+      stop(paste(input.name,"must have length",input.length))
+    }
+  }
+  
+  if(!is.null(input.type)){
+    if(!is(input,input.type)){
+      stop(paste(input.name,"must be of type",input.type))
+    }
+  }
+  
+  if(!is.null(decimal.possible)){
+    if(input %%1 !=0 & decimal.possible==FALSE){
+      stop(paste(input.name,"cannot have a decimal part"))
+    }
+  }
+  
+  if(!is.null(c.names)){
+    if(!input %in% c.names){
+      stop(paste(input," is not a column in dat"))
+    }
+  }
+  
+  if(!is.null(dat) & !is.null(dat.column.type)){
+    if(!is(dat[[input]],dat.column.type)){
+      stop(paste(input.name,"must be a",input.type,"column in dat"))
+    }
+  }
+  
+  return(NULL)
+}
