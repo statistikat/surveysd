@@ -187,7 +187,7 @@
 draw.bootstrap <- function(
   dat, REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
   cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
-    NULL, split = FALSE, pid = NULL, new.method = TRUE) {
+    NULL, split = FALSE, pid = NULL, seed = NULL, new.method = TRUE) {
 
   occurence_first_period <- NULL
 
@@ -203,16 +203,16 @@ draw.bootstrap <- function(
   c.names <- colnames(dat)
 
   removeCols <- c()
+  
+  # check seed
+  if(!is.null(seed)){
+    check.input(seed, input.name = "seed", input.length=1, input.type="numeric")
+    set.seed(seed)
+  }
+  
   # check REP
-  if (length(REP) != 1) {
-    stop("REP must have length 1")
-  }
-  if (!is.numeric(REP)) {
-    stop("REP must contain one numeric value")
-  }
-  if (REP %% 1 != 0) {
-    stop("REP cannot have a decimal part")
-  }
+  check.input(REP, input.name = "REP", input.length=1, input.type="numeric",
+              decimal.possible = FALSE)
 
   # check hid
   hidNULL <- is.null(hid)
@@ -221,24 +221,23 @@ draw.bootstrap <- function(
     dat[, c(hid) := 1:.N]
     removeCols <- c(removeCols, hid)
   }
+  check.input(hid, input.name = "hid", input.length=1, input.type="character",
+              c.names = c.names)
 
-  if (length(hid) != 1) {
-    stop("hid must have length 1")
+  # check pid
+  pidNULL <- is.null(pid)
+  if (pidNULL) {
+    pid <- generateRandomName(20, colnames(dat))
+    dat[, c(pid) := 1:.N, by=c(hid)]
+    removeCols <- c(removeCols, pid)
   }
-  if (!hid %in% c.names) {
-    stop(paste0(hid, " is not a column in dat"))
-  }
-
+  check.input(pid, input.name = "pid", input.length=1, input.type="character",
+              c.names = c.names)
+  
   # check weights
-  if (length(weights) != 1) {
-    stop("weights must have length 1")
-  }
-  if (!weights %in% c.names) {
-    stop(paste0(weights, " is not a column in dat"))
-  }
-  if (!is.numeric(dt.eval("dat[,", weights, "]"))) {
-    stop(paste0(weights, " must be a numeric column"))
-  }
+  check.input(weights, input.name = "weights", input.length=1, input.type="character",
+              c.names = c.names, dat = dat, dat.column.type = "numeric")
+
 
   # check period
   periodNULL <- is.null(period)
@@ -248,31 +247,34 @@ draw.bootstrap <- function(
     removeCols <- c(removeCols, period)
   }
 
-  if (length(period) != 1) {
-    stop("period must have length 1")
-  }
-  if (!period %in% c.names) {
-    stop(paste0(period, " is not a column in dat"))
-  }
-  if (!is.numeric(dat[[period]]) & !is.integer(dat[[period]])) {
-    stop(paste0(period, " is not an integer or numeric column"))
-  }
-
+  check.input(period, input.name = "period", input.length=1, input.type="character",
+              c.names = c.names, dat = dat, dat.column.type = "numeric")
+  
+  
+  
   # check design
+  strataNULL <- FALSE
   if (is.null(strata)) {
     strata <- "I"
+    strataNULL <- TRUE
   }
 
+  clusterNULL <- FALSE
   if (is.null(cluster)) {
     cluster <- hid
+    clusterNULL <- TRUE
   } else {
     if (length(cluster) == 1) {
       if (cluster %in% c("1", "I")) {
         cluster <- hid
       }
     }
-    if (!hid %in% cluster) {
-      cluster <- c(cluster, hid)
+    if (!hid %in% cluster & !pid %in% cluster) {
+      if(pidNULL==FALSE){
+        cluster <- c(cluster, pid)  
+      }else{
+        cluster <- c(cluster, hid)
+      }
     }
   }
 
@@ -353,8 +355,9 @@ draw.bootstrap <- function(
       }
     }
     # check if pid is unique in each household and period
-    unique.pid <- dt.eval("dat[,uniqueN(", pid,
-                          ")==.N,by=c(period,hid)][V1==FALSE]")
+    unique.pid <- dat[,unqiueN(pid)==.N, by=c(period, hid),
+                      env = list(pid = pid)]
+    unique.pid <- unique.pid[V1==FALSE]
     if (nrow(unique.pid) > 0) {
       stop("pid is not unique in each household for each period")
     }
@@ -371,8 +374,10 @@ draw.bootstrap <- function(
       #   strata
       totals <- generateRandomName(20, existingNames = colnames(dat))
       fpc.strata <- strata[!strata %in% c("I", "1")] # nolint
-      dt.eval("dat[,", totals, ":=sum(", weights, "[!duplicated(",
-              hid, ")]),by=c(fpc.strata,period)]")
+      dat[,c(totals) := sum(weights[!duplicated(hid)]),
+          by = c(fpc.strata, period),
+          env = list(weights = weights,
+                     hid = hid)]
       removeCols <- c(removeCols, totals)
     } else {
 
@@ -396,7 +401,9 @@ draw.bootstrap <- function(
   # check for each stage that PSUs are not in mutiple strata
   for(i in seq_along(strata)){
     if(!strata[i]%in%c("1","I") & !cluster[i]%in%c("1","I")){
-      countMultiple <- dt.eval("dat[,uniqueN(",strata[i],"),by=c(cluster[i],period)][V1>1]")
+      countMultiple <- dat[,uniqueN(strata_i), by=c(cluster[i], period),
+                           env = list(strata_i = strata[i])]
+      countMultiple <- countMultiple[V1>1]
       if(nrow(countMultiple)>0){
         stop("Some sampling units in ",cluster[i]," occur in multiple strata of ",strata[i])
       }
@@ -406,9 +413,9 @@ draw.bootstrap <- function(
   ##########################################################
 
   # define sample design
-  strata <- paste(strata, collapse = ">")
-  cluster <- paste(cluster, collapse = ">")
-  totals <- paste(totals, collapse = ">")
+  strata_design <- paste(strata, collapse = ">")
+  cluster_design <- paste(cluster, collapse = ">")
+  totals_design <- paste(totals, collapse = ">")
 
   if (is.null(boot.names)) {
     w.names <- paste0("w", 1:REP)
@@ -418,11 +425,20 @@ draw.bootstrap <- function(
 
   # calculate bootstrap replicates
   if(new.method==TRUE){
-    dat[, c(w.names) := rescaled.bootstrap(
-      dat = copy(.SD), REP = REP, strata = strata, cluster = cluster,
-      fpc = totals, single.PSU = single.PSU, return.value = "replicates",
-      check.input = FALSE, period = period)]
     
+    periods <- sort(unique(dat[[period]]))
+    dat_selection_prev <- NULL
+    for(p in periods){
+      dat_boot <- rescaled.bootstrap(dat = dat[period == p, env = list(period = period)],
+                                     REP = REP, strata = strata_design, cluster = cluster_design,
+                                     fpc = totals_design, single.PSU = single.PSU, return.value = c("replicates","selection"),
+                                     already.selected = dat_selection_prev,
+                                     run.input.checks = FALSE)
+      dat[period == p, c(w.names) := dat_boot$replicates, env = list(period = period)]
+      dat_selection_prev <- dat_boot$selection
+      rm(dat_boot)
+    }
+
     # respect split households
     if (split) {
       dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
@@ -436,26 +452,27 @@ draw.bootstrap <- function(
         x_groups <- rep(1:length(x_groups),times=x_groups)
         return(x_groups)
       }
-      dt.eval("dat[,hid_survey_segment_help:=help_survey_grouping(", period, "),by=c(hid)]")
-      dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid,'hid_survey_segment_help')]")
+      dat[,hid_survey_segment_help := help_survey_grouping(period), by=c(hid),
+          env = list(period = period)]
+      dat[,occurence_first_period := min(period_col), by=c(hid,"hid_survey_segment_help"),
+          env = list(period = period)]
       select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
-      dat.first.occurence <- unique(
-        dt.eval("dat[", period, "==occurence_first_period,.(",
-                select.first.occurence, ")]"
-        ), by = c(hid,"hid_survey_segment_help"))
+      dat.first.occurence <- unique(dat[period==occurence_first_period, .SD, 
+                                        .SDcols = c(hid,"hid_survey_segment_help", w.names),
+                                        env = list(period = period)])
       dat[, c(w.names) := NULL]
       dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
       dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-      dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
+      dat[, c(hid) := paste0(hid,"_orig"), env = list(hid = hid)]
       dat[, c(paste0(hid, "_orig")) := NULL]
     }
     
   }else{
     
     dat[, c(w.names) := rescaled.bootstrap_old(
-      dat = copy(.SD), REP = REP, strata = strata, cluster = cluster,
-      fpc = totals, single.PSU = single.PSU, return.value = "replicates",
-      check.input = FALSE, new.method = new.method), by = c(period)]
+      dat = copy(.SD), REP = REP, strata = strata_design, cluster = cluster_design,
+      fpc = totals_design, single.PSU = single.PSU, return.value = "replicates",
+      run.input.checks = FALSE, new.method = new.method), by = c(period)]
 
     # respect split households
 
@@ -509,11 +526,25 @@ draw.bootstrap <- function(
   if (hidNULL) {
     hid <- NULL
   }
+  if (clusterNULL){
+    cluster <- NULL
+  }
+  if (strataNULL){
+    strata <- NULL
+  }
+  if (pidNULL){
+    pid <- NULL
+  }
 
   setattr(dat, "weights", weights)
   setattr(dat, "period", period)
   setattr(dat, "b.rep", w.names)
   setattr(dat, "hid", hid)
-
+  setattr(dat, "pid", pid)
+  setattr(dat, "cluster", cluster)
+  setattr(dat, "strata", strata)
+  setattr(dat, "totals", totals)
+  
+  
   return(dat)
 }

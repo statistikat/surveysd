@@ -252,15 +252,15 @@
 # and calculating standard devation (using the bootstrap replicates) per period
 # and for k-period rolling means
 calc.stError <- function(
-  dat, weights = attr(dat, "weights"), b.weights = attr(dat, "b.rep"),
-  period = attr(dat, "period"), var, fun = weightedRatio, national = FALSE,
-  group = NULL, fun.adjust.var = NULL, adjust.var = NULL, period.diff = NULL,
-  period.mean = NULL, bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL,
-  add.arg = NULL) {
-
+    dat, weights = attr(dat, "weights"), b.weights = attr(dat, "b.rep"),
+    period = attr(dat, "period"), var = NULL, fun = weightedRatio, national = FALSE,
+    group = NULL, fun.adjust.var = NULL, adjust.var = NULL, period.diff = NULL,
+    period.mean = NULL, bias = FALSE, size.limit = 20, cv.limit = 10, p = NULL,
+    add.arg = NULL, new_method = FALSE) {
+  
   stE_high <- stE <- val <- as.formula <- est_type <- n_inc <-
     stE_roll <- n <- size <- NULL
-
+  
   ##########################################################
   # INPUT CHECKING
   if (is.data.frame(dat)) {
@@ -268,31 +268,31 @@ calc.stError <- function(
   }else if (!is.data.table(dat)) {
     stop("dat must be a data.frame or data.table")
   }
-
+  
   c.names <- colnames(dat)
-
+  
   # check weights
   if (length(weights) != 1)
     stop("weights must have length 1")
-
+  
   if (!weights %in% c.names)
     stop(weights, " is not a column in dat")
-
+  
   if (!is.numeric(dt.eval("dat[,", weights, "]")))
     stop(weights, " must be a numeric column")
-
-
+  
+  
   # check b.weights
   if (!all(b.weights %in% c.names))
     stop("Not all elements in b.rep are column names in dat")
-
+  
   if (any(!grepl("^[[:alpha:]]", b.weights)))
     stop("Column names of bootstrap replicates must start with alphabetic ",
          "character")
-
+  
   if (any(!unlist(lapply(dat[, mget(b.weights)], is.numeric))))
     stop("Columns containing bootstrap replicates must be numeric")
-
+  
   # check period
   removeCols <- c()
   periodNULL <- is.null(period)
@@ -301,70 +301,77 @@ calc.stError <- function(
     dat[, c(period) := 1]
     removeCols <- c(removeCols, period)
   }
-
+  
   if (length(period) != 1)
     stop("period must have length 1")
-
+  
   if (!period %in% c.names)
     stop(paste0(period, " is not a column in dat"))
-
-
+  
+  
   # check var
+  if(is.null(var)){
+    var <- generateRandomName(20, colnames(dat))
+    dat[, c(var) := 1]
+    removeCols <- c(removeCols, var)
+  }
   if (any(!var %in% c(c.names)))
     stop("Not all elements in var are column names in dat")
-
+  
+  
+  
   if (any(!unlist(lapply(dat[, mget(b.weights)], is.numeric))))
     stop("Columns containing ", paste(var, collapse = ","),
          " must all be numeric")
-
-
+  
+  
   # check national
   if (!is.logical(national))
     stop("national can only be logical")
-
-
+  
+  
   # check fun and add.arg
   if (!is.function(fun))
     stop("fun can only be a function")
-
+  
   if (!is.null(add.arg)) {
     if (!is.list(add.arg) | !is.vector(add.arg))
       stop("add.arg needs to be a list or vector")
-
+    
     if (length(names(add.arg)) == 0)
       stop("add.arg needs to be a named list or vector, names(add.arg) <- ?")
-
+    
     if (any(!names(add.arg) %in% formalArgs(fun))) {
       notInFun <- !names(add.arg) %in% formalArgs(fun)
       stop(paste(names(add.arg)[notInFun], collapse = " "),
            " not argument(s) of supplied function.")
     }
-
+    
     if (any(!unlist(add.arg) %in% c.names)) {
       notInData <- unlist(add.arg)
       notInData <- notInData[!notInData %in% c.names]
       stop(paste(notInData, collapse = " "), " not in column names of dat.")
     }
-
+    
     add.arg <- unlist(add.arg)
     add.arg <- paste0(",", paste(names(add.arg), add.arg, sep = "=",
                                  collapse = ","))
   }
-
-
+  
+  
   test.val <- dt.eval("dat[,fun(", var[1], ",", weights, add.arg, ")]")
   if (!is.numeric(test.val) & !is.integer(test.val))
     stop("Function in fun does not return integer or numeric value")
-
+  
   if (length(test.val) > 1)
     stop("Function in fun does return more than one value. Only functions ",
          "which return a single value are allowed.")
-
+  
   # check fun.adjust.var
   if (!is.null(fun.adjust.var)) {
     if (!is.function(fun.adjust.var))
       stop("fun.adjust.var can only be a function or NULL")
-
+    
     test.val <- dt.eval("dat[,fun.adjust.var(", adjust.var, ",", weights,
                         add.arg, ")]")
     if (!is.numeric(test.val) & !is.integer(test.val))
@@ -375,38 +382,38 @@ calc.stError <- function(
   if (!is.null(adjust.var)) {
     if (!is.character(adjust.var))
       stop("adjust.var needs to be a character")
-
+    
     if (length(adjust.var) > 1)
       stop("adjust.var can only be a single variable name")
-
+    
     if (!adjust.var %in% c.names)
       stop("adjust.var must be a column name in dat")
   }
-
+  
   # check group
   if (is.null(group))
     group <- list(NULL)
-
+  
   if (!is.list(group))
     group <- as.list(group)
-
+  
   if (!any(unlist(lapply(group, is.null))))
     group <- c(list(NULL), group)
-
+  
   if (any(!unlist(group) %in% c.names))
     stop("Not all elements on group are column names in dat")
-
+  
   # check period.mean
   if (!is.null(period.mean)) {
     if (length(period.mean) != 1)
       stop("period.mean must have length 1")
-
+    
     if (!is.numeric(period.mean))
       stop("period.mean must contain one numeric value")
-
+    
     if (period.mean %% 1 != 0)
       stop("period.mean cannot have a decimal part")
-
+    
     if (period.mean %% 2 == 0 & period.mean > 0) {
       warning("period.mean must be odd - mean over periods",
               " will not be calculated")
@@ -416,45 +423,46 @@ calc.stError <- function(
         period.mean <- NULL
     }
   }
-
-
+  
+  
   # check bias
   if (length(bias) != 1)
     stop("period.mean must have length 1")
-
+  
   if (!is.logical(bias))
     stop("bias can only be TRUE of FALSE")
-
+  
   # check size.limit
   if (length(size.limit) != 1)
     stop("size.limit must have length 1")
-
+  
   if (!is.numeric(size.limit))
     stop("size.limit must contain one numeric value")
-
-
+  
+  
   # check cv.limit
   if (length(cv.limit) != 1)
     stop("cv.limit must have length 1")
-
+  
   if (!is.numeric(cv.limit))
     stop("cv.limit must contain one numeric value")
-
+  
   # check p
   if (!is.null(p)) {
     if (!is.numeric(p))
       stop("p must be a numeric vector")
-
+    
     if (any(!p %between% c(0, 1)))
       stop("Values in p must be between 0 and 1")
-
+    
   }
-
+  
   # check period.diff
   if (!is.null(period.diff)) {
     periods.dat <- dt.eval("dat[,unique(", period, ")]")
     period.diff <- strsplit(period.diff, "-")
-
+    period.diff <- lapply(period.diff, trimws)
+    
     rm.index <- rep(0, length(period.diff))
     for (i in seq_along(period.diff)) {
       if (any(!period.diff[[i]] %in% periods.dat)) {
@@ -471,16 +479,16 @@ calc.stError <- function(
       period.diff <- period.diff[rm.index == 0]
     }
   }
-
-
+  
+  
   ##########################################################
-
+  
   ##########################################################
   # setup parameters
   # define columns in which NAs are present (will be discarded for
   #   the evaluation)
-
-
+  
+  
   col_cross <- unique(unlist(group))
   if (!is.null(col_cross)) {
     no.na <- unlist(dat[, lapply(.SD,
@@ -489,45 +497,67 @@ calc.stError <- function(
                                  }),
                         .SDcols = col_cross])
     no.na <- names(no.na)[!no.na]
-
+    
     if (length(no.na) > 0) {
       print.no.na <- paste0(no.na, collapse = ", ")
       warning("Missing values found in column name(s) ", print.no.na,
               "\n Cells with missing values are discarded for the",
               "calculation!\n")
     }
-
+    
   } else {
     no.na <- NULL
   }
-
+  
   if (!is.null(p)) {
     p.names <- paste0("p", p)
   } else {
     p.names <- NULL
   }
-
+  
   # calculate point estimates
-  outx <- help.stError(
-    dat = dat, period = period, var = var, weights = weights,
-    b.weights = b.weights, fun = fun, national = national, group = group,
-    fun.adjust.var = fun.adjust.var, adjust.var = adjust.var,
-    period.diff = period.diff, period.mean = period.mean, bias = bias,
-    no.na = no.na, size.limit = size.limit, p = p, add.arg = add.arg)
-
-  outx.names <- colnames(outx)
-  outx.names <- outx.names[!outx.names %in% c("val", "est_type", "stE", "mean",
-                                              "size", p.names)]
-
+  
+  if(new_method == TRUE){
+    
+    outx <- run.stError(
+      dat = dat, period = period, var = var, weights = weights,
+      b.weights = b.weights, fun = fun, national = national, group = group,
+      period.diff = period.diff, period.mean = period.mean, bias = bias,
+      no.na = no.na, size.limit = size.limit, p = p)
+    
+  }else{
+    
+    outx <- help.stError(
+      dat = dat, period = period, var = var, weights = weights,
+      b.weights = b.weights, fun = fun, national = national, group = group,
+      fun.adjust.var = fun.adjust.var, adjust.var = adjust.var,
+      period.diff = period.diff, period.mean = period.mean, bias = bias,
+      no.na = no.na, size.limit = size.limit, p = p, add.arg = add.arg)
+    
+  }
+  
+  
   # remove columns
   if (length(removeCols) > 0) {
     dat[, c(removeCols) := NULL]
+    
+    removeCols2 <- removeCols[removeCols %in% colnames(outx)]
+    outx[, c(removeCols2) := NULL]
+    
+    if(var %in% removeCols){
+      outx[,est:="N"]
+      var <- "N"
+    }
   }
-
+  
+  outx.names <- colnames(outx)
+  outx.names <- outx.names[!outx.names %in% c("val", "est_type", "stE", "mean",
+                                              "size", p.names)]
+  
   # get meta data like stE_high - size - increase in effektive sample size
   # flag stE if values are especially high
   outx[, stE_high := ((stE / val) * 100) > cv.limit]
-
+  
   # create bool matrix for stE_high
   sd_bool <- subset(
     outx,
@@ -537,7 +567,7 @@ calc.stError <- function(
     paste(outx.names[!outx.names %in% c("N", "n", "est")], collapse = "+"),
     "est", sep = "~"))
   sd_bool <- dcast(sd_bool, form, value.var = "stE_high")
-
+  
   # create matrix for increase of sample size
   if (nrow(outx[est_type == "roll"]) > 0) {
     # estimate (roughly) the effektive sample size per
@@ -551,7 +581,7 @@ calc.stError <- function(
     samp_eff[, c("size", "val", "est_type", "N", "n") := NULL]
     setnames(samp_eff, "stE", "stE_roll")
     same_names <- intersect(colnames(samp_eff), colnames(outx))
-
+    
     samp_eff <- merge(samp_eff, outx[, mget(c("stE", "n", same_names))],
                       by = same_names)
     samp_eff[, n_inc := ((stE / stE_roll) ^ 2 - 1) * n]
@@ -559,40 +589,213 @@ calc.stError <- function(
   } else {
     samp_eff <- NULL
   }
-
+  
   # create Matrix for groups which have small sizes
   size_group <- unique(subset(
     outx[size == TRUE],
     select = c(outx.names[!outx.names %in% c("est", "N")])
   ))
-
+  
   val.var <- c("val", "stE", p.names)
   if (bias) {
     val.var <- c(val.var, "mean")
   }
-
+  
   form <- as.formula(paste(
-    paste(outx.names[outx.names != "est"], collapse = "+"), "est", sep = "~"
+    paste(outx.names[!outx.names %in% c("est")], collapse = "+"), "est", sep = "~"
   ))
   outx <- dcast(outx, form, value.var = val.var, fill = NA)
   # reorder output
   col.order <- as.vector(outer(paste0(val.var, "_"), var, FUN = "paste0"))
   outx.names <- colnames(outx)
   col.order <- c(outx.names[!outx.names %in% col.order], col.order)
+  col.order <- col.order[col.order %in% outx.names]
   setcolorder(outx, col.order)
-
+  
   param <- list(
     number.bweights = length(b.weights), period = period, var = var,
     fun = fun, fun.adjust.var = fun.adjust.var, adjust.var = adjust.var,
     group = group, period.diff = period.diff, period.mean = period.mean,
     bias = bias, size.limit = size.limit, cv.limit = cv.limit, add.arg)
-
+  
   output <- list(Estimates = outx, smallGroups = size_group, cvHigh = sd_bool,
                  stEDecrease = samp_eff, param = param)
-
+  
   class(output) <- c("surveysd", class(output))
-
+  
   return(output)
+}
+
+run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:1000), fun, national,
+                        group, period.diff = NULL, period.mean = NULL, bias = FALSE, no.na, size.limit = 20, p = NULL){
+  
+  # var holds only sinle variable
+  
+  # melt data set for easier data manipulation
+  id.vars <- unique(c(period, var, unlist(group)))
+  
+  variable_weights <- generateRandomName(existingNames = id.vars)
+  value_weights <- generateRandomName(existingNames = id.vars)
+  dat <- melt(dat,id.vars = id.vars, measure.vars = c(weights,b.weights), variable.name = variable_weights, value.name = value_weights)
+  
+  
+  # create point estimate for subnational result in relation to national level
+  if (national) {
+    national.arg <- paste_("Nat",seq_along(var))
+    
+    dat[,c(national.arg) := lapply(.SD, fun, weights), by=c(period, variable_weights), .SDcols=c(var), env = list(weights = value_weights)]
+    
+    # create new functions which divides by national level
+    fun_original <- fun # nolint
+    fun <- dt.eval(
+      "function(", paste0(formalArgs(fun), collapse = ","),
+      ",national.arg) {fun_original(x,w)/national.arg*100}")
+  }
+  
+  
+  # define parameter for quantile calculation
+  if (!is.null(p)) {
+    p.names <- paste0("p", p)
+    np <- length(p.names)
+  }
+  
+  # define additional parameters for mean over consecutive periods
+  periods <- sort(unique(dat[[period]]))
+  
+  if (!is.null(period.mean)) {
+    # formulate k consecutive periods
+    if (length(periods) >= period.mean & period.mean %% 2 == 1) {
+      periodsList <- unlist(lapply(
+        periods[1:c(length(periods) - period.mean + 1)],
+        function(z) {
+          if (!((z + period.mean - 1) > max(periods))) {
+            paste(z:c(z + period.mean - 1), collapse = "_")
+          }
+        }
+      ))
+    } else{
+      periodsList <- NULL
+      warning("Not enough periods present in data to calculate mean over ",
+              period.mean, " periods.\n")
+      period.mean <- NULL
+    }
+    
+    # get periods for k period mean over period-differences
+    # get for each difference a list of vectors that correspond to the
+    #   differences needed to use for the mean over differences
+    if (!is.null(period.diff)) {
+      period.diff.b <- TRUE
+      period.diff.mean <- lapply(period.diff, function(z) {
+        z <- as.numeric(z)
+        steps <- (period.mean - 1) / 2
+        z_upper <- (z[1] + steps):(z[1] - steps)
+        z_lower <- (z[2] + steps):(z[2] - steps)
+        diff.feasable <- all(c(z_lower, z_upper) %in% periods)
+        if (diff.feasable) {
+          lapply(1:period.mean, function(s) {
+            c(z_upper[s], z_lower[s])
+          })
+        } else {
+          warning("Cannot calculate differences between periods ", z[1],
+                  " and ", z[2], " over ", period.mean, " periods.\n")
+          NULL
+        }
+      })
+      period.diff.mean[unlist(lapply(period.diff.mean, is.null))] <- NULL
+    } else {
+      period.diff.b <- FALSE
+      period.diff.mean <- NULL
+    }
+  } else {
+    if (is.null(period.diff)) {
+      period.diff.b <- FALSE
+    } else {
+      period.diff.b <- TRUE
+    }
+    period.diff.mean <- NULL
+    periodsList <- NULL
+  }
+  
+  # variable name for estimate
+  variable_est <- generateRandomName(existingNames = c(unique(unlist(group)),"n","N"))
+  
+  out <- lapply(group, function(z) {
+    
+    # use only unique values for grouping (duplicates are discarded)
+    # if period in z also discard -> always group by period
+    z <- unique(z[!z == period])
+    na.check <- z[z %in% no.na]
+    if (length(na.check) > 0) {
+      na.eval <- paste(paste0("(!is.na(", na.check, "))"), collapse = "&")
+    } else {
+      na.eval <- NULL
+    }
+    by.eval <- c(period, z, variable_weights)
+    
+    # calcualte estimate
+    if(national){
+      var.est <- dat[,.(n=.N, N = sum(weights),fun(x,weights,national.arg[1])), 
+                     by=c(by.eval), env = list(x = var,
+                                               weights = value_weights,
+                                               national.arg = national.arg)]
+    }else{
+      var.est <- dat[,.(n=.N, N = sum(weights),fun(x,weights)), 
+                     by=c(by.eval), env = list(x = var,
+                                               weights = value_weights)]
+    }
+    
+    setnames(var.est,tail(colnames(var.est),1),variable_est)
+    
+    # specify small groups
+    var.est[, help_direct_estimate := variable_weights == weights, env = list(variable_weights = variable_weights)]
+    
+    var.est.small <- var.est[help_direct_estimate == TRUE & N < size.limit]
+    if (nrow(var.est.small) > 0) {
+      small.group <- var.est.small[, .SD, .SDcols=c(period, z)]
+      cat(paste0("For grouping by ", paste(c(period, z), collapse = "~"),
+                 ": \n"))
+      if (nrow(var.est.small[N < size.limit]) > 10) {
+        cat(paste0("Sample size lower ", size.limit, " for ",
+                   nrow(var.est.small[N < size.limit]), " groups \n"))
+      } else {
+        cat(paste0("Sample size lower ", size.limit, " for groups \n"))
+        print(small.group)
+      }
+    }
+    
+    var.est[, est_type := "norm"]
+    
+    
+    if (!is.null(p)) {
+      sd.est <- var.est[help_direct_estimate == FALSE, as.list(
+        c(stE = sd(x), quantileNA(x, probs = p, p.names = p.names, np = np))),
+        by = c(period, z), env = list(x = variable_est)]
+    } else {
+      sd.est <- var.est[help_direct_estimate == FALSE, .(stE = sd(x)), by = c(period, z),
+                        env = list(x = variable_est)]
+    }
+    
+    
+    out.z <- merge(var.est[help_direct_estimate == TRUE], sd.est, by = c(period, z))
+    
+    if (bias) {
+      bias.est <- var.est[ID != 1, .(mean = mean(V1)), by = c(period, z)]
+      out.z <- merge(out.z, bias.est, by = c(period, z))
+    }
+    
+    # define size groups - groups with zero size do not fall under size-output
+    # for groups with zero size the resutling estimatese will be NAs
+    out.z[(!is.na(n)) & n > 0, size := n < size.limit]
+    
+    return(out.z)
+    
+  })
+  
+  out <- rbindlist(out, fill = TRUE, use.names = TRUE)
+  setnames(out, variable_est, "val")
+  out[,c(variable_weights,"help_direct_estimate"):=NULL]
+  
+  return(out) 
 }
 
 

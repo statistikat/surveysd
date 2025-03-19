@@ -12,8 +12,9 @@ rescaled.bootstrap(
   fpc = "N.cluster>N.households",
   single.PSU = c("merge", "mean"),
   return.value = c("data", "replicates"),
-  check.input = TRUE,
-  period = NULL
+  run.input.checks = TRUE,
+  already.selected = NULL,
+  seed = NULL
 )
 }
 \arguments{
@@ -23,19 +24,22 @@ rescaled.bootstrap(
 
 \item{strata}{string specifying the column name in \code{dat} that is used for
 stratification. For multistage sampling multiple column names can be
-specified by \code{strata=c("strata1>strata2>strata3")}. See Details for more
+specified by \code{strata=c("strata1","strata2","strata3")} or
+\code{strata=c("strata1>strata2>strata3")}. See Details for more
 information.}
 
 \item{cluster}{string specifying the column name in \code{dat} that is used for
 clustering. For instance given a household sample the column containing
 the household ID should be supplied.
 For multistage sampling multiple column names can be specified
-by \code{cluster=c("cluster1>cluster2>cluster3")}.
+by \code{cluster=c("cluster1","cluster2","cluster3")} or
+\code{cluster=c("cluster1>cluster2>cluster3")}.
 See Details for more information.}
 
 \item{fpc}{string specifying the column name in \code{dat} that contains the
 number of PSUs at the first stage. For multistage sampling the number of
-PSUs at each stage must be specified by \code{strata=c("fpc1>fpc2>fpc3")}.}
+PSUs at each stage must be specified by \code{strata=c("fpc1","fpc2","fpc3")}
+or \code{strata=c("fpc1>fpc2>fpc3")}.}
 
 \item{single.PSU}{either "merge" or "mean" defining how single PSUs need to
 be dealt with. For \code{single.PSU="merge"} single PSUs at each stage are
@@ -44,18 +48,23 @@ multiple of those exist one will be select via random draw. For
 \code{single.PSU="mean"} single PSUs will get the mean over all bootstrap
 replicates at the stage which did not contain single PSUs.}
 
-\item{return.value}{either "data" or "replicates" specifying the return value
-of the function. For "data" the survey data is returned as class
-\code{data.table}, for "replicates" only the bootstrap replicates are returned
-as \code{data.table}.}
+\item{return.value}{either "data", "replicates" and/or "selection"
+specifying the return value of the function. For "data" the survey data is
+returned as class \code{data.table}, for "replicates" only the bootstrap replicates
+are returned as \code{data.table}. For "selection" list of data.tables with
+length of \code{length(strata)} is returned containing 1:\code{REP} 0-1 columns
+indicating if a PSU was selected for each sampling stage.}
 
-\item{check.input}{logical, if TRUE the input will be checked before applying
+\item{run.input.checks}{logical, if TRUE the input will be checked before applying
 the bootstrap procedure}
 
-\item{period}{optional character specifying the name of the column in \code{dat}
-containing he sample periods. This column must be a factor where the factor
-levels determine the order of the values in column \code{period}. See details for
-more information}
+\item{already.selected}{list of data.tables or \code{NULL} where each data.table contains
+columns in \code{cluster}, \code{strata} and additionally 1:\code{REP} columns containing
+0-1 values which indicate if a PSU was selected for each bootstrap replicate.
+Each of the data.tables corresponds to one of the sampling stages. First entry
+in the list corresponds to the first sampling stage and so on.}
+
+\item{seed}{integer specifying the seed for the random number generator.}
 }
 \value{
 returns the complete data set including the bootstrap replicates or
@@ -71,13 +80,17 @@ bootstrap for stratified multistage sampling, presented by Preston, J.
 For specifying multistage sampling designs the column names in
 \code{strata},\code{cluster} and \code{fpc} need to be seperated by ">".\cr
 For multistage sampling the strings are read from left to right meaning that
-the column name before the first ">" is taken as the column for
-stratification/clustering/number of PSUs at the first and the column after
+the first vector entry or column name before the first ">" is taken as the column for
+stratification/clustering/number of PSUs at the first and the last vector entry
+or column after
 the last ">" is taken as the column for stratification/clustering/number of
 PSUs at the last stage.
 If for some stages the sample was not stratified or clustered one must
-specify this by "1" or "I", e.g. \code{strata=c("strata1>I>strata3")} if there was
-no stratification at the second stage or \code{cluster=c("cluster1>cluster2>I")}
+specify this by "1" or "I", e.g. \code{strata=c("strata1","I","strata3")} or
+\code{strata=c("strata1>I>strata3")} if there was
+no stratification at the second stage or
+\code{cluster=c("cluster1","cluster2","I")} respectively
+\code{cluster=c("cluster1>cluster2>I")}
 if there were no clusters at the last stage.\cr
 The number of PSUs at each stage is not calculated internally and must be
 specified for any sampling design.
@@ -85,15 +98,13 @@ For single stage sampling using stratification this can usually be done by
 adding over all sample weights of each PSU by each strata-code.\cr
 Spaces in each of the strings will be removed, so if column names contain
 spaces they should be renamed before calling this procedure!\cr
-If \code{period} is supplied the sampling of bootstrap replicates for each period
-will follow the method proposed by Preston, J. (2009) with the condition
-that records drawn at the previous period are automatically selected.
-This can result in more than halve of the records selected
-for a specific \code{period}, \code{strata} and \code{cluster}. In that case
-records will be de-selected such that \code{floor(n/2)} records, with \code{n} as the
-total number of records, are selected for each \code{period}, \code{strata} and \code{cluster}.
-If \code{NULL} (the default), it is assumed that all observations belong#
-to the same period and this parameter will be ignored.
+If \code{already.selected} is supplied the sampling of bootstrap replicates
+considers if speficif PSUs have already been selected by a previous survey wave.
+For a specific \code{strata} and \code{cluster} this could lead to more than \code{floor(n/2)}
+records selected. In that case records will be de-selected such that \code{floor(n/2)} records,
+with \code{n} as the total number of records, are selected for each
+\code{strata} and \code{cluster}. This parameter ist mostly used by \link{draw.bootstrap} in
+order to consider the rotation of the sampling units over time.
 }
 \examples{
 

@@ -408,9 +408,11 @@ recalib <- function(
   }
 
 
-  dat[, c("hidfactor", "FirstPersonInHousehold_") := NULL]
+  dat[, c("hidfactor", "FirstPersonInHousehold_", removeCols) := NULL]
 
   # recode vars back to either integer of character
+  vars.class <- vars.class[!vars %in% removeCols]
+  vars <- vars[!vars %in% removeCols]
   for (i in seq_along(vars.class)) {
     if (vars.class[i] %in% c("integer", "numeric")) {
       dt.eval("dat[,", vars[i], ":=as.numeric(as.character(", vars[i], "))]")
