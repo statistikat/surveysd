@@ -179,10 +179,15 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
       by=c(paste0("combined_factors_", i))]
   
     # adjust weights to hit target 
-    # weights might shift due applying boundary limits in numerialWeighting()
+    # weights might shift due  to applying boundary limits in numerialWeighting()
+    
     dat[!is.na(value) & value!=0, fVariableForCalibrationIPF := fVariableForCalibrationIPF*value/sum(fVariableForCalibrationIPF*get(numericalWeightingVar)*get(variableKeepingTheCalibWeight)), by=c(paste0("combined_factors_", i))]
     
-    # result after applying factor 
+    # # do this only if wValue is bigger than target
+    # # dat[!is.na(value) & value!=0, value_too_large := value < sum(fVariableForCalibrationIPF*get(numericalWeightingVar)*get(variableKeepingTheCalibWeight)), by=c(paste0("combined_factors_", i))]
+    # # dat[!is.na(value) & value!=0 & value_too_large == TRUE, fVariableForCalibrationIPF := fVariableForCalibrationIPF*value/sum(fVariableForCalibrationIPF*get(numericalWeightingVar)*get(variableKeepingTheCalibWeight)), by=c(paste0("combined_factors_", i))]
+    
+    # result after applying factor
     # dat[!is.na(value) & value!=0, wValue:=sum(fVariableForCalibrationIPF*get(variableKeepingTheCalibWeight)*get(numericalWeightingVar)), by = c(paste0("combined_factors_", i))]
   } else {
     # categorical variable to be calibrated
