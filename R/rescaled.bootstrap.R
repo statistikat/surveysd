@@ -101,7 +101,7 @@
 #'
 #'
 
-#TEST EILEEN
+#TEST 2 EILEEN
 
 rescaled.bootstrap <- function(
   dat, REP = 1000, strata = "DB050>1", cluster = "DB060>DB030", fpc =
