@@ -104,13 +104,20 @@
 #TEST 2 EILEEN
 
 rescaled.bootstrap <- function(
-  dat, REP = 1000, strata = "DB050>1", cluster = "DB060>DB030", fpc =
-    "N.cluster>N.households", single.PSU = c("merge", "mean"), return.value =
-    c("data", "replicates"), run.input.checks = TRUE, 
-  already.selected = NULL, seed = NULL) {
+  dat, 
+  REP = 1000, 
+  strata = "DB050>1",   # strata = spalten die Gruppen definieren die sicher abgedeckt werden sollen -> resampling innerhalb der Schicht (Subgruppen repräsentieren)
+  cluster = "DB060>DB030",   # cluster = spalten mit natürlichen Gruppen -> resampling ganze cluster (Gruppeneffekte identifizieren)
+  fpc = "N.cluster>N.households", # finite population correction: Korrigiert Varianz wenn Stichprobe groß im Verhältnis zur GG ist (Spalten mit der Gesamtzahl der möglichen Gruppen) -> Ansonsten wird Varianz zu groß geschätzt. Ohne FCP wird Varianz so geschätzt als gäbe es unendlich viele Schulen
+  single.PSU = c("merge", "mean"), # was tun wenn eine Scicht nur eine Gruppe hat ? mit anderer Schicht zusammenführen vs. mean aus andere bootstrap Stichproben nehmen
+  return.value = c("data", "replicates"), # was am ende rauskommt
+  run.input.checks = TRUE, # prüft vorab ob alle Eingaben korrekt sind
+  already.selected = NULL, # falls man schon eine bootstrap Auswahl hat
+  seed = NULL) {
+  
 
   InitialOrder <- N <- SINGLE_BOOT_FLAG <- SINGLE_BOOT_FLAG_FINAL <- f <-
-    n_prev <- n_draw_prev <- sum_prev <- n_draw <- NULL
+    n_prev <- n_draw_prev <- sum_prev <- n_draw <- NULL  # diese ganzen variablen als Null deklarieren
 
   dat <- copy(dat)
   
@@ -133,12 +140,13 @@ rescaled.bootstrap <- function(
   set.seed
 
   # prepare input
-  removeCols <- c()
+  removeCols <- c()  #temporär
   if (is.null(cluster)) {
     cluster <- generateRandomName(20, colnames(dat))
     removeCols <- c(removeCols, cluster)
     dat[, c(cluster) := 1:.N]
   }
+  # wenn keine cluster/strata explizit angegeben werden dann funktioniert der algo trotzdem auch wenn der Benutzer keine cluster/strata definiert hat
   if (is.null(strata)) {
     strata <- generateRandomName(20, colnames(dat))
     removeCols <- c(removeCols, strata)
@@ -150,10 +158,12 @@ rescaled.bootstrap <- function(
   check.input(strata, input.name = "strata", input.type="character")
   check.input(fpc, input.name = "fpc", input.type="character")
   check.input(cluster, input.name = "cluster", input.type="character")
+  # -> überprüft ob Parameter den richtigen Typ haben
   if(length(strata)==1 && strata %like% ">"){
     strata <- unlist(strsplit(strata, ">"))
     strata <- gsub("\\s", "", strata)
-  }
+  } # wenn strata ein element hat UND es ein > enthält -> trenne zeichenkette bei >, entferne Leerzeichen
+  
   if(length(cluster)==1 && cluster %like% ">"){
     cluster <- unlist(strsplit(cluster, ">"))
     cluster <- gsub("\\s", "", cluster)
@@ -163,7 +173,7 @@ rescaled.bootstrap <- function(
     fpc <- gsub("\\s", "", fpc)
   }
   
-  single.PSU <- single.PSU[1]
+  single.PSU <- single.PSU[1]  #falls ausversehen mehrere werte übergeben wurden nimm nur den ersten
   # return.value <- return.value[1]
 
   # continue input checks
@@ -225,7 +235,7 @@ rescaled.bootstrap <- function(
   }
 
   # check if variable f, N, n are in data.table
-  overwrite.names <- c("f", "N", "n", "n_prev", "n_draw", "n_draw_prev")
+  overwrite.names <- c("f", "N", "n", "n_prev", "n_draw", "n_draw_prev") #namenskonflikte vermeiden, ursprüngliche Daten werden umbenannt in mit Präfix "ORIGINAL_"
   overwrite.names <- overwrite.names[overwrite.names %in% colnames(dat)]
   if (length(overwrite.names) > 0) {
     overwrite.names.new <- paste0("ORIGINAL_", overwrite.names)
@@ -254,23 +264,23 @@ rescaled.bootstrap <- function(
 
   delta_selection <- list()
   
-  for (i in 1:stages) {
+  for (i in 1:stages) {  # iteriere über jede stufe im mehrstufigen Prozess
     # iterate over sampling stages
     # select units in each sampling stage and
     # calucalte factors to finally generate
     # boostrap replicates
     
     # define by.val
-    by.val <- strata[i]
+    by.val <- strata[i]  # by.val bestimmt die Gruppierung für die aktuelle Stufe
     if (i > 1) {
-      by.val <- c(strata[1:(i - 1)], cluster[1:(i - 1)], strata[i])
+      by.val <- c(strata[1:(i - 1)], cluster[1:(i - 1)], strata[i]) # kombiniert strata der aktuellen und vorherigen stufe
     }
-    by.val <- by.val[!by.val %in% c("1", "I")]
+    by.val <- by.val[!by.val %in% c("1", "I")] #platzhater herausfiltern
     
     # define cluster value
     clust.val <- cluster[i]
     if (clust.val %in% c("1", "I")) {
-      clust.val <- paste0("ID_help_", i)
+      clust.val <- paste0("ID_help_", i)  # erstellt hilfsids wenn kein echtes Cluster definiert ist
       dat[, c(clust.val) := .I, by = c(by.val)]
     }
     # check of fpc[i] is well defined
