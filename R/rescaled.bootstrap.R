@@ -280,13 +280,13 @@ rescaled.bootstrap <- function(
     # define cluster value
     clust.val <- cluster[i]
     if (clust.val %in% c("1", "I")) {
-      clust.val <- paste0("ID_help_", i)  # erstellt hilfsids wenn kein echtes Cluster definiert ist
+      clust.val <- paste0("ID_help_", i)  # erstellt hilfsids wenn kein echtes Cluster definiert ist, Sampling erfolgt auf Individualebene (weil immer eine Cluster-Definition benötigt wird)
       dat[, c(clust.val) := .I, by = c(by.val)]
     }
     # check of fpc[i] is well defined
     # fpc[i] can not have different values per each by.val
     check.fpc <- dat[,uniqueN(fpc_i), by=c(by.val), 
-                     env = list(fpc_i = fpc[i])]
+                     env = list(fpc_i = fpc[i])]  # prüfen ob fpc werte innerhalb jeder stratum-Cluster-kombination konsistent sind
     check.fpc <- check.fpc[V1>1]
     if (nrow(check.fpc) > 0) {
       stop("values in ", fpc[i], " do vary in some strata-cluster ",
