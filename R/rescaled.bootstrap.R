@@ -275,7 +275,7 @@ rescaled.bootstrap <- function(
     if (i > 1) {
       by.val <- c(strata[1:(i - 1)], cluster[1:(i - 1)], strata[i]) # kombiniert strata der aktuellen und vorherigen stufe
     }
-    by.val <- by.val[!by.val %in% c("1", "I")] #platzhater herausfiltern
+    by.val <- by.val[!by.val %in% c("1", "I")] # platzhater herausfiltern
     
     # define cluster value
     clust.val <- cluster[i]
@@ -293,7 +293,7 @@ rescaled.bootstrap <- function(
            "combinations at sampling stage ", i)
     }
     
-    singles <- dat[fpc_i>1, sum(!duplicated(clust.val)), by=c(by.val),
+    singles <- dat[fpc_i>1, sum(!duplicated(clust.val)), by=c(by.val),   # findet gruppen in denen nur eine einzige psu vorhanden ist -> das ist problematisch für bootstrap (mit nur einem element kann nicht geresamplet werden)
                    env = list(fpc_i = fpc[i],
                               clust.val = clust.val)]
     singles <- singles[V1==1]
@@ -310,6 +310,10 @@ rescaled.bootstrap <- function(
         higher.stages <- by.val
       }
       singles <- unique(subset(singles, select = higher.stages))
+      
+      
+      
+      # wenn merge angegeben wird: Diese Gruppen werden mit einer ähnlichen (übergeordneter Struktur, z.B. Region) zusammengelegt, sodass mehr als 1 PSU entsteht.
       if (single.PSU == "merge") {
         # save original PSU coding and fpc values to replace changed values
         #   bevore returning the data.table
@@ -371,7 +375,10 @@ rescaled.bootstrap <- function(
                        fpc.i_ADD = fpc.i_ADD)]
         
         dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
-      } else if (single.PSU == "mean") {
+      } 
+      
+      # wenn bei ingle = mean: Markiert die betroffenen Beobachtungen mit einem SINGLE_BOOT_FLAG, um später im Bootstrap-Prozess einfach den Durchschnitt anderer Replicates zu nehmen.
+      else if (single.PSU == "mean") {
         # if single.PSU="mean" flag the observation as well as the all the
         #   observations in the higher group
         singles[, SINGLE_BOOT_FLAG := paste(higher.stages, .GRP, sep = "-"),
@@ -386,7 +393,9 @@ rescaled.bootstrap <- function(
         }
         dat[, SINGLE_BOOT_FLAG := NULL]
         
-      } else {
+      } 
+      
+      else {
         message("Single PSUs detected at the following stages:\n")
         dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
                          env = list(clust.val = clust.val)]
@@ -395,43 +404,55 @@ rescaled.bootstrap <- function(
     }
     
     # get Stage
-    if (i == 1) {
-      dati <- dat[,.(N=fpc_i[1], clust.val = unique(clust.val),
-                     f = 1, n_prev = 1, n_draw_prev = 1, sum_prev = 1),
+    if (i == 1) { # dati: enthält alle PSU (PSU = die ursprünglichen Cluster oder Gruppen in einer komplexen Stichprobe) mit zugehörigen FPC 
+      dati <- dat[,.(N=fpc_i[1], # Populationsgröße in dieser Gruppe
+                     clust.val = unique(clust.val), # Cluster-ID (jede PSU)
+                     f = 1, # Samplingfaktor (Startwert)
+                     n_prev = 1, n_draw_prev = 1, # Startwerte für vorige Stufe (irrelevant in Stufe 1)
+                     sum_prev = 1),  # Zusatz für spätere Berechnungen (wird unten nicht verwendet)
                   by = c(by.val),
                   env = list(fpc_i = fpc[i],
                              clust.val = clust.val)]
-    } else {
-      dati <- dat[,.(N=fpc_i[1], clust.val = unique(clust.val),
-                     f = f[1], n_prev = n_prev[1], n_draw_prev = n_draw_prev,
-                     sum_prev = sum_prev[1]),
+      
+    } else { # In Stufe 2 oder höher: Jetzt werden die Infos aus vorheriger Ziehung übernommen
+      dati <- dat[,.(N=fpc_i[1], 
+                     clust.val = unique(clust.val),
+                     f = f[1], # Samplingfaktor aus vorheriger Stufe
+                     n_prev = n_prev[1], # gezogene Anzahl auf vorheriger Stufe
+                     n_draw_prev = n_draw_prev, # gezogene PSU vorher
+                     sum_prev = sum_prev[1]), # vorherige Summenkomponente (für Varianzformeln)
                   by = c(by.val),
                   env = list(fpc_i = fpc[i],
                              clust.val = clust.val)]
     }
     
-    deltai <- paste0("delta_", i, "_", 1:REP)
-    dati[, n := .N, by = c(by.val)]
+    # dati = Tabelle mit einer Zeile pro PSU, inklusive N, clust.val, f (sampling faktor), n_prev (Zahl gezogener PSU in vorheriger Stufe), n_draw_prev (gezogene PSU in vorheriger Stufe), sum_prev (Hilfswert), n (Anzahl PSU in Gruppe), n_draw (Anzahl PSU die neu gezogen werden sollen)
+    
+    deltai <- paste0("delta_", i, "_", 1:REP) #erstellt eine Variable, die eine Liste von Namen für zukünftige Delta-Werte erstellt
+    dati[, n := .N, by = c(by.val)]  # n = Anzahl PSU 
+    
     # determin number of psu to be drawn
     # dati[, n_draw := select.nstar(
     #   n[1], N[1], f[1], n_prev[1], n_draw_prev[1], sum_prev = NULL,
     #   new.method = new.method), by = c(by.val)]
-    dati[,n_draw:=floor(n/2),by = c(by.val)]
     
-    if (nrow(dati[n_draw == 0]) > 0) {
+    dati[,n_draw:=floor(n/2),by = c(by.val)]  # Für jede Gruppe wird Anzahl gezogener PSUs berechnet
+                                              # n_draw= hälfte der vorhandenen PSU
+    
+    if (nrow(dati[n_draw == 0]) > 0) {  # wenn eine Gruppe kein PSu zum ziehen hat
       stop("Resampling 0 PSUs should not be possible! Please report bug in ",
            "https://github.com/statistikat/surveysd")
     }
     
     # do bootstrap for i-th stage
-    if(!is.null(already.selected)){
+    if(!is.null(already.selected)){ # prüfe ob in der aktuellen stufe i schon gezogene PSUs vorhanden sind
       # if already.selected was supplied consider already selected units
       dati_selected <- already.selected[[i]]
       dati[dati_selected,c(deltai):=mget(deltai),on=c(by.val,clust.val)]
       
-      dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){
+      dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){ # funktion OHNE zurücklegen um bootstrap stichprobe zu ziehen -> für jedes deltai (sammlung von delta werten)
         draw.without.replacement(n[1],n_draw[1],delta=delta)
-      },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)]
+      },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)] # überprüfe ob die Gesamtzahl der gezogenen PSUs für jede Gruppe mit dem erwarteten Wert übereinstimmt
       
       dati_check <- dati[,lapply(.SD,function(z,n_draw){
         sum(z)==n_draw[1]
@@ -441,25 +462,25 @@ rescaled.bootstrap <- function(
         stop("Wrong number of units selected! Please report bug in ",
              "https://github.com/statistikat/surveysd")
       }
-    }else{
+    }else{ # wenn es noch keine PSUs gibt -> einfacher bootstrap ohne Wiederholung
       # do simple sampling without replacement
       dati[, c(deltai) := as.data.table(
-        replicate(REP, draw.without.replacement(n[1], n_draw[1]),
+        replicate(REP, draw.without.replacement(n[1], n_draw[1]), # Funktion "replicate" wiederholt den Ziehvorgang REP mal
                   simplify = FALSE)),
-        by = c(by.val)]
+        by = c(by.val)] #by.val: für jede Gruppe wird neue Zufallsstichprobe durchgeführt
     }
     
     
     # merge with data
-    if(i>1){
-      dat[,c("f","n_prev","n_draw_prev","sum_prev"):=NULL]
+    if(i>1){ # wenn nicht erste stufe
+      dat[,c("f","n_prev","n_draw_prev","sum_prev"):=NULL]  # alte Variablen aus dat entfernen
     }
-    dat <- merge(dat,dati,by=c(by.val,clust.val))
-    setorder(dat,InitialOrder)
+    dat <- merge(dat,dati,by=c(by.val,clust.val)) # dann basierend auf variablen by.val und clust.val die tabelle dati und dat zusammenführen
+    setorder(dat,InitialOrder) # Reihenfolge ist initial order
     
     # prepare output for return.value %in% "selection"
     delta_selection <- c(delta_selection,
-                         list(dat[, .SD, .SDcols = c(cluster, strata, deltai)]))
+                         list(dat[, .SD, .SDcols = c(cluster, strata, deltai)]))  # enthält  für jede Stufe die Informationen zu den gezogenen PSUs und deren Cluster
     
     # extract information from data.table and remove again from data table
     # (less memory intensive)
