@@ -493,13 +493,13 @@ rescaled.bootstrap <- function(
     # dat[, sum_prev := sum_prev +
     #       (sqrt(n_draw * f * (1 - n / N) / (n - n_draw)) *
     #          sqrt(n_prev / n_draw_prev) * (n / n_draw - 1))]
-    dat[, f := n / N * f]
+    dat[, f := n / N * f]  # aktualisiere Variablen für die nächste Stufe
     dat[, n_prev := n * n_prev]
     dat[, n_draw_prev := n_draw * n_draw_prev]
     
-    dat[, c("n", "N", deltai, "n_draw") := NULL]
+    dat[, c("n", "N", deltai, "n_draw") := NULL] # entfernen
     
-    rm(dati);gc()
+    rm(dati);gc() # entfernen,Speicher durch den Garbage Collector bereinigen
   }
   # remove names
   dat[,c("f","n_prev","n_draw_prev","sum_prev"):=NULL]
@@ -508,12 +508,12 @@ rescaled.bootstrap <- function(
   names(delta_selection) <- paste0("SamplingStage",1:stages)
   
   # calculate bootstrap replicate values
-  bootRep <- paste0("bootRep", 1:REP)
-  dat[, c(bootRep) := as.data.table(calc.replicate(
-    n = n.calc, N = N.calc, n_draw = n_draw.calc, delta = delta.calc))]
+  bootRep <- paste0("bootRep", 1:REP) # für jede bootstrap wiederholung wird neue variable erstellt
+  dat[, c(bootRep) := as.data.table(calc.replicate( # rufe function calc.replicate auf -> berechne bootstrap replicate für jede Wiederholung
+    n = n.calc, N = N.calc, n_draw = n_draw.calc, delta = delta.calc))] 
 
   if (single.PSU == "mean") {
-    dat[!is.na(SINGLE_BOOT_FLAG_FINAL), c(bootRep) := lapply(
+    dat[!is.na(SINGLE_BOOT_FLAG_FINAL), c(bootRep) := lapply(  # wenn single.PSU mean ist und SINGLE_BOOT_FLAG_FINAL nicht na -> durchschnitt über alle bootstrap wiederholungen
       .SD,
       function(z) {
         mean(z, na.rm = TRUE)
@@ -521,7 +521,7 @@ rescaled.bootstrap <- function(
       ), by = SINGLE_BOOT_FLAG_FINAL, .SDcols = c(bootRep)]
   }
 
-  setkey(dat, InitialOrder)
+  setkey(dat, InitialOrder)  # reihenfolge der daten wird widerhergestellt
   if (length(removeCols) > 0) {
     dat[, c(removeCols) := NULL]
   }
@@ -529,7 +529,7 @@ rescaled.bootstrap <- function(
   if ("data" %in% return.value) {
     # get original values for PSUs and fpc - if singles PSUs have been detected
     #   and merged
-    if (single.PSU == "merge") {
+    if (single.PSU == "merge") {  # wenn merge: prüfe ob Spaltennamen vorhanden sind, die auf _ORIGINALSINGLES enden. Diese Spalten werden entfernt, und die ursprünglichen Namen werden wiederhergestellt, indem _ORIGINALSINGLES entfernt wird.
       c.names <- colnames(dat)
       c.names <- c.names[grepl("_ORIGINALSINGLES", c.names)]
       if (length(c.names) > 0) {
@@ -538,18 +538,18 @@ rescaled.bootstrap <- function(
         setnames(dat, c(c.names), drop.names)
       }
     }
-    dat[, c("InitialOrder") := NULL]
+    dat[, c("InitialOrder") := NULL]  # initial order entfernen
     # get original col values
     if (length(overwrite.names) > 0) {
       setnames(dat, overwrite.names.new, overwrite.names)
     }
 
     output_bootstrap <- list(data = dat)
-  } else if ("replicates" %in% return.value) {
-    output_bootstrap <- list(replicates = dat[, mget(bootRep)])
+  } else if ("replicates" %in% return.value) { #Nur die Bootstrap-Replikate (die Spalten bootRep1, bootRep2, ..., bootRep[REP]) werden zurückgegeben.
+    output_bootstrap <- list(replicates = dat[, mget(bootRep)]) 
   }
   
-  if("selection" %in% return.value){
+  if("selection" %in% return.value){ # Die delta_selection-Liste (die die gezogenen PSUs enthält) wird zur Ausgabe hinzugefügt.
     if(length(return.value)>1){
       output_bootstrap <- c(output_bootstrap, list(selection = delta_selection))
     }else{
@@ -591,18 +591,23 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
   return(n_draw)
 }
 
-draw.without.replacement <- function(n, n_draw, delta = NULL) {
+
+
+draw.without.replacement <- function(n, n_draw, delta = NULL) { # Stichprobenziehung OHNE zurücklegen
+    # n = Geamtpopulation
+    # n_draw = Ziehung einer bestimmten Anzahl von Einheiten
+  
   
   # if no units have been selected prior
   if(is.null(delta)){
-    delta <- rep(c(1.0, 0.0), c(n_draw, n - n_draw))
+    delta <- rep(c(1.0, 0.0), c(n_draw, n - n_draw)) # wenn delta nicht übergeben wird (es wurden noch keine Einheiten erstellt), wird er hier erstellt. Alle Einheiten werden mit whkeit von 1.0 oder o.o ausgewählt
     if (length(delta) > 1) {
       delta <- sample(delta)
     }
   }else{
     # if units have already been selected
-    n_selected <- sum(delta,na.rm=TRUE)
-    delta_new_unit <- is.na(delta)
+    n_selected <- sum(delta,na.rm=TRUE)  # wenn delta existiert dh. bereits Einheiten ausgewählt wurden wird delta angepasst: n_selected = Anzahl bisher ausgewählten Einheiten
+    delta_new_unit <- is.na(delta) # TRUE für nicht gezogene Einheiten, FALSE für bereits gezogene Einheiten
     
     # check if only 1 unit needs to be selected
     if(sum(delta_new_unit)==1){
@@ -610,10 +615,10 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {
       # so that resulting element will have a selection probability
       if(n_selected<n_draw){
         # set one entry in delta==0 to NA
-        delta <- set.random2NA(delta,value2NA = 0)
+        delta <- set.random2NA(delta,value2NA = 0)  # nicht gezogene Einheit (0) wird auf NA gesetzt
       }else{
         # set one entry in delta==1 to NA
-        delta <- set.random2NA(delta,value2NA = 1)
+        delta <- set.random2NA(delta,value2NA = 1) # bereits gezogene Einheit (1) word auf NA gesetzt
       }
       
       n_selected <- sum(delta,na.rm=TRUE)
@@ -627,10 +632,10 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {
       # due to already selected units
       # set some units with delta==1 to 0
       # such that entries with delta NA have selection probability >0
-      add1 <- as.numeric(sum(delta_new_unit)>1)
+      add1 <- as.numeric(sum(delta_new_unit)>1) # Wenn noch mehr Einheiten ausgewählt werden müssen, als aktuell als NA markiert sind, werden einige der 0-Werte in delta zufällig zu 1 geändert,
       nChanges <- n_selected - n_draw + add1
       
-      if(nChanges == sum(delta_new_unit==FALSE)){
+      if(nChanges == sum(delta_new_unit==FALSE)){ 
         delta <- set.random2NA(delta, value2NA=1,
                                      nChanges = n_selected - n_draw + add1) 
       }else{
@@ -652,6 +657,9 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {
       n_selected <- sum(delta,na.rm=TRUE)
       delta_new_unit <- is.na(delta)
     }
+    # sicherstellen dass genau die Anzahl an Einheiten die benötigt wird in der Stichprobe sind
+      # Zu viele Einheiten: von "ausgewäht" zu "nicht ausgewählt"
+      # Wenn zu wenig: es werden weitere Einheiten aus denen, dei noch nicht ausgewählt wurden hinzugefügt
     
     n_draw <- n_draw - n_selected
     delta_rest <- rep(c(1.0, 0.0), c(n_draw, sum(delta_new_unit)-n_draw))
