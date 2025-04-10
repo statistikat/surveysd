@@ -105,6 +105,7 @@
 
 rescaled.bootstrap <- function(
   dat, 
+  method = c("Preston", "Rao-Wu"), # preston oder Rao-Wu
   REP = 1000, 
   strata = "DB050>1",   # strata = spalten die Gruppen definieren die sicher abgedeckt werden sollen -> resampling innerhalb der Schicht (Subgruppen repräsentieren)
   cluster = "DB060>DB030",   # cluster = spalten mit natürlichen Gruppen -> resampling ganze cluster (Gruppeneffekte identifizieren)
@@ -158,6 +159,7 @@ rescaled.bootstrap <- function(
   check.input(strata, input.name = "strata", input.type="character")
   check.input(fpc, input.name = "fpc", input.type="character")
   check.input(cluster, input.name = "cluster", input.type="character")
+
   # -> überprüft ob Parameter den richtigen Typ haben
   if(length(strata)==1 && strata %like% ">"){
     strata <- unlist(strsplit(strata, ">"))
@@ -182,6 +184,13 @@ rescaled.bootstrap <- function(
     # check REP
     check.input(REP, input.name = "REP", input.length=1, input.type="numeric",
                 decimal.possible = FALSE)
+    
+    # check method
+    if (!method %in% c("Preston", "Rao-Wu")) {     #****Rao-Wu
+      stop("method must be either 'Preston' or 'Rao-Wu'")
+    }
+    
+    method <- match.arg(method)
 
     # check design variables
     # check length of strata, cluster, fpc
@@ -250,17 +259,18 @@ rescaled.bootstrap <- function(
   }
 
   # set index for data to return dat in correct order
-  dat[, InitialOrder := .I]
+  dat[, InitialOrder := .I]  # neue spalte in dat mit Namen InitialOrder
 
   # calculate bootstrap replicates
-  stages <- length(strata)
+  stages <- length(strata) # Anzahl an Stufen basierend auf Strata (verschiedene Schichten)
   
   n <- nrow(dat)
   # define values for final calculation
-  n.calc <- matrix(0, nrow = n, ncol = stages)
-  N.calc <- matrix(0, nrow = n, ncol = stages)
-  n_draw.calc <- matrix(0, nrow = n, ncol = stages)
-  delta.calc <- array(0, dim = c(n, stages, REP))
+  n.calc <- matrix(0, nrow = n, ncol = stages) # n = Stichprobengröße
+  N.calc <- matrix(0, nrow = n, ncol = stages) #  N = Gesamtpopulation
+  n_draw.calc <- matrix(0, nrow = n, ncol = stages)  # n_draw = Ziehungszahlen in den verschiedenen Stufen
+  delta.calc <- array(0, dim = c(n, stages, REP)) # um Änderungen von delta über alle stufen und reps hinweg zu speichern
+  
 
   delta_selection <- list()
   
@@ -283,6 +293,7 @@ rescaled.bootstrap <- function(
       clust.val <- paste0("ID_help_", i)  # erstellt hilfsids wenn kein echtes Cluster definiert ist, Sampling erfolgt auf Individualebene (weil immer eine Cluster-Definition benötigt wird)
       dat[, c(clust.val) := .I, by = c(by.val)]
     }
+    
     # check of fpc[i] is well defined
     # fpc[i] can not have different values per each by.val
     check.fpc <- dat[,uniqueN(fpc_i), by=c(by.val), 
@@ -439,7 +450,7 @@ rescaled.bootstrap <- function(
     dati[,n_draw:=floor(n/2),by = c(by.val)]  # Für jede Gruppe wird Anzahl gezogener PSUs berechnet
                                               # n_draw= hälfte der vorhandenen PSU
     
-    if (nrow(dati[n_draw == 0]) > 0) {  # wenn eine Gruppe kein PSu zum ziehen hat
+    if (nrow(dati[n_draw == 0]) > 0) {  # wenn eine Gruppe kein PSU zum ziehen hat
       stop("Resampling 0 PSUs should not be possible! Please report bug in ",
            "https://github.com/statistikat/surveysd")
     }
@@ -451,7 +462,16 @@ rescaled.bootstrap <- function(
       dati[dati_selected,c(deltai):=mget(deltai),on=c(by.val,clust.val)]
       
       dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){ # funktion OHNE zurücklegen um bootstrap stichprobe zu ziehen -> für jedes deltai (sammlung von delta werten)
-        draw.without.replacement(n[1],n_draw[1],delta=delta)
+        
+        if (method == "Rao-Wu") {  # ***Rao-Wu
+          if (i == 1) {
+            draw.without.replacement(n[1], n_draw[1], delta = delta)
+          } else {
+            draw.with.replacement(n[1], n_draw[1]) # ***Rao-Wu
+          }
+        } else if (method == "Preston"){
+          draw.without.replacement(n[1],n_draw[1],delta=delta)
+        }
       },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)] # überprüfe ob die Gesamtzahl der gezogenen PSUs für jede Gruppe mit dem erwarteten Wert übereinstimmt
       
       dati_check <- dati[,lapply(.SD,function(z,n_draw){
@@ -464,10 +484,26 @@ rescaled.bootstrap <- function(
       }
     }else{ # wenn es noch keine PSUs gibt -> einfacher bootstrap ohne Wiederholung
       # do simple sampling without replacement
-      dati[, c(deltai) := as.data.table(
-        replicate(REP, draw.without.replacement(n[1], n_draw[1]), # Funktion "replicate" wiederholt den Ziehvorgang REP mal
-                  simplify = FALSE)),
-        by = c(by.val)] #by.val: für jede Gruppe wird neue Zufallsstichprobe durchgeführt
+      
+      # ***Rao-Wu
+        if (method == "Rao-Wu") {
+          if (i == 1) { 
+            dati[, c(deltai) := as.data.table( 
+              replicate(REP, draw.without.replacement(n[1], n_draw[1]), simplify = FALSE)
+            ), by = c(by.val)]
+          } else {
+            dati[, c(deltai) := as.data.table(
+              replicate(REP, draw.with.replacement(n[1], n_draw[1]), simplify = FALSE)
+            ), by = c(by.val)]
+          }
+        # ***Rao-Wu
+          
+        } else if (method == "Preston") {
+          dati[, c(deltai) := as.data.table(
+          replicate(REP, draw.without.replacement(n[1], n_draw[1]), # Funktion "replicate" wiederholt den Ziehvorgang REP mal
+                    simplify = FALSE)),
+          by = c(by.val)]
+        }
     }
     
     
@@ -489,6 +525,14 @@ rescaled.bootstrap <- function(
     N.calc[, i] <- dat[, N]
     n_draw.calc[, i] <- dat[, n_draw]
     delta.calc[, i, ] <- as.matrix(dat[, mget(deltai)])
+    
+    if(method == "Rao-Wu") {  # ****Rao_Wu
+      # Rao-Wu rescaling factor
+      dat[, f := sqrt((N - n)/(N - 1)) * (n_draw/n - 1) + 1] # ****Rao_Wu
+    } else { # ****Rao_Wu
+      # Original Preston method
+      dat[, f := n_draw/n] # ****Rao_Wu
+    } # ****Rao_Wu
     
     # dat[, sum_prev := sum_prev +
     #       (sqrt(n_draw * f * (1 - n / N) / (n - n_draw)) *
@@ -564,9 +608,20 @@ rescaled.bootstrap <- function(
   return(output_bootstrap)
 }
 
+
+
+
+
+
+
+
+
+
+
+#############################################################################################################################################################
+
 select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
                          sum_prev = NULL, new.method) {
-
   if (n == 1) {
     # if only a single unit in strata
     # return missing
@@ -588,14 +643,14 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
     }
   }
 
-  return(n_draw)
+  return(n_draw) # n_draw = Grüße der Unterstichprobe
 }
 
 
 
 draw.without.replacement <- function(n, n_draw, delta = NULL) { # Stichprobenziehung OHNE zurücklegen
     # n = Geamtpopulation
-    # n_draw = Ziehung einer bestimmten Anzahl von Einheiten
+    # n_draw = Ziehung einer bestimmten Anzahl von Einheiten (n_draw)
   
   
   # if no units have been selected prior
@@ -672,6 +727,51 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) { # Stichprobenzie
   return(delta)
 }
 
+
+draw.with.replacement <- function(n, n_draw, delta) { 
+  # Funktion für Stichprobenziehung MIT Zurücklegen nach dem Rao-Wu-Verfahren
+  # Argumente:
+  # n = Gesamtpopulation
+  # n_draw = Anzahl der zu ziehenden Einheiten
+  # delta = aktueller Status, welche Einheiten ausgewählt wurden (1 = ausgewählt, 0 = nicht ausgewählt)
+  
+  # Anzahl der bereits ausgewählten Einheiten
+  n_selected <- sum(delta, na.rm = TRUE)
+  
+  # Wenn noch nicht genügend Einheiten ausgewählt wurden:
+  if (n_selected < n_draw) {
+    # Berechnung, wie viele zusätzliche Einheiten benötigt werden
+    n_needed <- n_draw - n_selected
+    
+    # Zufällige Ziehung MIT Zurücklegen für die zusätzlichen Einheiten
+    additional_draws <- sample(1:n, size = n_needed, replace = TRUE)
+    
+    # Aktualisiere delta: Setze die gezogenen Einheiten auf 1
+    for (i in additional_draws) {
+      delta[i] <- 1
+    }
+  }
+  # Wenn mehr Einheiten ausgewählt sind, als benötigt:
+  if (n_selected > n_draw) {
+    # Anzahl der überschüssigen Einheiten
+    over_selected <- n_selected - n_draw
+    
+    # Reduziere die überschüssigen Einheiten mithilfe von change.random.value
+    delta <- change.random.value(delta, changeVal = 1, nChanges = over_selected)
+  }
+  
+  # Falls einige Einheiten auf NA gesetzt werden sollen:
+  if (any(is.na(delta))) {
+    # Setze zufällig einige Werte auf NA, falls nötig
+    delta <- set.random2NA(delta, value2NA = 0, nChanges = 1)
+  }
+  
+  return(delta)
+}
+
+
+
+
 change.random.value <- function(delta,changeVal=0,nChanges=1){
   
   changeVal2 <- fifelse(changeVal==0,1,0)
@@ -682,6 +782,7 @@ change.random.value <- function(delta,changeVal=0,nChanges=1){
   delta[set2NA] <- changeVal2
   return(delta)
 }
+
 set.random2NA <- function(delta,value2NA=0,nChanges=1){
   
   set2NA <- which(delta==value2NA & !is.na(delta))
@@ -692,40 +793,77 @@ set.random2NA <- function(delta,value2NA=0,nChanges=1){
   return(delta)
 }
 
-calc.replicate <- function(n, N, n_draw, delta) {
-  p <- ncol(n)
+calc.replicate <- function(n, N, n_draw, delta, r_hi_star) {
+  p <- ncol(n)  #  Anzahl der Spalten in der Matrix n,
   # n_draw <- trunc(n/2)
   # n_draw <- floor(n/(2-rowCumprods(n/N))-1)
   # n_draw[n_draw<1] <- 1
   dimdelta <- dim(delta)
   for (i in 1:p) {
-    if (i == 1) {
-      lambda <- sqrt(n_draw[, 1] *
-                       (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1]))
-      rep_out <- 1 - lambda + lambda * n[, i] / n_draw[, i] * delta[, i, ]
-    } else if (i == 2) {
-      lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
-      lambda <- sqrt((n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
-      rep_out <- rep_out + lambda *
-        (sqrt(n[, i - 1] / n_draw[, i - 1]) * delta[, i - 1, ]) *
-        (n[, i] / n_draw[, i] * delta[, i, ] - 1)
-    } else {
-      lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
-      lambda <- sqrt(rowProds(n[, 1:(i - 1)] / N[, 1:(i - 1)]) *
-                       n_draw[, i] * lambda)
-      prod_val <- matrix(0, ncol = dimdelta[3], nrow = dimdelta[1])
-      for (r in 1:dimdelta[3]) {
-        prod_val[, r] <- rowProds(sqrt(n[, 1:(i - 1)] / n_draw[, 1:(i - 1)]) *
-                                    delta[, 1:(i - 1), r])
+    if (method == "Preston") {
+      m_h <- 
+      if (i == 1) { # 
+        lambda <- sqrt(n_draw[, 1] *
+                         (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1]))
+        rep_out <- 1 - lambda + lambda * n[, i] / n_draw[, i] * delta[, i, ] # rep_out ist das Ergebnis der Berechnung für die Replikate -> Gewichtung der delta-Werte für den ersten Schritt.
+      } else if (i == 2) {
+        lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
+        lambda <- sqrt((n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
+        rep_out <- rep_out + lambda *                                        # rep_out wird dann um die Berechnung für die zweite Stufe ergänzt, wobei auch die Abweichungen von der ersten Stufe (delta[, i - 1, ]) berücksichtigt werden.
+          (sqrt(n[, i - 1] / n_draw[, i - 1]) * delta[, i - 1, ]) *
+          (n[, i] / n_draw[, i] * delta[, i, ] - 1)
+      } else {
+        lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
+        lambda <- sqrt(rowProds(n[, 1:(i - 1)] / N[, 1:(i - 1)]) *
+                         n_draw[, i] * lambda)
+        prod_val <- matrix(0, ncol = dimdelta[3], nrow = dimdelta[1])
+        for (r in 1:dimdelta[3]) {
+          prod_val[, r] <- rowProds(sqrt(n[, 1:(i - 1)] / n_draw[, 1:(i - 1)]) *
+                                      delta[, 1:(i - 1), r])
+        }
+        # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/
+        #   n_draw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/n_draw[,i]*delta[,i,]-1)
+        rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] *      # Schließlich wird rep_out für jede zusätzliche Stufe unter Berücksichtigung der vorherigen Stufen aktualisiert.
+                                                    delta[, i, ] - 1)
       }
-      # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/
-      #   n_draw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/n_draw[,i]*delta[,i,]-1)
-      rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] *
-                                                  delta[, i, ] - 1)
+    } else if (method == "Rao-Wu") {
+      if (i == 1) {
+        # Für den ersten Schritt (FPC-Korrektur)
+        n_h <- n[, i]
+        m_h <- n_h - 1 # m_h = n_h - 1 # Anzahl gezogener PSUs
+        fpc <- sqrt((N[, i] - n[, i]) / (N[, i] - 1))
+        lambda <- sqrt(m[, 1] * (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1]))
+        rep_out <- (1 - lambda + lambda * n[, i] / n_draw[, i] * r_hi_star ) * delta[, i, ]
+        
+        # FPC-Anpassung (Finite Population Correction)
+        N.calc <- N[, 1] * (1 - n[, 1] / N[, 1])  # FPC-Korrektur für den ersten Schritt
+      } else if (i == 2) {
+        lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
+        lambda <- sqrt((n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
+        rep_out <- rep_out + lambda * (sqrt(n[, i - 1] / n_draw[, i - 1]) * delta[, i - 1, ]) *
+          (n[, i] / n_draw[, i] * delta[, i, ] - 1)
+        
+      } else {
+        lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
+        lambda <- sqrt(rowProds(n[, 1:(i - 1)] / N[, 1:(i - 1)]) * n_draw[, i] * lambda)
+        prod_val <- matrix(0, ncol = dimdelta[3], nrow = dimdelta[1])
+        for (r in 1:dimdelta[3]) {
+          prod_val[, r] <- rowProds(sqrt(n[, 1:(i - 1)] / n_draw[, 1:(i - 1)]) * delta[, 1:(i - 1), r])
+        }
+        rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] * delta[, i, ] - 1)
+      }
+      
+      # Für Rao-Wu sind zusätzliche Korrekturen nötig, um Cluster-Effekte zu berücksichtigen
+      # Beispiel: Cluster-Effekte hier addieren
+      cluster_factor <- 1  # Hier könnte eine spezifische Berechnung des Cluster-Faktors nötig sein
+      rep_out <- rep_out * cluster_factor  # Cluster-Korrektur
     }
   }
   return(rep_out)
 }
+
+
+
 
 next_minimum <- function(N, by) {
   N_notOne <- N != 1
