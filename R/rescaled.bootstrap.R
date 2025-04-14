@@ -263,6 +263,7 @@ rescaled.bootstrap <- function(
 
   # calculate bootstrap replicates
   stages <- length(strata) # Anzahl an Stufen basierend auf Strata (verschiedene Schichten)
+  print(paste("stages: ", stages))
   
   n <- nrow(dat)
   # define values for final calculation
@@ -271,6 +272,7 @@ rescaled.bootstrap <- function(
   n_draw.calc <- matrix(0, nrow = n, ncol = stages)  # n_draw = Ziehungszahlen in den verschiedenen Stufen
   delta.calc <- array(0, dim = c(n, stages, REP)) # um Änderungen von delta über alle stufen und reps hinweg zu speichern
   
+  print(paste( "n.calc:", n.calc,"N.calc:", N.calc,"n_draw.calc:", n_draw.calc,  "delta.calc: ", delta.calc ))
 
   delta_selection <- list()
   
@@ -442,6 +444,14 @@ rescaled.bootstrap <- function(
     deltai <- paste0("delta_", i, "_", 1:REP) #erstellt eine Variable, die eine Liste von Namen für zukünftige Delta-Werte erstellt
     dati[, n := .N, by = c(by.val)]  # n = Anzahl PSU 
     
+    print(paste("dati:"))
+    print(head(dati))
+    print(paste("Type of dati:", class(dati)))
+    
+    print(paste("deltai:"))
+    print(head(deltai))
+    print(paste("Type of deltai:", class(deltai)))
+    
     # determin number of psu to be drawn
     # dati[, n_draw := select.nstar(
     #   n[1], N[1], f[1], n_prev[1], n_draw_prev[1], sum_prev = NULL,
@@ -464,13 +474,10 @@ rescaled.bootstrap <- function(
       dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){ # funktion OHNE zurücklegen um bootstrap stichprobe zu ziehen -> für jedes deltai (sammlung von delta werten)
         
         if (method == "Rao-Wu") {  # ***Rao-Wu
-          if (i == 1) {
-            draw.without.replacement(n[1], n_draw[1], delta = delta)
-          } else {
-            draw.with.replacement(n[1], n_draw[1]) # ***Rao-Wu
-          }
+          draw.with.replacement(n[1], n_draw[1]) # ***Rao-Wu
         } else if (method == "Preston"){
           draw.without.replacement(n[1],n_draw[1],delta=delta)
+          print(paste("n[1]:", n[1], "n_draw[1]:", n_draw[1]))
         }
       },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)] # überprüfe ob die Gesamtzahl der gezogenen PSUs für jede Gruppe mit dem erwarteten Wert übereinstimmt
       
@@ -487,18 +494,12 @@ rescaled.bootstrap <- function(
       
       # ***Rao-Wu
         if (method == "Rao-Wu") {
-          if (i == 1) { 
-            dati[, c(deltai) := as.data.table( 
-              replicate(REP, draw.without.replacement(n[1], n_draw[1]), simplify = FALSE)
-            ), by = c(by.val)]
-          } else {
-            dati[, c(deltai) := as.data.table(
+          dati[, c(deltai) := as.data.table(
               replicate(REP, draw.with.replacement(n[1], n_draw[1]), simplify = FALSE)
-            ), by = c(by.val)]
-          }
-        # ***Rao-Wu
+            ), by = c(by.val)] # ***Rao-Wu
           
         } else if (method == "Preston") {
+          print(paste("n[1]:", n[1], "n_draw[1]:", n_draw[1] ))
           dati[, c(deltai) := as.data.table(
           replicate(REP, draw.without.replacement(n[1], n_draw[1]), # Funktion "replicate" wiederholt den Ziehvorgang REP mal
                     simplify = FALSE)),
@@ -531,7 +532,7 @@ rescaled.bootstrap <- function(
       dat[, f := sqrt((N - n)/(N - 1)) * (n_draw/n - 1) + 1] # ****Rao_Wu
     } else { # ****Rao_Wu
       # Original Preston method
-      dat[, f := n_draw/n] # ****Rao_Wu
+      dat[, f := n / N * f] # ****Rao_Wu
     } # ****Rao_Wu
     
     # dat[, sum_prev := sum_prev +
@@ -553,6 +554,19 @@ rescaled.bootstrap <- function(
   
   # calculate bootstrap replicate values
   bootRep <- paste0("bootRep", 1:REP) # für jede bootstrap wiederholung wird neue variable erstellt
+  
+  (paste("n.calc:", head(n.calc)))
+  print(paste("Type of n.calc:", class(n.calc)))
+  
+  print(paste("N.calc:", head(N.calc)))
+  print(paste("Type of N.calc:", class(N.calc)))
+  
+  print(paste("n_draw.calc:", head(n_draw.calc)))
+  print(paste("Type of n_draw.calc:", class(n_draw.calc)))
+  
+  print(paste("delta.calc:", head(delta.calc)))
+  print(paste("Type of delta.calc:", class(delta.calc)))
+  
   dat[, c(bootRep) := as.data.table(calc.replicate( # rufe function calc.replicate auf -> berechne bootstrap replicate für jede Wiederholung
     n = n.calc, N = N.calc, n_draw = n_draw.calc, delta = delta.calc))] 
 
@@ -564,6 +578,9 @@ rescaled.bootstrap <- function(
       }
       ), by = SINGLE_BOOT_FLAG_FINAL, .SDcols = c(bootRep)]
   }
+  
+  print("dat: ")
+  print (head(dat))
 
   setkey(dat, InitialOrder)  # reihenfolge der daten wird widerhergestellt
   if (length(removeCols) > 0) {
@@ -611,9 +628,21 @@ rescaled.bootstrap <- function(
 
 
 
+# ----------------------------------------------------------------------------------------------------
+#library(surveysd)
+library(data.table)
+set.seed(1234)
+eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 
+eusilc[,N.households:=uniqueN(hid),by=region]
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region", method = "Preston",
+                                       cluster="hid",fpc="N.households")
 
-
+eusilc[,new_strata:=paste(region,hsize,sep="_")]
+eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
+                                       cluster="hid",fpc="N.households",method = "Preston")
+# ----------------------------------------------------------------------------------------------------
 
 
 
@@ -793,7 +822,13 @@ set.random2NA <- function(delta,value2NA=0,nChanges=1){
   return(delta)
 }
 
-calc.replicate <- function(n, N, n_draw, delta, r_hi_star) {
+
+calc.replicate <- function(n, N, n_draw, delta, r_hi_star, method = "Preston") {
+  
+    # n = n.calc, N = N.calc, n_draw = n_draw.calc, delta = delta.calc
+    # n/n.calc, N/N.calc, n_draw/n_draw.calc sind Matrizen
+    # delta_1_1, delta_1_2, etc. sind Resampling-Indikatoren -> 0 = nicht ausgewählt, 1 = ausgewählt
+  
   p <- ncol(n)  #  Anzahl der Spalten in der Matrix n,
   # n_draw <- trunc(n/2)
   # n_draw <- floor(n/(2-rowCumprods(n/N))-1)
@@ -827,40 +862,121 @@ calc.replicate <- function(n, N, n_draw, delta, r_hi_star) {
                                                     delta[, i, ] - 1)
       }
     } else if (method == "Rao-Wu") {
-      if (i == 1) {
-        # Für den ersten Schritt (FPC-Korrektur)
-        n_h <- n[, i]
-        m_h <- n_h - 1 # m_h = n_h - 1 # Anzahl gezogener PSUs
-        fpc <- sqrt((N[, i] - n[, i]) / (N[, i] - 1))
-        lambda <- sqrt(m[, 1] * (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1]))
-        rep_out <- (1 - lambda + lambda * n[, i] / n_draw[, i] * r_hi_star ) * delta[, i, ]
-        
-        # FPC-Anpassung (Finite Population Correction)
-        N.calc <- N[, 1] * (1 - n[, 1] / N[, 1])  # FPC-Korrektur für den ersten Schritt
-      } else if (i == 2) {
-        lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
-        lambda <- sqrt((n[, i - 1] / N[, i - 1]) * n_draw[, i] * lambda)
-        rep_out <- rep_out + lambda * (sqrt(n[, i - 1] / n_draw[, i - 1]) * delta[, i - 1, ]) *
-          (n[, i] / n_draw[, i] * delta[, i, ] - 1)
-        
-      } else {
-        lambda <- (1 - n[, i] / N[, i]) / (n[, i] - n_draw[, i])
-        lambda <- sqrt(rowProds(n[, 1:(i - 1)] / N[, 1:(i - 1)]) * n_draw[, i] * lambda)
-        prod_val <- matrix(0, ncol = dimdelta[3], nrow = dimdelta[1])
-        for (r in 1:dimdelta[3]) {
-          prod_val[, r] <- rowProds(sqrt(n[, 1:(i - 1)] / n_draw[, 1:(i - 1)]) * delta[, 1:(i - 1), r])
-        }
-        rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] * delta[, i, ] - 1)
+      # darf für merhstufige designs angewendet werden solange sampling fraction in der ersten stufe klein ist
+      # Die Varianz, die durch die Auswahl der PSUs entsteht, dominiert die Gesamtvarianz.Die zusätzliche Unsicherheit durch die Auswahl innerhalb der PSUs (also auf Stufe 2 oder 3) ist vergleichsweise gering.
+
+      # Für den ersten Schritt (FPC-Korrektur)
+      n_h <- n[, i]               # Anzahl gezogener PSUs (Primary Sampling Units)
+      m_h <- n_h - 1              # Für Resampling einen weglassen
+      f_h <- n_h / N[, i]         # Stichprobenanteil
+      
+      if (f_h > 0.1) {
+        stop("Sampling Fraction is too big for Rao-Wu, choose preston instead")
       }
       
-      # Für Rao-Wu sind zusätzliche Korrekturen nötig, um Cluster-Effekte zu berücksichtigen
-      # Beispiel: Cluster-Effekte hier addieren
-      cluster_factor <- 1  # Hier könnte eine spezifische Berechnung des Cluster-Faktors nötig sein
-      rep_out <- rep_out * cluster_factor  # Cluster-Korrektur
+      w_hi <- N[, i] / n_h        # Designgewichte (Inverse der Auswahlwahrscheinlichkeit)
+      
+      # Skalierungsfaktor λ, lambda bestimmt die Varianzkorrektur
+      lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
+      
+      # r_hi_star: Erzeuge Replikate durch Ziehen von (n_h - 1) Einheiten ohne Zurücklegen
+      r_hi_star <- matrix(NA, nrow = length(n_h), ncol = max(n_h))
+      for (h in seq_along(n_h)) {
+        sampled <- sample(1:n_h[h], size = m_h[h], replace = TRUE)
+        r_hi_star[h, 1:n_h[h]] <- tabulate(sampled, nbins = n_h[h])
+      }
+      
+      # rep_out = Matrix der replizierten Gewichtungen
+      rep_out <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
+      # adjustment <- sweep(r_hi_star, 1, lambda * n_h / m_h, FUN = "*") # Jede Zeile der Matrix r_hi_star wird elementweise mit dem entsprechenden Stratum-Faktor multipliziert.
+      # adjustment <- sweep(adjustment, 1, 1 - lambda, FUN = "+") # 1 - lamda + lambda * n/N * r_hi_star
+      # rep_out <- adjustment * w_hi # * w_hi
     }
+
+
+      # } else if (i == 2) {
+      #   # === Stufe 2: Korrektur für aktuelle Stufe UND Einfluss von Stufe 1 ===
+      #   
+      #   n_h <- n[, i] # N_h = Anuahl units, n_h = anzahl sampled units
+      #   m_h <- n_h - 1  # Anzahl gezogener PSUs
+      #   f_h <- n[, i] / N[, i] # sampling fraction
+      #   w_hi <- N[, i] / n[, i]
+      #   lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
+      #   
+      #   r_hi_star <- t(sapply(n_h, function(n_sampled) {
+      #     sampled <- sample(1:n_sampled, size = n_sampled - 1, replace = TRUE)
+      #     tabulate(sampled, nbins = n_sampled)
+      #   }))
+      #   
+      #   # Multiplikativer Effekt aus Stufe 1
+      #   # factor1 <- sqrt(n[, i - 1] / (n[, i - 1] - 1)) # fpc-Faktor Stufe 1, benötigt man nur wenn ohne zurücklegen gezogen wird
+      #   # delta1 <- delta[, i - 1, ] # Abweichungen aus Stufe 1
+      #   
+      #   rep_out <- (1 - lambda + lambda * n_h / m_h * r_hi_star ) * w_hi 
+      # 
+      #   
+      # } else {
+      #   n_h <- n[, i]
+      #   m_h <- n_h - 1
+      #   f_h <- n[, i] / N[, i]
+      #   w_hi <- N[, i] / n[, i]
+      #   lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
+      #   
+      #   r_hi_star <- t(sapply(n_h, function(n_sampled) {
+      #     sampled <- sample(1:n_sampled, size = n_sampled - 1, replace = TRUE)
+      #     tabulate(sampled, nbins = n_sampled)
+      #   }))
+      #   
+      #   # Produkt aller vorherigen sqrt(n_h / (n_h - 1)) * delta[, h, ]
+      #   dimdelta <- dim(delta)
+      #   prod_val <- matrix(1, nrow = dimdelta[1], ncol = dimdelta[3])  # Init mit 1 für Multiplikation
+      #   
+      #   for (h in 1:(i - 1)) {
+      #     factor_h <- sqrt(n[, h] / (n[, h] - 1))
+      #     delta_h <- delta[, h, ]
+      #     prod_val <- prod_val * (factor_h * delta_h)
+      #   }
+      # rep_out <- rep_out + lambda * prod_val * (n_h / m_h * r_hi_star - 1) * w_hi
   }
   return(rep_out)
 }
+
+
+
+
+# TEST -----------------------------------------------------------------------------------------------------------------
+set.seed(123) # Für reproduzierbare Ergebnisse
+
+# Anzahl der Beobachtungen
+n_rows <- 10
+n_cols <- 3
+n_replicates <- 5
+
+# Erstellen der Matrizen und Vektoren
+n <- matrix(sample(5:20, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Stichprobenanzahl
+N <- matrix(n * sample(20:50, n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)     # Grundgesamtheiten
+n_draw <- matrix(sample(1:5, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Anzahl der gezogenen Einheiten
+delta <- array(sample(0:1, n_rows * n_cols * n_replicates, replace = TRUE), dim = c(n_rows, n_cols, n_replicates))  # Resampling-Indikatoren
+r_hi_star <- NULL # Wird in der Funktion generiert, wenn nicht vorhanden
+
+# Testen der Funktion mit der "Preston"-Methode
+result_preston <- calc.replicate(n, N, n_draw, delta, r_hi_star, method = "Preston")
+print("Ergebnis mit der Preston-Methode:")
+print(result_preston)
+
+# Testen der Funktion mit der "Rao-Wu"-Methode
+result_rao_wu <- calc.replicate(n, N, n_draw, delta, r_hi_star, method = "Rao-Wu")
+print("Ergebnis mit der Rao-Wu-Methode:")
+print(result_rao_wu)
+# TEST -----------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 
