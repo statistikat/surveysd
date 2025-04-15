@@ -101,7 +101,7 @@
 #'
 #'
 
-#TEST 2 EILEEN
+
 
 rescaled.bootstrap <- function(
   dat, 
@@ -138,7 +138,7 @@ rescaled.bootstrap <- function(
       check.input(seed, input.name = "seed", input.length=1, input.type="numeric")
     }
   }
-  set.seed
+  set.seed        ################################################################################################# @Johannes: Zahl ? #####################################
 
   # prepare input
   removeCols <- c()  #temporär
@@ -186,11 +186,12 @@ rescaled.bootstrap <- function(
                 decimal.possible = FALSE)
     
     # check method
-    if (!method %in% c("Preston", "Rao-Wu")) {     #****Rao-Wu
-      stop("method must be either 'Preston' or 'Rao-Wu'")
-    }
-    
     method <- match.arg(method)
+    
+    # Warning for Rao-Wu method
+    if (method == "Rao-Wu") {
+      warning("The 'Rao-Wu' method should only be used when the first stage sampling is conducted without replacement. Ensure that your sampling design follows this requirement.")
+    }
 
     # check design variables
     # check length of strata, cluster, fpc
@@ -500,13 +501,15 @@ rescaled.bootstrap <- function(
             .SD,
             function(z) {
               if (all(is.na(z))) { #all(is.na(z)): Prüft, ob alle Werte in der aktuellen Spalte z NA sind.
-                return(rep(mean(z, na.rm = TRUE), length(z)))  # Berechnet den Durchschnitt der Werte in z, ignoriert dabei NA-Werte 
+                avg <- mean(z, na.rm = TRUE)
+                if (is.na(avg)) avg <- 0 
+                return(rep(avg, length(z)))  # Berechnet den Durchschnitt der Werte in z, ignoriert dabei NA-Werte 
               } else {
                 return(z) # Wenn nicht alle Werte NA sind, wird der Originalvektor z unverändert zurückgegeben.
               }
             }
           ), by = SINGLE_BOOT_FLAG_FINAL, .SDcols = c(bootRep)] #Das bedeutet, dass alle Zeilen, die zur gleichen Single PSU gehören, zusammen verarbeitet werden.
-        
+        }
         else {
           message("Single PSUs detected at the following stages:\n")
           dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
@@ -741,7 +744,6 @@ rescaled.bootstrap <- function(
   if(length(output_bootstrap) == 1){
     output_bootstrap <- output_bootstrap[[1]]
   }
-  
   return(output_bootstrap)
 }
 
@@ -750,14 +752,134 @@ rescaled.bootstrap <- function(
 
 # ----------------------------------------------------------------------------------------------------
 #library(surveysd)
+# library(data.table)
+# set.seed(1234)
+# eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
+# 
+# eusilc[,new_strata:=paste(region,hsize,sep="_")]
+# eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+# eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
+#                                        cluster="hid",fpc="N.households",method = "Preston")
+
+
+# Lade notwendige Bibliothek
 library(data.table)
 set.seed(1234)
 eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 
+eusilc[,N.households:=uniqueN(hid),by=region]
+eusilc.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc,REP=10,strata="region",
+                                       cluster="hid",fpc="N.households")
+
+eusilc.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc,REP=10,strata="region",
+                                               cluster="hid",fpc="N.households")
+
+
 eusilc[,new_strata:=paste(region,hsize,sep="_")]
 eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
-                                       cluster="hid",fpc="N.households",method = "Preston")
+eusilc.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc,REP=10,strata=c("new_strata"),
+                                       cluster="hid",fpc="N.households")
+eusilc.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc,REP=10,strata=c("new_strata"),
+                                               cluster="hid",fpc="N.households")
+
+
+# ergebnisse ansehen
+head(eusilc.bootstrap.PRESTON[, .SD, .SDcols = patterns("^bootRep")])
+head(eusilc.bootstrap.RAOWU[, .SD, .SDcols = patterns("^bootRep")])
+
+eusilc.bootstrap.PRESTON[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+eusilc.bootstrap.RAOWU[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+
+var_preston <- eusilc.bootstrap.PRESTON[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+var_raowu <- eusilc.bootstrap.RAOWU[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+print(var_preston)
+print(var_raowu)
+
+
+
+demo.eusilc.small <- function(n = 8, prettyNames = FALSE, dropout_fraction = 0.05) {
+  
+  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <-
+    . <- povertyRisk <- ecoStat <- NULL
+  
+  data("eusilc", package = "laeken", envir = environment())
+  setDT(eusilc)
+  # generate yearly data for y years
+  # Adjusted dropout fraction (default: 5%)
+  eusilc[, year := 2010]
+  eusilc.i <- copy(eusilc)
+  nsamp <- round(eusilc[, uniqueN(db030)] * dropout_fraction)
+  hhincome <- eusilc[!duplicated(db030)][["eqIncome"]]
+  nextIDs <- (1:nsamp) + eusilc[, max(db030)]
+  if (n > 1)
+    for (i in 1:(n - 1)) {
+      eusilc.i[db030 %in% sample(unique(eusilc.i$db030), nsamp),
+               c("db030", "eqIncome") := .(nextIDs[.GRP], sample(hhincome, 1L)),
+               by = db030]
+      eusilc.i[, year := year + 1]
+      eusilc <- rbind(eusilc, eusilc.i)
+      nextIDs <- (1:nsamp) + eusilc[, max(db030)]
+    }
+  
+  eusilc[, rb030 := as.integer(paste0(db030, "0", 1:.N)),
+         by = list(year, db030)]
+  eusilc[, povmd60 := as.numeric(
+    eqIncome < .6 * laeken::weightedMedian(eqIncome, w = db090)
+  ), by = year]
+  eusilc[, age := cut(age, c(-Inf, 16, 25, 45, 65, Inf))]
+  eusilc[, hsize := cut(hsize, c(0:5, Inf))]
+  
+  if (prettyNames) {
+    data.table::setnames(eusilc, "db030", "hid")
+    data.table::setnames(eusilc, "db040", "region")
+    data.table::setnames(eusilc, "rb030", "pid")
+    data.table::setnames(eusilc, "rb090", "gender")
+    data.table::setnames(eusilc, "pb220a", "citizenship")
+    data.table::setnames(eusilc, "pl030", "ecoStat")
+    eusilc[, ecoStat := factor(ecoStat, labels = c(
+      "full time", "part time", "unemployed",
+      "education", "retired", "disabled", "domestic"
+    ))]
+    data.table::setnames(eusilc, "rb050", "pWeight")
+    data.table::setnames(eusilc, "povmd60", "povertyRisk")
+    eusilc[, povertyRisk := as.logical(povertyRisk)]
+  }
+  
+  return(eusilc)
+}
+
+# Beispielaufruf mit 5% Dropout
+eusilc_small <- demo.eusilc.small(n = 8, prettyNames = TRUE, dropout_fraction = 0.02)
+eusilc_small[,N.households:=uniqueN(hid),by=region]
+eusilc_small.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc_small,REP=10,strata="region",
+                                               cluster="hid",fpc="N.households")
+
+eusilc_small.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc_small,REP=10,strata="region",
+                                             cluster="hid",fpc="N.households")
+
+
+eusilc_small[,new_strata:=paste(region,hsize,sep="_")]
+eusilc_small[,N.housholds:=uniqueN(hid),by=new_strata]
+eusilc_small.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc_small,REP=10,strata=c("new_strata"),
+                                               cluster="hid",fpc="N.households")
+eusilc_small.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc_small,REP=10,strata=c("new_strata"),
+                                             cluster="hid",fpc="N.households")
+
+
+# ergebnisse ansehen
+head(eusilc_small.bootstrap.PRESTON[, .SD, .SDcols = patterns("^bootRep")])
+head(eusilc_small.bootstrap.RAOWU[, .SD, .SDcols = patterns("^bootRep")])
+
+eusilc_small.bootstrap.PRESTON[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+eusilc_small.bootstrap.RAOWU[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+
+var_preston <- eusilc_small.bootstrap.PRESTON[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+var_raowu <- eusilc_small.bootstrap.RAOWU[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+print(var_preston)
+print(var_raowu)
+
+
+
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -873,7 +995,7 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {
 
 
 # Stichprobenziehung MIT Zurücklegen (Rao-Wu-Methode)
-draw.with.replacement <- function(n, n_draw, delta) { 
+draw.with.replacement <- function(n, n_draw, delta = NULL) { 
   # Funktion für Stichprobenziehung MIT Zurücklegen nach dem Rao-Wu-Verfahren
   # Argumente:
   # n = Gesamtpopulation
@@ -1030,9 +1152,9 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       m_h <- n_h - 1              # Für Resampling einen weglassen
       f_h <- n_h / N[, i]         # Stichprobenanteil
       print(f_h)
-      if (any(f_h > 0.5)) {
-        stop("Sampling Fraction is too big for Rao-Wu, choose preston instead")
-      }
+      # if (any(f_h > 0.1)) {  
+      #   stop("Sampling Fraction is too big for Rao-Wu, choose preston instead") ################################################################################################# @Johannes: Welche Sampling Fraction ? (Recherche sagt maximales f von 0.05 - 0.1) #####################################
+      # }
       
       w_hi <- N[, i] / n_h        # Designgewichte (Inverse der Auswahlwahrscheinlichkeit)
       
