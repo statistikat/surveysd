@@ -263,7 +263,8 @@ rescaled.bootstrap <- function(
 
   # calculate bootstrap replicates
   stages <- length(strata) # Anzahl an Stufen basierend auf Strata (verschiedene Schichten)
-  print(paste("stages: ", stages))
+  print("stages: ")
+  print(stages)
   
   n <- nrow(dat)
   # define values for final calculation
@@ -272,7 +273,19 @@ rescaled.bootstrap <- function(
   n_draw.calc <- matrix(0, nrow = n, ncol = stages)  # n_draw = Ziehungszahlen in den verschiedenen Stufen
   delta.calc <- array(0, dim = c(n, stages, REP)) # um Änderungen von delta über alle stufen und reps hinweg zu speichern
   
-  print(paste( "n.calc:", n.calc,"N.calc:", N.calc,"n_draw.calc:", n_draw.calc,  "delta.calc: ", delta.calc ))
+  print("n.calc:")
+  print(head(n.calc))
+  
+  print("N.calc:")
+  print(head(N.calc)) 
+  
+  print("n_draw.calc:")
+  print(head(n_draw.calc)) 
+  
+  print("delta.calc:")
+  print(head(delta.calc))
+  
+  
 
   delta_selection <- list()
   
@@ -324,97 +337,188 @@ rescaled.bootstrap <- function(
       }
       singles <- unique(subset(singles, select = higher.stages))
       
+################ SINGLE ANFANG ################ ##############################################################################################
       
-      
+      if (method == "Preston") {
       # wenn merge angegeben wird: Diese Gruppen werden mit einer ähnlichen (übergeordneter Struktur, z.B. Region) zusammengelegt, sodass mehr als 1 PSU entsteht.
-      if (single.PSU == "merge") {
-        # save original PSU coding and fpc values to replace changed values
-        #   bevore returning the data.table
-        if (return.value == "data") {
-          by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
-          fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
-          
-          set(dat, i = by.val.orig, value = dat[[by.val.tail]])
-          set(dat, i = fpc_orig, value = dat[[fpc[i]]])
-        }
-        
-        setkeyv(dat, higher.stages)
-        next.PSU <- dat[singles, .(N = sum(!duplicated(clust.val))), by = c(by.val),
-                        on = c(higher.stages),
-                        env = list(clust.val = clust.val)]
-        
-        if(nrow(next.PSU)==1){
-          stop("Only 1 single PSU in first sampling stage! Cannot combine single PSU.\nPlease manually combine sampling STRATA to eliminate single PSU!")
-        }
-        
-        new.var <- paste0(tail(by.val, 1), "_NEWVAR")
-        
-        next.PSU[,c(new.var) := next_minimum(N, by.val.tail), by = c(higher.stages),
-                 env = list(by.val.tail = by.val.tail)]
-        if(any(is.na(next.PSU[[new.var]]))){
-          if(firstStage){
-            next.PUS[is.na(new.var_col), c(new.var) := head(higher.stages, 1),
-                     env = list(new.var_col = new_var,
-                                higher.stages = higher.stages)]
-          }else{
-            next.PUS[is.na(new.var_col), c(new.var) := head(by.val.tail,1),
-                     env = list(new.var_col = new_var,
-                                by.val.tail = by.val.tail)]
+        if (single.PSU == "merge") {
+          # save original PSU coding and fpc values to replace changed values
+          #   bevore returning the data.table
+          if (return.value == "data") {
+            by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
+            fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
+            
+            set(dat, i = by.val.orig, value = dat[[by.val.tail]])
+            set(dat, i = fpc_orig, value = dat[[fpc[i]]])
           }
+          
+          setkeyv(dat, higher.stages)
+          next.PSU <- dat[singles, .(N = sum(!duplicated(clust.val))), by = c(by.val),
+                          on = c(higher.stages),
+                          env = list(clust.val = clust.val)]
+          
+          if(nrow(next.PSU)==1){
+            stop("Only 1 single PSU in first sampling stage! Cannot combine single PSU.\nPlease manually combine sampling STRATA to eliminate single PSU!")
+          }
+          
+          new.var <- paste0(tail(by.val, 1), "_NEWVAR")
+          
+          next.PSU[,c(new.var) := next_minimum(N, by.val.tail), by = c(higher.stages),
+                   env = list(by.val.tail = by.val.tail)]
+          if(any(is.na(next.PSU[[new.var]]))){
+            if(firstStage){
+              next.PUS[is.na(new.var_col), c(new.var) := head(higher.stages, 1),      ################################################################################################# @Johannes: PSU ? #####################################
+                       env = list(new.var_col = new_var,
+                                  higher.stages = higher.stages)]
+            }else{
+              next.PUS[is.na(new.var_col), c(new.var) := head(by.val.tail,1),       ################################################################################################# @Johannes: PSU ? #####################################
+                       env = list(new.var_col = new_var,
+                                  by.val.tail = by.val.tail)]
+            }
+          }
+          
+          # select singel PSUs and PSUs to join with
+          next.PSU <- next.PSU[N == 1 | new.var == by.val.tail,
+                               env = list( new.var = new.var,
+                                           by.val.tail = by.val.tail)]
+          dat <- merge(dat, next.PSU[, mget(c(by.val, new.var))],
+                       by = c(by.val), all.x = TRUE)
+          
+          # sum over margins
+          fpc.i_ADD <- paste0(fpc[i], "_ADD")
+          dat[!is.na(new.var), c(fpc.i_ADD) := 
+                sum(fpc_i[!duplicated(by.val.tail)]), by = c(new.var),
+              env = list(new.var = new.var,
+                         fpc_i = fpc[i],
+                         by.val.tail = by.val.tail)]
+          
+          # assign to new group
+          dat[!is.na(new.var), c(by.val.tail) := new.var, 
+              env = list(new.var = new.var)]
+          dat[ c(fpc[i]) := fpc_i[is.na(new.var)][1], by=c(by.val),
+               env = list(new.var = new.var)]
+          dat[!is.na(new.var), c(fpc[i]) := fpc.i_ADD,
+              env = list(new.var = new.var,
+                         fpc.i_ADD = fpc.i_ADD)]
+          
+          dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
+        } 
+        
+        # wenn bei ingle = mean: Markiert die betroffenen Beobachtungen mit einem SINGLE_BOOT_FLAG, um später im Bootstrap-Prozess einfach den Durchschnitt anderer Replicates zu nehmen.
+        else if (single.PSU == "mean") {
+          # if single.PSU="mean" flag the observation as well as the all the
+          #   observations in the higher group
+          singles[, SINGLE_BOOT_FLAG := paste(higher.stages, .GRP, sep = "-"),
+                  by = c(higher.stages)]
+          
+          dat <- merge(dat, singles, by = c(higher.stages), all.x = TRUE)
+          if (!"SINGLE_BOOT_FLAG_FINAL" %in% colnames(dat)) {
+            dat[, SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
+          } else {
+            dat[is.na(SINGLE_BOOT_FLAG_FINAL),
+                SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
+          }
+          dat[, SINGLE_BOOT_FLAG := NULL]
+          
+        } 
+        
+        else {
+          message("Single PSUs detected at the following stages:\n")
+          dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
+                           env = list(clust.val = clust.val)]
+          dat.print <- dat.print[V1==1,.SD,.SDcols=c(by.val)]
+        }
+      } else if (method == "Rao-Wu") {
+        if (single.PSU == "merge") {
+          # save original PSU coding and fpc values to replace changed values
+          #   bevore returning the data.table
+          if (return.value == "data") {
+            by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
+            fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
+            
+            set(dat, i = by.val.orig, value = dat[[by.val.tail]])
+            set(dat, i = fpc_orig, value = dat[[fpc[i]]])
+          }
+          
+          setkeyv(dat, higher.stages)
+          next.PSU <- dat[singles, .(N = sum(!duplicated(clust.val))), by = c(by.val),
+                          on = c(higher.stages),
+                          env = list(clust.val = clust.val)]
+          
+          if(nrow(next.PSU)==1){
+            warning("Only 1 single PSU in first sampling stage! Consider manually combining strata.")
+          }
+          
+          new.var <- paste0(tail(by.val, 1), "_NEWVAR")
+          
+          next.PSU[,c(new.var) := next_minimum(N, by.val.tail), by = c(higher.stages),
+                   env = list(by.val.tail = by.val.tail)]
+          if(any(is.na(next.PSU[[new.var]]))){
+            if(firstStage){
+              next.PUS[is.na(new.var_col), c(new.var) := head(higher.stages, 1),
+                       env = list(new.var_col = new_var,
+                                  higher.stages = higher.stages)]
+            }else{
+              next.PUS[is.na(new.var_col), c(new.var) := head(by.val.tail,1),
+                       env = list(new.var_col = new_var,
+                                  by.val.tail = by.val.tail)]
+            }
+          }
+          
+          # select singel PSUs and PSUs to join with
+          next.PSU <- next.PSU[N == 1 | new.var == by.val.tail,
+                               env = list( new.var = new.var,
+                                           by.val.tail = by.val.tail)]
+          dat <- merge(dat, next.PSU[, mget(c(by.val, new.var))],
+                       by = c(by.val), all.x = TRUE)
+          
+          # sum over margins
+          fpc.i_ADD <- paste0(fpc[i], "_ADD")
+          dat[!is.na(new.var), c(fpc.i_ADD) := 
+                sum(fpc_i[!duplicated(by.val.tail)]), by = c(new.var),
+              env = list(new.var = new.var,
+                         fpc_i = fpc[i],
+                         by.val.tail = by.val.tail)]
+          
+          # assign to new group
+          dat[!is.na(new.var), c(by.val.tail) := new.var, 
+              env = list(new.var = new.var)]
+          dat[ c(fpc[i]) := fpc_i[is.na(new.var)][1], by=c(by.val),
+               env = list(new.var = new.var)]
+          dat[!is.na(new.var), c(fpc[i]) := fpc.i_ADD,
+              env = list(new.var = new.var,
+                         fpc.i_ADD = fpc.i_ADD)]
+          
+          dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
+        } 
+        
+        # wenn bei ingle = mean: Markiert die betroffenen Beobachtungen mit einem SINGLE_BOOT_FLAG, um später im Bootstrap-Prozess einfach den Durchschnitt anderer Replicates zu nehmen.
+        else if (single.PSU == "mean") {
+
+          # Sicherstellen, dass die Single PSU mindestens einmal gezogen wird
+          dat[!is.na(SINGLE_BOOT_FLAG_FINAL), c(bootRep) := lapply( 
+            .SD,
+            function(z) {
+              if (all(is.na(z))) { #all(is.na(z)): Prüft, ob alle Werte in der aktuellen Spalte z NA sind.
+                return(rep(mean(z, na.rm = TRUE), length(z)))  # Berechnet den Durchschnitt der Werte in z, ignoriert dabei NA-Werte 
+              } else {
+                return(z) # Wenn nicht alle Werte NA sind, wird der Originalvektor z unverändert zurückgegeben.
+              }
+            }
+          ), by = SINGLE_BOOT_FLAG_FINAL, .SDcols = c(bootRep)] #Das bedeutet, dass alle Zeilen, die zur gleichen Single PSU gehören, zusammen verarbeitet werden.
+        
+        else {
+          message("Single PSUs detected at the following stages:\n")
+          dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
+                           env = list(clust.val = clust.val)]
+          dat.print <- dat.print[V1==1,.SD,.SDcols=c(by.val)]
+          
+          #Falls alle Werte in einer Replikat-Spalte NA sind, wird der Durchschnitt der anderen Replikate verwendet.
         }
         
-        # select singel PSUs and PSUs to join with
-        next.PSU <- next.PSU[N == 1 | new.var == by.val.tail,
-                             env = list( new.var = new.var,
-                                         by.val.tail = by.val.tail)]
-        dat <- merge(dat, next.PSU[, mget(c(by.val, new.var))],
-                     by = c(by.val), all.x = TRUE)
-        
-        # sum over margins
-        fpc.i_ADD <- paste0(fpc[i], "_ADD")
-        dat[!is.na(new.var), c(fpc.i_ADD) := 
-              sum(fpc_i[!duplicated(by.val.tail)]), by = c(new.var),
-            env = list(new.var = new.var,
-                       fpc_i = fpc[i],
-                       by.val.tail = by.val.tail)]
-        
-        # assign to new group
-        dat[!is.na(new.var), c(by.val.tail) := new.var, 
-            env = list(new.var = new.var)]
-        dat[ c(fpc[i]) := fpc_i[is.na(new.var)][1], by=c(by.val),
-             env = list(new.var = new.var)]
-        dat[!is.na(new.var), c(fpc[i]) := fpc.i_ADD,
-            env = list(new.var = new.var,
-                       fpc.i_ADD = fpc.i_ADD)]
-        
-        dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
-      } 
-      
-      # wenn bei ingle = mean: Markiert die betroffenen Beobachtungen mit einem SINGLE_BOOT_FLAG, um später im Bootstrap-Prozess einfach den Durchschnitt anderer Replicates zu nehmen.
-      else if (single.PSU == "mean") {
-        # if single.PSU="mean" flag the observation as well as the all the
-        #   observations in the higher group
-        singles[, SINGLE_BOOT_FLAG := paste(higher.stages, .GRP, sep = "-"),
-                by = c(higher.stages)]
-        
-        dat <- merge(dat, singles, by = c(higher.stages), all.x = TRUE)
-        if (!"SINGLE_BOOT_FLAG_FINAL" %in% colnames(dat)) {
-          dat[, SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
-        } else {
-          dat[is.na(SINGLE_BOOT_FLAG_FINAL),
-              SINGLE_BOOT_FLAG_FINAL := SINGLE_BOOT_FLAG]
-        }
-        dat[, SINGLE_BOOT_FLAG := NULL]
-        
-      } 
-      
-      else {
-        message("Single PSUs detected at the following stages:\n")
-        dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
-                         env = list(clust.val = clust.val)]
-        dat.print <- dat.print[V1==1,.SD,.SDcols=c(by.val)]
       }
     }
+################ SINGLE ENDE ################ ##############################################################################################
     
     # get Stage
     if (i == 1) { # dati: enthält alle PSU (PSU = die ursprünglichen Cluster oder Gruppen in einer komplexen Stichprobe) mit zugehörigen FPC 
@@ -446,11 +550,13 @@ rescaled.bootstrap <- function(
     
     print(paste("dati:"))
     print(head(dati))
-    print(paste("Type of dati:", class(dati)))
+    print(paste("Type of dati:"))
+    print(class(dati))
     
     print(paste("deltai:"))
     print(head(deltai))
-    print(paste("Type of deltai:", class(deltai)))
+    print(paste("Type of deltai:"))
+    print(class(deltai))
     
     # determin number of psu to be drawn
     # dati[, n_draw := select.nstar(
@@ -474,10 +580,14 @@ rescaled.bootstrap <- function(
       dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){ # funktion OHNE zurücklegen um bootstrap stichprobe zu ziehen -> für jedes deltai (sammlung von delta werten)
         
         if (method == "Rao-Wu") {  # ***Rao-Wu
-          draw.with.replacement(n[1], n_draw[1]) # ***Rao-Wu
+          draw.with.replacement(n[1], n_draw[1], delta=delta) # ***Rao-Wu
         } else if (method == "Preston"){
-          draw.without.replacement(n[1],n_draw[1],delta=delta)
-          print(paste("n[1]:", n[1], "n_draw[1]:", n_draw[1]))
+          draw.without.replacement(n[1],n_draw[1], delta=delta)
+          print("n[1]:")
+          print(n[1])
+          
+          print("n_draw[1]:")
+          print(n_draw)
         }
       },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)] # überprüfe ob die Gesamtzahl der gezogenen PSUs für jede Gruppe mit dem erwarteten Wert übereinstimmt
       
@@ -495,11 +605,16 @@ rescaled.bootstrap <- function(
       # ***Rao-Wu
         if (method == "Rao-Wu") {
           dati[, c(deltai) := as.data.table(
-              replicate(REP, draw.with.replacement(n[1], n_draw[1]), simplify = FALSE)
+              replicate(REP, draw.with.replacement(n[1], n_draw[1]),simplify = FALSE)
             ), by = c(by.val)] # ***Rao-Wu
           
         } else if (method == "Preston") {
-          print(paste("n[1]:", n[1], "n_draw[1]:", n_draw[1] ))
+          print("n[1]:")
+          print(n[1])
+          
+          print("n_draw[1]:")
+          print(n_draw)
+          
           dati[, c(deltai) := as.data.table(
           replicate(REP, draw.without.replacement(n[1], n_draw[1]), # Funktion "replicate" wiederholt den Ziehvorgang REP mal
                     simplify = FALSE)),
@@ -556,19 +671,24 @@ rescaled.bootstrap <- function(
   bootRep <- paste0("bootRep", 1:REP) # für jede bootstrap wiederholung wird neue variable erstellt
   
   (paste("n.calc:", head(n.calc)))
-  print(paste("Type of n.calc:", class(n.calc)))
+  print("Type of n.calc:")
+  print(class(n.calc))
   
-  print(paste("N.calc:", head(N.calc)))
-  print(paste("Type of N.calc:", class(N.calc)))
+  print("Type of N.calc:")
+  print(class(N.calc))
   
-  print(paste("n_draw.calc:", head(n_draw.calc)))
-  print(paste("Type of n_draw.calc:", class(n_draw.calc)))
+  print("Type of n_draw.calc:")
+  print(class(n_draw.calc))
   
-  print(paste("delta.calc:", head(delta.calc)))
-  print(paste("Type of delta.calc:", class(delta.calc)))
+  print("Type of delta.calc:")
+  print(class(delta.calc))
   
   dat[, c(bootRep) := as.data.table(calc.replicate( # rufe function calc.replicate auf -> berechne bootstrap replicate für jede Wiederholung
-    n = n.calc, N = N.calc, n_draw = n_draw.calc, delta = delta.calc))] 
+    method = method,
+    n = n.calc, 
+    N = N.calc, 
+    n_draw = n_draw.calc, 
+    delta = delta.calc))] 
 
   if (single.PSU == "mean") {
     dat[!is.na(SINGLE_BOOT_FLAG_FINAL), c(bootRep) := lapply(  # wenn single.PSU mean ist und SINGLE_BOOT_FLAG_FINAL nicht na -> durchschnitt über alle bootstrap wiederholungen
@@ -634,10 +754,6 @@ library(data.table)
 set.seed(1234)
 eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 
-eusilc[,N.households:=uniqueN(hid),by=region]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region", method = "Preston",
-                                       cluster="hid",fpc="N.households")
-
 eusilc[,new_strata:=paste(region,hsize,sep="_")]
 eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
 eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
@@ -677,10 +793,10 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
 
 
 
-draw.without.replacement <- function(n, n_draw, delta = NULL) { # Stichprobenziehung OHNE zurücklegen
+# Stichprobenziehung OHNE Zurücklegen (Preston-Methode)
+draw.without.replacement <- function(n, n_draw, delta = NULL) {
     # n = Geamtpopulation
     # n_draw = Ziehung einer bestimmten Anzahl von Einheiten (n_draw)
-  
   
   # if no units have been selected prior
   if(is.null(delta)){
@@ -709,7 +825,6 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) { # Stichprobenzie
       delta_new_unit <- is.na(delta)
     }
     
-
     if(n_draw<=n_selected){
       # if more entries have been selected than actually possible
       # or n_draw units have already been selected
@@ -757,6 +872,7 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) { # Stichprobenzie
 }
 
 
+# Stichprobenziehung MIT Zurücklegen (Rao-Wu-Methode)
 draw.with.replacement <- function(n, n_draw, delta) { 
   # Funktion für Stichprobenziehung MIT Zurücklegen nach dem Rao-Wu-Verfahren
   # Argumente:
@@ -764,35 +880,33 @@ draw.with.replacement <- function(n, n_draw, delta) {
   # n_draw = Anzahl der zu ziehenden Einheiten
   # delta = aktueller Status, welche Einheiten ausgewählt wurden (1 = ausgewählt, 0 = nicht ausgewählt)
   
+  # Initialisiere `r_hi_star` (Häufigkeiten der Ziehungen)
+  if (is.null(delta)) {
+    delta <- rep(0, n)  # Setze alle Einheiten auf 0 (noch nicht gezogen)
+  }
   # Anzahl der bereits ausgewählten Einheiten
   n_selected <- sum(delta, na.rm = TRUE)
   
-  # Wenn noch nicht genügend Einheiten ausgewählt wurden:
+  # 1. Ziehe zusätzliche Einheiten, falls weniger als n_draw ausgewählt sind
   if (n_selected < n_draw) {
-    # Berechnung, wie viele zusätzliche Einheiten benötigt werden
-    n_needed <- n_draw - n_selected
-    
-    # Zufällige Ziehung MIT Zurücklegen für die zusätzlichen Einheiten
-    additional_draws <- sample(1:n, size = n_needed, replace = TRUE)
-    
-    # Aktualisiere delta: Setze die gezogenen Einheiten auf 1
+    n_needed <- n_draw - n_selected # Berechnung der fehlenden Anzahl von Ziehungen
+    additional_draws <- sample(1:n, size = n_needed, replace = TRUE)  # Ziehungen mit Zurücklegen
     for (i in additional_draws) {
-      delta[i] <- 1
+      delta[i] <- delta[i] + 1     # Aktualisiere delta: Erhöhe die Häufigkeit der gezogenen Einheiten
     }
   }
-  # Wenn mehr Einheiten ausgewählt sind, als benötigt:
+  
+  # 2. Reduziere überschüssige Einheiten, falls mehr als n_draw ausgewählt sind
   if (n_selected > n_draw) {
-    # Anzahl der überschüssigen Einheiten
-    over_selected <- n_selected - n_draw
-    
-    # Reduziere die überschüssigen Einheiten mithilfe von change.random.value
-    delta <- change.random.value(delta, changeVal = 1, nChanges = over_selected)
+    over_selected <- n_selected - n_draw # Berechnung der überschüssigen Ziehungen
+    for (i in which(delta > 0)[1:over_selected]) {
+      delta[i] <- delta[i] - 1     # Entferne überschüssige Ziehungen gleichmäßig
+    }
   }
   
-  # Falls einige Einheiten auf NA gesetzt werden sollen:
+  # 3. Behandle NA-Werte in delta, falls vorhanden
   if (any(is.na(delta))) {
-    # Setze zufällig einige Werte auf NA, falls nötig
-    delta <- set.random2NA(delta, value2NA = 0, nChanges = 1)
+    delta[is.na(delta)] <- 0     # Setze NA-Werte auf 0 (nicht gezogen)
   }
   
   return(delta)
@@ -800,17 +914,49 @@ draw.with.replacement <- function(n, n_draw, delta) {
 
 
 
+# change.random.value <- function(delta, changeVal = 0, nChanges = 1, method = "Preston") {
+#   
+#   if (method == "Preston") {
+#     # Logik für die Preston-Methode (ohne Zurücklegen)
+#     changeVal2 <- fifelse(changeVal == 0, 1, 0)  # Wechsel zwischen 0 und 1
+#     set2NA <- which(delta == changeVal & !is.na(delta))  # Finde Positionen mit changeVal
+#     
+#     if (length(set2NA) > 1) {
+#       # Zufällige Auswahl von nChanges Positionen
+#       set2NA <- sample(set2NA, min(nChanges, length(set2NA)))
+#     }
+#     delta[set2NA] <- changeVal2  # Werte ändern
+#     return(delta)
+#     
+#   } else if (method == "Rao-Wu") {
+#     # Logik für die Rao-Wu-Methode (mit Zurücklegen)
+#     set2Change <- which(!is.na(delta))  # Alle Positionen, die nicht NA sind
+#     
+#     if (length(set2Change) > 1) {
+#       # Zufällige Auswahl von nChanges Positionen
+#       set2Change <- sample(set2Change, min(nChanges, length(set2Change)))
+#     }
+#     delta[set2Change] <- delta[set2Change] + 1  # Häufigkeit erhöhen
+#     return(delta)
+#     
+#   } else {
+#     stop("Invalid method. Please use 'Preston' or 'Rao-Wu'.")  # Fehler für ungültige Methode
+#   }
+# }
 
 change.random.value <- function(delta,changeVal=0,nChanges=1){
   
-  changeVal2 <- fifelse(changeVal==0,1,0)
+  changeVal2 <- fifelse(changeVal==0,1,0) # Wechsel zwischen 0 und 1
   set2NA <- which(delta==changeVal & !is.na(delta))
   if(length(set2NA)>1){
+    # Zufällige Auswahl von nChanges Positionen
     set2NA <- sample(set2NA,min(nChanges,length(set2NA)))
   }
   delta[set2NA] <- changeVal2
   return(delta)
 }
+
+
 
 set.random2NA <- function(delta,value2NA=0,nChanges=1){
   
@@ -823,7 +969,7 @@ set.random2NA <- function(delta,value2NA=0,nChanges=1){
 }
 
 
-calc.replicate <- function(n, N, n_draw, delta, r_hi_star, method = "Preston") {
+calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
   
     # n = n.calc, N = N.calc, n_draw = n_draw.calc, delta = delta.calc
     # n/n.calc, N/N.calc, n_draw/n_draw.calc sind Matrizen
@@ -836,7 +982,6 @@ calc.replicate <- function(n, N, n_draw, delta, r_hi_star, method = "Preston") {
   dimdelta <- dim(delta)
   for (i in 1:p) {
     if (method == "Preston") {
-      m_h <- 
       if (i == 1) { # 
         lambda <- sqrt(n_draw[, 1] *
                          (1 - n[, 1] / N[, 1]) / (n[, 1] - n_draw[, 1]))
@@ -855,12 +1000,27 @@ calc.replicate <- function(n, N, n_draw, delta, r_hi_star, method = "Preston") {
         for (r in 1:dimdelta[3]) {
           prod_val[, r] <- rowProds(sqrt(n[, 1:(i - 1)] / n_draw[, 1:(i - 1)]) *
                                       delta[, 1:(i - 1), r])
+          
+          print("prod_val:")
+          print(prod_val)
         }
         # rep_out <- rep_out + lambda*rowProds(sqrt(n[,1:(i-1)]/
         #   n_draw[,1:(i-1)])*delta[,1:(i-1),]) * (n[,i]/n_draw[,i]*delta[,i,]-1)
         rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] *      # Schließlich wird rep_out für jede zusätzliche Stufe unter Berücksichtigung der vorherigen Stufen aktualisiert.
                                                     delta[, i, ] - 1)
       }
+      print("n:")
+      print(head(n))
+      print("N:")
+      print(head(N))
+      
+      print("delta:")
+      print(head(delta))
+      
+      print("lambda:")
+      print(lambda)
+      
+      
     } else if (method == "Rao-Wu") {
       # darf für merhstufige designs angewendet werden solange sampling fraction in der ersten stufe klein ist
       # Die Varianz, die durch die Auswahl der PSUs entsteht, dominiert die Gesamtvarianz.Die zusätzliche Unsicherheit durch die Auswahl innerhalb der PSUs (also auf Stufe 2 oder 3) ist vergleichsweise gering.
@@ -869,8 +1029,8 @@ calc.replicate <- function(n, N, n_draw, delta, r_hi_star, method = "Preston") {
       n_h <- n[, i]               # Anzahl gezogener PSUs (Primary Sampling Units)
       m_h <- n_h - 1              # Für Resampling einen weglassen
       f_h <- n_h / N[, i]         # Stichprobenanteil
-      
-      if (f_h > 0.1) {
+      print(f_h)
+      if (any(f_h > 0.5)) {
         stop("Sampling Fraction is too big for Rao-Wu, choose preston instead")
       }
       
@@ -880,68 +1040,73 @@ calc.replicate <- function(n, N, n_draw, delta, r_hi_star, method = "Preston") {
       lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
       
       # r_hi_star: Erzeuge Replikate durch Ziehen von (n_h - 1) Einheiten ohne Zurücklegen
-      r_hi_star <- matrix(NA, nrow = length(n_h), ncol = max(n_h))
-      for (h in seq_along(n_h)) {
-        sampled <- sample(1:n_h[h], size = m_h[h], replace = TRUE)
-        r_hi_star[h, 1:n_h[h]] <- tabulate(sampled, nbins = n_h[h])
-      }
+      r_hi_star <- delta[, i, ]
+      
       
       # rep_out = Matrix der replizierten Gewichtungen
       rep_out <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
       # adjustment <- sweep(r_hi_star, 1, lambda * n_h / m_h, FUN = "*") # Jede Zeile der Matrix r_hi_star wird elementweise mit dem entsprechenden Stratum-Faktor multipliziert.
       # adjustment <- sweep(adjustment, 1, 1 - lambda, FUN = "+") # 1 - lamda + lambda * n/N * r_hi_star
       # rep_out <- adjustment * w_hi # * w_hi
+      print("n:")
+      print(head(n))
+      print("N:")
+      print(head(N))
+      
+      print("delta:")
+      print(head(delta))
+      
+      print("lambda:")
+      print(lambda)
+      
     }
-
-
-      # } else if (i == 2) {
-      #   # === Stufe 2: Korrektur für aktuelle Stufe UND Einfluss von Stufe 1 ===
-      #   
-      #   n_h <- n[, i] # N_h = Anuahl units, n_h = anzahl sampled units
-      #   m_h <- n_h - 1  # Anzahl gezogener PSUs
-      #   f_h <- n[, i] / N[, i] # sampling fraction
-      #   w_hi <- N[, i] / n[, i]
-      #   lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
-      #   
-      #   r_hi_star <- t(sapply(n_h, function(n_sampled) {
-      #     sampled <- sample(1:n_sampled, size = n_sampled - 1, replace = TRUE)
-      #     tabulate(sampled, nbins = n_sampled)
-      #   }))
-      #   
-      #   # Multiplikativer Effekt aus Stufe 1
-      #   # factor1 <- sqrt(n[, i - 1] / (n[, i - 1] - 1)) # fpc-Faktor Stufe 1, benötigt man nur wenn ohne zurücklegen gezogen wird
-      #   # delta1 <- delta[, i - 1, ] # Abweichungen aus Stufe 1
-      #   
-      #   rep_out <- (1 - lambda + lambda * n_h / m_h * r_hi_star ) * w_hi 
-      # 
-      #   
-      # } else {
-      #   n_h <- n[, i]
-      #   m_h <- n_h - 1
-      #   f_h <- n[, i] / N[, i]
-      #   w_hi <- N[, i] / n[, i]
-      #   lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
-      #   
-      #   r_hi_star <- t(sapply(n_h, function(n_sampled) {
-      #     sampled <- sample(1:n_sampled, size = n_sampled - 1, replace = TRUE)
-      #     tabulate(sampled, nbins = n_sampled)
-      #   }))
-      #   
-      #   # Produkt aller vorherigen sqrt(n_h / (n_h - 1)) * delta[, h, ]
-      #   dimdelta <- dim(delta)
-      #   prod_val <- matrix(1, nrow = dimdelta[1], ncol = dimdelta[3])  # Init mit 1 für Multiplikation
-      #   
-      #   for (h in 1:(i - 1)) {
-      #     factor_h <- sqrt(n[, h] / (n[, h] - 1))
-      #     delta_h <- delta[, h, ]
-      #     prod_val <- prod_val * (factor_h * delta_h)
-      #   }
-      # rep_out <- rep_out + lambda * prod_val * (n_h / m_h * r_hi_star - 1) * w_hi
   }
   return(rep_out)
 }
 
-
+# } else if (i == 2) {
+#   # === Stufe 2: Korrektur für aktuelle Stufe UND Einfluss von Stufe 1 ===
+#   
+#   n_h <- n[, i] # N_h = Anuahl units, n_h = anzahl sampled units
+#   m_h <- n_h - 1  # Anzahl gezogener PSUs
+#   f_h <- n[, i] / N[, i] # sampling fraction
+#   w_hi <- N[, i] / n[, i]
+#   lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
+#   
+#   r_hi_star <- t(sapply(n_h, function(n_sampled) {
+#     sampled <- sample(1:n_sampled, size = n_sampled - 1, replace = TRUE)
+#     tabulate(sampled, nbins = n_sampled)
+#   }))
+#   
+#   # Multiplikativer Effekt aus Stufe 1
+#   # factor1 <- sqrt(n[, i - 1] / (n[, i - 1] - 1)) # fpc-Faktor Stufe 1, benötigt man nur wenn ohne zurücklegen gezogen wird
+#   # delta1 <- delta[, i - 1, ] # Abweichungen aus Stufe 1
+#   
+#   rep_out <- (1 - lambda + lambda * n_h / m_h * r_hi_star ) * w_hi 
+# 
+#   
+# } else {
+#   n_h <- n[, i]
+#   m_h <- n_h - 1
+#   f_h <- n[, i] / N[, i]
+#   w_hi <- N[, i] / n[, i]
+#   lambda <- sqrt(m_h * (1 - f_h) / (n_h - 1))
+#   
+#   r_hi_star <- t(sapply(n_h, function(n_sampled) {
+#     sampled <- sample(1:n_sampled, size = n_sampled - 1, replace = TRUE)
+#     tabulate(sampled, nbins = n_sampled)
+#   }))
+#   
+#   # Produkt aller vorherigen sqrt(n_h / (n_h - 1)) * delta[, h, ]
+#   dimdelta <- dim(delta)
+#   prod_val <- matrix(1, nrow = dimdelta[1], ncol = dimdelta[3])  # Init mit 1 für Multiplikation
+#   
+#   for (h in 1:(i - 1)) {
+#     factor_h <- sqrt(n[, h] / (n[, h] - 1))
+#     delta_h <- delta[, h, ]
+#     prod_val <- prod_val * (factor_h * delta_h)
+#   }
+# rep_out <- rep_out + lambda * prod_val * (n_h / m_h * r_hi_star - 1) * w_hi
 
 
 # TEST -----------------------------------------------------------------------------------------------------------------
@@ -956,16 +1121,39 @@ n_replicates <- 5
 n <- matrix(sample(5:20, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Stichprobenanzahl
 N <- matrix(n * sample(20:50, n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)     # Grundgesamtheiten
 n_draw <- matrix(sample(1:5, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Anzahl der gezogenen Einheiten
-delta <- array(sample(0:1, n_rows * n_cols * n_replicates, replace = TRUE), dim = c(n_rows, n_cols, n_replicates))  # Resampling-Indikatoren
-r_hi_star <- NULL # Wird in der Funktion generiert, wenn nicht vorhanden
+# Generieren von delta für die Preston-Methode (Binär: 0 oder 1)
+delta_preston <- array(sample(0:1, n_rows * n_cols * n_replicates, replace = TRUE), dim = c(n_rows, n_cols, n_replicates))  # Resampling-Indikatoren
+
+# Generieren von delta für die Rao-Wu-Methode (Ganzzahlig: Häufigkeit der Ziehungen)
+delta_rao_wu <- array(0, dim = c(n_rows, n_cols, n_replicates))  # Delta initialisieren
+set.seed(123)  # Für Reproduzierbarkeit
+for (r in 1:n_replicates) {
+  for (i in 1:n_cols) {
+    for (j in 1:n_rows) {
+      # Häufigkeit der Ziehungen mit Zurücklegen
+      delta_rao_wu[j, i, r] <- sum(sample(1:n[j, i], n_draw[j, i], replace = TRUE) == 1)
+    }
+  }
+}
+
+
+# Zeilen repräsentieren die verschiedenen Einheiten oder Strata in der Stichprobe
+# Spalten repräsentieren die verschiedenen Stufen des Stichprobenverfahrens. Ein mehrstufiges Stichprobenverfahren kann folgende Schritte beinhalten: 
+    # Stufe 1 (Primärstufe): Auswahl von Primäreinheiten (z. B. Dörfer, Schulen).
+    # Stufe 2 (Sekundärstufe): Auswahl von Sekundäreinheiten innerhalb der Primäreinheiten (z. B. Haushalte in einem Dorf, Klassen in einer Schule).
+    # Stufe 3 (Tertiärstufe): Auswahl von Tertiäreinheiten innerhalb der Sekundäreinheiten (z. B. Personen in einem Haushalt, Schüler in einer Klasse).
+# n[i, j] = Stichprobenanzahl =  Beispiel: n[2, 1] könnte die Anzahl der Dörfer sein, die in Stratum 2 auf der Primärstufe gezogen wurden.
+# N[i, j] = Grundgesamtheiten = Beispiel: N[3, 2] könnte die Anzahl der verfügbaren Haushalte in Stratum 3 auf der Sekundärstufe sein.
+# delta -> Dimensionen (Zeilen, Spalten, Replikate) = Beispiel: delta[1, 2, 3] gibt an, ob eine Einheit aus Stratum 1 auf Stufe 2 im dritten Replikat ausgewählt wurde
+
 
 # Testen der Funktion mit der "Preston"-Methode
-result_preston <- calc.replicate(n, N, n_draw, delta, r_hi_star, method = "Preston")
+result_preston <- calc.replicate(n, N, n_draw, delta_preston, method = "Preston")
 print("Ergebnis mit der Preston-Methode:")
 print(result_preston)
 
 # Testen der Funktion mit der "Rao-Wu"-Methode
-result_rao_wu <- calc.replicate(n, N, n_draw, delta, r_hi_star, method = "Rao-Wu")
+result_rao_wu <- calc.replicate(n, N, n_draw, delta_rao_wu, method = "Rao-Wu")
 print("Ergebnis mit der Rao-Wu-Methode:")
 print(result_rao_wu)
 # TEST -----------------------------------------------------------------------------------------------------------------
