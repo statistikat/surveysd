@@ -473,7 +473,7 @@ rescaled.bootstrap <- function(
                        by = c(by.val), all.x = TRUE)
           
           # sum over margins
-          fpc.i_ADD <- paste0(fpc[i], "_ADD")
+          fpc.i_ADD <- paste0(fpc[i], "_ADD")  
           dat[!is.na(new.var), c(fpc.i_ADD) := 
                 sum(fpc_i[!duplicated(by.val.tail)]), by = c(new.var),
               env = list(new.var = new.var,
