@@ -753,227 +753,6 @@ rescaled.bootstrap <- function(
   return(output_bootstrap)
 }
 
-
-
-
-# ----------------------------------------------------------------------------------------------------
-#library(surveysd)
-# library(data.table)
-# set.seed(1234)
-# eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
-# 
-# eusilc[,new_strata:=paste(region,hsize,sep="_")]
-# eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
-# eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
-#                                        cluster="hid",fpc="N.households",method = "Preston")
-
-
-# Lade notwendige Bibliothek
-library(data.table)
-set.seed(1234)
-eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
-
-eusilc[,N.households:=uniqueN(hid),by=region]
-eusilc.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc,REP=10,strata="region",
-                                               cluster="hid",fpc="N.households")
-
-eusilc.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc,REP=10,strata="region",
-                                             cluster="hid",fpc="N.households")
-
-
-eusilc[,new_strata:=paste(region,hsize,sep="_")]
-eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
-eusilc.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc,REP=10,strata=c("new_strata"),
-                                               cluster="hid",fpc="N.households")
-eusilc.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc,REP=10,strata=c("new_strata"),
-                                             cluster="hid",fpc="N.households")
-
-
-# ergebnisse ansehen
-head(eusilc.bootstrap.PRESTON[, .SD, .SDcols = patterns("^bootRep")])
-head(eusilc.bootstrap.RAOWU[, .SD, .SDcols = patterns("^bootRep")])
-
-eusilc.bootstrap.PRESTON[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
-eusilc.bootstrap.RAOWU[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
-
-var_preston <- eusilc.bootstrap.PRESTON[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
-var_raowu <- eusilc.bootstrap.RAOWU[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
-print(var_preston)
-print(var_raowu)
-
-
-# weighted means
-weighted_means_preston <- eusilc.bootstrap.PRESTON[
-  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
-  .SDcols = patterns("^bootRep")
-]
-
-weighted_means_raowu <- eusilc.bootstrap.RAOWU[
-  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
-  .SDcols = patterns("^bootRep")
-]
-
-print(weighted_means_preston)
-print(weighted_means_raowu)
-
-
-library(ggplot2)
-# Daten für Plot vorbereiten
-preston_melt <- melt(weighted_means_preston, measure.vars = patterns("^bootRep"))
-raowu_melt <- melt(weighted_means_raowu, measure.vars = patterns("^bootRep"))
-
-ggplot() +
-  geom_boxplot(data = preston_melt, aes(x = "Preston", y = value), fill = "blue", alpha = 0.5) +
-  geom_boxplot(data = raowu_melt, aes(x = "Rao-Wu", y = value), fill = "red", alpha = 0.5) +
-  labs(title = "Vergleich der Bootstrap-Mittelwerte", y = "Gewichtetes Einkommen (€)")
-
-# 10%-, 50%- und 90%-Quantil pro Replikation
-quantiles_preston <- eusilc.bootstrap.PRESTON[
-  , lapply(.SD, function(w) 
-    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
-  .SDcols = patterns("^bootRep")
-]
-
-
-quantiles_raowu <- eusilc.bootstrap.RAOWU[
-  , lapply(.SD, function(w) 
-    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
-  .SDcols = patterns("^bootRep")
-]
-
-
-
-
-###
-###
-# small
-demo.eusilc.small <- function(n = 8, prettyNames = FALSE, dropout_fraction = 0.05) {
-  
-  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <-
-    . <- povertyRisk <- ecoStat <- NULL
-  
-  data("eusilc", package = "laeken", envir = environment())
-  setDT(eusilc)
-  # generate yearly data for y years
-  # Adjusted dropout fraction (default: 5%)
-  eusilc[, year := 2010]
-  eusilc.i <- copy(eusilc)
-  nsamp <- round(eusilc[, uniqueN(db030)] * dropout_fraction)
-  hhincome <- eusilc[!duplicated(db030)][["eqIncome"]]
-  nextIDs <- (1:nsamp) + eusilc[, max(db030)]
-  if (n > 1)
-    for (i in 1:(n - 1)) {
-      eusilc.i[db030 %in% sample(unique(eusilc.i$db030), nsamp),
-               c("db030", "eqIncome") := .(nextIDs[.GRP], sample(hhincome, 1L)),
-               by = db030]
-      eusilc.i[, year := year + 1]
-      eusilc <- rbind(eusilc, eusilc.i)
-      nextIDs <- (1:nsamp) + eusilc[, max(db030)]
-    }
-  
-  eusilc[, rb030 := as.integer(paste0(db030, "0", 1:.N)),
-         by = list(year, db030)]
-  eusilc[, povmd60 := as.numeric(
-    eqIncome < .6 * laeken::weightedMedian(eqIncome, w = db090)
-  ), by = year]
-  eusilc[, age := cut(age, c(-Inf, 16, 25, 45, 65, Inf))]
-  eusilc[, hsize := cut(hsize, c(0:5, Inf))]
-  
-  if (prettyNames) {
-    data.table::setnames(eusilc, "db030", "hid")
-    data.table::setnames(eusilc, "db040", "region")
-    data.table::setnames(eusilc, "rb030", "pid")
-    data.table::setnames(eusilc, "rb090", "gender")
-    data.table::setnames(eusilc, "pb220a", "citizenship")
-    data.table::setnames(eusilc, "pl030", "ecoStat")
-    eusilc[, ecoStat := factor(ecoStat, labels = c(
-      "full time", "part time", "unemployed",
-      "education", "retired", "disabled", "domestic"
-    ))]
-    data.table::setnames(eusilc, "rb050", "pWeight")
-    data.table::setnames(eusilc, "povmd60", "povertyRisk")
-    eusilc[, povertyRisk := as.logical(povertyRisk)]
-  }
-  
-  return(eusilc)
-}
-
-# Beispielaufruf mit 5% Dropout
-eusilc_small <- demo.eusilc.small(n = 8, prettyNames = TRUE, dropout_fraction = 0.02)
-eusilc_small[,N.households:=uniqueN(hid),by=region]
-eusilc_small.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc_small,REP=10,strata="region",
-                                                     cluster="hid",fpc="N.households")
-
-eusilc_small.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc_small,REP=10,strata="region",
-                                                   cluster="hid",fpc="N.households")
-
-
-eusilc_small[,new_strata:=paste(region,hsize,sep="_")]
-eusilc_small[,N.housholds:=uniqueN(hid),by=new_strata]
-eusilc_small.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc_small,REP=10,strata=c("new_strata"),
-                                                     cluster="hid",fpc="N.households")
-eusilc_small.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc_small,REP=10,strata=c("new_strata"),
-                                                   cluster="hid",fpc="N.households")
-
-
-# ergebnisse ansehen
-head(eusilc_small.bootstrap.PRESTON[, .SD, .SDcols = patterns("^bootRep")])
-head(eusilc_small.bootstrap.RAOWU[, .SD, .SDcols = patterns("^bootRep")])
-
-eusilc_small.bootstrap.PRESTON[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
-eusilc_small.bootstrap.RAOWU[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
-
-var_preston <- eusilc_small.bootstrap.PRESTON[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
-var_raowu <- eusilc_small.bootstrap.RAOWU[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
-print(var_preston)
-print(var_raowu)
-
-# weighted means
-weighted_means_preston_small <- eusilc_small.bootstrap.PRESTON[
-  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
-  .SDcols = patterns("^bootRep")
-]
-
-weighted_means_raowu_small <- eusilc_small.bootstrap.RAOWU[
-  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
-  .SDcols = patterns("^bootRep")
-]
-
-print(weighted_means_preston_small)
-print(weighted_means_raowu_small)
-
-
-library(ggplot2)
-# Daten für Plot vorbereiten
-preston_melt_small <- melt(weighted_means_preston_small, measure.vars = patterns("^bootRep"))
-raowu_melt_small <- melt(weighted_means_raowu_small, measure.vars = patterns("^bootRep"))
-
-ggplot() +
-  geom_boxplot(data = preston_melt_small, aes(x = "Preston", y = value), fill = "blue", alpha = 0.5) +
-  geom_boxplot(data = raowu_melt_small, aes(x = "Rao-Wu", y = value), fill = "red", alpha = 0.5) +
-  labs(title = "Vergleich der Bootstrap-Mittelwerte", y = "Gewichtetes Einkommen (€)")
-
-# 10%-, 50%- und 90%-Quantil pro Replikation
-quantiles_preston <- eusilc_small.bootstrap.PRESTON[
-  , lapply(.SD, function(w) 
-    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
-  .SDcols = patterns("^bootRep")
-]
-
-
-quantiles_raowu <- eusilc_small.bootstrap.RAOWU[
-  , lapply(.SD, function(w) 
-    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
-  .SDcols = patterns("^bootRep")
-]
-
-# ----------------------------------------------------------------------------------------------------
-
-
-
-
-#############################################################################################################################################################
-
 select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
                          sum_prev = NULL, new.method) {
   if (n == 1) {
@@ -997,7 +776,7 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
     }
   }
   
-  return(n_draw) # n_draw = Grüße der Unterstichprobe
+  return(n_draw) # n_draw = Größe der Unterstichprobe
 }
 
 
@@ -1253,12 +1032,11 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       # r_hi_star: Erzeuge Replikate durch Ziehen von (n_h - 1) Einheiten ohne Zurücklegen
       r_hi_star <- delta[, i, ]
       
-      
       # rep_out = Matrix der replizierten Gewichtungen
       rep_out <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
       # adjustment <- sweep(r_hi_star, 1, lambda * n_h / m_h, FUN = "*") # Jede Zeile der Matrix r_hi_star wird elementweise mit dem entsprechenden Stratum-Faktor multipliziert.
       # adjustment <- sweep(adjustment, 1, 1 - lambda, FUN = "+") # 1 - lamda + lambda * n/N * r_hi_star
-      # rep_out <- adjustment * w_hi # * w_hi
+      # rep_out <- adjustment * w_hi
       print("n:")
       print(head(n))
       print("N:")
@@ -1300,54 +1078,291 @@ next_minimum <- function(N, by) {
 
 
 
-# TEST -----------------------------------------------------------------------------------------------------------------
-set.seed(123) # Für reproduzierbare Ergebnisse
 
-# Anzahl der Beobachtungen
-n_rows <- 10
-n_cols <- 3
-n_replicates <- 5
+# ----------------------------------------------------------------------------------------------------
+# ---------------------------------------------- TEST ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+#library(surveysd)
+# library(data.table)
+# set.seed(1234)
+# eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
+# 
+# eusilc[,new_strata:=paste(region,hsize,sep="_")]
+# eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+# eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
+#                                        cluster="hid",fpc="N.households",method = "Preston")
 
-# Erstellen der Matrizen und Vektoren
-n <- matrix(sample(5:20, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Stichprobenanzahl
-N <- matrix(n * sample(20:50, n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)     # Grundgesamtheiten
-n_draw <- matrix(sample(1:5, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Anzahl der gezogenen Einheiten
-# Generieren von delta für die Preston-Methode (Binär: 0 oder 1)
-delta_preston <- array(sample(0:1, n_rows * n_cols * n_replicates, replace = TRUE), dim = c(n_rows, n_cols, n_replicates))  # Resampling-Indikatoren
 
-# Generieren von delta für die Rao-Wu-Methode (Ganzzahlig: Häufigkeit der Ziehungen)
-delta_rao_wu <- array(0, dim = c(n_rows, n_cols, n_replicates))  # Delta initialisieren
-set.seed(123)  # Für Reproduzierbarkeit
-for (r in 1:n_replicates) {
-  for (i in 1:n_cols) {
-    for (j in 1:n_rows) {
-      # Häufigkeit der Ziehungen mit Zurücklegen
-      delta_rao_wu[j, i, r] <- sum(sample(1:n[j, i], n_draw[j, i], replace = TRUE) == 1)
+# Lade notwendige Bibliothek
+library(data.table)
+set.seed(1234)
+eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
+
+eusilc[,N.households:=uniqueN(hid),by=region]
+eusilc.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc,REP=10,strata="region",
+                                               cluster="hid",fpc="N.households")
+
+eusilc.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc,REP=10,strata="region",
+                                             cluster="hid",fpc="N.households")
+
+
+eusilc[,new_strata:=paste(region,hsize,sep="_")]
+eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+eusilc.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc,REP=10,strata=c("new_strata"),
+                                               cluster="hid",fpc="N.households")
+eusilc.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc,REP=10,strata=c("new_strata"),
+                                             cluster="hid",fpc="N.households")
+
+
+# ergebnisse ansehen
+head(eusilc.bootstrap.PRESTON[, .SD, .SDcols = patterns("^bootRep")])
+head(eusilc.bootstrap.RAOWU[, .SD, .SDcols = patterns("^bootRep")])
+
+eusilc.bootstrap.PRESTON[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+eusilc.bootstrap.RAOWU[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+
+var_preston <- eusilc.bootstrap.PRESTON[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+var_raowu <- eusilc.bootstrap.RAOWU[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+print(var_preston)
+print(var_raowu)
+
+
+# weighted means
+weighted_means_preston <- eusilc.bootstrap.PRESTON[
+  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
+  .SDcols = patterns("^bootRep")
+]
+
+weighted_means_raowu <- eusilc.bootstrap.RAOWU[
+  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
+  .SDcols = patterns("^bootRep")
+]
+
+print(weighted_means_preston)
+print(weighted_means_raowu)
+
+
+library(ggplot2)
+# Daten für Plot vorbereiten
+preston_melt <- melt(weighted_means_preston, measure.vars = patterns("^bootRep"))
+raowu_melt <- melt(weighted_means_raowu, measure.vars = patterns("^bootRep"))
+
+ggplot() +
+  geom_boxplot(data = preston_melt, aes(x = "Preston", y = value), fill = "blue", alpha = 0.5) +
+  geom_boxplot(data = raowu_melt, aes(x = "Rao-Wu", y = value), fill = "red", alpha = 0.5) +
+  labs(title = "Vergleich der Bootstrap-Mittelwerte", y = "Gewichtetes Einkommen (€)")
+
+# 10%-, 50%- und 90%-Quantil pro Replikation
+quantiles_preston <- eusilc.bootstrap.PRESTON[
+  , lapply(.SD, function(w) 
+    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
+  .SDcols = patterns("^bootRep")
+]
+
+
+quantiles_raowu <- eusilc.bootstrap.RAOWU[
+  , lapply(.SD, function(w) 
+    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
+  .SDcols = patterns("^bootRep")
+]
+
+
+
+
+###
+###
+# small
+demo.eusilc.small <- function(n = 8, prettyNames = FALSE, dropout_fraction = 0.05) {
+  
+  db030 <- rb030 <- povmd60 <- eqincome <- db090 <- eqIncome <- age <- hsize <-
+    . <- povertyRisk <- ecoStat <- NULL
+  
+  data("eusilc", package = "laeken", envir = environment())
+  setDT(eusilc)
+  # generate yearly data for y years
+  # Adjusted dropout fraction (default: 5%)
+  eusilc[, year := 2010]
+  eusilc.i <- copy(eusilc)
+  nsamp <- round(eusilc[, uniqueN(db030)] * dropout_fraction)
+  hhincome <- eusilc[!duplicated(db030)][["eqIncome"]]
+  nextIDs <- (1:nsamp) + eusilc[, max(db030)]
+  if (n > 1)
+    for (i in 1:(n - 1)) {
+      eusilc.i[db030 %in% sample(unique(eusilc.i$db030), nsamp),
+               c("db030", "eqIncome") := .(nextIDs[.GRP], sample(hhincome, 1L)),
+               by = db030]
+      eusilc.i[, year := year + 1]
+      eusilc <- rbind(eusilc, eusilc.i)
+      nextIDs <- (1:nsamp) + eusilc[, max(db030)]
     }
+  
+  eusilc[, rb030 := as.integer(paste0(db030, "0", 1:.N)),
+         by = list(year, db030)]
+  eusilc[, povmd60 := as.numeric(
+    eqIncome < .6 * laeken::weightedMedian(eqIncome, w = db090)
+  ), by = year]
+  eusilc[, age := cut(age, c(-Inf, 16, 25, 45, 65, Inf))]
+  eusilc[, hsize := cut(hsize, c(0:5, Inf))]
+  
+  if (prettyNames) {
+    data.table::setnames(eusilc, "db030", "hid")
+    data.table::setnames(eusilc, "db040", "region")
+    data.table::setnames(eusilc, "rb030", "pid")
+    data.table::setnames(eusilc, "rb090", "gender")
+    data.table::setnames(eusilc, "pb220a", "citizenship")
+    data.table::setnames(eusilc, "pl030", "ecoStat")
+    eusilc[, ecoStat := factor(ecoStat, labels = c(
+      "full time", "part time", "unemployed",
+      "education", "retired", "disabled", "domestic"
+    ))]
+    data.table::setnames(eusilc, "rb050", "pWeight")
+    data.table::setnames(eusilc, "povmd60", "povertyRisk")
+    eusilc[, povertyRisk := as.logical(povertyRisk)]
   }
+  
+  return(eusilc)
 }
 
+# Beispielaufruf mit 5% Dropout
+eusilc_small <- demo.eusilc.small(n = 8, prettyNames = TRUE, dropout_fraction = 0.02)
+eusilc_small[,N.households:=uniqueN(hid),by=region]
+eusilc_small.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc_small,REP=10,strata="region",
+                                                     cluster="hid",fpc="N.households")
 
-# Zeilen repräsentieren die verschiedenen Einheiten oder Strata in der Stichprobe
-# Spalten repräsentieren die verschiedenen Stufen des Stichprobenverfahrens. Ein mehrstufiges Stichprobenverfahren kann folgende Schritte beinhalten: 
-# Stufe 1 (Primärstufe): Auswahl von Primäreinheiten (z. B. Dörfer, Schulen).
-# Stufe 2 (Sekundärstufe): Auswahl von Sekundäreinheiten innerhalb der Primäreinheiten (z. B. Haushalte in einem Dorf, Klassen in einer Schule).
-# Stufe 3 (Tertiärstufe): Auswahl von Tertiäreinheiten innerhalb der Sekundäreinheiten (z. B. Personen in einem Haushalt, Schüler in einer Klasse).
-# n[i, j] = Stichprobenanzahl =  Beispiel: n[2, 1] könnte die Anzahl der Dörfer sein, die in Stratum 2 auf der Primärstufe gezogen wurden.
-# N[i, j] = Grundgesamtheiten = Beispiel: N[3, 2] könnte die Anzahl der verfügbaren Haushalte in Stratum 3 auf der Sekundärstufe sein.
-# delta -> Dimensionen (Zeilen, Spalten, Replikate) = Beispiel: delta[1, 2, 3] gibt an, ob eine Einheit aus Stratum 1 auf Stufe 2 im dritten Replikat ausgewählt wurde
+eusilc_small.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc_small,REP=10,strata="region",
+                                                   cluster="hid",fpc="N.households")
 
 
-# Testen der Funktion mit der "Preston"-Methode
-result_preston <- calc.replicate(n, N, n_draw, delta_preston, method = "Preston")
-print("Ergebnis mit der Preston-Methode:")
-print(result_preston)
+eusilc_small[,new_strata:=paste(region,hsize,sep="_")]
+eusilc_small[,N.housholds:=uniqueN(hid),by=new_strata]
+eusilc_small.bootstrap.PRESTON <- rescaled.bootstrap(method="Preston", eusilc_small,REP=10,strata=c("new_strata"),
+                                                     cluster="hid",fpc="N.households")
+eusilc_small.bootstrap.RAOWU <- rescaled.bootstrap(method="Rao-Wu", eusilc_small,REP=10,strata=c("new_strata"),
+                                                   cluster="hid",fpc="N.households")
 
-# Testen der Funktion mit der "Rao-Wu"-Methode
-result_rao_wu <- calc.replicate(n, N, n_draw, delta_rao_wu, method = "Rao-Wu")
-print("Ergebnis mit der Rao-Wu-Methode:")
-print(result_rao_wu)
-# TEST -----------------------------------------------------------------------------------------------------------------
+
+# ergebnisse ansehen
+head(eusilc_small.bootstrap.PRESTON[, .SD, .SDcols = patterns("^bootRep")])
+head(eusilc_small.bootstrap.RAOWU[, .SD, .SDcols = patterns("^bootRep")])
+
+eusilc_small.bootstrap.PRESTON[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+eusilc_small.bootstrap.RAOWU[, .(total_draws = rowSums(.SD)), .SDcols = patterns("^bootRep"), by = hid]
+
+var_preston <- eusilc_small.bootstrap.PRESTON[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+var_raowu <- eusilc_small.bootstrap.RAOWU[, lapply(.SD, var), .SDcols = patterns("^bootRep")]
+print(var_preston)
+print(var_raowu)
+
+# weighted means
+weighted_means_preston_small <- eusilc_small.bootstrap.PRESTON[
+  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
+  .SDcols = patterns("^bootRep")
+]
+
+weighted_means_raowu_small <- eusilc_small.bootstrap.RAOWU[
+  , lapply(.SD, function(w) sum(w * pWeight * eqIncome) / sum(w * pWeight)),
+  .SDcols = patterns("^bootRep")
+]
+
+print(weighted_means_preston_small)
+print(weighted_means_raowu_small)
+
+
+library(ggplot2)
+# Daten für Plot vorbereiten
+preston_melt_small <- melt(weighted_means_preston_small, measure.vars = patterns("^bootRep"))
+raowu_melt_small <- melt(weighted_means_raowu_small, measure.vars = patterns("^bootRep"))
+
+ggplot() +
+  geom_boxplot(data = preston_melt_small, aes(x = "Preston", y = value), fill = "blue", alpha = 0.5) +
+  geom_boxplot(data = raowu_melt_small, aes(x = "Rao-Wu", y = value), fill = "red", alpha = 0.5) +
+  labs(title = "Vergleich der Bootstrap-Mittelwerte", y = "Gewichtetes Einkommen (€)")
+
+# 10%-, 50%- und 90%-Quantil pro Replikation
+quantiles_preston <- eusilc_small.bootstrap.PRESTON[
+  , lapply(.SD, function(w) 
+    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
+  .SDcols = patterns("^bootRep")
+]
+
+
+quantiles_raowu <- eusilc_small.bootstrap.RAOWU[
+  , lapply(.SD, function(w) 
+    quantile(rep(eqIncome, round(w * pWeight)), probs = c(0.1, 0.5, 0.9))),
+  .SDcols = patterns("^bootRep")
+]
+
+# ----------------------------------------------------------------------------------------------------
+
+
+
+
+#############################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
+# 
+# # TEST -----------------------------------------------------------------------------------------------------------------
+# set.seed(123) # Für reproduzierbare Ergebnisse
+# 
+# # Anzahl der Beobachtungen
+# n_rows <- 10
+# n_cols <- 3
+# n_replicates <- 5
+# 
+# # Erstellen der Matrizen und Vektoren
+# n <- matrix(sample(5:20, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Stichprobenanzahl
+# N <- matrix(n * sample(20:50, n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)     # Grundgesamtheiten
+# n_draw <- matrix(sample(1:5, n_rows * n_cols, replace = TRUE), nrow = n_rows, ncol = n_cols)  # Anzahl der gezogenen Einheiten
+# # Generieren von delta für die Preston-Methode (Binär: 0 oder 1)
+# delta_preston <- array(sample(0:1, n_rows * n_cols * n_replicates, replace = TRUE), dim = c(n_rows, n_cols, n_replicates))  # Resampling-Indikatoren
+# 
+# # Generieren von delta für die Rao-Wu-Methode (Ganzzahlig: Häufigkeit der Ziehungen)
+# delta_rao_wu <- array(0, dim = c(n_rows, n_cols, n_replicates))  # Delta initialisieren
+# set.seed(123)  # Für Reproduzierbarkeit
+# for (r in 1:n_replicates) {
+#   for (i in 1:n_cols) {
+#     for (j in 1:n_rows) {
+#       # Häufigkeit der Ziehungen mit Zurücklegen
+#       delta_rao_wu[j, i, r] <- sum(sample(1:n[j, i], n_draw[j, i], replace = TRUE) == 1)
+#     }
+#   }
+# }
+# 
+# 
+# # Zeilen repräsentieren die verschiedenen Einheiten oder Strata in der Stichprobe
+# # Spalten repräsentieren die verschiedenen Stufen des Stichprobenverfahrens. Ein mehrstufiges Stichprobenverfahren kann folgende Schritte beinhalten: 
+# # Stufe 1 (Primärstufe): Auswahl von Primäreinheiten (z. B. Dörfer, Schulen).
+# # Stufe 2 (Sekundärstufe): Auswahl von Sekundäreinheiten innerhalb der Primäreinheiten (z. B. Haushalte in einem Dorf, Klassen in einer Schule).
+# # Stufe 3 (Tertiärstufe): Auswahl von Tertiäreinheiten innerhalb der Sekundäreinheiten (z. B. Personen in einem Haushalt, Schüler in einer Klasse).
+# # n[i, j] = Stichprobenanzahl =  Beispiel: n[2, 1] könnte die Anzahl der Dörfer sein, die in Stratum 2 auf der Primärstufe gezogen wurden.
+# # N[i, j] = Grundgesamtheiten = Beispiel: N[3, 2] könnte die Anzahl der verfügbaren Haushalte in Stratum 3 auf der Sekundärstufe sein.
+# # delta -> Dimensionen (Zeilen, Spalten, Replikate) = Beispiel: delta[1, 2, 3] gibt an, ob eine Einheit aus Stratum 1 auf Stufe 2 im dritten Replikat ausgewählt wurde
+# 
+# 
+# # Testen der Funktion mit der "Preston"-Methode
+# result_preston <- calc.replicate(n, N, n_draw, delta_preston, method = "Preston")
+# print("Ergebnis mit der Preston-Methode:")
+# print(result_preston)
+# 
+# # Testen der Funktion mit der "Rao-Wu"-Methode
+# result_rao_wu <- calc.replicate(n, N, n_draw, delta_rao_wu, method = "Rao-Wu")
+# print("Ergebnis mit der Rao-Wu-Methode:")
+# print(result_rao_wu)
+# # TEST -----------------------------------------------------------------------------------------------------------------
 
 
 
