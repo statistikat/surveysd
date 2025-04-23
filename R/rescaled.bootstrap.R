@@ -148,8 +148,8 @@ rescaled.bootstrap <- function(
     removeCols <- c(removeCols, cluster)
     dat[, c(cluster) := 1:.N]
   }
-
-    if (is.null(strata)) {
+  
+  if (is.null(strata)) {
     strata <- generateRandomName(20, colnames(dat))
     removeCols <- c(removeCols, strata)
     dat[, c(strata) := 1]
@@ -278,7 +278,7 @@ rescaled.bootstrap <- function(
   delta_selection <- list()
   
   for (i in 1:stages) {  
-
+    
     # define by.val
     by.val <- strata[i]  # by.val determines the grouping for the current level
     if (i > 1) {
@@ -324,7 +324,7 @@ rescaled.bootstrap <- function(
       
       if (method == "Preston") {
         if (single.PSU == "merge") { # strata with only one PSU are merged with the nearest smaller stratum to avoid issues in the bootstrap procedure.
-
+          
           if (return.value == "data") {
             by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
             fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
@@ -409,7 +409,7 @@ rescaled.bootstrap <- function(
         }
       } else if (method == "Rao-Wu") {
         if (single.PSU == "merge") {
-
+          
           if (return.value == "data") {
             by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
             fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
@@ -521,7 +521,7 @@ rescaled.bootstrap <- function(
                              clust.val = clust.val)]
     }
     
-
+    
     deltai <- paste0("delta_", i, "_", 1:REP) 
     dati[, n := .N, by = c(by.val)]  
     
@@ -719,7 +719,7 @@ select.nstar <- function(n, N, f, n_prev, n_draw_prev, lambda_prev,
 
 # Sampling WITHOUT replacement (Preston method)
 draw.without.replacement <- function(n, n_draw, delta = NULL) {   # delta: 1= selected, 0 = not selected, NA = not yet drawn, NULL = not existent yet
-
+  
   # if no units have been selected prior
   if(is.null(delta)){
     delta <- rep(c(1.0, 0.0), c(n_draw, n - n_draw)) # if delta is not passed (no units have been created yet), it will be created here. All units are selected with prob of 1.0 or 0.0
@@ -793,11 +793,11 @@ draw.without.replacement <- function(n, n_draw, delta = NULL) {   # delta: 1= se
 
 # Sampling WITH replacement (Rao-Wu method)
 draw.with.replacement <- function(n, n_draw, delta = NULL) { 
-
+  
   if (is.null(delta)) {
     delta <- rep(0, n)  # Set all units to 0 (not yet drawn)
   }
-
+  
   n_selected <- sum(delta, na.rm = TRUE)
   
   # 1. draw additional units if less than n_draw are selected
@@ -878,13 +878,13 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
           print("prod_val:")
           print(prod_val)
         }
-
+        
         rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] *      
                                                     delta[, i, ] - 1)
       }
       
     } else if (method == "Rao-Wu") {
-
+      
       n_h <- n[, i]               # Number of PSUs drawn 
       m_h <- n_h - 1              # Omit 1 for resampling
       f_h <- n_h / N[, i]         # sample fraction
@@ -901,7 +901,7 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       
       # r_hi_star: Create replicas by drawing (n_h - 1) units without putting them back
       r_hi_star <- delta[, i, ]
-
+      
       rep_out <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
       
     }
@@ -918,4 +918,3 @@ next_minimum <- function(N, by) {
   }
   return(by)
 }
-
