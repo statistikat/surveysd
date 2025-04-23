@@ -27,21 +27,22 @@ $$
  \lambda_h = \sqrt{\frac{m_h(1 - f_h)}{n_h - 1}}
 $$
 where:<br>
- - \( w_{hi} \) is the design weight of unit \( i \) in stratum \( h \),<br>
- - \( r^*_{hi} \in \{0, 1, 2, \dots\} \) is a **counter** that indicates how many times unit \( i \) in stratum \( h \) has been selected in the replicate,<br>
+ - \( w_{hi} \) is the design weight for PSU \( i \) in stratum \( h \), \( w_h = N_h / n_h \) is the average design weight for the entire stratum \( h \),<br>
+ - \( N_h \) is the total number of units in stratum \( h \),<br>
  - \( n_h \) is the number of PSUs in the original sample for stratum \( h \),<br>
+ - \( r^*_{hi} \in \{0, 1, 2, \dots\} \) is a **resampling indicator** that represents how many times PSU \( i \) in stratum \( h \)  was drawn in the bootstrap ,<br>
  - \( m_h = n_h - 1 \) is the **number of units** to be drawn in each replicate for stratum \( h \),<br>
  - \( \lambda_h\) is the **scaling factor** used to adjust the weights during the bootstrap process,<br>
- - and \( f_h = n_h / N_h \) is the sampling fraction in stratum \( h \), and \( N_h \) is the total number of units in stratum \( h \).<br>
+ - and \( f_h = n_h / N_h \) is the **sampling fraction** in stratum \( h \).<br>
 
 ### Use of Rao-Wu
 The Rao-Wu bootstrap is particularly suited for complex survey designs with stratification and multi-stage selection. The design-based variance estimation benefits from a resampling method that accounts for the primary sampling stage and incorporates finite population corrections (FPC) directly in the replicate weights.
 The method is appropriate when the sampling fraction in the first stage (i.e., the share of selected PSUs within strata) is relatively small, typically below 10%. 
 
-Rao-Wu is **not suitable** when:
- - The sampling fraction in the first stage is **large** and the first-stage sampling is  **without replacement**.
- - The survey does **not include PSU-level identifiers**, making a first-stage resampling infeasible since the method requires resampling entire PSUs to reflect first-stage sampling variability.
- - The design is **single-stage**, where methods like the Preston bootstrap may be more appropriate.
+Rao-Wu is **not suitable** when:<br>
+ - The sampling fraction in the first stage is large and the first-stage sampling is without replacement.<br>
+ - The survey does not include PSU-level identifiers, making a first-stage resampling infeasible since the method requires resampling entire PSUs to reflect first-stage sampling variability.<br>
+ - The design is single-stage, where methods like the Preston bootstrap may be more appropriate.<br>
 
 In those cases, it is recommended to fall back on alternative bootstrap methods such as the default Preston approach implemented in `surveysd`, which offers more flexibility for a wider range of designs without PSU information.
 

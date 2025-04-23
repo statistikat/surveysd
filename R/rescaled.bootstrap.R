@@ -103,7 +103,6 @@
 #'
 
 
-
 rescaled.bootstrap <- function(
     dat, 
     method = c("Preston", "Rao-Wu"), 
