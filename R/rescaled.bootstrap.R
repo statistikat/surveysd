@@ -347,11 +347,11 @@ rescaled.bootstrap <- function(
                    env = list(by.val.tail = by.val.tail)]
           if(any(is.na(next.PSU[[new.var]]))){
             if(firstStage){
-              next.PUS[is.na(new.var_col), c(new.var) := head(higher.stages, 1),      ################################################################################################# @Johannes: PSU ? #####################################
+              next.PSU[is.na(new.var_col), c(new.var) := head(higher.stages, 1),      ################################################################################################# @Johannes: PSU ? #####################################
                        env = list(new.var_col = new_var,
                                   higher.stages = higher.stages)]
             }else{
-              next.PUS[is.na(new.var_col), c(new.var) := head(by.val.tail,1),       ################################################################################################# @Johannes: PSU ? #####################################
+              next.PSU[is.na(new.var_col), c(new.var) := head(by.val.tail,1),       ################################################################################################# @Johannes: PSU ? #####################################
                        env = list(new.var_col = new_var,
                                   by.val.tail = by.val.tail)]
             }
@@ -423,7 +423,7 @@ rescaled.bootstrap <- function(
                           env = list(clust.val = clust.val)]
           
           if(nrow(next.PSU)==1){
-            warning("Only 1 single PSU in first sampling stage! Results may be unreliable. Consider manually combining strata.")
+            stop("Only 1 single PSU in first sampling stage! Cannot combine single PSU.\nPlease manually combine sampling STRATA to eliminate single PSU!")
           }
           
           new.var <- paste0(tail(by.val, 1), "_NEWVAR")
@@ -889,9 +889,9 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       f_h <- n_h / N[, i]         # sample fraction
       print(f_h)
       
-      # if (any(f_h > 0.1)) {  
-      #   stop("Sampling Fraction is too big for Rao-Wu, choose preston instead") ################################################################################################# @Johannes: Welche Sampling Fraction ? (Recherche sagt maximales f von 0.05 - 0.1) #####################################
-      # }
+      if (any(f_h > 0.1)) {
+        warning("Sampling Fraction is too big for Rao-Wu, choose preston instead") 
+      }
       
       w_hi <- N[, i] / n_h # Designgweights
       
