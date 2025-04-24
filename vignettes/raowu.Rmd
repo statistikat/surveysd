@@ -14,7 +14,7 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 In the following we describe an extension of the methodology implemented in `surveysd`.
-While the default rescaling method described in `vignette("Methodology")` follows the approach of Preston, this vignette introduces an alternative rescaling method based on the Rao-Wu bootstrap.
+While the default rescaling method described in `vignette("Methodology")` follows the approach of Preston, this vignette introduces an alternative rescaling method based on the Rao-Wu bootstrap [@raowu1988].
 
 ### Mathematical Formulation
 
