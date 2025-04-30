@@ -116,6 +116,7 @@ rescaled.bootstrap <- function(
     already.selected = NULL, 
     seed = NULL) {
   
+  # browser()
   
   InitialOrder <- N <- SINGLE_BOOT_FLAG <- SINGLE_BOOT_FLAG_FINAL <- f <-
     n_prev <- n_draw_prev <- sum_prev <- n_draw <- NULL  
@@ -263,8 +264,8 @@ rescaled.bootstrap <- function(
   
   # calculate bootstrap replicates
   stages <- length(strata) 
-  print("stages: ")
-  print(stages)
+  # print("stages: ")
+  # print(stages)
   
   n <- nrow(dat)
   
@@ -406,6 +407,7 @@ rescaled.bootstrap <- function(
                            env = list(clust.val = clust.val)]
           dat.print <- dat.print[V1==1,.SD,.SDcols=c(by.val)]
         }
+        
       } else if (method == "Rao-Wu") {
         if (single.PSU == "merge") {
           
@@ -520,6 +522,8 @@ rescaled.bootstrap <- function(
                              clust.val = clust.val)]
     }
     
+    # print("dati[, .N, by = c(by.val)]")
+    # print(dati[, .N, by = c(by.val)])
     
     deltai <- paste0("delta_", i, "_", 1:REP) 
     dati[, n := .N, by = c(by.val)]  
@@ -537,53 +541,122 @@ rescaled.bootstrap <- function(
     }
     
     # do bootstrap for i-th stage
-    if(!is.null(already.selected)){ 
-      # if already.selected was supplied consider already selected units
+    if (!is.null(already.selected)) { 
+      # if already.selected was supplied, consider already selected units
       dati_selected <- already.selected[[i]]
-      dati[dati_selected,c(deltai):=mget(deltai),on=c(by.val,clust.val)]
+      dati[dati_selected, c(deltai) := mget(deltai), on = c(by.val, clust.val)]
       
-      dati[,c(deltai):=lapply(.SD,function(delta,n,n_draw){
+      dati[, c(deltai) := lapply(.SD, function(delta, n, n_draw) {
+        # Debugging-Ausgaben
+        # print("Inside lapply for bootstrap")
+        # print(list(delta = delta, n = n, n_draw = n_draw))
         
+        # Handle method-specific sampling
         if (method == "Rao-Wu") {  
-          draw.with.replacement(n[1], n_draw[1], delta=delta) 
-        } else if (method == "Preston"){
-          draw.without.replacement(n[1],n_draw[1], delta=delta)
-          print("n[1]:")
-          print(n[1])
-          
-          print("n_draw[1]:")
-          print(n_draw)
+          # print("Debugging draw.without.replacement:")
+          # print(paste("n:", n))
+          # print(paste("n_draw:", n_draw))
+          # print("delta (initial):")
+          # print(delta)
+          (draw.with.replacement(n[1], n_draw[1], delta = delta))
+        } else if (method == "Preston") {
+          (draw.without.replacement(n[1], n_draw[1], delta = delta))
+        } else {
+          stop("Invalid method specified: ", method)
         }
-      },n=n,n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)] 
+      }, n = n, n_draw = n_draw), by = c(by.val), .SDcols = c(deltai)]
       
-      dati_check <- dati[,lapply(.SD,function(z,n_draw){
-        sum(z)==n_draw[1]
-      },n_draw=n_draw),by=c(by.val),.SDcols=c(deltai)]
       
-      if(any(!dati_check[,.SD,.SDcols=c(deltai)])){
+      dati_check <- dati[, lapply(.SD, function(z, n_draw) {
+        sum(z) == n_draw[1]
+        # print ("(z):")
+        # print (z)
+        print ("sum(z):")
+        print (sum(z))
+        print ("length(z):")
+        print (length(z))
+        print("n_draw[1]: ")
+        print(n_draw[1])
+        
+        if (length(z) == 0 || is.null(z)) {
+          print("z ist leer oder NULL!")
+          return(FALSE)  # Gebe FALSE zurück, um den Fehler zu vermeiden
+        }
+        
+        # Prüfe die Bedingung
+        result <- sum(z, na.rm = TRUE) == n_draw[1]
+        # print(paste("Result:", result))
+        
+        return(as.logical(result))
+        
+        
+      }, n_draw = n_draw), by = c(by.val), .SDcols = c(deltai)]
+      
+      if (any(!dati_check[, .SD, .SDcols = c(deltai)])) {
         stop("Wrong number of units selected! Please report bug in ",
              "https://github.com/statistikat/surveysd")
       }
-    }else{ 
-      # do simple sampling without replacement
-      if (method == "Rao-Wu") {
+      
+    } else {
+      # Do sampling based on the specified method
+      if (method == "Preston") {
+        # Sampling without replacement
         dati[, c(deltai) := as.data.table(
-          replicate(REP, draw.with.replacement(n[1], n_draw[1]),simplify = FALSE)
-        ), by = c(by.val)] 
-        
-      } else if (method == "Preston") {
-        print("n[1]:")
-        print(n[1])
-        
-        print("n_draw[1]:")
-        print(n_draw)
-        
+          replicate(REP, draw.without.replacement(n[1], n_draw[1]), simplify = FALSE)
+        ), by = c(by.val)]
+      } else if (method == "Rao-Wu") {
+        print("Debugging draw.without.replacement:")
+        print(paste("n:", n))
+        print(paste("n_draw:", n_draw))
+        # print("delta (initial):")
+        # print(delta)
+        # Sampling with replacement
         dati[, c(deltai) := as.data.table(
-          replicate(REP, draw.without.replacement(n[1], n_draw[1]), 
-                    simplify = FALSE)),
-          by = c(by.val)]
+          replicate(REP, draw.with.replacement(n[1], n_draw[1]), simplify = FALSE)
+        ), by = c(by.val)]
+      } else {
+        stop("Invalid method specified. Please use 'Preston' or 'Rao-Wu'.")
       }
     }
+    
+    # Debugging-Ausgaben für den Kontext
+    # print("Bootstrap stage completed")
+    # print("n[1]:")
+    # print(n[1])
+    # print("n_draw[1]:")
+    # print(n_draw)
+    # print("method:")
+    # print(method)
+    # print("names(dati):")
+    # print(names(dati))
+    # print("deltai:")
+    # print(deltai)
+    # print("by.val:")
+    # print(by.val)
+    # print("clust.val:")
+    # print(clust.val)
+    # # print("delta:")
+    # # print(delta)
+    # print("n:")
+    # print(n)
+    # print("n_draw:")
+    # print(n_draw)
+    
+    # if (!"delta_1_1" %in% names(dati)) {
+    #   stop("Column 'delta_1_1' is missing in 'dati'")
+    # }
+    # if (all(is.na(dati[["delta_1_1"]]))) {
+    #   stop("Column 'delta_1_1' contains only NA values")
+    # }
+    # if (!method %in% c("Rao-Wu", "Preston")) {
+    #   stop("Invalid method: ", method)
+    # }
+    # 
+    # if (is.null(n_draw) || length(n_draw) == 0 || any(is.na(n_draw))) {
+    #   stop("Invalid or missing values in 'n_draw'")
+    # }
+    # 
+    # if (is.null(delta) || all(is.na(delta))) return(rep(NA, length(delta)))
     
     
     # merge with data
@@ -642,8 +715,8 @@ rescaled.bootstrap <- function(
     ), by = SINGLE_BOOT_FLAG_FINAL, .SDcols = c(bootRep)]
   }
   
-  print("dat: ")
-  print (head(dat))
+  # print("dat: ")
+  # print (head(dat))
   
   setkey(dat, InitialOrder)  
   if (length(removeCols) > 0) {
@@ -795,6 +868,11 @@ draw.with.replacement <- function(n, n_draw, delta = NULL) {
   
   if (is.null(delta)) {
     delta <- rep(0, n)  # Set all units to 0 (not yet drawn)
+    delta[is.na(delta)] <- 0
+  }
+  
+  if (is.na(n_draw) || n_draw > n) {
+    stop("Error: Invalid n_draw value.")
   }
   
   n_selected <- sum(delta, na.rm = TRUE)
@@ -802,17 +880,30 @@ draw.with.replacement <- function(n, n_draw, delta = NULL) {
   # 1. draw additional units if less than n_draw are selected
   if (n_selected < n_draw) {
     n_needed <- n_draw - n_selected
-    additional_draws <- sample(1:n, size = n_needed, replace = TRUE) 
+    additional_draws <- sample(1:n, size = n_needed, replace = TRUE)
+    
     for (i in additional_draws) {
-      delta[i] <- delta[i] + 1 # Update delta: Increase the frequency of units drawn
+      if (is.na(delta[i])) {
+        delta[i] <- 1  # Setze auf 1, wenn delta[i] NA ist
+      } else {
+        delta[i] <- delta[i] + 1  # Erhöhe den Wert von delta[i]
+      }
     }
   }
   
   # 2 Reduce excess units if more than n_draw are selected
   if (n_selected > n_draw) {
-    over_selected <- n_selected - n_draw 
-    for (i in which(delta > 0)[1:over_selected]) {
-      delta[i] <- delta[i] - 1
+    over_selected <- n_selected - n_draw
+    # for (i in which(delta > 0)[1:over_selected]) {
+    #   delta[i] <- delta[i] - 1
+    # }
+    if (over_selected > 0) {
+      indices <- which(delta > 0)
+      if (length(indices) >= over_selected) {
+        delta[indices[1:over_selected]] <- delta[indices[1:over_selected]] - 1
+      } else {
+        stop("Error: Too many units to remove from delta.")
+      }
     }
   }
   
@@ -853,6 +944,7 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
   
   p <- ncol(n)  
   dimdelta <- dim(delta)
+  
   for (i in 1:p) {
     if (method == "Preston") {
       if (i == 1) { # 
@@ -874,8 +966,8 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
           prod_val[, r] <- rowProds(sqrt(n[, 1:(i - 1)] / n_draw[, 1:(i - 1)]) *
                                       delta[, 1:(i - 1), r])
           
-          print("prod_val:")
-          print(prod_val)
+          # print("prod_val:")
+          # print(prod_val)
         }
         
         rep_out <- rep_out + lambda * prod_val * (n[, i] / n_draw[, i] *      
@@ -884,13 +976,13 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       
     } else if (method == "Rao-Wu") {
       
-      n_h <- n[, i]               # Number of PSUs drawn 
+      n_h <- n[, i]               # Number of PSUs drawn
       m_h <- n_h - 1              # Omit 1 for resampling
       f_h <- n_h / N[, i]         # sample fraction
-      print(f_h)
+      #print(f_h)
       
       if (any(f_h > 0.1)) {
-        warning("Sampling Fraction is too big for Rao-Wu, choose preston instead") 
+        warning("Sampling Fraction is too big for Rao-Wu, choose preston instead")
       }
       
       w_hi <- N[, i] / n_h # Designgweights
@@ -900,8 +992,15 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       
       # r_hi_star: Create replicas by drawing (n_h - 1) units without putting them back
       r_hi_star <- delta[, i, ]
+      w_hi_star <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
       
-      rep_out <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
+      if (i == 1) {
+        rep_out <- w_hi_star
+      } else {
+        rep_out <- rep_out * w_hi_star  # Multiplikation über Stufen!
+      }
+      
+      #rep_out <- (1 - lambda + lambda * (n_h / m_h) * r_hi_star) * w_hi
       
     }
   }
