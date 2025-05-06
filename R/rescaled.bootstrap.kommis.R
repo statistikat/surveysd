@@ -1187,19 +1187,19 @@ check.input <- function(input, input.name, input.length=NULL,
 
 
 
-library(data.table)
-setDTthreads(1)
-set.seed(1234)
-eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
-
-eusilc[,N.households:=uniqueN(hid),by=region]
-# eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region",
+# library(data.table)
+# setDTthreads(1)
+# set.seed(1234)
+# eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
+# 
+# eusilc[,N.households:=uniqueN(hid),by=region]
+# # eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region",
+# #                                        cluster="hid",fpc="N.households")
+# 
+# eusilc[,new_strata:=paste(region,hsize,sep="_")]
+# eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+# eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
 #                                        cluster="hid",fpc="N.households")
-
-eusilc[,new_strata:=paste(region,hsize,sep="_")]
-eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
-                                       cluster="hid",fpc="N.households")
 
 
 
