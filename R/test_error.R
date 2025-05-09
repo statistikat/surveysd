@@ -10,7 +10,7 @@ source("R/draw.bootstrap.R")
 
 setDTthreads(1)
 set.seed(1234)
-eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
+eusilc <- surveysd:::demo.eusilc(n = 3, prettyNames = TRUE)
 
 dat_boot <- draw.bootstrap(eusilc,  REP = 1000 , hid = "hid",
                            weights = "pWeight",
@@ -21,10 +21,10 @@ dat_boot_rw <- draw.bootstrap(eusilc, method = "Rao-Wu", REP = 1000 , hid = "hid
                            strata = "region", period = "year")
 
 # calibrate weight for bootstrap replicates
-dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
+dat_boot_calib <- surveysd:::recalib(dat_boot, conP.var = "gender", conH.var = "region",
                           verbose = TRUE)
 
-dat_boot_calib_rw <- recalib(dat_boot_rw,  conP.var = "gender", conH.var = "region",
+dat_boot_calib_rw <- surveysd:::recalib(dat_boot_rw,  conP.var = "gender", conH.var = "region",
                           verbose = TRUE)
 
 
@@ -221,7 +221,16 @@ ggplot(dt_means_all, aes(x = Mean, fill = Methode, color = Methode)) +
 
 
 
+######
+# error
+bweight_names_rw <- grep("^w[0-9]+$", colnames(dat_boot_calib_rw), value = TRUE)
+err.est <- surveysd:::calc.stError(dat_boot_calib, weights = "pWeight", b.weights = bweight_names_rw, var = "povertyRisk",
+                        fun = surveysd:::weightedRatio)
+err.est$Estimates
 
+err_rw.est <- surveysd:::calc.stError(dat_boot_calib_rw, weights = "pWeight", b.weights = bweight_names_rw, var = "povertyRisk",
+                        fun = surveysd:::weightedRatio)
+err_rw.est$Estimates
 
 
 
