@@ -139,7 +139,7 @@ rescaled.bootstrap <- function(
       check.input(seed, input.name = "seed", input.length=1, input.type="numeric")
     }
   }
-  set.seed        ################################################################################################# @Johannes: Zahl ? #####################################
+  set.seed(seed) 
   
   # prepare input
   removeCols <- c()  
@@ -982,7 +982,7 @@ calc.replicate <- function(n, N, n_draw, delta , method = "Preston") {
       #print(f_h)
       
       if (any(f_h > 0.1)) {
-        warning("Sampling Fraction is too big for Rao-Wu, choose preston instead")
+        warning("Sampling Fraction is too big for method = 'Rao-Wu', choose method = 'Preston' instead")
       }
       
       w_hi <- N[, i] / n_h # Designgweights
