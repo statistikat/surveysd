@@ -235,7 +235,7 @@ draw.bootstrap <- function(
   pidNULL <- is.null(pid)
   if (pidNULL) {
     pid <- generateRandomName(20, colnames(dat))
-    dat[, c(pid) := 1:.N, by=c(hid)]
+    dat[, c(pid) := paste(hid,1:.N, sep="."), by=c(hid)]
     removeCols <- c(removeCols, pid)
   }
   check.input(pid, input.name = "pid", input.length=1, input.type="character",
@@ -363,7 +363,7 @@ draw.bootstrap <- function(
       }
     }
     # check if pid is unique in each household and period
-    unique.pid <- dat[,unqiueN(pid)==.N, by=c(period, hid),
+    unique.pid <- dat[,uniqueN(pid)==.N, by=c(period, hid),
                       env = list(pid = pid)]
     unique.pid <- unique.pid[V1==FALSE]
     if (nrow(unique.pid) > 0) {
@@ -470,7 +470,7 @@ draw.bootstrap <- function(
     dat[, c(w.names) := NULL]
     dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
     dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-    dat[, c(hid) := paste0(hid,"_orig"), env = list(hid = hid)]
+    dat[, hid := paste0(hid,"_orig"), env = list(hid = hid)]
     dat[, c(paste0(hid, "_orig")) := NULL]
   }
   
