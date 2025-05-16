@@ -365,7 +365,7 @@ draw.bootstrap <- function(
       }
     }
     # check if pid is unique in each household and period
-    unique.pid <- dat[,unqiueN(pid)==.N, by=c(period, hid),
+    unique.pid <- dat[,uniqueN(pid)==.N, by=c(period, hid),
                       env = list(pid = pid)]
     unique.pid <- unique.pid[V1==FALSE]
     if (nrow(unique.pid) > 0) {
