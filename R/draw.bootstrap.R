@@ -465,29 +465,29 @@ draw.bootstrap <- function(
       x_groups <- rep(1:length(x_groups),times=x_groups)
       return(x_groups)
     }
-    # dat[,hid_survey_segment_help := help_survey_grouping(period), by=c(hid),
-    #     env = list(period = period)]
-    # dat[,occurence_first_period := min(period), by=c(hid,"hid_survey_segment_help"),
-    #     env = list(period = period)]
-    dat[, hid_survey_segment_help := help_survey_grouping(get(period)), by = hid]
-    dat[, occurence_first_period := min(get(period)), 
-        by = .(hid, hid_survey_segment_help)]
+    dat[,hid_survey_segment_help := help_survey_grouping(period), by=c(hid),
+        env = list(period = period)]
+    dat[,occurence_first_period := min(period), by=c(hid,"hid_survey_segment_help"),
+        env = list(period = period)]
+    # dat[, hid_survey_segment_help := help_survey_grouping(get(period)), by = hid]
+    # dat[, occurence_first_period := min(get(period)), 
+    #     by = .(hid, hid_survey_segment_help)]
     
-    # select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
-    # dat.first.occurence <- unique(dat[period==occurence_first_period, .SD, 
-    #                                   .SDcols = c(hid,"hid_survey_segment_help", w.names),
-    #                                   env = list(period = period)])
-    select_cols <- c(hid, "hid_survey_segment_help", w.names)
-    dat.first.occurence <- unique(
-      dat[get(period) == occurence_first_period, 
-          ..select_cols] 
-    )
+    select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
+    dat.first.occurence <- unique(dat[period==occurence_first_period, .SD,
+                                      .SDcols = c(hid,"hid_survey_segment_help", w.names),
+                                      env = list(period = period)])
+    # select_cols <- c(hid, "hid_survey_segment_help", w.names)
+    # dat.first.occurence <- unique(
+    #   dat[get(period) == occurence_first_period, 
+    #       ..select_cols] 
+    # )
     
     dat[, c(w.names) := NULL]
     dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
     dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-    # dat[, hid := paste0(hid,"_orig"), env = list(hid = hid)]
-    dat[, (hid) := paste0(get(hid), "_orig")]
+    dat[, hid := paste0(hid,"_orig"), env = list(hid = hid)]
+    # dat[, (hid) := paste0(get(hid), "_orig")]
     dat[, c(paste0(hid, "_orig")) := NULL]
   }
   
