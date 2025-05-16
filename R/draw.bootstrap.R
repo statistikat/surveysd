@@ -48,8 +48,6 @@
 #'   for more information see Details.
 #' @param pid column in `dat` specifying the personal identifier. This
 #'   identifier needs to be unique for each person throught the whole data set.
-#' @param new.method if `TRUE` bootstrap replicates will be more consistent over time;
-#'   this parameter will be deleted after testing.
 #'
 #' @return the survey data with the number of REP bootstrap replicates added as
 #'   columns.
@@ -189,7 +187,7 @@
 draw.bootstrap <- function(
     dat, method = "Preston", REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
     cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
-      NULL, split = FALSE, pid = NULL, seed = NULL, new.method = TRUE) {
+      NULL, split = FALSE, pid = NULL, seed = NULL) {
   
   # browser()
   
@@ -434,97 +432,48 @@ draw.bootstrap <- function(
   }
   
   # calculate bootstrap replicates
-  if(new.method==TRUE){
-    
-    periods <- sort(unique(dat[[period]]))
-    dat_selection_prev <- NULL
-    for(p in periods){
-      dat_boot <- rescaled.bootstrap(dat = dat[period == p, env = list(period = period)],
-                                     method = method, 
-                                     REP = REP, strata = strata_design, cluster = cluster_design,
-                                     fpc = totals_design, single.PSU = single.PSU, return.value = c("replicates","selection"),
-                                     already.selected = dat_selection_prev,
-                                     run.input.checks = FALSE)
-      dat[period == p, c(w.names) := dat_boot$replicates, env = list(period = period)]
-      dat_selection_prev <- dat_boot$selection
-      rm(dat_boot)
-    }
-    
-    # respect split households
-    if (split) {
-      dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
-      
-      # keep bootstrap replicates of first period for each household
-      # if households drops out of survey and re-enters survey at a later stage
-      # -> treat as different instances
-      help_survey_grouping <- function(x){
-        x_holes <- which(diff(x)>1)
-        x_groups <- diff(c(0,x_holes,length(x)))
-        x_groups <- rep(1:length(x_groups),times=x_groups)
-        return(x_groups)
-      }
-      dat[,hid_survey_segment_help := help_survey_grouping(period), by=c(hid),
-          env = list(period = period)]
-      dat[,occurence_first_period := min(period_col), by=c(hid,"hid_survey_segment_help"),
-          env = list(period = period)]
-      select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
-      dat.first.occurence <- unique(dat[period==occurence_first_period, .SD, 
-                                        .SDcols = c(hid,"hid_survey_segment_help", w.names),
-                                        env = list(period = period)])
-      dat[, c(w.names) := NULL]
-      dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
-      dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-      dat[, c(hid) := paste0(hid,"_orig"), env = list(hid = hid)]
-      dat[, c(paste0(hid, "_orig")) := NULL]
-    }
-    
-  }else{
-    
-    dat[, c(w.names) := rescaled.bootstrap_old(
-      dat = copy(.SD), REP = REP, strata = strata_design, cluster = cluster_design,
-      fpc = totals_design, single.PSU = single.PSU, return.value = "replicates",
-      run.input.checks = FALSE, new.method = new.method), by = c(period)]
-    
-    # respect split households
-    
-    if (split) {
-      dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
-    }
-    
+  periods <- sort(unique(dat[[period]]))
+  dat_selection_prev <- NULL
+  for(p in periods){
+    dat_boot <- rescaled.bootstrap(dat = dat[period == p, env = list(period = period)],
+                                   method = method, 
+                                   REP = REP, strata = strata_design, cluster = cluster_design,
+                                   fpc = totals_design, single.PSU = single.PSU, return.value = c("replicates","selection"),
+                                   already.selected = dat_selection_prev,
+                                   run.input.checks = FALSE)
+    dat[period == p, c(w.names) := dat_boot$replicates, env = list(period = period)]
+    dat_selection_prev <- dat_boot$selection
+    rm(dat_boot)
+  }
+  
+  # respect split households
+  if (split) {
+    dat <- generate.HHID(dat, period = period, pid = pid, hid = hid)
     
     # keep bootstrap replicates of first period for each household
     # if households drops out of survey and re-enters survey at a later stage
     # -> treat as different instances
-    
     help_survey_grouping <- function(x){
-      
       x_holes <- which(diff(x)>1)
       x_groups <- diff(c(0,x_holes,length(x)))
       x_groups <- rep(1:length(x_groups),times=x_groups)
       return(x_groups)
-      
     }
-    dt.eval("dat[,hid_survey_segment_help:=help_survey_grouping(", period, "),by=c(hid)]")
-    dt.eval("dat[,occurence_first_period :=min(", period, "),by=c(hid,'hid_survey_segment_help')]")
+    dat[,hid_survey_segment_help := help_survey_grouping(period), by=c(hid),
+        env = list(period = period)]
+    dat[,occurence_first_period := min(period), by=c(hid,"hid_survey_segment_help"),
+        env = list(period = period)]
     select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
-    
-    dat.first.occurence <- unique(
-      dt.eval("dat[", period, "==occurence_first_period,.(",
-              select.first.occurence, ")]"
-      ), by = c(hid,"hid_survey_segment_help"))
+    dat.first.occurence <- unique(dat[period==occurence_first_period, .SD, 
+                                      .SDcols = c(hid,"hid_survey_segment_help", w.names),
+                                      env = list(period = period)])
     dat[, c(w.names) := NULL]
-    
-    
     dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
     dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-    
-    
-    if (split) {
-      dt.eval("dat[,", hid, ":=", paste0(hid, "_orig"), "]")
-      dat[, c(paste0(hid, "_orig")) := NULL]
-    }
-    
+    dat[, c(hid) := paste0(hid,"_orig"), env = list(hid = hid)]
+    dat[, c(paste0(hid, "_orig")) := NULL]
   }
+  
   
   if (length(removeCols) > 0) {
     dat[, c(removeCols) := NULL]
