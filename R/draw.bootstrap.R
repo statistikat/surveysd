@@ -188,8 +188,6 @@ draw.bootstrap <- function(
     cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
       NULL, split = FALSE, pid = NULL, seed = NULL) {
   
-  # browser()
-  
   occurence_first_period <- NULL
   
   if (method == "Rao-Wu") {
