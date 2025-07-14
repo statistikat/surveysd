@@ -199,7 +199,7 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
     ## sicherheitshalber abs(epsPcur)? Aber es wird schon niemand negative eps
     ##   Werte uebergeben??
     if (verbose && (calIter %% 10 == 0| calIter %% print_every_n == 0)) {
-      message(calIter, ":Not yet converged for P-Constraint", i, "\n")
+      message(calIter, ":(NEW) Not yet converged for P-Constraint", i, "\n")
       if (calIter %% print_every_n == 0) {
 
         tmp <- dat[
@@ -318,7 +318,7 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
   
   if (dat[,any(selectGroupNotConverged)]) {
     if (verbose && (calIter %% 10 == 0| calIter %% print_every_n == 0)) {
-      message(calIter, ":Not yet converged for H-Constraint", i, "\n")
+      message(calIter, ":(NEW) Not yet converged for H-Constraint", i, "\n")
       if (calIter %% print_every_n == 0) {
         tmp <- dat[selectGroupNotConverged == TRUE,
           list(maxFac = max(abs(1 / fVariableForCalibrationIPF - 1)), .N,
