@@ -186,8 +186,14 @@ calibP <- function(i, dat, error, valueP, pColNames, bound, verbose, calIter,
           dat[["fVariableForCalibrationIPF"]])
   }
   
-  dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsPcur]
+  # dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsPcur]  # -> old
+### LÖSUNG
+  relError <- abs(dat[["wValue"]] - dat[["value"]]) / dat[["value"]]
+  relError[!is.finite(relError)] <- NA  # Inf/NaN durch NA ersetzen
+  dat[, selectGroupNotConverged := relError > epsPcur]
+### LÖSUNG
   dat[is.na(selectGroupNotConverged),selectGroupNotConverged:=FALSE]
+  message("Maximaler relativer Fehler: ", max(relError, na.rm=TRUE))
   
   if (dat[,any(selectGroupNotConverged)]) {
     ## sicherheitshalber abs(epsPcur)? Aber es wird schon niemand negative eps
@@ -301,8 +307,14 @@ calibH <- function(i, dat, error, valueH, hColNames, bound, verbose, calIter,
   set(dat, j = "wValue", value = dat[["value"]] /
         dat[["fVariableForCalibrationIPF"]])
 
-  dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsHcur]
+  # dat[, selectGroupNotConverged := (abs(wValue-value)/value)>epsHcur]
+  ### LÖSUNG
+  relError <- abs(dat[["wValue"]] - dat[["value"]]) / dat[["value"]]
+  relError[!is.finite(relError)] <- NA  # Inf/NaN durch NA ersetzen
+  dat[, selectGroupNotConverged := relError > epsPcur]
+  ### LÖSUNG
   dat[is.na(selectGroupNotConverged),selectGroupNotConverged:=FALSE]
+  message("Maximaler relativer Fehler: ", max(relError, na.rm=TRUE))
   
   if (dat[,any(selectGroupNotConverged)]) {
     if (verbose && (calIter %% 10 == 0| calIter %% print_every_n == 0)) {
