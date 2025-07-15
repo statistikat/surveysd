@@ -397,6 +397,7 @@ rescaled.bootstrap <- function(
           dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
                            env = list(clust.val = clust.val)]
           dat.print <- dat.print[V1==1,.SD,.SDcols=c(by.val)]
+          print(dat.print)
         }
         
       } else if (method == "Rao-Wu") {
@@ -483,6 +484,7 @@ rescaled.bootstrap <- function(
           dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
                            env = list(clust.val = clust.val)]
           dat.print <- dat.print[V1==1,.SD,.SDcols=c(by.val)]
+          print(dat.print)
           
         }
         

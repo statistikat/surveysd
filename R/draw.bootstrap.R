@@ -186,7 +186,7 @@
 draw.bootstrap <- function(
     dat, method = "Preston", REP = 1000, hid = NULL, weights, period = NULL, strata = NULL,
     cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
-      NULL, split = FALSE, pid = NULL, seed = NULL) {
+      NULL, split = FALSE, pid = NULL, seed = NULL, already.selected = NULL) {
   
   occurence_first_period <- NULL
   
@@ -418,6 +418,9 @@ draw.bootstrap <- function(
   # calculate bootstrap replicates
   periods <- sort(unique(dat[[period]]))
   dat_selection_prev <- NULL
+  if(!is.null(already.selected)){
+    dat_selection_prev <- already.selected
+  }
   for(p in periods){
 
       dat_boot <- rescaled.bootstrap(dat[get(period) == p],
