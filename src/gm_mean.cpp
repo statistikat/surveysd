@@ -80,6 +80,8 @@ NumericVector arithmetic_mean(const NumericVector& w, const IntegerVector& class
 
   for (int i = 0; i < w.size(); i++){
     int cl = classes[i] - 1;
+    if (cl < 0 || cl >= nclasses)
+      stop("class index out of bounds");
     sums[cl] += w[i];
     sizes[cl] += 1;
   }
