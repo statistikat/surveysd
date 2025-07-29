@@ -6,6 +6,7 @@
 \usage{
 rescaled.bootstrap(
   dat,
+  method = c("Preston", "Rao-Wu"),
   REP = 1000,
   strata = "DB050>1",
   cluster = "DB060>DB030",
@@ -19,6 +20,8 @@ rescaled.bootstrap(
 }
 \arguments{
 \item{dat}{either data frame or data table containing the survey sample}
+
+\item{method}{for bootstrap replicates, either preston or rao-wu}
 
 \item{REP}{integer indicating the number of bootstraps to be drawn}
 

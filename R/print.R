@@ -68,14 +68,11 @@ print.surveysd <- function(x, ...) {
 
 
   # get number of point estimates where sd exceeds cv.limit
-  stEtoohigh <- colnames(x[["cvHigh"]])
-  stEtoohigh <- stEtoohigh[!stEtoohigh %in% c(
-    x[["param"]][["period"]], unique(unlist(x[["param"]][["group"]])))]
-  stEtoohigh <- as.matrix(subset(x[["cvHigh"]], select = stEtoohigh))
+  stEtoohigh <- as.matrix(subset(x[["cvHigh"]], select = var))
   if (sum(stEtoohigh, na.rm = TRUE) > 0) {
     cat("Estimated standard error exceeds", x[["param"]][["cv.limit"]],
         "% of the the point estimate in", sum(stEtoohigh, na.rm = TRUE),
-        "cases\n")
+        "cases (approx.",round(mean(stEtoohigh, na.rm = TRUE)*100,2),"%)\n")
     cat("\n")
   }
 }

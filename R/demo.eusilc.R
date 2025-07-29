@@ -61,7 +61,7 @@ demo.eusilc <- function(n = 8, prettyNames = FALSE) {
     eqIncome < .6 * laeken::weightedMedian(eqIncome, w = db090)
   ), by = year]
   eusilc[, age := cut(age, c(-Inf, 16, 25, 45, 65, Inf))]
-  eusilc[, hsize := cut(hsize, c(0:5, Inf))]
+  eusilc[, hsize := factor(pmin(hsize,5))]
 
   if (prettyNames) {
     data.table::setnames(eusilc, "db030", "hid")

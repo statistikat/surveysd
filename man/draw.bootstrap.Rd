@@ -6,6 +6,7 @@
 \usage{
 draw.bootstrap(
   dat,
+  method = "Preston",
   REP = 1000,
   hid = NULL,
   weights,
@@ -18,7 +19,7 @@ draw.bootstrap(
   split = FALSE,
   pid = NULL,
   seed = NULL,
-  new.method = TRUE
+  already.selected = NULL
 )
 }
 \arguments{
@@ -76,9 +77,6 @@ for more information see Details.}
 
 \item{pid}{column in \code{dat} specifying the personal identifier. This
 identifier needs to be unique for each person throught the whole data set.}
-
-\item{new.method}{if \code{TRUE} bootstrap replicates will be more consistent over time;
-this parameter will be deleted after testing.}
 }
 \value{
 the survey data with the number of REP bootstrap replicates added as

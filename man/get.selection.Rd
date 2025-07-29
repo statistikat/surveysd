@@ -6,11 +6,11 @@
 \usage{
 get.selection(
   dat,
-  bootRep = attr(dat_boot, "b.rep"),
-  cluster = attr(dat_boot, "cluster"),
-  strata = attr(dat_boot, "strata"),
-  pid = attr(dat_boot, "pid"),
-  hid = attr(dat_boot, "hid")
+  bootRep = attr(dat, "b.rep"),
+  cluster = attr(dat, "cluster"),
+  strata = attr(dat, "strata"),
+  pid = attr(dat, "pid"),
+  hid = attr(dat, "hid")
 )
 }
 \arguments{

@@ -620,9 +620,6 @@ rescaled.bootstrap <- function(
     rm(dati);gc() 
   }
   
-  print("sampling fraction f: ")
-  print (head(dat[,f]))
-
   dat[,c("f","n_prev","n_draw_prev","sum_prev"):=NULL]
   
   names(delta_selection) <- paste0("SamplingStage",1:stages)

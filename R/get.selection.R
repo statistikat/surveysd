@@ -109,12 +109,14 @@ get.selection <- function(dat, bootRep = attr(dat,"b.rep"),
         }
         stop("Uneven amount of unique replicate values for\n",
              uniqueN(rep_number)," replicate weights (",example_rep,")\n",
-             "This function only accepts replicate weights drawn in the same fashion as surveysd::draw.bootstrap() or surveysd::rescaled.bootstrap() !")
+             "This function only accepts replicate weights drawn in the same fashion as 
+             surveysd::draw.bootstrap(..., method = 'Preston', ...) or surveysd::rescaled.bootstrap(..., method = 'Preston', ...) !")
       }else{
         dat_problem <- unique(dat_problem[,.SD,.SDcols=c(print_cols,"ReplicateNames")])
         stop("Uneven amount of unique replicate values found in \n",
              paste(capture.output(print(dat_problem, row.names = FALSE)),collapse="\n"),
-             "\nThis function only accepts replicate weights drawn in the same fashion as surveysd::draw.bootstrap() or surveysd::rescaled.bootstrap() !")
+             "\nThis function only accepts replicate weights drawn in the same fashion as 
+             surveysd::draw.bootstrap(..., method = 'Preston', ...) or surveysd::rescaled.bootstrap(..., method = 'Preston', ...) !")
       }
     }
     
