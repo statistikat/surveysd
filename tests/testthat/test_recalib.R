@@ -25,22 +25,22 @@ test_that("test para - data", {
 test_that("test para - REP", {
   expect_error(
     recalib(eusilc, b.rep = "a", conP.var = "rb090", conH.var = "db040"),
-    "Not all elements in b.rep are column names in dat")
+    "column(s) 'a' specified in 'b.rep' not found in dat", fixed = TRUE)
   expect_error(
     recalib(eusilc, b.rep = 1:2, conP.var = "rb090", conH.var = "db040"),
-    "Not all elements in b.rep are column names in dat")
+    "'b.rep' must be of type character")
 })
 
 test_that("test para - hid, weights and period", {
   expect_error(
     recalib(eusilc, hid = "db030s", conP.var = "rb090", conH.var = "db040"),
-    "db030s is not a column in dat")
+    "column(s) 'db030s' specified in 'hid' not found in dat", fixed = TRUE)
   expect_error(
     recalib(eusilc, weights = "db090s", conP.var = "rb090", conH.var = "db040"),
-    "db090s is not a column in dat")
+    "column(s) 'db090s' specified in 'weights' not found in dat", fixed = TRUE)
   expect_error(
     recalib(eusilc, period = "years", conP.var = "rb090", conH.var = "db040"),
-    "years is not a column in dat")
+    "column(s) 'years' specified in 'years' not found in dat", fixed = TRUE)
 })
 
 test_that("test para - conP.var conH.var", {

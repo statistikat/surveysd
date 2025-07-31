@@ -7,9 +7,9 @@
 \method{summary}{ipf}(object, ...)
 }
 \arguments{
-\item{...}{additional arguments}
+\item{object}{object of class ipf}
 
-\item{x}{object of class ipf}
+\item{...}{additional arguments}
 }
 \value{
 a list of the following outputs

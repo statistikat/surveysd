@@ -12,8 +12,9 @@ calc.stError(
   period = attr(dat, "period"),
   var = NULL,
   fun = weightedRatio,
-  national = FALSE,
+  relative.share = FALSE,
   group = NULL,
+  group.diff = FALSE,
   fun.adjust.var = NULL,
   adjust.var = NULL,
   period.diff = NULL,
@@ -23,7 +24,8 @@ calc.stError(
   cv.limit = 10,
   p = NULL,
   add.arg = NULL,
-  new_method = FALSE
+  national = FALSE,
+  new_method = TRUE
 )
 }
 \arguments{
@@ -42,21 +44,25 @@ containing the original sample weights. Used to calculate point estimates.}
 containing the sample periods.}
 
 \item{var}{character vector containing variable names in \code{dat} on which \code{fun}
-shall be applied for each sample period.}
+shall be applied for each sample period. If \code{var = NULL} the results will
+reflect the sum of \code{weights}.}
 
 \item{fun}{function which will be applied on \code{var} for each sample period.
 Predefined functions are \link{weightedRatio}, \link{weightedSum}, but can also take
 any other function which returns a double or integer and uses weights as
 its second argument.}
 
-\item{national}{boolean, if TRUE point estimates resulting from fun will be
-divided by the point estimate at the national level.}
+\item{relative.share}{boolean, if \code{TRUE} point estimates resulting from \code{fun} will be
+divided by the point estimate at population level per \code{period}.}
 
 \item{group}{character vectors or list of character vectors containig
 variables in \code{dat}. For each list entry \code{dat} will be split in subgroups
 according to the containing variables as well as \code{period}. The
 pointestimates are then estimated for each subgroup seperately. If
 \code{group=NULL} the data will split into sample periods by default.}
+
+\item{group.diff}{boolen, if \code{TRUE} differences and the standard error
+between groups defined in \code{group} are calculated. See details for more explanations.}
 
 \item{fun.adjust.var}{can be either \code{NULL} or a function. This argument can
 be used to apply a function for each \code{period} and bootstrap weight to the
@@ -95,6 +101,9 @@ quantiles for the distribution of \code{var} are additionally estimated.}
 either a named list or vector. The names of the object correspond to the
 function arguments and the values to column names in dat, see also
 examples.}
+
+\item{national}{DEPRECATED use 'relative.share' instead! boolean, if TRUE point estimates resulting from fun will be
+divided by the point estimate at the national level.}
 }
 \value{
 Returns a list containing:
@@ -161,6 +170,21 @@ for each value of \code{period}. For variables in \code{group} which have \code{
 When \code{group} is a list of character vectors, subsets of \code{dat} and the
 following estimation of the point estimate, including the estimate for the
 standard error, are calculated for each list entry.\cr
+\cr
+If \code{group.diff = TRUE} difference between groups definded by \code{group} are calculated.
+Differences are only calculated within each variables of \code{group},
+e.g \code{group = c("gender", "region")} will calcualate estimates of each group and
+also differences within \code{"gender"} and \code{"region"} seperately.
+If grouping is done with multiple variables e.g \verb{group = list(c("gender","region")})
+(~ grouping by \code{"gender"} x \code{"region"}) differences are calculated
+only between groups where one of the grouping variables is different.
+For instance the difference between \code{gender = "female" & region = "Vienna"} and
+\code{gender = "male" & region = "Vienna"} OR \code{gender = "female" & region = "Vienna"} and
+\code{gender = "female" & region = "Salzburg"} will be calculated.
+The difference between \code{gender = "female" & region = "Vienna"} and
+\code{gender = "male" & region = "Salzburg"} will not be calculated. The order of difference
+is determined by order of value (alpha-numerical order) or
+if grouping contains factor variables the factor levels determin the order.
 \cr
 The optional parameters \code{fun.adjust.var} and \code{adjust.var} can be used if the
 values in \code{var} are dependent on the \code{weights}. As is for instance the case

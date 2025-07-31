@@ -1,6 +1,6 @@
 #' Generate summary output for a ipf calibration
 #'
-#' @param x object of class ipf
+#' @param object object of class ipf
 #' @param ... additional arguments
 #'
 #' @author Laura Gruber
@@ -38,11 +38,11 @@ summary.ipf <- function(object, ...){
   terms <- variable <- NULL
   dots <- list(...)
   extraExport <- dots$extraExport
-  av <- attributes(x)
+  av <- attributes(object)
   w <- av$baseweight
   hid <- av$hid
   output <- vector(mode = "list", length = 3)
-  av <- attributes(x)
+  av <- attributes(object)
 
   ## ---- FormP/FormH - Variablen etc. ---- ##
   vars <- c()
@@ -87,7 +87,7 @@ summary.ipf <- function(object, ...){
   dist_gew <- list()
   if(!is.null(w)){
     for(i in vars){
-      part_i <- x[,list(cv=sd(get(w))/mean(get(w)),
+      part_i <- object[,list(cv=sd(get(w))/mean(get(w)),
                         min=min(get(w)),
                         max=max(get(w)),
                         quotient=min(get(w))/max(get(w))),keyby=c(i)]
@@ -102,9 +102,9 @@ summary.ipf <- function(object, ...){
   
   
 
-  cols <- c(which(colnames(x) %in% c(hid,vars,w,calibWeightName,extraExport)))
+  cols <- c(which(colnames(object) %in% c(hid,vars,w,calibWeightName,extraExport)))
   names(output)[1] <- "weighted data"
-  output[[1]] <- subset(x,select=cols)
+  output[[1]] <- subset(object,select=cols)
 
 
   #beinhaltet ebenfalls formP und formH
@@ -124,9 +124,9 @@ summary.ipf <- function(object, ...){
       output4 <- list(
         "conP_%i" = as.data.table(av$conP[[i]]),
         "conP_%i_adjusted" = as.data.table(av$conP_adj[[i]]),
-        "conP_%i_original" = as.data.table(xtabs(formPBase[[i]], data = x)),
+        "conP_%i_original" = as.data.table(xtabs(formPBase[[i]], data = object)),
         "conP_%i_rel_diff_original" = as.data.table(round(
-          100*(av$conP[[i]] - xtabs(formPBase[[i]], data = x)) / av$conP[[i]], 2)),
+          100*(av$conP[[i]] - xtabs(formPBase[[i]], data = object)) / av$conP[[i]], 2)),
         "conP_%i_rel_diff_calib" = as.data.table(round(
           100*(av$conP[[i]] - av$conP_adj[[i]]) / av$conP[[i]], 2))
       )
@@ -144,8 +144,8 @@ summary.ipf <- function(object, ...){
                                      paste0("conH_",i,"_rel_diff_original"),paste0("conH_",i,"_rel_diff_calib"))
       output5[[j]] <- as.data.table(av$conH[[i]]) #conH_i
       output5[[j+1]] <- as.data.table(av$conH_adj[[i]]) #conH_i_adjusted
-      output5[[j+2]] <- as.data.table(xtabs(formHBase[[i]],data=x)) #conH_i_original
-      output5[[j+3]] <- as.data.table(round(100*(av$conH[[i]]-xtabs(formHBase[[i]],data=x))/av$conH[[i]],2)) #conH_i_rel_diff_original
+      output5[[j+2]] <- as.data.table(xtabs(formHBase[[i]],data=object)) #conH_i_original
+      output5[[j+3]] <- as.data.table(round(100*(av$conH[[i]]-xtabs(formHBase[[i]],data=object))/av$conH[[i]],2)) #conH_i_rel_diff_original
       output5[[j+4]] <- as.data.table(round(100*(av$conH[[i]]-av$conH_adj[[i]])/av$conH[[i]],2)) #conH_i__rel_diff_calib
 
     }

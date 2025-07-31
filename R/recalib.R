@@ -135,14 +135,15 @@
 #'
 
 recalib <- function(
-  dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"), b.rep =
-    attr(dat, "b.rep"), period = attr(dat, "period"), conP.var = NULL,
-  conH.var = NULL, conP = NULL, conH = NULL, epsP = 1e-2, epsH = 2e-2, ...) {
-
+    dat, hid = attr(dat, "hid"), weights = attr(dat, "weights"), b.rep =
+      attr(dat, "b.rep"), period = attr(dat, "period"), conP.var = NULL,
+    conH.var = NULL, conP = NULL, conH = NULL, epsP = 1e-2, epsH = 2e-2, ...) {
+  
   hidfactor <- calibWeight <- FirstPersonInHousehold_ <- verbose <-
     bound <- maxiter <- meanHH <- check_hh_vars <- allPthenH <-
-    returnNA <- numericalWeighting <- conversion_messages <- maxIter <- NULL
-
+    returnNA <- numericalWeighting <- conversion_messages <- maxIter <- 
+    V1 <- NULL
+  
   removeCols <- c()
   
   ##########################################################
@@ -177,9 +178,9 @@ recalib <- function(
     stop("dat must be a data.frame or data.table")
   }
   dat <- copy(dat)
-
+  
   c.names <- colnames(dat)
-
+  
   # check hid
   hidNULL <- is.null(hid)
   if (hidNULL) {
@@ -187,67 +188,47 @@ recalib <- function(
     dat[, c(hid) := 1:.N]
     removeCols <- c(removeCols, hid)
   }
-
-  if (length(hid) != 1) {
-    stop("hid must have length 1")
-  }
-  if (!hid %in% c.names) {
-    stop(paste0(hid, " is not a column in dat"))
-  }
-
+  
+  check.input(hid, input.name = "hid", input.length=1, input.type="character",
+              c.names = c.names)
+  
   # check weights
-  if (length(weights) != 1) {
-    stop("weights must have length 1")
-  }
-  if (!weights %in% c.names) {
-    stop(paste0(weights, " is not a column in dat"))
-  }
-  if (!is.numeric(dt.eval("dat[,", weights, "]"))) {
-    stop(paste0(weights, " must be a numeric column"))
-  }
+  check.input(weights, input.name = "weights", input.length=1, input.type="character",
+              c.names = c.names, dat = dat, dat.column.type = "numeric")
 
   # check b.rep
-  if (!all(b.rep %in% c.names)) {
-    stop("Not all elements in b.rep are column names in dat")
-  }
-  if (any(!grepl("^[[:alpha:]]", b.rep))) {
-    stop("Column names of bootstrap replicates must start with ",
-         "alphabetic character")
-  }
-  if (any(!unlist(lapply(dat[, mget(b.rep)], is.numeric)))) {
-    stop("Column containing bootstrap replicates must be numeric")
-  }
-
+  check.input(b.rep, "b.rep", input.type = "character", 
+              c.names = c.names, dat = dat, dat.column.type = "numeric")
+  
+  if (any(!grepl("^[[:alpha:]]", b.rep)))
+    stop("Column names of bootstrap replicates must start with alphabetic ",
+         "character")
+  
   # check conP.var
   if (!all(unique(unlist(conP.var)) %in% c.names)) {
     stop("Not all elements in conP.var are column names in dat")
   }
-
+  
   # check conH.var
   if (!all(unique(unlist(conH.var)) %in% c.names)) {
-    print(all(unique(unlist(conH.var)) %in% c.names))
-    print(unique(unlist(conH.var)))
-    print(c.names[1:30])
     stop("Not all elements in conH.var are column names in dat")
   }
-
+  
   # check period
+  removeCols <- c()
   periodNULL <- is.null(period)
   if (periodNULL) {
     period <- generateRandomName(20, colnames(dat))
     dat[, c(period) := 1]
     removeCols <- c(removeCols, period)
   }
-  if (length(period) != 1) {
-    stop(paste0(period, " must have length 1"))
-  }
-  if (!period %in% c.names) {
-    stop(paste0(period, " is not a column in dat"))
-  }
-
-
+  
+  check.input(period, period, input.length = 1, input.type = "character",
+              c.names = c.names)
+  
+  
   ##########################################################
-
+  
   # check conP and conH
   conPnames <- lapply(conP, function(z) {
     z <- names(dimnames(z))
@@ -262,19 +243,19 @@ recalib <- function(
     z <- names(dimnames(z))
     z[z != period]
   })
-    if(!is.null(names(conH))){
-      conHnamesNumeric <- unique(names(conH))
-      conHnamesNumeric <- conHnamesNumeric[conHnamesNumeric!=""]
+  if(!is.null(names(conH))){
+    conHnamesNumeric <- unique(names(conH))
+    conHnamesNumeric <- conHnamesNumeric[conHnamesNumeric!=""]
   }
-
+  
   if (!all(unlist(conPnames) %in% c.names)) {
     stop("Not all dimnames in conP are column names in dat")
   }
   if (!all(unlist(conHnames) %in% c.names)) {
     stop("Not all dimnames in conH are column names in dat")
   }
-
-
+  
+  
   if (!is.null(conH.var) | !is.null(conP.var) |
       !is.null(conP) | !is.null(conH)) {
     var.miss <- unlist(
@@ -293,9 +274,9 @@ recalib <- function(
     message("recalib: conP.var, conH.var, conP and conH are all missing. ",
             "Only calibrating for the population totals")
   }
-
-
-
+  
+  
+  
   # recode household and person variables to factor
   # improves runtime for ipf
   #
@@ -313,8 +294,8 @@ recalib <- function(
       dt.eval("dat[,", vars[i], ":=as.factor(", vars[i], ")]")
     }
   }
-
-
+  
+  
   # calculate contingency tables
   for (p in seq_along(conP.var)) {
     existTab <- sapply(conPnames, setequal, y = conP.var[[p]])
@@ -327,7 +308,7 @@ recalib <- function(
            " was supplied through parameter conP AND conP.var")
     }
   }
-
+  
   dat[, FirstPersonInHousehold_ := c(1L, rep(0, .N - 1)), by = c(hid, period)]
   for (h in seq_along(conH.var)) {
     existTab <- sapply(conHnames, setequal, y = conH.var[[h]])
@@ -350,19 +331,17 @@ recalib <- function(
                          unlist(c(conP.var, conH.var, conPnames, conHnames,
                                   conPnamesNumeric, conHnamesNumeric))))
   calib.fail <- c()
-
+  
   for (g in b.rep) {
-    set(dat, j = g, value = dt.eval("dat[,", g, "*", weights, "]"))
-
+    dat[, g := g * weights, env = list(g = g, weights = weights)]
+    
     # check if margins for bootstrap weights are always positive
     check.conP <- lapply(conP, function(z) {
-      check.z <- dt.eval("dat[,sum(", g, "),by=list(",
-                         paste(names(dimnames(z)), collapse = ","), ")][V1==0]")
+      check.z <- dat[,sum(g), by=c(names(dimnames(z))), env = list(g = g)][V1 == 0]
       nrow(check.z) > 0
     })
     check.conH <- lapply(conH, function(z) {
-      check.z <- dt.eval("dat[,sum(", g, "),by=list(",
-                         paste(names(dimnames(z)), collapse = ","), ")][V1==0]")
+      check.z <- dat[,sum(g), by=c(names(dimnames(z))), env = list(g = g)][V1 == 0]
       nrow(check.z) > 0
     })
     if (!is.null(conP) | !is.null(conH)) {
@@ -385,14 +364,14 @@ recalib <- function(
       }
     }
   }
-
-
+  
+  
   # paste warnings if calibration failed in some instances
   if (length(calib.fail) > 0) {
-
+    
     dat[, c(calib.fail) := NULL]
     b.rep <- b.rep[!b.rep %in% calib.fail]
-
+    
     if (length(b.rep) == 0) {
       cat("Calibration failed for all bootstrap replicates\n")
       cat("Returning no bootstrap weights\n")
@@ -406,28 +385,28 @@ recalib <- function(
       b.rep <- b.rep_new
     }
   }
-
-
+  
+  
   dat[, c("hidfactor", "FirstPersonInHousehold_", removeCols) := NULL]
-
+  
   # recode vars back to either integer of character
   vars.class <- vars.class[!vars %in% removeCols]
   vars <- vars[!vars %in% removeCols]
   for (i in seq_along(vars.class)) {
     if (vars.class[i] %in% c("integer", "numeric")) {
-      dt.eval("dat[,", vars[i], ":=as.numeric(as.character(", vars[i], "))]")
+      dat[,vars := as.numeric(as.character(vars)), env = list(vars = vars[i])]
     } else if (vars.class[i] == "character") {
-      dt.eval("dat[,", vars[i], ":=as.character(", vars[i], ")]")
+      dat[,vars := as.character(vars), env = list(vars = vars[i])]
     }
   }
-
+  
   if (periodNULL) {
     period <- NULL
   }
-
+  
   setattr(dat, "weights", weights)
   setattr(dat, "period", period)
   setattr(dat, "b.rep", b.rep)
-
+  
   return(dat)
 }

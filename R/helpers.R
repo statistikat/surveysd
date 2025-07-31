@@ -4,10 +4,10 @@
 #' @import ggplot2
 #' @import data.table Rcpp
 #' @importFrom "graphics" "plot"
-#' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd" "xtabs" "formula"
-#' @importFrom "utils" "data" "find" "tail" "head"
+#' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd" "xtabs" "formula" "var"
+#' @importFrom "utils" "data" "find" "tail" "head" "capture.output"
 #' @importFrom "laeken" "weightedMedian"
-#' @importFrom "methods" "formalArgs"
+#' @importFrom "methods" "formalArgs" "is"
 #' @useDynLib surveysd
 
 rowProds <- function(x, na.rm = FALSE) {
@@ -128,6 +128,8 @@ check.input <- function(input, input.name, input.length=NULL,
                         input.type = NULL, decimal.possible = NULL, 
                         c.names = NULL, dat = NULL, dat.column.type = NULL){
   
+  input.name <- paste0("'",input.name,"'")
+  
   if(!is.null(input.length)){
     if(length(input) != 1){
       stop(paste(input.name,"must have length",input.length))
@@ -135,8 +137,9 @@ check.input <- function(input, input.name, input.length=NULL,
   }
   
   if(!is.null(input.type)){
-    if(!is(input,input.type)){
-      stop(paste(input.name,"must be of type",input.type))
+    check.input.type <- sapply(input.type, function(z){is(input,z)})
+    if(all(check.input.type==FALSE)){
+      stop(paste(input.name,"must be of type",paste(input.type,collapse=" or ")))
     }
   }
   
@@ -147,14 +150,36 @@ check.input <- function(input, input.name, input.length=NULL,
   }
   
   if(!is.null(c.names)){
-    if(!input %in% c.names){
-      stop(paste(input," is not a column in dat"))
+    if(any(!input %in% c.names)){
+      input.miss <- input[!input %in% c.names]
+      input.miss <- head(input.miss,5)
+      input.miss <- paste(input.miss, collapse = "', '")
+      input.miss <- paste0("'",input.miss,"'")
+      
+      if(sum(!input %in% c.names)>5){
+        input.miss <- paste0(input.miss,", ...")
+      }
+      
+      stop(paste("column(s)",input.miss,"specified in",input.name,"not found in dat"))
     }
   }
   
   if(!is.null(dat) & !is.null(dat.column.type)){
-    if(!is(dat[[input]],dat.column.type)){
-      stop(paste(input.name,"must be a",input.type,"column in dat"))
+    check.input.type <- sapply(input, function(z){
+      check.z <- sapply(dat.column.type,function(y,dat.col){
+        is(dat.col,y)
+      }, dat.col = dat[[z]])
+      return(any(check.z))
+      })
+    if(any(!check.input.type)){
+      check.fail <- names(check.input.type)[check.input.type == FALSE]
+      check.fail <- head(check.fail,5)
+      check.fail <- paste(check.fail, collapse = "', '")
+      check.fail <- paste0("'",check.fail,"'")
+      if(sum(!check.input.type)>5){
+        check.fail <- paste0(check.fail,", ...")
+      }
+      stop(paste("column(s)",check.fail,"in parameter",input.name,"must correspond to",paste(dat.column.type, collapse = " OR "),"column(s) in dat"))
     }
   }
   

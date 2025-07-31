@@ -6,6 +6,7 @@
 \usage{
 draw.bootstrap(
   dat,
+  method = "Preston",
   REP = 1000,
   hid = NULL,
   weights,
@@ -18,12 +19,14 @@ draw.bootstrap(
   split = FALSE,
   pid = NULL,
   seed = NULL,
-  new.method = TRUE
+  already.selected = NULL
 )
 }
 \arguments{
 \item{dat}{either data.frame or data.table containing the survey data with
 rotating panel design.}
+
+\item{method}{for bootstrap replicates, either \code{"Preston"} or \code{"Rao-Wu"}}
 
 \item{REP}{integer indicating the number of bootstrap replicates.}
 
@@ -75,10 +78,14 @@ for each bootstrap replica. If NULL defaults to "w".}
 for more information see Details.}
 
 \item{pid}{column in \code{dat} specifying the personal identifier. This
-identifier needs to be unique for each person throught the whole data set.}
+identifier needs to be unique for each person throught the whole data set.
+Can be \code{NULL}.}
 
-\item{new.method}{if \code{TRUE} bootstrap replicates will be more consistent over time;
-this parameter will be deleted after testing.}
+\item{seed}{integer specifying the seed for the random number generator.}
+
+\item{already.selected}{list of data.tables indicating if record was drawn
+in previous \code{period}. \code{length(already.selected)} must be equal to
+the number of sampling stages specified. See \code{\link[=get.selection]{get.selection()}} for an example.}
 }
 \value{
 the survey data with the number of REP bootstrap replicates added as
@@ -114,40 +121,44 @@ and passed via the corresponding parameters:
 (parameter: \code{strata}).
 }
 
+As methods either the either the rescaled bootstrap for stratified
+multistage sampling, presented by J. Preston (2009) (\code{method = "Preston"})
+or the Rao-Wu boostrap by J. N. K. Rao and C. F. J. Wu (1988) (\code{method = "Rao-Wu"})
+are supported.
+\cr
 For single stage sampling design a column the argument \code{totals} is optional,
 meaning that a column of the number of PSUs at the first stage does not need
-to be supplied.
-For this case the number of PSUs is calculated and added to \code{dat} using
+to be supplied. The number of PSUs is calculated and added to \code{dat} using
 \code{strata} and \code{weights}. By setting \code{cluster} to NULL single stage sampling
 design is always assumed and
 if \code{strata} contains of multiple column names the combination of all those
 column names will be used for stratification.
-
+\cr
 In the case of multi stage sampling design the argument \code{totals} needs to be
 specified and needs to have the same number of arguments as \code{strata}.
-
+\cr
 If \code{cluster} is \code{NULL} or does not contain \code{hid} at the last stage, \code{hid}
 will automatically be used as the final cluster. If, besides \code{hid},
 clustering in additional stages is specified the number of column names in
 \code{strata} and \code{cluster} (including \code{hid}) must be the same. If for any stage
 there was no clustering or stratification one can set "1" or "I" for this
 stage.
-
+\cr
 For example \verb{strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")} would
 speficy a 2 stage sampling design where at the first stage the municipalities
 where drawn stratified by regions
 and at the 2nd stage housholds are drawn in each municipality without
 stratification.
-
+\cr
 Bootstrap replicates are drawn for each survey period consecutively (\code{period}) using the
 function \link{rescaled.bootstrap}.
 Bootstrap replicates are drawn consistently in the way that in each \code{period} and
 sampling stage always \eqn{\floor{n/2}} clusters are selected in each strata.
-
+\cr
 This ensures that the bootstrap replicates follow the same logic as the
 sampled households, making the bootstrap replicates more comparable to the
 actual sample units.
-
+\cr
 If \code{split} ist set to \code{TRUE} and \code{pid} is specified, the bootstrap replicates
 are carried forward using the personal identifiers instead of the household
 identifier.
@@ -156,6 +167,10 @@ Any person in this new split household will get the same bootstrap replicate
 as the person that has come from an other household in the survey.
 People who enter already existing households will also get the same bootstrap
 replicate as the other households members had in the previous periods.
+\cr
+\code{already.selected} can be specified in order to construct bootstrap replicates
+considering that already drawn bootstrap replicates from a previous \code{period}
+exist for the same survey. See \code{\link[=get.selection]{get.selection()}} for more explanations and examples.
 }
 \examples{
 
@@ -165,7 +180,7 @@ setDTthreads(1)
 set.seed(1234)
 eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 
-## draw sample without stratification or clustering
+## draw replicates without stratification or clustering
 dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
                            period = "year")
 
@@ -213,6 +228,12 @@ dat_boot <- draw.bootstrap(
 dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
 
 
+}
+\references{
+Preston, J. (2009). Rescaled bootstrap for stratified multistage
+sampling. Survey Methodology. 35. 227-234.
+Rao, J. N. K., and C. F. J. Wu. (1988). Resampling Inference with Complex Survey Data.
+Journal of the American Statistical Association 83 (401): 231–41.
 }
 \seealso{
 \code{\link[data.table:data.table]{data.table}} for more information on

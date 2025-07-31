@@ -148,7 +148,7 @@ err.est$Estimates
 ```
 
 
-The approach shown above is only valid if not grouping variables are supplied (parameter `group`).
+The approach shown above is only valid if no grouping variables are supplied (parameter `group = NULL`).
 If grouping variables are supplied one should use parameters `fun.adjust.var` and `adjust.var` such that
 the $povertyRisk_w$ is first calculated for each `period` and then used for each grouping in `group`.
 
@@ -232,7 +232,7 @@ povertyRates$Estimates
 
 ```
 
-#### Option 2: All combinations of `state` and `gender`
+#### Option 2: All combinations of `region` and `gender`
 
 Split the data by all combinations of the two grouping variables. This will result in a larger 
 output-table of the size
@@ -250,8 +250,8 @@ povertyRates$Estimates
 In this case, the estimates and standard errors are calculated for
 
 * every gender,
-* every state and
-* every combination of state and gender.
+* every region and
+* every combination of region and gender.
 
 The number of rows in the output is therefore 
 
@@ -260,6 +260,98 @@ $$n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{region
 ```{r}
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = list("gender", "region", c("gender", "region")))
+povertyRates$Estimates
+```
+
+
+## Group differences
+
+If differences between groups need to be calculated, e.g difference of poverty rates between `gender = "male"` and `gender = "female"`, parameter `group.diff` can be utilised.
+Setting `group.diff = TRUE` the differences and the standard error of these differences for all variables defined in `groups` will be calculated.
+
+```{r}
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
+                             group = c("gender", "region"),
+                             group.diff = TRUE)
+povertyRates$Estimates
+```
+
+The resulting output table contains `r nrow(povertyRates$Estimates)` rows. `r sum(povertyRates$Estimates$estimate_type == "direct")` rows for all the direct estimators
+
+$$n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12,$$
+
+and another `r sum(povertyRates$Estimates$estimate_type == "group difference")` for all the differences within the variable `"gender"` and `"region"` seperately.
+Variable `"gender"` has 2 unique values (`unique(dat2$gender)`) resulting in 1 difference, ~ `gender = "male"` - `gender = "female"` and variable `"region"` has
+9 unique values (`unique(dat2$region)`) resulting in 
+
+$$8 + 7 + 6 + 5 + 4 + 3 + 2 + 1  = \sum\limits_{1=1}^{9-1}i = 36$$
+
+estimates. Thus the output contains 1 + 36 = 37 estimates with respect to group differences.
+
+If a combintaion of grouping variables is used in `group` and `group.diff = TRUE` then differences between combinations will only be calculated
+if one of the grouping variables differs.
+For example the difference between the following groups would be calculated
+
+- `gender = "female" & region = "Vienna"` - `gender = "male" & region = "Vienna"` 
+- `gender = "female" & region = "Vienna"` - `gender = "female" & region = "Salzburg"`
+- `gender = "male" & region = "Salzburg"` - `gender = "female" & region = "Salzburg"`
+
+The difference between `gender = "female" & region = "Vienna"` and `gender = "male" & region = "Salzburg"` however would not be calculated.
+
+Thus this leads to 
+
+$$2\cdot(\sum\limits_{1=1}^{9-1}i) + 9\cdot1 = 81$$
+
+results with respect to the differences.
+The Output contains an additional column `estimate_type` and 
+
+```{r}
+povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
+                             group = list(c("gender", "region")),
+                             group.diff = TRUE)
+povertyRates$Estimates[,.N,by=.(estimate_type)]
+```
+
+## Differences between survey periods
+
+Differences of estimates between `period`s can be calculated using parameter `period.diff`.
+`period.diff` expects a character vector (if not `NULL`) specifying for which `period`s the differences should be calcualed for.
+The inputs should be specified in the form `"period2" - "period1"`.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             period.diff = c("2017 - 2016", "2016 - 2015", "2015 - 2014"))
+povertyRates$Estimates
+```
+
+If additional grouping variables are supplied to `calc.stError()` die differences across `period`s are also carried out
+for all variables in `group`.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             group = "gender",
+                             period.diff = c("2017 - 2016", "2016 - 2015", "2015 - 2014"))
+povertyRates$Estimates
+```
+
+
+## Averages across periods
+
+With parameter `period.mean` averages across `period`s are calculated additional. The parameter accepts only odd integer values.
+The resulting table will contain the direct estimates as well as rolling averages of length `period.mean`.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             period.mean = 3)
+povertyRates$Estimates
+```
+
+if in addition the parameters `group` and/or `period.diff` are specified then differences and groupings of averages will be calculated.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             period.mean = 3, period.diff = "2016 - 2015",
+                             group = "gender")
 povertyRates$Estimates
 ```
 
