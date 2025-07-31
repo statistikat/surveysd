@@ -30,12 +30,12 @@ test_that("test para - REP", {
     rescaled.bootstrap(
       eusilc, REP = "a", strata = "db040", cluster = "db030",
       fpc = "N.households"),
-    "REP needs to be numeric")
-  expect_warning(
+    "'REP' must be of type numeric")
+  expect_error(
     rescaled.bootstrap(
       eusilc, REP = c(1:3), strata = "db040", cluster = "db030",
       fpc = "N.households"),
-    "REP has length >1 - First argument will be used!")
+    "'REP' must have length 1")
 })
 
 test_that("test para - strata, cluster and fpc", {
@@ -49,7 +49,8 @@ test_that("test para - strata, cluster and fpc", {
       eusilc, REP = 2, strata = "db040>db030", cluster = "db030",
       fpc = "N.households"),
     paste0("strata, cluster, and fpc need to have the same number ",
-           "of arguments separated with '>'"))
+           "of arguments either separated with '>' or ", 
+           "be character vectors of the same length"))
   expect_error(
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "db040", cluster = "10", fpc = "N.households"),
@@ -58,8 +59,9 @@ test_that("test para - strata, cluster and fpc", {
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "db040", cluster = "db040>db030",
       fpc = "N.households"),
-    paste0("strata, cluster, and fpc need to have the same number of ",
-           "arguments separated with '>'"))
+    paste0("strata, cluster, and fpc need to have the same number ",
+           "of arguments either separated with '>' or ", 
+           "be character vectors of the same length"))
   expect_error(
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "db040>db030", cluster = "db040>db030",
@@ -94,15 +96,15 @@ test_that("test para - strata, cluster and fpc", {
 })
 
 
-test_that("test para - check.input", {
+test_that("test para - run.input.checks", {
   expect_error(rescaled.bootstrap(
     eusilc, REP = 2, strata = "db040", cluster = "db030", fpc = "N.households",
-    check.input = FALSE), NA)
+    run.input.checks = FALSE), NA)
   expect_error(
     rescaled.bootstrap(
       eusilc, REP = 2, strata = "db040", cluster = "db030", fpc =
-        "N.households", check.input = "FALSE"),
-    "check.input can only be logical")
+        "N.households", run.input.checks = "FALSE"),
+    "run.input.checks can only be logical")
 })
 
 
@@ -136,3 +138,4 @@ test_that("test return", {
     return.value = "replicates")
   expect_true(ncol(dat.boot) == 2)
 })
+

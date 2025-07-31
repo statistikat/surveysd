@@ -302,7 +302,8 @@ Thus this leads to
 
 $$2\cdot(\sum\limits_{1=1}^{9-1}i) + 9\cdot1 = 81$$
 
-results with respect to the differences
+results with respect to the differences.
+The Output contains an additional column `estimate_type` and 
 
 ```{r}
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
@@ -311,8 +312,46 @@ povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio,
 povertyRates$Estimates[,.N,by=.(estimate_type)]
 ```
 
-## Differences between periods
+## Differences between survey periods
+
+Differences of estimates between `period`s can be calculated using parameter `period.diff`.
+`period.diff` expects a character vector (if not `NULL`) specifying for which `period`s the differences should be calcualed for.
+The inputs should be specified in the form `"period2" - "period1"`.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             period.diff = c("2017 - 2016", "2016 - 2015", "2015 - 2014"))
+povertyRates$Estimates
+```
+
+If additional grouping variables are supplied to `calc.stError()` die differences across `period`s are also carried out
+for all variables in `group`.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             group = "gender",
+                             period.diff = c("2017 - 2016", "2016 - 2015", "2015 - 2014"))
+povertyRates$Estimates
+```
 
 
+## Averages across periods
 
+With parameter `period.mean` averages across `period`s are calculated additional. The parameter accepts only odd integer values.
+The resulting table will contain the direct estimates as well as rolling averages of length `period.mean`.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             period.mean = 3)
+povertyRates$Estimates
+```
+
+if in addition the parameters `group` and/or `period.diff` are specified then differences and groupings of averages will be calculated.
+
+```{r}
+povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
+                             period.mean = 3, period.diff = "2016 - 2015",
+                             group = "gender")
+povertyRates$Estimates
+```
 

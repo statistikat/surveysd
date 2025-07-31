@@ -4,10 +4,10 @@
 #' @import ggplot2
 #' @import data.table Rcpp
 #' @importFrom "graphics" "plot"
-#' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd" "xtabs" "formula"
-#' @importFrom "utils" "data" "find" "tail" "head"
+#' @importFrom "stats" "as.formula" "na.omit" "quantile" "sd" "xtabs" "formula" "var"
+#' @importFrom "utils" "data" "find" "tail" "head" "capture.output"
 #' @importFrom "laeken" "weightedMedian"
-#' @importFrom "methods" "formalArgs"
+#' @importFrom "methods" "formalArgs" "is"
 #' @useDynLib surveysd
 
 rowProds <- function(x, na.rm = FALSE) {
@@ -128,6 +128,8 @@ check.input <- function(input, input.name, input.length=NULL,
                         input.type = NULL, decimal.possible = NULL, 
                         c.names = NULL, dat = NULL, dat.column.type = NULL){
   
+  input.name <- paste0("'",input.name,"'")
+  
   if(!is.null(input.length)){
     if(length(input) != 1){
       stop(paste(input.name,"must have length",input.length))
@@ -151,13 +153,14 @@ check.input <- function(input, input.name, input.length=NULL,
     if(any(!input %in% c.names)){
       input.miss <- input[!input %in% c.names]
       input.miss <- head(input.miss,5)
-      input.miss <- paste(input.miss, collapse = ", ")
+      input.miss <- paste(input.miss, collapse = "', '")
+      input.miss <- paste0("'",input.miss,"'")
       
       if(sum(!input %in% c.names)>5){
         input.miss <- paste0(input.miss,", ...")
       }
       
-      stop(paste("column(s)",input.miss,"not found in dat"))
+      stop(paste("column(s)",input.miss,"specified in",input.name,"not found in dat"))
     }
   }
   
@@ -171,7 +174,8 @@ check.input <- function(input, input.name, input.length=NULL,
     if(any(!check.input.type)){
       check.fail <- names(check.input.type)[check.input.type == FALSE]
       check.fail <- head(check.fail,5)
-      check.fail <- paste(check.fail, collapse = ", ")
+      check.fail <- paste(check.fail, collapse = "', '")
+      check.fail <- paste0("'",check.fail,"'")
       if(sum(!check.input.type)>5){
         check.fail <- paste0(check.fail,", ...")
       }

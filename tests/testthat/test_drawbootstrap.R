@@ -7,7 +7,7 @@ library(surveysd)
 library(laeken)
 library(data.table)
 
-eusilc <- surveysd:::demo.eusilc(n = 5)
+eusilc <- surveysd:::demo.eusilc(n = 3)
 eusilc[, N.households := sum(db090[!duplicated(db030)]), by = .(year, db040)]
 eusilc[!duplicated(db030), N.households.error := sum(db090),
        by = .(year, db040)]
@@ -30,12 +30,12 @@ test_that("test para - REP", {
     draw.bootstrap(
       eusilc, REP = "a", hid = "db030", weights = "db090", period = "year",
       strata = "db040"),
-    "REP must contain one numeric value")
+    "'REP' must be of type numeric")
   expect_error(
     draw.bootstrap(
       eusilc, REP = 1:2, hid = "db030", weights = "db090", period = "year",
       strata = "db040"),
-    "REP must have length 1")
+    "'REP' must have length 1")
 })
 
 test_that("test para - hid, weights and period", {
@@ -43,24 +43,24 @@ test_that("test para - hid, weights and period", {
     draw.bootstrap(
       eusilc, REP = 2, hid = "db030s", weights = "db090", period = "year",
       strata = "db040"),
-    "db030s is not a column in dat")
+    "column(s) 'db030s' specified in 'hid' not found in dat", fixed = TRUE)
   expect_error(
     draw.bootstrap(
       eusilc, REP = 2, hid = "db030", weights = "db090s", period = "year",
       strata = "db040"),
-    "db090s is not a column in dat")
+    "column(s) 'db090s' specified in 'weights' not found in dat", fixed = TRUE)
   expect_error(
     draw.bootstrap(
       eusilc, REP = 2, hid = "db030", weights = "db090", period = "years",
       strata = "db040"),
-    "years is not a column in dat")
+    "column(s) 'years' specified in 'period' not found in dat", fixed = TRUE)
 
   eusilc[, year.char := as.character(year)]
   expect_error(
     draw.bootstrap(
       eusilc, REP = 2, hid = "db030", weights = "db090", period = "year.char",
       strata = "db040"),
-    "year.char is not an integer or numeric column")
+    "column(s) 'year.char' in parameter 'period' must correspond to numeric column(s) in dat", fixed = TRUE)
 })
 
 test_that("test para - strata, cluster and totals", {
@@ -131,7 +131,7 @@ if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
       draw.bootstrap(
         eusilc, REP = 2, hid = "db030", weights = "db090", period = "year",
         strata = "db040", split = TRUE),
-      "when split is TRUE pid needs to be a string")
+      "when split is TRUE pid must be specified")
 
     eusilc[, rb030error := rb030[1], by = list(year, db030)]
     expect_error(

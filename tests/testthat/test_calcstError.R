@@ -31,22 +31,22 @@ test_that("test para - weights, b.weights, year and group", {
   expect_error(
     calc.stError(
       eusilc, b.weights = "a", var = "povmd60", group = c("rb090", "db040")),
-    "Not all elements in b.rep are column names in dat"
+    "column(s) 'a' specified in 'b.weights' not found in dat", fixed = TRUE
   )
   expect_error(
     calc.stError(eusilc, b.weights = 1:2, var = "povmd60",
                  group = c("rb090", "db040")),
-    "Not all elements in b.rep are column names in dat"
+    "'b.weights' must be of type character"
   )
 
   expect_error(
     calc.stError(
       eusilc, weights = "db090s", var = "povmd60", group = c("rb090", "db040")),
-    "db090s is not a column in dat")
+    "column(s) 'db090s' specified in 'weights' not found in dat", fixed = TRUE)
   expect_error(
     calc.stError(
       eusilc, period = "years", var = "povmd60", group = c("rb090", "db040")),
-    "years is not a column in dat")
+    "column(s) 'years' specified in 'years' not found in dat", fixed = TRUE)
 
   expect_error(
     calc.stError(
@@ -78,7 +78,7 @@ test_that("test para - period.diff, period.mean", {
   expect_warning(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), period.mean = 4),
-    "period.mean must be odd - mean over periods will not be calculated")
+    "period.mean must be odd - average over periods will not be calculated")
 
   diff.warning <- capture_warnings(calc.stError(
     eusilc, var = "povmd60", group = c("rb090", "db040"),
@@ -114,7 +114,7 @@ test_that("test para - bias, size.limit, cv.limit, p", {
   expect_error(
     calc.stError(eusilc, var = "povmd60", group = c("rb090", "db040"),
                  bias = "FALSE"),
-    "bias can only be TRUE of FALSE")
+    "'bias' must be of type logical")
   eusilc.bias <- calc.stError(
     eusilc, weights = "db090", b.weights = paste0("w", 1:2), period = "year",
     var = "povmd60", group = c("rb090", "db040"), bias = TRUE)
@@ -123,22 +123,22 @@ test_that("test para - bias, size.limit, cv.limit, p", {
   expect_error(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), size.limit = "10"),
-    "size.limit must contain one numeric value")
+    "'size.limit' must be of type numeric")
   expect_error(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), size.limit = 1:2),
-    "size.limit must have length 1")
+    "'size.limit' must have length 1")
   expect_error(calc.stError(
     eusilc, var = "povmd60", group = c("rb090", "db040"), size.limit = 50), NA)
 
   expect_error(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), cv.limit = 1:10),
-    "cv.limit must have length 1")
+    "'cv.limit' must have length 1")
   expect_error(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), cv.limit = "1"),
-    "cv.limit must contain one numeric value")
+    "'cv.limit' must be of type numeric")
   expect_error(calc.stError(
     eusilc, var = "povmd60", group = c("rb090", "db040"), cv.limit = 20), NA)
 
@@ -146,7 +146,7 @@ test_that("test para - bias, size.limit, cv.limit, p", {
   expect_error(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), p = ".5"),
-    "p must be a numeric vector")
+    "'p' must be of type numeric")
   expect_error(
     calc.stError(
       eusilc, var = "povmd60", group = c("rb090", "db040"), p = c(.1, .7, 1.2)),

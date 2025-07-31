@@ -10,7 +10,9 @@
 #'
 #' @export
 print.surveysd <- function(x, ...) {
-
+  
+  var <- NULL
+  
   # get parameter
   col.val <- grepl("^val_*.", colnames(x[["Estimates"]]))
   col.val <- colnames(x[["Estimates"]])[col.val]

@@ -281,7 +281,7 @@ calc.stError <- function(
     add.arg = NULL, national = FALSE, new_method = TRUE) {
   
   stE_high <- stE <- val <- as.formula <- est_type <- n_inc <-
-    stE_roll <- n <- size <- NULL
+    stE_roll <- n <- size <- est <- estimate_type <- NULL
   
   ##########################################################
   # INPUT CHECKING
@@ -296,16 +296,7 @@ calc.stError <- function(
   # check weights
   check.input(weights, "weights", input.length = 1, input.type = "character", 
               c.names = c.names, dat = dat, dat.column.type = "numeric")
-  
-  if (length(weights) != 1)
-    stop("weights must have length 1")
-  
-  if (!weights %in% c.names)
-    stop(weights, " is not a column in dat")
-  
-  if (!is.numeric(dat[[weights]]))
-    stop(weights, " must be a numeric column")
-  
+
   
   # check b.weights
   check.input(b.weights, "b.weights", input.type = "character", 
@@ -388,7 +379,8 @@ calc.stError <- function(
       stop("If adjust.var is not NULL, adjust.var and var must have the same length!")
     }
       
-    check.input(adjust.var, "adjust.var", input.length = length(var), c.names = c.names,
+    check.input(adjust.var, "adjust.var", input.length = length(var), input.type = 
+                  "character", c.names = c.names,
                 dat = dat, dat.column.type = c("numeric","logical"))
     
     
@@ -637,16 +629,22 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
                         fun.adjust.var = NULL, adjust.var = NULL,
                         bias = FALSE, no.na, size.limit = 20, p = NULL, add.arg){
   
+  .SDx <- .SDw <- . <- .SD_add.args <- keep_row <- .SDy <- est_type <- 
+    V1 <- N <- n <- difference_group_value <- help_direct_estimate <- 
+    x <- size <- NULL
+  
   # melt data set for easier data manipulation if var holds multiple values
   id.vars <- unique(c(period, unlist(group), unlist(add.arg), weights, b.weights))
   id.vars <- which(colnames(dat) %in% id.vars)
-  m.vars <- list(paste(var,collapse="|")) # used in patterns() for melting
+  m.vars <- paste(var,collapse="|")
+  m.vars <- paste0("^(",m.vars,")$")
+  m.vars <- list(m.vars) # used in patterns() for melting
   name_var <- paste0("name_var_",generateRandomName(nchar = 10, existingNames = id.vars))
   value_var <- paste0("value_var_",generateRandomName(nchar = 10, existingNames = id.vars))
   value_adjust.var <- NULL
   if(!is.null(adjust.var)){
     value_adjust.var <- paste0("value_adjust.var_",generateRandomName(nchar = 10, existingNames = id.vars))
-    m.vars <- c(m.vars, list(paste(adjust.var, collapse="|"))) # must be column index for melting
+    m.vars <- c(m.vars, list(paste0("^(",paste(adjust.var, collapse="|"),")$"))) # must be column index for melting
   }
   dat <- melt(dat,id.vars = id.vars, measure.vars = patterns(m.vars), 
               variable.name = c(name_var), value.name = c(value_var, value_adjust.var), variable.factor = FALSE)
@@ -958,7 +956,8 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
     out.z <- merge(var.est[help_direct_estimate == TRUE], sd.est, by = c(by.eval2))
     
     if (bias) {
-      bias.est <- var.est[ID != 1, .(mean = mean(V1)), by = c(period, z)]
+      bias.est <- var.est[help_direct_estimate == FALSE, .(mean = mean(x)), 
+                          by = c(period, z), env = list(x = var_est)]
       out.z <- merge(out.z, bias.est, by = c(period, z))
     }
     
@@ -1317,6 +1316,8 @@ help.stError <- function(
 
 
 help_diff_group <- function(var.est, by.eval, var_est, diff.group, diff.column){
+  
+  . <- N <- n <- NULL
   
   by.eval <- by.eval[!by.eval %in% diff.column]
   

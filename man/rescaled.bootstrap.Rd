@@ -21,7 +21,7 @@ rescaled.bootstrap(
 \arguments{
 \item{dat}{either data frame or data table containing the survey sample}
 
-\item{method}{for bootstrap replicates, either preston or rao-wu}
+\item{method}{for bootstrap replicates, either \code{"Preston"} or \code{"Rao-Wu"}}
 
 \item{REP}{integer indicating the number of bootstraps to be drawn}
 
@@ -75,9 +75,9 @@ just the bootstrap replicates, depending on \code{return.value="data"} or
 \code{return.value="replicates"} respectively.
 }
 \description{
-Draw bootstrap replicates from survey data using the rescaled
-bootstrap for stratified multistage sampling, presented by Preston, J.
-(2009).
+Draw bootstrap replicates from survey data using either the rescaled
+bootstrap for stratified multistage sampling, presented by J. Preston
+(2009) or the Rao-Wu boostrap by J. N. K. Rao and C. F. J. Wu (1988)
 }
 \details{
 For specifying multistage sampling designs the column names in
@@ -131,7 +131,9 @@ eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
 \references{
 Preston, J. (2009). Rescaled bootstrap for stratified multistage
 sampling. Survey Methodology. 35. 227-234.
+Rao, J. N. K., and C. F. J. Wu. (1988). Resampling Inference with Complex Survey Data.
+Journal of the American Statistical Association 83 (401): 231–41.
 }
 \author{
-Johannes Gussenbauer, Statistics Austria
+Johannes Gussenbauer, Eileen Vattheuer, Statistics Austria
 }

@@ -1,11 +1,11 @@
 #' @title Draw bootstrap replicates
 #'
-#' @description Draw bootstrap replicates from survey data using the rescaled
-#'   bootstrap for stratified multistage sampling, presented by Preston, J.
-#'   (2009).
+#' @description Draw bootstrap replicates from survey data using either the rescaled
+#'   bootstrap for stratified multistage sampling, presented by J. Preston
+#'   (2009) or the Rao-Wu boostrap by J. N. K. Rao and C. F. J. Wu (1988) 
 #'
 #' @param dat either data frame or data table containing the survey sample
-#' @param method for bootstrap replicates, either preston or rao-wu 
+#' @param method for bootstrap replicates, either `"Preston"` or `"Rao-Wu"` 
 #' @param REP integer indicating the number of bootstraps to be drawn
 #' @param strata string specifying the column name in `dat` that is used for
 #'   stratification. For multistage sampling multiple column names can be
@@ -78,10 +78,12 @@
 #'   `return.value="replicates"` respectively.
 #' @export rescaled.bootstrap
 #'
-#' @references Preston, J. (2009). Rescaled bootstrap for stratified multistage
+#' @references 
+#' Preston, J. (2009). Rescaled bootstrap for stratified multistage
 #'   sampling. Survey Methodology. 35. 227-234.
-#'
-#' @author Johannes Gussenbauer, Statistics Austria
+#' Rao, J. N. K., and C. F. J. Wu. (1988). Resampling Inference with Complex Survey Data.
+#'  Journal of the American Statistical Association 83 (401): 231–41.
+#' @author Johannes Gussenbauer, Eileen Vattheuer, Statistics Austria
 #'
 #' @examples
 #' 
@@ -118,10 +120,11 @@ rescaled.bootstrap <- function(
 
   
   InitialOrder <- N <- SINGLE_BOOT_FLAG <- SINGLE_BOOT_FLAG_FINAL <- f <-
-    n_prev <- n_draw_prev <- sum_prev <- n_draw <- NULL  
+    n_prev <- n_draw_prev <- sum_prev <- n_draw <- strata_i <- 
+    V1 <- fpc_i <- . <- new.var_col <- new_var <- NULL  
   
   dat <- copy(dat)
-  
+  method <- method[1]
   # check run.input.checks
   if (!is.logical(run.input.checks)) {
     stop("run.input.checks can only be logical")
@@ -426,11 +429,11 @@ rescaled.bootstrap <- function(
                    env = list(by.val.tail = by.val.tail)]
           if(any(is.na(next.PSU[[new.var]]))){
             if(firstStage){
-              next.PUS[is.na(new.var_col), c(new.var) := head(higher.stages, 1),
+              next.PSU[is.na(new.var_col), c(new.var) := head(higher.stages, 1),
                        env = list(new.var_col = new_var,
                                   higher.stages = higher.stages)]
             }else{
-              next.PUS[is.na(new.var_col), c(new.var) := head(by.val.tail,1),
+              next.PSU[is.na(new.var_col), c(new.var) := head(by.val.tail,1),
                        env = list(new.var_col = new_var,
                                   by.val.tail = by.val.tail)]
             }
@@ -534,7 +537,8 @@ rescaled.bootstrap <- function(
     if (!is.null(already.selected)) { 
       # if already.selected was supplied, consider already selected units
       dati_selected <- already.selected[[i]]
-      dati[dati_selected, c(deltai) := mget(deltai), on = c(by.val, clust.val)]
+      on_cols <- c(by.val, clust.val)[c(by.val, clust.val) %in% colnames(dati_selected)]
+      dati[dati_selected, c(deltai) := mget(deltai), on = c(on_cols)]
       
       dati[, c(deltai) := lapply(.SD, function(delta, n, n_draw) {
         
@@ -602,8 +606,10 @@ rescaled.bootstrap <- function(
     setorder(dat,InitialOrder) 
     
     # prepare output for return.value %in% "selection"
+    keep_cols <- c(cluster, strata, deltai)
+    keep_cols <- keep_cols[keep_cols %in% colnames(dat)]
     delta_selection <- c(delta_selection,
-                         list(dat[, .SD, .SDcols = c(cluster, strata, deltai)]))  
+                         list(subset(dat, select = keep_cols)))
     
     # only matrices and arrays needed for final calculation
     n.calc[, i] <- dat[, n]

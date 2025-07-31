@@ -7,6 +7,7 @@
 #'
 #' @param dat either data.frame or data.table containing the survey data with
 #'   rotating panel design.
+#' @param method for bootstrap replicates, either `"Preston"` or `"Rao-Wu"` 
 #' @param REP integer indicating the number of bootstrap replicates.
 #' @param hid character specifying the name of the column in `dat` containing
 #'   the household id. If `NULL` (the default), the household structure is not
@@ -48,7 +49,12 @@
 #'   for more information see Details.
 #' @param pid column in `dat` specifying the personal identifier. This
 #'   identifier needs to be unique for each person throught the whole data set.
-#'
+#'   Can be `NULL`.
+#' @param seed integer specifying the seed for the random number generator.
+#' @param already.selected list of data.tables indicating if record was drawn
+#' in previous `period`. `length(already.selected)` must be equal to 
+#' the number of sampling stages specified. See [get.selection()] for an example. 
+#' 
 #' @return the survey data with the number of REP bootstrap replicates added as
 #'   columns.
 #'
@@ -66,40 +72,44 @@
 #' * Columns by which population was stratified during the sampling process
 #'   (parameter: `strata`).
 #'
+#' As methods either the either the rescaled bootstrap for stratified 
+#' multistage sampling, presented by J. Preston (2009) (`method = "Preston"`) 
+#' or the Rao-Wu boostrap by J. N. K. Rao and C. F. J. Wu (1988) (`method = "Rao-Wu"`)
+#' are supported.
+#' \cr
 #' For single stage sampling design a column the argument `totals` is optional,
 #' meaning that a column of the number of PSUs at the first stage does not need
-#' to be supplied.
-#' For this case the number of PSUs is calculated and added to `dat` using
+#' to be supplied. The number of PSUs is calculated and added to `dat` using
 #' `strata` and `weights`. By setting `cluster` to NULL single stage sampling
 #' design is always assumed and
 #' if `strata` contains of multiple column names the combination of all those
 #' column names will be used for stratification.
-#'
+#' \cr
 #' In the case of multi stage sampling design the argument `totals` needs to be
 #' specified and needs to have the same number of arguments as `strata`.
-#'
+#' \cr
 #' If `cluster` is `NULL` or does not contain `hid` at the last stage, `hid`
 #' will automatically be used as the final cluster. If, besides `hid`,
 #' clustering in additional stages is specified the number of column names in
 #' `strata` and `cluster` (including `hid`) must be the same. If for any stage
 #' there was no clustering or stratification one can set "1" or "I" for this
 #' stage.
-#'
+#' \cr
 #' For example `strata=c("REGION","I"),cluster=c("MUNICIPALITY","HID")` would
 #' speficy a 2 stage sampling design where at the first stage the municipalities
 #' where drawn stratified by regions
 #' and at the 2nd stage housholds are drawn in each municipality without
 #' stratification.
-#'
+#' \cr
 #' Bootstrap replicates are drawn for each survey period consecutively (`period`) using the
 #' function [rescaled.bootstrap].
 #' Bootstrap replicates are drawn consistently in the way that in each `period` and
 #' sampling stage always \eqn{\floor{n/2}} clusters are selected in each strata.
-#'
+#' \cr
 #' This ensures that the bootstrap replicates follow the same logic as the
 #' sampled households, making the bootstrap replicates more comparable to the
 #' actual sample units.
-#'
+#' \cr
 #' If `split` ist set to `TRUE` and `pid` is specified, the bootstrap replicates
 #' are carried forward using the personal identifiers instead of the household
 #' identifier.
@@ -108,6 +118,10 @@
 #' as the person that has come from an other household in the survey.
 #' People who enter already existing households will also get the same bootstrap
 #' replicate as the other households members had in the previous periods.
+#' \cr
+#' `already.selected` can be specified in order to construct bootstrap replicates
+#' considering that already drawn bootstrap replicates from a previous `period`
+#' exist for the same survey. See [get.selection()] for more explanations and examples.
 #'
 #' @return Returns a data.table containing the original data as well as the
 #'   number of `REP` columns containing the bootstrap replicates for each
@@ -120,6 +134,11 @@
 #' @seealso [`data.table`][data.table::data.table] for more information on
 #'   data.table objects.
 #'
+#' @references 
+#' Preston, J. (2009). Rescaled bootstrap for stratified multistage
+#'   sampling. Survey Methodology. 35. 227-234.
+#' Rao, J. N. K., and C. F. J. Wu. (1988). Resampling Inference with Complex Survey Data.
+#'  Journal of the American Statistical Association 83 (401): 231–41.
 #' @author Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 #'
 #' @examples
@@ -130,7 +149,7 @@
 #' set.seed(1234)
 #' eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
 #'
-#' ## draw sample without stratification or clustering
+#' ## draw replicates without stratification or clustering
 #' dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
 #'                            period = "year")
 #'
@@ -188,7 +207,8 @@ draw.bootstrap <- function(
     cluster = NULL, totals = NULL, single.PSU = c("merge", "mean"), boot.names =
       NULL, split = FALSE, pid = NULL, seed = NULL, already.selected = NULL) {
   
-  occurence_first_period <- NULL
+  occurence_first_period <- V1 <- strata_i <- . <-
+    hid_survey_segment_help <- NULL
   
   if (method == "Rao-Wu") {
     warning("The 'Rao-Wu' method should only be used when the first stage sampling is conducted without replacement. Ensure that your sampling design follows this requirement.")
@@ -253,10 +273,11 @@ draw.bootstrap <- function(
               c.names = c.names, dat = dat, dat.column.type = "numeric")
 
   # check design
-  strataNULL <- FALSE
-  if (is.null(strata)) {
-    strata <- "I"
-    strataNULL <- TRUE
+  strataNULL <- is.null(strata)
+  if (strataNULL) {
+    strata <- generateRandomName(20, colnames(dat))
+    dat[, (strata) := 1]
+    removeCols <- c(removeCols, strata)
   }
 
   clusterNULL <- FALSE
@@ -343,17 +364,9 @@ draw.bootstrap <- function(
     stop("split needs to be logical")
   }
   if (split) {
-    if (!is.character(pid)) {
-      stop("when split is TRUE pid needs to be a string")
-    } else {
-      if (length(pid) > 1) {
-        stop("pid can only have length 1")
-      } else {
-        if (!pid %in% c.names) {
-          stop(pid, "is not a column of dat")
-        }
-      }
-    }
+    if (!is.character(pid) | pidNULL == TRUE) {
+      stop("when split is TRUE pid must be specified")
+    } 
     # check if pid is unique in each household and period
     unique.pid <- dat[,uniqueN(pid)==.N, by=c(period, hid),
                       env = list(pid = pid)]
@@ -423,7 +436,7 @@ draw.bootstrap <- function(
   }
   for(p in periods){
 
-      dat_boot <- rescaled.bootstrap(dat[get(period) == p],
+      dat_boot <- rescaled.bootstrap(dat[.(p),on=c(period)],
                                    method = method, 
                                    REP = REP, strata = strata_design, cluster = cluster_design,
                                    fpc = totals_design, single.PSU = single.PSU, return.value = c("replicates","selection"),
@@ -474,8 +487,7 @@ draw.bootstrap <- function(
   if (length(removeCols) > 0) {
     dat[, c(removeCols) := NULL]
   }
-  
-  
+
   if (periodNULL) {
     period <- NULL
   }

@@ -27,7 +27,7 @@ if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
     expect_error(
       calc.stError(
         eusilc, var = "povmd60s", group = c("rb090", "db040")),
-      "Not all elements in var are column names in dat")
+      "column(s) 'povmd60s' specified in 'var' not found in dat", fixed = TRUE)
 
     eusilc[sample(.N, 100), povmd60NA := NA]
     expect_error(calc.stError(
@@ -130,17 +130,17 @@ if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
       calc.stError(
         eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
           group, fun.adjust.var = povmd, adjust.var = 1),
-      "adjust.var needs to be a character")
+      "'adjust.var' must be of type character")
     expect_error(
       calc.stError(
         eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
           group, fun.adjust.var = povmd, adjust.var = "1"),
-      "adjust.var must be a column name in dat")
+      "column(s) '1' specified in 'adjust.var' not found in dat", fixed = TRUE)
     expect_error(
       calc.stError(
         eusilc, weights = "rb050", var = "povmd60", fun = weightedRatio, group =
           group, fun.adjust.var = povmd, adjust.var = c("eqIncome", "1")),
-      "adjust.var can only be a single variable name")
+      "If adjust.var is not NULL, adjust.var and var must have the same length!")
 
 
     # compare fun.adjust.var with results not using fun.adjust.var
@@ -188,7 +188,7 @@ if (Sys.getenv("SURVEYSD_ADDITIONAL_TEST") == "TRUE") {
       calc.stError(
         eusilc,  var = "eqIncome", fun = fun, group = c("rb090", "db040"),
         add.arg = add.arg),
-      "c not argument\\(s\\) of supplied function.")
+      "c not argument(s) of supplied function.", fixed = TRUE)
 
     add.arg <- list(b = "onePerson", a = "abcde")
     expect_error(
