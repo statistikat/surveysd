@@ -910,17 +910,17 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
     
     # add results to one data.table
     if (!is.null(period.mean)) {
-      var.est <- rbind(var.est, roll.est, fill = TRUE)
+      var.est <- rbind(var.est, roll.est, fill = TRUE, ignore.attr=TRUE)
     }
     if (period.diff.b) {
-      var.est <- rbind(var.est, diff.est, fill = TRUE)
+      var.est <- rbind(var.est, diff.est, fill = TRUE, ignore.attr=TRUE)
       
       if (!is.null(unlist(period.diff.mean))) {
-        var.est <- rbind(var.est, diff.mean.est, fill = TRUE)
+        var.est <- rbind(var.est, diff.mean.est, fill = TRUE, ignore.attr=TRUE)
       }
     }
     if(group.diff == TRUE & length(z)>0){
-      var.est <- rbind(var.est, diff.group.est, fill = TRUE)
+      var.est <- rbind(var.est, diff.group.est, fill = TRUE, ignore.attr=TRUE)
     }
     
     
