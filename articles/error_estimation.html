@@ -4,371 +4,948 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Error estimation • surveysd</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Error estimation">
-<meta property="og:description" content="surveysd">
-<meta property="og:image" content="/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">surveysd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.0</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../articles/surveysd.html">Get started</a>
-</li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/error_estimation.html">Error estimation</a>
-    </li>
-    <li>
-      <a href="../articles/ipf.html">Iterative Proportional Fitting</a>
-    </li>
-    <li>
-      <a href="../articles/methodology.html">Methodology</a>
-    </li>
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">surveysd</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.2</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/surveysd.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/error_estimation.html">Error estimation</a></li>
+    <li><a class="dropdown-item" href="../articles/ipf.html">Iterative Proportional Fitting</a></li>
+    <li><a class="dropdown-item" href="../articles/methodology.html">Methodology</a></li>
+    <li><a class="dropdown-item" href="../articles/raowu.html">Rao-Wu Bootstrap in surveysd</a></li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/statistikat/surveysd/">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/statistikat/surveysd/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Error estimation</h1>
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Error estimation</h1>
             
-            <h4 class="date">2020-11-10</h4>
+            <h4 data-toc-skip class="date">2025-08-01</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd"><code>vignettes/error_estimation.Rmd</code></a></small>
-      <div class="hidden name"><code>error_estimation.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd" class="external-link"><code>vignettes/error_estimation.Rmd</code></a></small>
+      <div class="d-none name"><code>error_estimation.Rmd</code></div>
     </div>
 
     
     
-<p>For the most part, this document will present the functionalities of the function <code><a href="../reference/calc.stError.html">surveysd::calc.stError()</a></code> which generates point estimates and standard errors for user-supplied estimation functions.</p>
-<div id="prerequisites" class="section level2">
-<h2 class="hasAnchor">
-<a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
-<p>In order to use a dataset with <code><a href="../reference/calc.stError.html">calc.stError()</a></code>, several weight columns have to be present. Each weight column corresponds to a bootstrap sample. In the following examples, we will use the data from <code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code> and attach the bootstrap weights using <code><a href="../reference/draw.bootstrap.html">draw.bootstrap()</a></code> and <code><a href="../reference/recalib.html">recalib()</a></code>. Please refer to the documentation of those functions for more detail.</p>
+<p>For the most part, this document will present the functionalities of
+the function <code><a href="../reference/calc.stError.html">surveysd::calc.stError()</a></code> which generates point
+estimates and standard errors for user-supplied estimation
+functions.</p>
+<div class="section level2">
+<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+</h2>
+<p>In order to use a dataset with <code><a href="../reference/calc.stError.html">calc.stError()</a></code>, several
+weight columns have to be present. Each weight column corresponds to a
+bootstrap sample. In the following examples, we will use the data from
+<code><a href="../reference/demo.eusilc.html">demo.eusilc()</a></code> and attach the bootstrap weights using
+<code><a href="../reference/draw.bootstrap.html">draw.bootstrap()</a></code> and <code><a href="../reference/recalib.html">recalib()</a></code>. Please refer
+to the documentation of those functions for more detail.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statistikat/surveysd">surveysd</a></span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">10</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,
-                           strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span>
-<span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span>,
-                          epsP <span class="op">=</span> <span class="fl">1e-2</span>, epsH <span class="op">=</span> <span class="fl">2.5e-2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">dat_boot_calib</span><span class="op">[</span>, <span class="va">onePerson</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">hid</span><span class="op">)</span><span class="op">]</span>
-
-<span class="co">## print part of the dataset</span>
-<span class="va">dat_boot_calib</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">povertyRisk</span>, <span class="va">eqIncome</span>, <span class="va">onePerson</span>, <span class="va">pWeight</span>, <span class="va">w1</span>, <span class="va">w2</span>, <span class="va">w3</span>, <span class="va">w4</span>, <span class="va">w5</span><span class="op">)</span><span class="op">]</span></code></pre></div>
-<pre><code>##    year povertyRisk eqIncome onePerson  pWeight        w1        w2        w3
-## 1: 2010       FALSE 16090.69     FALSE 504.5696 0.4477743 1007.5651 0.4466992
-## 2: 2010       FALSE 16090.69     FALSE 504.5696 0.4477743 1007.5651 0.4466992
-## 3: 2010       FALSE 16090.69     FALSE 504.5696 0.4477743 1007.5651 0.4466992
-## 4: 2011       FALSE 16090.69     FALSE 504.5696 0.4237016  968.2711 0.4468813
-## 5: 2011       FALSE 16090.69     FALSE 504.5696 0.4237016  968.2711 0.4468813
-##           w4       w5
-## 1: 0.4489062 1019.721
-## 2: 0.4489062 1019.721
-## 3: 0.4489062 1019.721
-## 4: 0.4654705 1005.100
-## 5: 0.4654705 1005.100</code></pre>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statistikat/surveysd" class="external-link">surveysd</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">10</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span>
+<span>                           strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span>,</span>
+<span>                          epsP <span class="op">=</span> <span class="fl">1e-2</span>, epsH <span class="op">=</span> <span class="fl">2.5e-2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">dat_boot_calib</span><span class="op">[</span>, <span class="va">onePerson</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">hid</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co">## print part of the dataset</span></span>
+<span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">povertyRisk</span>, <span class="va">eqIncome</span>, <span class="va">onePerson</span>, <span class="va">pWeight</span>, <span class="va">w1</span>, <span class="va">w2</span>, <span class="va">w3</span>, <span class="va">w4</span>, <span class="va">w5</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##     year povertyRisk eqIncome onePerson  pWeight        w1           w2</span></span>
+<span><span class="co">##    &lt;num&gt;      &lt;lgcl&gt;    &lt;num&gt;    &lt;lgcl&gt;    &lt;num&gt;     &lt;num&gt;        &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010       FALSE 16090.69     FALSE 504.5696 0.4519476 1011.8142165</span></span>
+<span><span class="co">## 2:  2010       FALSE 16090.69     FALSE 504.5696 0.4519476 1011.8142165</span></span>
+<span><span class="co">## 3:  2010       FALSE 16090.69     FALSE 504.5696 0.4519476 1011.8142165</span></span>
+<span><span class="co">## 4:  2010       FALSE 27076.24     FALSE 493.3824 0.4415810    0.4402716</span></span>
+<span><span class="co">## 5:  2010       FALSE 27076.24     FALSE 493.3824 0.4415810    0.4402716</span></span>
+<span><span class="co">##             w3          w4          w5</span></span>
+<span><span class="co">##          &lt;num&gt;       &lt;num&gt;       &lt;num&gt;</span></span>
+<span><span class="co">## 1:   0.4419773   0.4455616   0.4470053</span></span>
+<span><span class="co">## 2:   0.4419773   0.4455616   0.4470053</span></span>
+<span><span class="co">## 3:   0.4419773   0.4455616   0.4470053</span></span>
+<span><span class="co">## 4: 970.6285299 979.8096143 983.0893461</span></span>
+<span><span class="co">## 5: 970.6285299 979.8096143 983.0893461</span></span></code></pre>
 </div>
-<div id="estimator-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#estimator-functions" class="anchor"></a>Estimator functions</h2>
-<p>The parameters <code>fun</code> and <code>var</code> in <code><a href="../reference/calc.stError.html">calc.stError()</a></code> define the estimator to be used in the error analysis. There are two built-in estimator functions <code><a href="../reference/PointEstimates.html">weightedSum()</a></code> and <code><a href="../reference/PointEstimates.html">weightedRatio()</a></code> which can be used as follows.</p>
+<div class="section level2">
+<h2 id="estimator-functions">Estimator functions<a class="anchor" aria-label="anchor" href="#estimator-functions"></a>
+</h2>
+<p>The parameters <code>fun</code> and <code>var</code> in
+<code><a href="../reference/calc.stError.html">calc.stError()</a></code> define the estimator to be used in the error
+analysis. There are two built-in estimator functions
+<code><a href="../reference/PointEstimates.html">weightedSum()</a></code> and <code><a href="../reference/PointEstimates.html">weightedRatio()</a></code> which can be
+used as follows.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">povertyRate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span>
-<span class="va">totalIncome</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">weightedSum</span><span class="op">)</span></code></pre></div>
-<p>Those functions calculate the ratio of persons at risk of poverty (in percent) and the total income. By default, the results are calculated separately for each reference period.</p>
+<code class="sourceCode R"><span><span class="va">povertyRate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span></span>
+<span><span class="va">totalIncome</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">weightedSum</span><span class="op">)</span></span></code></pre></div>
+<p>Those functions calculate the ratio of persons at risk of poverty (in
+percent) and the total income. By default, the results are calculated
+separately for each reference period.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">povertyRate</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##    year     n       N val_povertyRisk stE_povertyRisk
-## 1: 2010 14827 8182222        14.44422       0.5838199
-## 2: 2011 14827 8182222        14.77393       0.6771848
-## 3: 2012 14827 8182222        15.04515       0.4907275
-## 4: 2013 14827 8182222        14.89013       0.4756386
-## 5: 2014 14827 8182222        15.14556       0.5195149
-## 6: 2015 14827 8182222        15.53640       0.4808834
-## 7: 2016 14827 8182222        15.08315       0.3566648
-## 8: 2017 14827 8182222        15.42019       0.5592589</code></pre>
+<code class="sourceCode R"><span><span class="va">povertyRate</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422       0.4985492</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393       0.3741308</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515       0.3985125</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013       0.3760315</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556       0.3854059</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640       0.3369891</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315       0.5516559</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019       0.4865819</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##    year     n       N val_eqIncome stE_eqIncome
-## 1: 2010 14827 8182222 162750998071    960851034
-## 2: 2011 14827 8182222 161926931417    901915958
-## 3: 2012 14827 8182222 162576509628   1198230549
-## 4: 2013 14827 8182222 163199507862   1474893389
-## 5: 2014 14827 8182222 163986275009   1528829971
-## 6: 2015 14827 8182222 163416275447   1338217239
-## 7: 2016 14827 8182222 162706205137   1207314432
-## 8: 2017 14827 8182222 164314959107   1322744977</code></pre>
-<p>Columns that use the <code>val_</code> prefix denote the point estimate belonging to the “main weight” of the dataset, which is <code>pWeight</code> in case of the dataset used here.</p>
-<p>Columns with the <code>stE_</code> prefix denote standard errors calculated with bootstrap replicates. The replicates result in using <code>w1</code>, <code>w2</code>, …, <code>w10</code> instead of <code>pWeight</code> when applying the estimator.</p>
-<p><code>n</code> denotes the number of observations for the year and <code>N</code> denotes the total weight of those persons.</p>
-<div id="custom-estimators" class="section level3">
-<h3 class="hasAnchor">
-<a href="#custom-estimators" class="anchor"></a>Custom estimators</h3>
-<p>In order to define a custom estimator function to be used in <code>fun</code>, the function needs to have two arguments like the example below.</p>
+<code class="sourceCode R"><span><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##     year     n       N estimate_type val_eqIncome stE_eqIncome</span></span>
+<span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;        &lt;num&gt;        &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010 14827 8182222        direct 162750998071   1111669263</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct 161926931417   1016528123</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct 162576509628   1089206520</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct 163199507862   1061874434</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct 163986275009   1283385592</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct 163416275447   1506089648</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct 162706205137   1132432780</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct 164314959107   1257987114</span></span></code></pre>
+<p>Columns that use the <code>val_</code> prefix denote the point
+estimate belonging to the “main weight” of the dataset, which is
+<code>pWeight</code> in case of the dataset used here.</p>
+<p>Columns with the <code>stE_</code> prefix denote standard errors
+calculated with bootstrap replicates. The replicates result in using
+<code>w1</code>, <code>w2</code>, …, <code>w10</code> instead of
+<code>pWeight</code> when applying the estimator.</p>
+<p><code>n</code> denotes the number of observations for the year and
+<code>N</code> denotes the total weight of those persons.</p>
+<div class="section level3">
+<h3 id="custom-estimators">Custom estimators<a class="anchor" aria-label="anchor" href="#custom-estimators"></a>
+</h3>
+<p>In order to define a custom estimator function to be used in
+<code>fun</code>, the function needs to have at least two arguments like
+the example below.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## define custom estimator</span>
-<span class="va">myWeightedSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">w</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="co">## check if results are equal to the one using `suveysd::weightedSum()`</span>
-<span class="va">totalIncome2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">myWeightedSum</span><span class="op">)</span>
-<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span><span class="op">(</span><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span>, <span class="va">totalIncome2</span><span class="op">$</span><span class="va">Estimates</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
-<p>The parameters <code>x</code> and <code>w</code> can be assumed to be vectors with equal length with <code>w</code> being numeric and <code>x</code> being the column defined in the <code>var</code> argument. It will be called once for each period (in this case <code>year</code>) and for each weight column (in this case <code>pWeight</code>, <code>w1</code>, <code>w2</code>, …, <code>w10</code>).</p>
-</div>
-<div id="multiple-estimators" class="section level3">
-<h3 class="hasAnchor">
-<a href="#multiple-estimators" class="anchor"></a>Multiple estimators</h3>
-<p>In case an estimator should be applied to several columns of the dataset, <code>var</code> can be set to a vector containing all necessary columns.</p>
+<code class="sourceCode R"><span><span class="co">## define custom estimator</span></span>
+<span><span class="va">myWeightedSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">w</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">## check if results are equal to the one using `surveysd::weightedSum()`</span></span>
+<span><span class="va">totalIncome2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">myWeightedSum</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span>, <span class="va">totalIncome2</span><span class="op">$</span><span class="va">Estimates</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
+<p>The parameters <code>x</code> and <code>w</code> can be assumed to be
+vectors with equal length with <code>w</code> being numeric weight
+vector and <code>x</code> being the column defined in the
+<code>var</code> argument. It will be called once for each period (in
+this case <code>year</code>) and for each weight column (in this case
+<code>pWeight</code>, <code>w1</code>, <code>w2</code>, …,
+<code>w10</code>).</p>
+<p>Custom estimators using additional parameters can also be supplied
+and parameter <code>add.arg</code> can be used to set the additional
+arguments for the custom estimator.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">multipleRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span>
-<span class="va">multipleRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##    year     n       N val_povertyRisk stE_povertyRisk val_onePerson
-## 1: 2010 14827 8182222        14.44422       0.5838199      14.85737
-## 2: 2011 14827 8182222        14.77393       0.6771848      14.85737
-## 3: 2012 14827 8182222        15.04515       0.4907275      14.85737
-## 4: 2013 14827 8182222        14.89013       0.4756386      14.85737
-## 5: 2014 14827 8182222        15.14556       0.5195149      14.85737
-## 6: 2015 14827 8182222        15.53640       0.4808834      14.85737
-## 7: 2016 14827 8182222        15.08315       0.3566648      14.85737
-## 8: 2017 14827 8182222        15.42019       0.5592589      14.85737
-##    stE_onePerson
-## 1:     0.2572088
-## 2:     0.2778282
-## 3:     0.2909612
-## 4:     0.3458258
-## 5:     0.4394058
-## 6:     0.3810024
-## 7:     0.3105411
-## 8:     0.3030293</code></pre>
-<p>Here we see the relative number of persons at risk of poverty and the relative number of one-person households.</p>
-</div>
-</div>
-<div id="grouping" class="section level2">
-<h2 class="hasAnchor">
-<a href="#grouping" class="anchor"></a>Grouping</h2>
-<p>The <code>groups</code> argument can be used to calculate estimators for different subsets of the data. This argument can take the grouping variable as a string that refers to a column name (usually a factor) in <code>dat</code>. If set, all estimators are not only split by the reference period but also by the grouping variable. For simplicity, only one reference period of the above data is used.</p>
+<code class="sourceCode R"><span><span class="co">## use add.arg-argument</span></span>
+<span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span>, <span class="va">b</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">w</span><span class="op">*</span><span class="va">b</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">add.arg</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>b<span class="op">=</span><span class="st">"onePerson"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">fun</span>,</span>
+<span>                        period.mean <span class="op">=</span> <span class="fl">0</span>, add.arg<span class="op">=</span><span class="va">add.arg</span><span class="op">)</span></span>
+<span><span class="va">err.est</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010 14827 8182222        direct        273683.9       12888.581</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        261883.6       13909.607</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        243083.9       13040.109</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        238004.4       18062.819</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        218572.1       16199.638</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        219984.1       12929.628</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        201753.9       13137.732</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        196881.2        7279.393</span></span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2010</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">att</span>  <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span><span class="op">)</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="va">att</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">att</span><span class="op">)</span></code></pre></div>
-<p>To calculate the ratio of persons at risk of poverty for each federal state of Austria, <code>group = "region"</code> can be used.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, group <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span>
-<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##     year     n       N        region val_povertyRisk stE_povertyRisk
-##  1: 2010   549  260564    Burgenland        19.53984       1.8042764
-##  2: 2010   733  377355    Vorarlberg        16.53731       3.2896891
-##  3: 2010   924  535451      Salzburg        13.78734       2.2585866
-##  4: 2010  1078  563648     Carinthia        13.08627       1.7469304
-##  5: 2010  1317  701899         Tyrol        15.30819       1.3943715
-##  6: 2010  2295 1167045        Styria        14.37464       1.3500431
-##  7: 2010  2322 1598931        Vienna        17.23468       1.0428496
-##  8: 2010  2804 1555709 Lower Austria        13.84362       1.7034375
-##  9: 2010  2805 1421620 Upper Austria        10.88977       0.8709790
-## 10: 2010 14827 8182222          &lt;NA&gt;        14.44422       0.5838199</code></pre>
-<p>The last row with <code>region = NA</code> denotes the aggregate over all regions. Note that the columns <code>N</code> and <code>n</code> now show the weighted and unweighted number of persons in each region.</p>
-<div id="several-grouping-variables" class="section level3">
-<h3 class="hasAnchor">
-<a href="#several-grouping-variables" class="anchor"></a>Several grouping variables</h3>
-<p>In case more than one grouping variable is used, there are several options of calling <code><a href="../reference/calc.stError.html">calc.stError()</a></code> depending on whether combinations of grouping levels should be regarded or not. We will consider the variables <code>gender</code> and <code>region</code> as our grouping variables and show three options on how <code><a href="../reference/calc.stError.html">calc.stError()</a></code> can be called.</p>
-<div id="option-1-all-regions-and-all-genders" class="section level4">
-<h4 class="hasAnchor">
-<a href="#option-1-all-regions-and-all-genders" class="anchor"></a>Option 1: All regions and all genders</h4>
-<p>Calculate the point estimate and standard error for each region and each gender. The number of rows in the output is therefore</p>
-<p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.\]</span></p>
-<p>The last row is again the estimate for the whole period.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, 
-                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##     year     n       N gender        region val_povertyRisk stE_povertyRisk
-##  1: 2010   549  260564   &lt;NA&gt;    Burgenland        19.53984       1.8042764
-##  2: 2010   733  377355   &lt;NA&gt;    Vorarlberg        16.53731       3.2896891
-##  3: 2010   924  535451   &lt;NA&gt;      Salzburg        13.78734       2.2585866
-##  4: 2010  1078  563648   &lt;NA&gt;     Carinthia        13.08627       1.7469304
-##  5: 2010  1317  701899   &lt;NA&gt;         Tyrol        15.30819       1.3943715
-##  6: 2010  2295 1167045   &lt;NA&gt;        Styria        14.37464       1.3500431
-##  7: 2010  2322 1598931   &lt;NA&gt;        Vienna        17.23468       1.0428496
-##  8: 2010  2804 1555709   &lt;NA&gt; Lower Austria        13.84362       1.7034375
-##  9: 2010  2805 1421620   &lt;NA&gt; Upper Austria        10.88977       0.8709790
-## 10: 2010  7267 3979572   male          &lt;NA&gt;        12.02660       0.6303407
-## 11: 2010  7560 4202650 female          &lt;NA&gt;        16.73351       0.6300745
-## 12: 2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        14.44422       0.5838199</code></pre>
+<code class="sourceCode R"><span><span class="co"># compare with direct computation</span></span>
+<span><span class="va">compare.value</span> <span class="op">&lt;-</span> <span class="va">dat_boot_calib</span><span class="op">[</span>,<span class="fu">fun</span><span class="op">(</span><span class="va">povertyRisk</span>,<span class="va">pWeight</span>,b<span class="op">=</span><span class="va">onePerson</span><span class="op">)</span>,</span>
+<span>                                 by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="op">(</span><span class="va">compare.value</span><span class="op">$</span><span class="va">V1</span><span class="op">-</span><span class="va">err.est</span><span class="op">$</span><span class="va">Estimates</span><span class="op">$</span><span class="va">val_povertyRisk</span><span class="op">)</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
+<p>The above chunk computes the weighted poverty ratio for single person
+households.</p>
 </div>
-<div id="option-2-all-combinations-of-state-and-gender" class="section level4">
-<h4 class="hasAnchor">
-<a href="#option-2-all-combinations-of-state-and-gender" class="anchor"></a>Option 2: All combinations of <code>state</code> and <code>gender</code>
+<div class="section level3">
+<h3 id="adjust-variable-depending-on-bootstrap-weights">Adjust variable depending on bootstrap weights<a class="anchor" aria-label="anchor" href="#adjust-variable-depending-on-bootstrap-weights"></a>
+</h3>
+<p>In our example the variable <code>povertyRisk</code> is a boolean and
+is <code>TRUE</code> if the income is less than 60% of the weighted
+median income. Thus it directly depends on the original weight vector
+<code>pWeight</code>. To further reduce the estimated error one should
+calculate for each bootstrap replicate weight
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
+the weighted median income
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mi>e</mi><mi>d</mi><mi>I</mi><mi>n</mi><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>e</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">medIncome_{w}</annotation></semantics></math>
+and then define
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>y</mi><mi>R</mi><mi>i</mi><mi>s</mi><msub><mi>k</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">povertyRisk_w</annotation></semantics></math>
+as</p>
+<p><span class="math display">$$
+povertyRisk_w = \cases{1 \quad\text{if Income}&lt;0.6\cdot
+medIncome_{w}\\
+                     0 \quad\text{else}}
+$$</span></p>
+<p>The estimator can then be applied to the new variable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>y</mi><mi>R</mi><mi>i</mi><mi>s</mi><msub><mi>k</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">povertyRisk_w</annotation></semantics></math>.
+This can be realized using a custom estimator function.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># custom estimator to first derive poverty threshold </span></span>
+<span><span class="co"># and then estimate a weighted ratio</span></span>
+<span><span class="va">povmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span></span>
+<span> <span class="va">md</span> <span class="op">&lt;-</span> <span class="fu">laeken</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/laeken/man/weightedMedian.html" class="external-link">weightedMedian</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span><span class="op">*</span><span class="fl">0.6</span></span>
+<span> <span class="va">pmd60</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">&lt;</span> <span class="va">md</span></span>
+<span> <span class="co"># weighted ratio is directly estimated inside the function</span></span>
+<span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span><span class="op">[</span><span class="va">pmd60</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span></span>
+<span>  <span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>,</span>
+<span>  fun.adjust.var <span class="op">=</span> <span class="va">povmd</span>, adjust.var <span class="op">=</span> <span class="st">"eqIncome"</span><span class="op">)</span></span>
+<span><span class="va">err.est</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422               0</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393               0</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515               0</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013               0</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556               0</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640               0</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315               0</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019               0</span></span></code></pre>
+<p>The approach shown above is only valid if no grouping variables are
+supplied (parameter <code>group = NULL</code>). If grouping variables
+are supplied one should use parameters <code>fun.adjust.var</code> and
+<code>adjust.var</code> such that the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>y</mi><mi>R</mi><mi>i</mi><mi>s</mi><msub><mi>k</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">povertyRisk_w</annotation></semantics></math>
+is first calculated for each <code>period</code> and then used for each
+grouping in <code>group</code>.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># using fun.adjust.var and adjust.var to estimate povmd60 indicator</span></span>
+<span><span class="co"># for each period and bootstrap weight before applying the weightedRatio</span></span>
+<span><span class="va">povmd2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span></span>
+<span> <span class="va">md</span> <span class="op">&lt;-</span> <span class="fu">laeken</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/laeken/man/weightedMedian.html" class="external-link">weightedMedian</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span><span class="op">*</span><span class="fl">0.6</span></span>
+<span> <span class="va">pmd60</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">&lt;</span> <span class="va">md</span></span>
+<span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">pmd60</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># set adjust.var="eqIncome" so the income vector is used to estimate</span></span>
+<span><span class="co"># the povmd60 indicator for each bootstrap weight</span></span>
+<span><span class="co"># and the resulting indicators are passed to function weightedRatio</span></span>
+<span><span class="va">group</span> <span class="op">&lt;-</span> <span class="st">"gender"</span></span>
+<span><span class="va">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span></span>
+<span>  <span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, group <span class="op">=</span> <span class="st">"gender"</span>,</span>
+<span>  fun.adjust.var <span class="op">=</span> <span class="va">povmd2</span>, adjust.var <span class="op">=</span> <span class="st">"eqIncome"</span><span class="op">)</span></span>
+<span><span class="va">err.est</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, estimate_type&gt;</span></span>
+<span><span class="co">##      year     n       N gender estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##     &lt;num&gt; &lt;int&gt;   &lt;num&gt; &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:  2010  7267 3979572   male        direct        12.02660       0.3729483</span></span>
+<span><span class="co">##  2:  2010  7560 4202650 female        direct        16.73351       0.6602336</span></span>
+<span><span class="co">##  3:  2010 14827 8182222   &lt;NA&gt;        direct        14.44422       0.4332347</span></span>
+<span><span class="co">##  4:  2011  7267 3979572   male        direct        12.81921       0.3538553</span></span>
+<span><span class="co">##  5:  2011  7560 4202650 female        direct        16.62488       0.4042358</span></span>
+<span><span class="co">##  6:  2011 14827 8182222   &lt;NA&gt;        direct        14.77393       0.2779549</span></span>
+<span><span class="co">##  7:  2012  7267 3979572   male        direct        13.76065       0.4249796</span></span>
+<span><span class="co">##  8:  2012  7560 4202650 female        direct        16.26147       0.5234183</span></span>
+<span><span class="co">##  9:  2012 14827 8182222   &lt;NA&gt;        direct        15.04515       0.3893152</span></span>
+<span><span class="co">## 10:  2013  7267 3979572   male        direct        13.88962       0.2994799</span></span>
+<span><span class="co">## 11:  2013  7560 4202650 female        direct        15.83754       0.4420736</span></span>
+<span><span class="co">## 12:  2013 14827 8182222   &lt;NA&gt;        direct        14.89013       0.2611000</span></span>
+<span><span class="co">## 13:  2014  7267 3979572   male        direct        14.50351       0.3184889</span></span>
+<span><span class="co">## 14:  2014  7560 4202650 female        direct        15.75353       0.3743615</span></span>
+<span><span class="co">## 15:  2014 14827 8182222   &lt;NA&gt;        direct        15.14556       0.2623019</span></span>
+<span><span class="co">## 16:  2015  7267 3979572   male        direct        15.12289       0.4533009</span></span>
+<span><span class="co">## 17:  2015  7560 4202650 female        direct        15.92796       0.4496259</span></span>
+<span><span class="co">## 18:  2015 14827 8182222   &lt;NA&gt;        direct        15.53640       0.3137888</span></span>
+<span><span class="co">## 19:  2016  7267 3979572   male        direct        14.57968       0.4199293</span></span>
+<span><span class="co">## 20:  2016  7560 4202650 female        direct        15.55989       0.5171037</span></span>
+<span><span class="co">## 21:  2016 14827 8182222   &lt;NA&gt;        direct        15.08315       0.4249162</span></span>
+<span><span class="co">## 22:  2017  7267 3979572   male        direct        14.94816       0.5943360</span></span>
+<span><span class="co">## 23:  2017  7560 4202650 female        direct        15.86717       0.4623052</span></span>
+<span><span class="co">## 24:  2017 14827 8182222   &lt;NA&gt;        direct        15.42019       0.4557103</span></span>
+<span><span class="co">##      year     n       N gender estimate_type val_povertyRisk stE_povertyRisk</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="multiple-estimators">Multiple estimators<a class="anchor" aria-label="anchor" href="#multiple-estimators"></a>
+</h3>
+<p>In case an estimator should be applied to several columns of the
+dataset, <code>var</code> can be set to a vector containing all
+necessary columns.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">multipleRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span></span>
+<span><span class="va">multipleRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422       0.4643198</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393       0.3454049</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515       0.4295729</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013       0.4386975</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556       0.4565593</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640       0.5227265</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315       0.5301508</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019       0.6339655</span></span>
+<span><span class="co">##    val_onePerson stE_onePerson</span></span>
+<span><span class="co">##            &lt;num&gt;         &lt;num&gt;</span></span>
+<span><span class="co">## 1:      14.85737     0.4643198</span></span>
+<span><span class="co">## 2:      14.85737     0.3454049</span></span>
+<span><span class="co">## 3:      14.85737     0.4295729</span></span>
+<span><span class="co">## 4:      14.85737     0.4386975</span></span>
+<span><span class="co">## 5:      14.85737     0.4565593</span></span>
+<span><span class="co">## 6:      14.85737     0.5227265</span></span>
+<span><span class="co">## 7:      14.85737     0.5301508</span></span>
+<span><span class="co">## 8:      14.85737     0.6339655</span></span></code></pre>
+<p>Here we see the relative number of persons at risk of poverty and the
+relative number of one-person households.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="grouping">Grouping<a class="anchor" aria-label="anchor" href="#grouping"></a>
+</h2>
+<p>The <code>groups</code> argument can be used to calculate estimators
+for different subsets of the data. This argument can take the grouping
+variable as a string that refers to a column name (usually a factor) in
+<code>dat</code>. If set, all estimators are not only split by the
+reference period but also by the grouping variable. For simplicity, only
+one reference period of the above data is used.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2010</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">att</span>  <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="va">att</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">att</span><span class="op">)</span></span></code></pre></div>
+<p>To calculate the ratio of persons at risk of poverty for each federal
+state of Austria, <code>group = "region"</code> can be used.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, group <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, region, estimate_type&gt;</span></span>
+<span><span class="co">##      year     n       N        region estimate_type val_povertyRisk</span></span>
+<span><span class="co">##     &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:  2010   549  260564    Burgenland        direct        19.53984</span></span>
+<span><span class="co">##  2:  2010   733  377355    Vorarlberg        direct        16.53731</span></span>
+<span><span class="co">##  3:  2010   924  535451      Salzburg        direct        13.78734</span></span>
+<span><span class="co">##  4:  2010  1078  563648     Carinthia        direct        13.08627</span></span>
+<span><span class="co">##  5:  2010  1317  701899         Tyrol        direct        15.30819</span></span>
+<span><span class="co">##  6:  2010  2295 1167045        Styria        direct        14.37464</span></span>
+<span><span class="co">##  7:  2010  2322 1598931        Vienna        direct        17.23468</span></span>
+<span><span class="co">##  8:  2010  2804 1555709 Lower Austria        direct        13.84362</span></span>
+<span><span class="co">##  9:  2010  2805 1421620 Upper Austria        direct        10.88977</span></span>
+<span><span class="co">## 10:  2010 14827 8182222          &lt;NA&gt;        direct        14.44422</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;num&gt;</span></span>
+<span><span class="co">##  1:       3.4883326</span></span>
+<span><span class="co">##  2:       2.2029913</span></span>
+<span><span class="co">##  3:       1.6957536</span></span>
+<span><span class="co">##  4:       1.9782861</span></span>
+<span><span class="co">##  5:       1.5274233</span></span>
+<span><span class="co">##  6:       1.0156324</span></span>
+<span><span class="co">##  7:       1.2813063</span></span>
+<span><span class="co">##  8:       0.8099991</span></span>
+<span><span class="co">##  9:       0.9201290</span></span>
+<span><span class="co">## 10:       0.4985492</span></span></code></pre>
+<p>The last row with <code>region = NA</code> denotes the aggregate over
+all regions. Note that the columns <code>N</code> and <code>n</code> now
+show the weighted and unweighted number of persons in each region.</p>
+<div class="section level3">
+<h3 id="several-grouping-variables">Several grouping variables<a class="anchor" aria-label="anchor" href="#several-grouping-variables"></a>
+</h3>
+<p>In case more than one grouping variable is used, there are several
+options of calling <code><a href="../reference/calc.stError.html">calc.stError()</a></code> depending on whether
+combinations of grouping levels should be regarded or not. We will
+consider the variables <code>gender</code> and <code>region</code> as
+our grouping variables and show three options on how
+<code><a href="../reference/calc.stError.html">calc.stError()</a></code> can be called.</p>
+<div class="section level4">
+<h4 id="option-1-all-regions-and-all-genders">Option 1: All regions and all genders<a class="anchor" aria-label="anchor" href="#option-1-all-regions-and-all-genders"></a>
 </h4>
-<p>Split the data by all combinations of the two grouping variables. This will result in a larger output-table of the size</p>
-<p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.\]</span></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, 
-                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##     year     n         N gender        region val_povertyRisk stE_povertyRisk
-##  1: 2010   261  122741.8   male    Burgenland       17.414524       2.2332286
-##  2: 2010   288  137822.2 female    Burgenland       21.432598       2.0899871
-##  3: 2010   359  182732.9   male    Vorarlberg       12.973259       3.1093204
-##  4: 2010   374  194622.1 female    Vorarlberg       19.883637       3.7576712
-##  5: 2010   440  253143.7   male      Salzburg        9.156964       1.9028612
-##  6: 2010   484  282307.3 female      Salzburg       17.939382       2.5374889
-##  7: 2010   517  268581.4   male     Carinthia       10.552149       2.0614209
-##  8: 2010   561  295066.6 female     Carinthia       15.392924       1.9756282
-##  9: 2010   650  339566.5   male         Tyrol       12.857542       1.0371712
-## 10: 2010   667  362332.5 female         Tyrol       17.604861       2.2145631
-## 11: 2010  1128  571011.7   male        Styria       11.671247       1.5111686
-## 12: 2010  1132  774405.4   male        Vienna       15.590616       1.3348673
-## 13: 2010  1167  596033.3 female        Styria       16.964539       1.3758548
-## 14: 2010  1190  824525.6 female        Vienna       18.778813       0.9304295
-## 15: 2010  1363  684272.5   male Upper Austria        9.074690       1.1711956
-## 16: 2010  1387  772593.2 female Lower Austria       16.372949       1.8366058
-## 17: 2010  1417  783115.8   male Lower Austria       11.348283       1.6437512
-## 18: 2010  1442  737347.5 female Upper Austria       12.574206       0.7710579
-## 19: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218       0.5838199</code></pre>
+<p>Calculate the point estimate and standard error for each region and
+each gender. The number of rows in the output is therefore</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>12</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.</annotation></semantics></math></p>
+<p>The last row is again the estimate for the whole period.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, region, estimate_type&gt;</span></span>
+<span><span class="co">##      year     n       N gender        region estimate_type val_povertyRisk</span></span>
+<span><span class="co">##     &lt;num&gt; &lt;int&gt;   &lt;num&gt; &lt;fctr&gt;        &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:  2010   549  260564   &lt;NA&gt;    Burgenland        direct        19.53984</span></span>
+<span><span class="co">##  2:  2010   733  377355   &lt;NA&gt;    Vorarlberg        direct        16.53731</span></span>
+<span><span class="co">##  3:  2010   924  535451   &lt;NA&gt;      Salzburg        direct        13.78734</span></span>
+<span><span class="co">##  4:  2010  1078  563648   &lt;NA&gt;     Carinthia        direct        13.08627</span></span>
+<span><span class="co">##  5:  2010  1317  701899   &lt;NA&gt;         Tyrol        direct        15.30819</span></span>
+<span><span class="co">##  6:  2010  2295 1167045   &lt;NA&gt;        Styria        direct        14.37464</span></span>
+<span><span class="co">##  7:  2010  2322 1598931   &lt;NA&gt;        Vienna        direct        17.23468</span></span>
+<span><span class="co">##  8:  2010  2804 1555709   &lt;NA&gt; Lower Austria        direct        13.84362</span></span>
+<span><span class="co">##  9:  2010  2805 1421620   &lt;NA&gt; Upper Austria        direct        10.88977</span></span>
+<span><span class="co">## 10:  2010  7267 3979572   male          &lt;NA&gt;        direct        12.02660</span></span>
+<span><span class="co">## 11:  2010  7560 4202650 female          &lt;NA&gt;        direct        16.73351</span></span>
+<span><span class="co">## 12:  2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        direct        14.44422</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;num&gt;</span></span>
+<span><span class="co">##  1:       3.4883326</span></span>
+<span><span class="co">##  2:       2.2029913</span></span>
+<span><span class="co">##  3:       1.6957536</span></span>
+<span><span class="co">##  4:       1.9782861</span></span>
+<span><span class="co">##  5:       1.5274233</span></span>
+<span><span class="co">##  6:       1.0156324</span></span>
+<span><span class="co">##  7:       1.2813063</span></span>
+<span><span class="co">##  8:       0.8099991</span></span>
+<span><span class="co">##  9:       0.9201290</span></span>
+<span><span class="co">## 10:       0.4098895</span></span>
+<span><span class="co">## 11:       0.7378802</span></span>
+<span><span class="co">## 12:       0.4985492</span></span></code></pre>
 </div>
-<div id="option-3-cobination-of-option-1-and-option-2" class="section level4">
-<h4 class="hasAnchor">
-<a href="#option-3-cobination-of-option-1-and-option-2" class="anchor"></a>Option 3: Cobination of Option 1 and Option 2</h4>
-<p>In this case, the estimates and standard errors are calculated for</p>
+<div class="section level4">
+<h4 id="option-2-all-combinations-of-region-and-gender">Option 2: All combinations of <code>region</code> and
+<code>gender</code><a class="anchor" aria-label="anchor" href="#option-2-all-combinations-of-region-and-gender"></a>
+</h4>
+<p>Split the data by all combinations of the two grouping variables.
+This will result in a larger output-table of the size</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>⋅</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>⋅</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>19</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.</annotation></semantics></math></p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, region, estimate_type&gt;</span></span>
+<span><span class="co">##      year     n         N gender        region estimate_type val_povertyRisk</span></span>
+<span><span class="co">##     &lt;num&gt; &lt;int&gt;     &lt;num&gt; &lt;fctr&gt;        &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:  2010   261  122741.8   male    Burgenland        direct       17.414524</span></span>
+<span><span class="co">##  2:  2010   288  137822.2 female    Burgenland        direct       21.432598</span></span>
+<span><span class="co">##  3:  2010   359  182732.9   male    Vorarlberg        direct       12.973259</span></span>
+<span><span class="co">##  4:  2010   374  194622.1 female    Vorarlberg        direct       19.883637</span></span>
+<span><span class="co">##  5:  2010   440  253143.7   male      Salzburg        direct        9.156964</span></span>
+<span><span class="co">##  6:  2010   484  282307.3 female      Salzburg        direct       17.939382</span></span>
+<span><span class="co">##  7:  2010   517  268581.4   male     Carinthia        direct       10.552149</span></span>
+<span><span class="co">##  8:  2010   561  295066.6 female     Carinthia        direct       15.392924</span></span>
+<span><span class="co">##  9:  2010   650  339566.5   male         Tyrol        direct       12.857542</span></span>
+<span><span class="co">## 10:  2010   667  362332.5 female         Tyrol        direct       17.604861</span></span>
+<span><span class="co">## 11:  2010  1128  571011.7   male        Styria        direct       11.671247</span></span>
+<span><span class="co">## 12:  2010  1132  774405.4   male        Vienna        direct       15.590616</span></span>
+<span><span class="co">## 13:  2010  1167  596033.3 female        Styria        direct       16.964539</span></span>
+<span><span class="co">## 14:  2010  1190  824525.6 female        Vienna        direct       18.778813</span></span>
+<span><span class="co">## 15:  2010  1363  684272.5   male Upper Austria        direct        9.074690</span></span>
+<span><span class="co">## 16:  2010  1387  772593.2 female Lower Austria        direct       16.372949</span></span>
+<span><span class="co">## 17:  2010  1417  783115.8   male Lower Austria        direct       11.348283</span></span>
+<span><span class="co">## 18:  2010  1442  737347.5 female Upper Austria        direct       12.574206</span></span>
+<span><span class="co">## 19:  2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        direct       14.444218</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;num&gt;</span></span>
+<span><span class="co">##  1:       3.5218439</span></span>
+<span><span class="co">##  2:       3.8268849</span></span>
+<span><span class="co">##  3:       1.8433157</span></span>
+<span><span class="co">##  4:       3.0942422</span></span>
+<span><span class="co">##  5:       1.2743437</span></span>
+<span><span class="co">##  6:       2.1412496</span></span>
+<span><span class="co">##  7:       2.1030785</span></span>
+<span><span class="co">##  8:       2.0810273</span></span>
+<span><span class="co">##  9:       1.9118588</span></span>
+<span><span class="co">## 10:       1.5815764</span></span>
+<span><span class="co">## 11:       1.1247960</span></span>
+<span><span class="co">## 12:       1.3616322</span></span>
+<span><span class="co">## 13:       1.1948267</span></span>
+<span><span class="co">## 14:       1.4986763</span></span>
+<span><span class="co">## 15:       1.1454024</span></span>
+<span><span class="co">## 16:       1.2176052</span></span>
+<span><span class="co">## 17:       0.7725874</span></span>
+<span><span class="co">## 18:       0.8510304</span></span>
+<span><span class="co">## 19:       0.4985492</span></span></code></pre>
+</div>
+<div class="section level4">
+<h4 id="option-3-cobination-of-option-1-and-option-2">Option 3: Cobination of Option 1 and Option 2<a class="anchor" aria-label="anchor" href="#option-3-cobination-of-option-1-and-option-2"></a>
+</h4>
+<p>In this case, the estimates and standard errors are calculated
+for</p>
 <ul>
 <li>every gender,</li>
-<li>every state and</li>
-<li>every combination of state and gender.</li>
+<li>every region and</li>
+<li>every combination of region and gender.</li>
 </ul>
 <p>The number of rows in the output is therefore</p>
-<p><span class="math display">\[n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.\]</span></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, 
-                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></code></pre></div>
-<pre><code>##     year     n         N gender        region val_povertyRisk stE_povertyRisk
-##  1: 2010   261  122741.8   male    Burgenland       17.414524       2.2332286
-##  2: 2010   288  137822.2 female    Burgenland       21.432598       2.0899871
-##  3: 2010   359  182732.9   male    Vorarlberg       12.973259       3.1093204
-##  4: 2010   374  194622.1 female    Vorarlberg       19.883637       3.7576712
-##  5: 2010   440  253143.7   male      Salzburg        9.156964       1.9028612
-##  6: 2010   484  282307.3 female      Salzburg       17.939382       2.5374889
-##  7: 2010   517  268581.4   male     Carinthia       10.552149       2.0614209
-##  8: 2010   549  260564.0   &lt;NA&gt;    Burgenland       19.539837       1.8042764
-##  9: 2010   561  295066.6 female     Carinthia       15.392924       1.9756282
-## 10: 2010   650  339566.5   male         Tyrol       12.857542       1.0371712
-## 11: 2010   667  362332.5 female         Tyrol       17.604861       2.2145631
-## 12: 2010   733  377355.0   &lt;NA&gt;    Vorarlberg       16.537310       3.2896891
-## 13: 2010   924  535451.0   &lt;NA&gt;      Salzburg       13.787343       2.2585866
-## 14: 2010  1078  563648.0   &lt;NA&gt;     Carinthia       13.086268       1.7469304
-## 15: 2010  1128  571011.7   male        Styria       11.671247       1.5111686
-## 16: 2010  1132  774405.4   male        Vienna       15.590616       1.3348673
-## 17: 2010  1167  596033.3 female        Styria       16.964539       1.3758548
-## 18: 2010  1190  824525.6 female        Vienna       18.778813       0.9304295
-## 19: 2010  1317  701899.0   &lt;NA&gt;         Tyrol       15.308190       1.3943715
-## 20: 2010  1363  684272.5   male Upper Austria        9.074690       1.1711956
-## 21: 2010  1387  772593.2 female Lower Austria       16.372949       1.8366058
-## 22: 2010  1417  783115.8   male Lower Austria       11.348283       1.6437512
-## 23: 2010  1442  737347.5 female Upper Austria       12.574206       0.7710579
-## 24: 2010  2295 1167045.0   &lt;NA&gt;        Styria       14.374637       1.3500431
-## 25: 2010  2322 1598931.0   &lt;NA&gt;        Vienna       17.234683       1.0428496
-## 26: 2010  2804 1555709.0   &lt;NA&gt; Lower Austria       13.843623       1.7034375
-## 27: 2010  2805 1421620.0   &lt;NA&gt; Upper Austria       10.889773       0.8709790
-## 28: 2010  7267 3979571.7   male          &lt;NA&gt;       12.026600       0.6303407
-## 29: 2010  7560 4202650.3 female          &lt;NA&gt;       16.733508       0.6300745
-## 30: 2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;       14.444218       0.5838199
-##     year     n         N gender        region val_povertyRisk stE_povertyRisk</code></pre>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>⋅</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>⋅</mo><mn>2</mn><mo>+</mo><mn>9</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>30</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.</annotation></semantics></math></p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, region, estimate_type&gt;</span></span>
+<span><span class="co">##      year     n         N gender        region estimate_type val_povertyRisk</span></span>
+<span><span class="co">##     &lt;num&gt; &lt;int&gt;     &lt;num&gt; &lt;fctr&gt;        &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:  2010   261  122741.8   male    Burgenland        direct       17.414524</span></span>
+<span><span class="co">##  2:  2010   288  137822.2 female    Burgenland        direct       21.432598</span></span>
+<span><span class="co">##  3:  2010   359  182732.9   male    Vorarlberg        direct       12.973259</span></span>
+<span><span class="co">##  4:  2010   374  194622.1 female    Vorarlberg        direct       19.883637</span></span>
+<span><span class="co">##  5:  2010   440  253143.7   male      Salzburg        direct        9.156964</span></span>
+<span><span class="co">##  6:  2010   484  282307.3 female      Salzburg        direct       17.939382</span></span>
+<span><span class="co">##  7:  2010   517  268581.4   male     Carinthia        direct       10.552149</span></span>
+<span><span class="co">##  8:  2010   549  260564.0   &lt;NA&gt;    Burgenland        direct       19.539837</span></span>
+<span><span class="co">##  9:  2010   561  295066.6 female     Carinthia        direct       15.392924</span></span>
+<span><span class="co">## 10:  2010   650  339566.5   male         Tyrol        direct       12.857542</span></span>
+<span><span class="co">## 11:  2010   667  362332.5 female         Tyrol        direct       17.604861</span></span>
+<span><span class="co">## 12:  2010   733  377355.0   &lt;NA&gt;    Vorarlberg        direct       16.537310</span></span>
+<span><span class="co">## 13:  2010   924  535451.0   &lt;NA&gt;      Salzburg        direct       13.787343</span></span>
+<span><span class="co">## 14:  2010  1078  563648.0   &lt;NA&gt;     Carinthia        direct       13.086268</span></span>
+<span><span class="co">## 15:  2010  1128  571011.7   male        Styria        direct       11.671247</span></span>
+<span><span class="co">## 16:  2010  1132  774405.4   male        Vienna        direct       15.590616</span></span>
+<span><span class="co">## 17:  2010  1167  596033.3 female        Styria        direct       16.964539</span></span>
+<span><span class="co">## 18:  2010  1190  824525.6 female        Vienna        direct       18.778813</span></span>
+<span><span class="co">## 19:  2010  1317  701899.0   &lt;NA&gt;         Tyrol        direct       15.308190</span></span>
+<span><span class="co">## 20:  2010  1363  684272.5   male Upper Austria        direct        9.074690</span></span>
+<span><span class="co">## 21:  2010  1387  772593.2 female Lower Austria        direct       16.372949</span></span>
+<span><span class="co">## 22:  2010  1417  783115.8   male Lower Austria        direct       11.348283</span></span>
+<span><span class="co">## 23:  2010  1442  737347.5 female Upper Austria        direct       12.574206</span></span>
+<span><span class="co">## 24:  2010  2295 1167045.0   &lt;NA&gt;        Styria        direct       14.374637</span></span>
+<span><span class="co">## 25:  2010  2322 1598931.0   &lt;NA&gt;        Vienna        direct       17.234683</span></span>
+<span><span class="co">## 26:  2010  2804 1555709.0   &lt;NA&gt; Lower Austria        direct       13.843623</span></span>
+<span><span class="co">## 27:  2010  2805 1421620.0   &lt;NA&gt; Upper Austria        direct       10.889773</span></span>
+<span><span class="co">## 28:  2010  7267 3979571.7   male          &lt;NA&gt;        direct       12.026600</span></span>
+<span><span class="co">## 29:  2010  7560 4202650.3 female          &lt;NA&gt;        direct       16.733508</span></span>
+<span><span class="co">## 30:  2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        direct       14.444218</span></span>
+<span><span class="co">##      year     n         N gender        region estimate_type val_povertyRisk</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;num&gt;</span></span>
+<span><span class="co">##  1:       3.5218439</span></span>
+<span><span class="co">##  2:       3.8268849</span></span>
+<span><span class="co">##  3:       1.8433157</span></span>
+<span><span class="co">##  4:       3.0942422</span></span>
+<span><span class="co">##  5:       1.2743437</span></span>
+<span><span class="co">##  6:       2.1412496</span></span>
+<span><span class="co">##  7:       2.1030785</span></span>
+<span><span class="co">##  8:       3.4883326</span></span>
+<span><span class="co">##  9:       2.0810273</span></span>
+<span><span class="co">## 10:       1.9118588</span></span>
+<span><span class="co">## 11:       1.5815764</span></span>
+<span><span class="co">## 12:       2.2029913</span></span>
+<span><span class="co">## 13:       1.6957536</span></span>
+<span><span class="co">## 14:       1.9782861</span></span>
+<span><span class="co">## 15:       1.1247960</span></span>
+<span><span class="co">## 16:       1.3616322</span></span>
+<span><span class="co">## 17:       1.1948267</span></span>
+<span><span class="co">## 18:       1.4986763</span></span>
+<span><span class="co">## 19:       1.5274233</span></span>
+<span><span class="co">## 20:       1.1454024</span></span>
+<span><span class="co">## 21:       1.2176052</span></span>
+<span><span class="co">## 22:       0.7725874</span></span>
+<span><span class="co">## 23:       0.8510304</span></span>
+<span><span class="co">## 24:       1.0156324</span></span>
+<span><span class="co">## 25:       1.2813063</span></span>
+<span><span class="co">## 26:       0.8099991</span></span>
+<span><span class="co">## 27:       0.9201290</span></span>
+<span><span class="co">## 28:       0.4098895</span></span>
+<span><span class="co">## 29:       0.7378802</span></span>
+<span><span class="co">## 30:       0.4985492</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span></code></pre>
 </div>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
+<div class="section level2">
+<h2 id="group-differences">Group differences<a class="anchor" aria-label="anchor" href="#group-differences"></a>
+</h2>
+<p>If differences between groups need to be calculated, e.g difference
+of poverty rates between <code>gender = "male"</code> and
+<code>gender = "female"</code>, parameter <code>group.diff</code> can be
+utilised. Setting <code>group.diff = TRUE</code> the differences and the
+standard error of these differences for all variables defined in
+<code>groups</code> will be calculated.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span>,</span>
+<span>                             group.diff <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, region, estimate_type&gt;</span></span>
+<span><span class="co">##      year       n         N        gender                        region</span></span>
+<span><span class="co">##     &lt;num&gt;   &lt;num&gt;     &lt;num&gt;        &lt;fctr&gt;                        &lt;fctr&gt;</span></span>
+<span><span class="co">##  1:  2010   549.0  260564.0          &lt;NA&gt;                    Burgenland</span></span>
+<span><span class="co">##  2:  2010   641.0  318959.5          &lt;NA&gt;       Burgenland - Vorarlberg</span></span>
+<span><span class="co">##  3:  2010   733.0  377355.0          &lt;NA&gt;                    Vorarlberg</span></span>
+<span><span class="co">##  4:  2010   736.5  398007.5          &lt;NA&gt;         Burgenland - Salzburg</span></span>
+<span><span class="co">##  5:  2010   813.5  412106.0          &lt;NA&gt;        Burgenland - Carinthia</span></span>
+<span><span class="co">##  6:  2010   828.5  456403.0          &lt;NA&gt;         Salzburg - Vorarlberg</span></span>
+<span><span class="co">##  7:  2010   905.5  470501.5          &lt;NA&gt;        Carinthia - Vorarlberg</span></span>
+<span><span class="co">##  8:  2010   924.0  535451.0          &lt;NA&gt;                      Salzburg</span></span>
+<span><span class="co">##  9:  2010   933.0  481231.5          &lt;NA&gt;            Burgenland - Tyrol</span></span>
+<span><span class="co">## 10:  2010  1001.0  549549.5          &lt;NA&gt;          Carinthia - Salzburg</span></span>
+<span><span class="co">## 11:  2010  1025.0  539627.0          &lt;NA&gt;            Tyrol - Vorarlberg</span></span>
+<span><span class="co">## 12:  2010  1078.0  563648.0          &lt;NA&gt;                     Carinthia</span></span>
+<span><span class="co">## 13:  2010  1120.5  618675.0          &lt;NA&gt;              Salzburg - Tyrol</span></span>
+<span><span class="co">## 14:  2010  1197.5  632773.5          &lt;NA&gt;             Carinthia - Tyrol</span></span>
+<span><span class="co">## 15:  2010  1317.0  701899.0          &lt;NA&gt;                         Tyrol</span></span>
+<span><span class="co">## 16:  2010  1422.0  713804.5          &lt;NA&gt;           Burgenland - Styria</span></span>
+<span><span class="co">## 17:  2010  1435.5  929747.5          &lt;NA&gt;           Burgenland - Vienna</span></span>
+<span><span class="co">## 18:  2010  1514.0  772200.0          &lt;NA&gt;           Styria - Vorarlberg</span></span>
+<span><span class="co">## 19:  2010  1527.5  988143.0          &lt;NA&gt;           Vienna - Vorarlberg</span></span>
+<span><span class="co">## 20:  2010  1609.5  851248.0          &lt;NA&gt;             Salzburg - Styria</span></span>
+<span><span class="co">## 21:  2010  1623.0 1067191.0          &lt;NA&gt;             Salzburg - Vienna</span></span>
+<span><span class="co">## 22:  2010  1676.5  908136.5          &lt;NA&gt;    Burgenland - Lower Austria</span></span>
+<span><span class="co">## 23:  2010  1677.0  841092.0          &lt;NA&gt;    Burgenland - Upper Austria</span></span>
+<span><span class="co">## 24:  2010  1686.5  865346.5          &lt;NA&gt;            Carinthia - Styria</span></span>
+<span><span class="co">## 25:  2010  1700.0 1081289.5          &lt;NA&gt;            Carinthia - Vienna</span></span>
+<span><span class="co">## 26:  2010  1768.5  966532.0          &lt;NA&gt;    Lower Austria - Vorarlberg</span></span>
+<span><span class="co">## 27:  2010  1769.0  899487.5          &lt;NA&gt;    Upper Austria - Vorarlberg</span></span>
+<span><span class="co">## 28:  2010  1806.0  934472.0          &lt;NA&gt;                Styria - Tyrol</span></span>
+<span><span class="co">## 29:  2010  1819.5 1150415.0          &lt;NA&gt;                Tyrol - Vienna</span></span>
+<span><span class="co">## 30:  2010  1864.0 1045580.0          &lt;NA&gt;      Lower Austria - Salzburg</span></span>
+<span><span class="co">## 31:  2010  1864.5  978535.5          &lt;NA&gt;      Salzburg - Upper Austria</span></span>
+<span><span class="co">## 32:  2010  1941.0 1059678.5          &lt;NA&gt;     Carinthia - Lower Austria</span></span>
+<span><span class="co">## 33:  2010  1941.5  992634.0          &lt;NA&gt;     Carinthia - Upper Austria</span></span>
+<span><span class="co">## 34:  2010  2060.5 1128804.0          &lt;NA&gt;         Lower Austria - Tyrol</span></span>
+<span><span class="co">## 35:  2010  2061.0 1061759.5          &lt;NA&gt;         Tyrol - Upper Austria</span></span>
+<span><span class="co">## 36:  2010  2295.0 1167045.0          &lt;NA&gt;                        Styria</span></span>
+<span><span class="co">## 37:  2010  2308.5 1382988.0          &lt;NA&gt;               Styria - Vienna</span></span>
+<span><span class="co">## 38:  2010  2322.0 1598931.0          &lt;NA&gt;                        Vienna</span></span>
+<span><span class="co">## 39:  2010  2549.5 1361377.0          &lt;NA&gt;        Lower Austria - Styria</span></span>
+<span><span class="co">## 40:  2010  2550.0 1294332.5          &lt;NA&gt;        Styria - Upper Austria</span></span>
+<span><span class="co">## 41:  2010  2563.0 1577320.0          &lt;NA&gt;        Lower Austria - Vienna</span></span>
+<span><span class="co">## 42:  2010  2563.5 1510275.5          &lt;NA&gt;        Upper Austria - Vienna</span></span>
+<span><span class="co">## 43:  2010  2804.0 1555709.0          &lt;NA&gt;                 Lower Austria</span></span>
+<span><span class="co">## 44:  2010  2804.5 1488664.5          &lt;NA&gt; Lower Austria - Upper Austria</span></span>
+<span><span class="co">## 45:  2010  2805.0 1421620.0          &lt;NA&gt;                 Upper Austria</span></span>
+<span><span class="co">## 46:  2010  7267.0 3979571.7          male                          &lt;NA&gt;</span></span>
+<span><span class="co">## 47:  2010  7413.5 4091111.0 male - female                          &lt;NA&gt;</span></span>
+<span><span class="co">## 48:  2010  7560.0 4202650.3        female                          &lt;NA&gt;</span></span>
+<span><span class="co">## 49:  2010 14827.0 8182222.0          &lt;NA&gt;                          &lt;NA&gt;</span></span>
+<span><span class="co">##      year       n         N        gender                        region</span></span>
+<span><span class="co">##        estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:           direct     19.53983651       3.4883326</span></span>
+<span><span class="co">##  2: group difference      3.00252634       3.5436547</span></span>
+<span><span class="co">##  3:           direct     16.53731017       2.2029913</span></span>
+<span><span class="co">##  4: group difference      5.75249330       3.2818988</span></span>
+<span><span class="co">##  5: group difference      6.45356876       2.8823604</span></span>
+<span><span class="co">##  6: group difference     -2.74996696       1.4668601</span></span>
+<span><span class="co">##  7: group difference     -3.45104242       3.2918250</span></span>
+<span><span class="co">##  8:           direct     13.78734321       1.6957536</span></span>
+<span><span class="co">##  9: group difference      4.23164602       3.3020550</span></span>
+<span><span class="co">## 10: group difference     -0.70107546       2.3954976</span></span>
+<span><span class="co">## 11: group difference     -1.22911968       2.5039315</span></span>
+<span><span class="co">## 12:           direct     13.08626775       1.9782861</span></span>
+<span><span class="co">## 13: group difference     -1.52084728       2.2402317</span></span>
+<span><span class="co">## 14: group difference     -2.22192274       2.1315688</span></span>
+<span><span class="co">## 15:           direct     15.30819049       1.5274233</span></span>
+<span><span class="co">## 16: group difference      5.16519923       3.6127427</span></span>
+<span><span class="co">## 17: group difference      2.30515330       3.7389514</span></span>
+<span><span class="co">## 18: group difference     -2.16267289       1.9124511</span></span>
+<span><span class="co">## 19: group difference      0.69737304       3.1429722</span></span>
+<span><span class="co">## 20: group difference     -0.58729407       1.8537957</span></span>
+<span><span class="co">## 21: group difference     -3.44734000       2.6744489</span></span>
+<span><span class="co">## 22: group difference      5.69621369       3.2673833</span></span>
+<span><span class="co">## 23: group difference      8.65006312       3.8169805</span></span>
+<span><span class="co">## 24: group difference     -1.28836953       2.5743050</span></span>
+<span><span class="co">## 25: group difference     -4.14841546       2.2018432</span></span>
+<span><span class="co">## 26: group difference     -2.69368735       2.0165426</span></span>
+<span><span class="co">## 27: group difference     -5.64753678       2.5063981</span></span>
+<span><span class="co">## 28: group difference     -0.93355321       1.6974786</span></span>
+<span><span class="co">## 29: group difference     -1.92649272       1.6855478</span></span>
+<span><span class="co">## 30: group difference      0.05627961       1.6110862</span></span>
+<span><span class="co">## 31: group difference      2.89756982       1.9737035</span></span>
+<span><span class="co">## 32: group difference     -0.75735506       2.4183335</span></span>
+<span><span class="co">## 33: group difference      2.19649436       1.9039796</span></span>
+<span><span class="co">## 34: group difference     -1.46456768       1.9257071</span></span>
+<span><span class="co">## 35: group difference      4.41841710       1.4737809</span></span>
+<span><span class="co">## 36:           direct     14.37463728       1.0156324</span></span>
+<span><span class="co">## 37: group difference     -2.86004593       1.6324708</span></span>
+<span><span class="co">## 38:           direct     17.23468321       1.2813063</span></span>
+<span><span class="co">## 39: group difference     -0.53101447       1.0837805</span></span>
+<span><span class="co">## 40: group difference      3.48486389       1.2837057</span></span>
+<span><span class="co">## 41: group difference     -3.39106040       1.7053790</span></span>
+<span><span class="co">## 42: group difference     -6.34490982       1.4980011</span></span>
+<span><span class="co">## 43:           direct     13.84362281       0.8099991</span></span>
+<span><span class="co">## 44: group difference      2.95384943       1.4936192</span></span>
+<span><span class="co">## 45:           direct     10.88977339       0.9201290</span></span>
+<span><span class="co">## 46:           direct     12.02659998       0.4098895</span></span>
+<span><span class="co">## 47: group difference     -4.70690810       0.6829789</span></span>
+<span><span class="co">## 48:           direct     16.73350808       0.7378802</span></span>
+<span><span class="co">## 49:           direct     14.44421817       0.4985492</span></span>
+<span><span class="co">##        estimate_type val_povertyRisk stE_povertyRisk</span></span></code></pre>
+<p>The resulting output table contains 49 rows. 12 rows for all the
+direct estimators</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>12</mn><mo>,</mo></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12,</annotation></semantics></math></p>
+<p>and another 37 for all the differences within the variable
+<code>"gender"</code> and <code>"region"</code> seperately. Variable
+<code>"gender"</code> has 2 unique values
+(<code>unique(dat2$gender)</code>) resulting in 1 difference, ~
+<code>gender = "male"</code> - <code>gender = "female"</code> and
+variable <code>"region"</code> has 9 unique values
+(<code>unique(dat2$region)</code>) resulting in</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8</mn><mo>+</mo><mn>7</mn><mo>+</mo><mn>6</mn><mo>+</mo><mn>5</mn><mo>+</mo><mn>4</mn><mo>+</mo><mn>3</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo>=</mo><munderover><mo>∑</mo><mrow><mn>1</mn><mo>=</mo><mn>1</mn></mrow><mrow><mn>9</mn><mo>−</mo><mn>1</mn></mrow></munderover><mi>i</mi><mo>=</mo><mn>36</mn></mrow><annotation encoding="application/x-tex">8 + 7 + 6 + 5 + 4 + 3 + 2 + 1  = \sum\limits_{1=1}^{9-1}i = 36</annotation></semantics></math></p>
+<p>estimates. Thus the output contains 1 + 36 = 37 estimates with
+respect to group differences.</p>
+<p>If a combintaion of grouping variables is used in <code>group</code>
+and <code>group.diff = TRUE</code> then differences between combinations
+will only be calculated if one of the grouping variables differs. For
+example the difference between the following groups would be
+calculated</p>
+<ul>
+<li>
+<code>gender = "female" &amp; region = "Vienna"</code> -
+<code>gender = "male" &amp; region = "Vienna"</code>
+</li>
+<li>
+<code>gender = "female" &amp; region = "Vienna"</code> -
+<code>gender = "female" &amp; region = "Salzburg"</code>
+</li>
+<li>
+<code>gender = "male" &amp; region = "Salzburg"</code> -
+<code>gender = "female" &amp; region = "Salzburg"</code>
+</li>
+</ul>
+<p>The difference between
+<code>gender = "female" &amp; region = "Vienna"</code> and
+<code>gender = "male" &amp; region = "Salzburg"</code> however would not
+be calculated.</p>
+<p>Thus this leads to</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mn>1</mn><mo>=</mo><mn>1</mn></mrow><mrow><mn>9</mn><mo>−</mo><mn>1</mn></mrow></munderover><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>9</mn><mo>⋅</mo><mn>1</mn><mo>=</mo><mn>81</mn></mrow><annotation encoding="application/x-tex">2\cdot(\sum\limits_{1=1}^{9-1}i) + 9\cdot1 = 81</annotation></semantics></math></p>
+<p>results with respect to the differences. The Output contains an
+additional column <code>estimate_type</code> and</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                             group.diff <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span><span class="op">[</span>,<span class="va">.N</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">estimate_type</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##       estimate_type     N</span></span>
+<span><span class="co">##              &lt;char&gt; &lt;int&gt;</span></span>
+<span><span class="co">## 1:           direct    19</span></span>
+<span><span class="co">## 2: group difference    81</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="differences-between-survey-periods">Differences between survey periods<a class="anchor" aria-label="anchor" href="#differences-between-survey-periods"></a>
+</h2>
+<p>Differences of estimates between <code>period</code>s can be
+calculated using parameter <code>period.diff</code>.
+<code>period.diff</code> expects a character vector (if not
+<code>NULL</code>) specifying for which <code>period</code>s the
+differences should be calcualed for. The inputs should be specified in
+the form <code>"period2" - "period1"</code>.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             period.diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2017 - 2016"</span>, <span class="st">"2016 - 2015"</span>, <span class="st">"2015 - 2014"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##         year     n       N     estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##       &lt;char&gt; &lt;num&gt;   &lt;num&gt;            &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">## 1:      2014 14827 8182222            direct      15.1455601       0.3854059</span></span>
+<span><span class="co">## 2:      2015 14827 8182222            direct      15.5364014       0.3369891</span></span>
+<span><span class="co">## 3: 2015-2014 14827 8182222 period difference       0.3908413       0.1526220</span></span>
+<span><span class="co">## 4:      2016 14827 8182222            direct      15.0831502       0.5516559</span></span>
+<span><span class="co">## 5: 2016-2015 14827 8182222 period difference      -0.4532512       0.4112263</span></span>
+<span><span class="co">## 6:      2017 14827 8182222            direct      15.4201916       0.4865819</span></span>
+<span><span class="co">## 7: 2017-2016 14827 8182222 period difference       0.3370414       0.4516175</span></span></code></pre>
+<p>If additional grouping variables are supplied to
+<code><a href="../reference/calc.stError.html">calc.stError()</a></code> die differences across <code>period</code>s
+are also carried out for all variables in <code>group</code>.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             group <span class="op">=</span> <span class="st">"gender"</span>,</span>
+<span>                             period.diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2017 - 2016"</span>, <span class="st">"2016 - 2015"</span>, <span class="st">"2015 - 2014"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, estimate_type&gt;</span></span>
+<span><span class="co">##          year     n       N gender     estimate_type val_povertyRisk</span></span>
+<span><span class="co">##        &lt;char&gt; &lt;num&gt;   &lt;num&gt; &lt;fctr&gt;            &lt;char&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:      2014  7267 3979572   male            direct      14.5035068</span></span>
+<span><span class="co">##  2:      2014  7560 4202650 female            direct      15.7535328</span></span>
+<span><span class="co">##  3:      2014 14827 8182222   &lt;NA&gt;            direct      15.1455601</span></span>
+<span><span class="co">##  4:      2015  7267 3979572   male            direct      15.1228904</span></span>
+<span><span class="co">##  5:      2015  7560 4202650 female            direct      15.9279630</span></span>
+<span><span class="co">##  6:      2015 14827 8182222   &lt;NA&gt;            direct      15.5364014</span></span>
+<span><span class="co">##  7: 2015-2014  7267 3979572   male period difference       0.6193836</span></span>
+<span><span class="co">##  8: 2015-2014  7560 4202650 female period difference       0.1744301</span></span>
+<span><span class="co">##  9: 2015-2014 14827 8182222   &lt;NA&gt; period difference       0.3908413</span></span>
+<span><span class="co">## 10:      2016  7267 3979572   male            direct      14.5796824</span></span>
+<span><span class="co">## 11:      2016  7560 4202650 female            direct      15.5598937</span></span>
+<span><span class="co">## 12:      2016 14827 8182222   &lt;NA&gt;            direct      15.0831502</span></span>
+<span><span class="co">## 13: 2016-2015  7267 3979572   male period difference      -0.5432080</span></span>
+<span><span class="co">## 14: 2016-2015  7560 4202650 female period difference      -0.3680693</span></span>
+<span><span class="co">## 15: 2016-2015 14827 8182222   &lt;NA&gt; period difference      -0.4532512</span></span>
+<span><span class="co">## 16:      2017  7267 3979572   male            direct      14.9481591</span></span>
+<span><span class="co">## 17:      2017  7560 4202650 female            direct      15.8671684</span></span>
+<span><span class="co">## 18:      2017 14827 8182222   &lt;NA&gt;            direct      15.4201916</span></span>
+<span><span class="co">## 19: 2017-2016  7267 3979572   male period difference       0.3684767</span></span>
+<span><span class="co">## 20: 2017-2016  7560 4202650 female period difference       0.3072748</span></span>
+<span><span class="co">## 21: 2017-2016 14827 8182222   &lt;NA&gt; period difference       0.3370414</span></span>
+<span><span class="co">##          year     n       N gender     estimate_type val_povertyRisk</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;num&gt;</span></span>
+<span><span class="co">##  1:       0.3567423</span></span>
+<span><span class="co">##  2:       0.4997999</span></span>
+<span><span class="co">##  3:       0.3854059</span></span>
+<span><span class="co">##  4:       0.3641568</span></span>
+<span><span class="co">##  5:       0.5471000</span></span>
+<span><span class="co">##  6:       0.3369891</span></span>
+<span><span class="co">##  7:       0.1650781</span></span>
+<span><span class="co">##  8:       0.2906962</span></span>
+<span><span class="co">##  9:       0.1526220</span></span>
+<span><span class="co">## 10:       0.4695371</span></span>
+<span><span class="co">## 11:       0.6966108</span></span>
+<span><span class="co">## 12:       0.5516559</span></span>
+<span><span class="co">## 13:       0.5086342</span></span>
+<span><span class="co">## 14:       0.3435487</span></span>
+<span><span class="co">## 15:       0.4112263</span></span>
+<span><span class="co">## 16:       0.6086907</span></span>
+<span><span class="co">## 17:       0.4977674</span></span>
+<span><span class="co">## 18:       0.4865819</span></span>
+<span><span class="co">## 19:       0.5156215</span></span>
+<span><span class="co">## 20:       0.4318003</span></span>
+<span><span class="co">## 21:       0.4516175</span></span>
+<span><span class="co">##     stE_povertyRisk</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="averages-across-periods">Averages across periods<a class="anchor" aria-label="anchor" href="#averages-across-periods"></a>
+</h2>
+<p>With parameter <code>period.mean</code> averages across
+<code>period</code>s are calculated additional. The parameter accepts
+only odd integer values. The resulting table will contain the direct
+estimates as well as rolling averages of length
+<code>period.mean</code>.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             period.mean <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
+<span><span class="co">##              year     n       N  estimate_type val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##            &lt;char&gt; &lt;num&gt;   &lt;num&gt;         &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">## 1:           2014 14827 8182222         direct        15.14556       0.3854059</span></span>
+<span><span class="co">## 2: 2014_2015_2016 14827 8182222 period average        15.25504       0.3811946</span></span>
+<span><span class="co">## 3:           2015 14827 8182222         direct        15.53640       0.3369891</span></span>
+<span><span class="co">## 4: 2015_2016_2017 14827 8182222 period average        15.34658       0.3961727</span></span>
+<span><span class="co">## 5:           2016 14827 8182222         direct        15.08315       0.5516559</span></span>
+<span><span class="co">## 6:           2017 14827 8182222         direct        15.42019       0.4865819</span></span></code></pre>
+<p>if in addition the parameters <code>group</code> and/or
+<code>period.diff</code> are specified then differences and groupings of
+averages will be calculated.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
+<span>                             period.mean <span class="op">=</span> <span class="fl">3</span>, period.diff <span class="op">=</span> <span class="st">"2016 - 2015"</span>,</span>
+<span>                             group <span class="op">=</span> <span class="st">"gender"</span><span class="op">)</span></span>
+<span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
+<pre><code><span><span class="co">## Key: &lt;year, n, N, gender, estimate_type&gt;</span></span>
+<span><span class="co">##               year     n       N gender                      estimate_type</span></span>
+<span><span class="co">##             &lt;char&gt; &lt;num&gt;   &lt;num&gt; &lt;fctr&gt;                             &lt;char&gt;</span></span>
+<span><span class="co">##  1:           2014  7267 3979572   male                             direct</span></span>
+<span><span class="co">##  2:           2014  7560 4202650 female                             direct</span></span>
+<span><span class="co">##  3:           2014 14827 8182222   &lt;NA&gt;                             direct</span></span>
+<span><span class="co">##  4: 2014_2015_2016  7267 3979572   male                     period average</span></span>
+<span><span class="co">##  5: 2014_2015_2016  7560 4202650 female                     period average</span></span>
+<span><span class="co">##  6: 2014_2015_2016 14827 8182222   &lt;NA&gt;                     period average</span></span>
+<span><span class="co">##  7:           2015  7267 3979572   male                             direct</span></span>
+<span><span class="co">##  8:           2015  7560 4202650 female                             direct</span></span>
+<span><span class="co">##  9:           2015 14827 8182222   &lt;NA&gt;                             direct</span></span>
+<span><span class="co">## 10: 2015_2016_2017  7267 3979572   male                     period average</span></span>
+<span><span class="co">## 11: 2015_2016_2017  7560 4202650 female                     period average</span></span>
+<span><span class="co">## 12: 2015_2016_2017 14827 8182222   &lt;NA&gt;                     period average</span></span>
+<span><span class="co">## 13:           2016  7267 3979572   male                             direct</span></span>
+<span><span class="co">## 14:           2016  7560 4202650 female                             direct</span></span>
+<span><span class="co">## 15:           2016 14827 8182222   &lt;NA&gt;                             direct</span></span>
+<span><span class="co">## 16:      2016-2015  7267 3979572   male                  period difference</span></span>
+<span><span class="co">## 17:      2016-2015  7560 4202650 female                  period difference</span></span>
+<span><span class="co">## 18:      2016-2015 14827 8182222   &lt;NA&gt;                  period difference</span></span>
+<span><span class="co">## 19: 2016-2015_mean  7267 3979572   male difference between period averages</span></span>
+<span><span class="co">## 20: 2016-2015_mean  7560 4202650 female difference between period averages</span></span>
+<span><span class="co">## 21: 2016-2015_mean 14827 8182222   &lt;NA&gt; difference between period averages</span></span>
+<span><span class="co">## 22:           2017  7267 3979572   male                             direct</span></span>
+<span><span class="co">## 23:           2017  7560 4202650 female                             direct</span></span>
+<span><span class="co">## 24:           2017 14827 8182222   &lt;NA&gt;                             direct</span></span>
+<span><span class="co">##               year     n       N gender                      estimate_type</span></span>
+<span><span class="co">##     val_povertyRisk stE_povertyRisk</span></span>
+<span><span class="co">##               &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">##  1:     14.50350682       0.3567423</span></span>
+<span><span class="co">##  2:     15.75353283       0.4997999</span></span>
+<span><span class="co">##  3:     15.14556006       0.3854059</span></span>
+<span><span class="co">##  4:     14.73535987       0.3275539</span></span>
+<span><span class="co">##  5:     15.74712982       0.5439951</span></span>
+<span><span class="co">##  6:     15.25503720       0.3811946</span></span>
+<span><span class="co">##  7:     15.12289042       0.3641568</span></span>
+<span><span class="co">##  8:     15.92796296       0.5471000</span></span>
+<span><span class="co">##  9:     15.53640136       0.3369891</span></span>
+<span><span class="co">## 10:     14.88357729       0.3916631</span></span>
+<span><span class="co">## 11:     15.78500836       0.5383820</span></span>
+<span><span class="co">## 12:     15.34658105       0.3961727</span></span>
+<span><span class="co">## 13:     14.57968239       0.4695371</span></span>
+<span><span class="co">## 14:     15.55989368       0.6966108</span></span>
+<span><span class="co">## 15:     15.08315018       0.5516559</span></span>
+<span><span class="co">## 16:     -0.54320803       0.5086342</span></span>
+<span><span class="co">## 17:     -0.36806928       0.3435487</span></span>
+<span><span class="co">## 18:     -0.45325118       0.4112263</span></span>
+<span><span class="co">## 19:      0.14821741       0.1795903</span></span>
+<span><span class="co">## 20:      0.03787854       0.1743685</span></span>
+<span><span class="co">## 21:      0.09154385       0.1661571</span></span>
+<span><span class="co">## 22:     14.94815906       0.6086907</span></span>
+<span><span class="co">## 23:     15.86716845       0.4977674</span></span>
+<span><span class="co">## 24:     15.42019160       0.4865819</span></span>
+<span><span class="co">##     val_povertyRisk stE_povertyRisk</span></span></code></pre>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Johannes Gussenbauer, Alexander Kowarik, Eileen Vattheuer, Gregor de Cillia.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+</div>
+
+    </footer>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p>Developed by Johannes Gussenbauer, Alexander Kowarik, Gregor de Cillia.</p>
-</div>
-
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
-</div>
-
-      </footer>
-</div>
-
-  
 
 
   </body>
