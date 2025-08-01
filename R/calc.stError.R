@@ -63,8 +63,9 @@
 #'   either a named list or vector. The names of the object correspond to the
 #'   function arguments and the values to column names in dat, see also
 #'   examples.
-#' @param national DEPRECATED use 'relative.share' instead! boolean, if TRUE point estimates resulting from fun will be
+#' @param national DEPRECATED use `relative.share` instead! boolean, if TRUE point estimates resulting from fun will be
 #'   divided by the point estimate at the national level.
+#' @param new.method used for testing new implementation; will be removed with new release.
 
 #' @details `calc.stError` takes survey data (`dat`) and returns point estimates
 #' as well as their standard Errors defined by `fun` and `var` for each sample
