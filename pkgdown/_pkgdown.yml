@@ -30,9 +30,15 @@ reference:
     - computeLinear
     - summary.ipf
 
+- title: internal
+  desc: >
+    Internal functions not (yet) described.
+  contents:
+    - get.selection()
+
 development:
   mode: release
 
+url: ~
 template:
-  params:
-    bootswatch: cosmo
+  bootstrap: 5
