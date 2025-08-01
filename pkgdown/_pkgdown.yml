@@ -1,3 +1,7 @@
+url: "https://statistikat.github.io/surveysd"
+template:
+  bootstrap: 5
+
 reference:
 - title: data import
   contents:
@@ -11,6 +15,7 @@ reference:
     - '`ipf`'
     - matches('bootstrap')
     - '`generate.HHID`'
+    - '`get.selection`'
     - '`recalib`'
 - title: estimation of standard errors
   desc: >
@@ -30,15 +35,5 @@ reference:
     - computeLinear
     - summary.ipf
 
-- title: internal
-  desc: >
-    Internal functions not (yet) described.
-  contents:
-    - get.selection()
-
 development:
   mode: release
-
-url: ~
-template:
-  bootstrap: 5
