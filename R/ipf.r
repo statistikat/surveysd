@@ -380,240 +380,67 @@ getFormulas <- function(con, w) {
 
 ## enrich dat_original with the calibrated weights and assign attributes
 
-addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
-                                    maxIter, calIter, returnNA, cw, bw,verbose, looseH, hidVar = NULL) {
-
-  variableKeepingTheCalibWeight <- cw
-  representativeHouseholdForCalibration <- OriginalSortingVariable <-
-    outTable <- copy(dat_original)
-
-  formP <- getFormulas(conP, w = variableKeepingTheCalibWeight)
-  formH <- getFormulas(conH, w = variableKeepingTheCalibWeight)
-
-  # general information
-  setattr(outTable, "iterations", min(maxIter, calIter))
-
-  # input constraints
-  setattr(outTable, "conP", conP)
-  setattr(outTable, "conH", conH)
-
-  # adjusted constraints (conP, conH according to the calibrated weights)
-  conP_adj <- lapply(formP, xtabs, dat)
-  conH_adj <- lapply(
-    formH, xtabs, dat[representativeHouseholdForCalibration == 1])
-  setattr(outTable, "conP_adj", conP_adj)
-  setattr(outTable, "conH_adj", conH_adj)
-
-  # tolerances
-  setattr(outTable, "epsP", epsP)
-  setattr(outTable, "epsH", epsH)
-
-  setkey(dat, OriginalSortingVariable)
-
-
-  # convergence
-  conP_converged <- sapply(seq_along(conP), function(i) {
-    epsP_current <- switch(is.list(epsP) + 1, epsP, epsP[[i]])
-    conP_zero <- conP[[i]]==0
-    cond1 <- abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]]
-    all(conP_zero==TRUE | cond1==TRUE)
-  })
-  if(looseH){
-
-    inc <- function(x){
-      10^(floor(log10(x))-1) * 9.99
-    }
-
-    conH_converged <- sapply(seq_along(conH), function(i) {
-      epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
-      if(verbose){
-        message(paste("For looseH=TRUE epsH+",inc(epsH_current),"is allowed as tolerance for the convergence."))
-      }
-      conH_zero <- conH[[i]] ==0
-      cond1 <- abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= (epsH_current + inc(epsH_current))
-      all(conH_zero==TRUE | cond1==TRUE)
-    })
-  }else{
-    conH_converged <- sapply(seq_along(conH), function(i) {
-      epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
-      conH_zero <- conH[[i]] ==0
-      cond1 <- abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]]
-      all(conH_zero==TRUE | cond1==TRUE)
-    })
-  }
-  converged <- all(conP_converged) && all(conH_converged)
-  setattr(outTable, "converged", converged)
-  if (verbose) {
-    if (converged)
-      message("Convergence reached")
-    else
-      message("No convergence reached")
-  }
-
-  # add calibrated weights. Use setkey to make sure the indexes match
-  setkey(dat, OriginalSortingVariable)
-
-  if (!converged & returnNA) {
-    outTable[, c(variableKeepingTheCalibWeight) := NA]
-  } else {
-    outTable[, c(variableKeepingTheCalibWeight) :=
-               dat[[variableKeepingTheCalibWeight]]]
-  }
-
-  # formulas
-  setattr(outTable, "formP", formP)
-  setattr(outTable, "formH", formH)
-  setattr(outTable, "baseweight", bw)
-  setattr(outTable, "hid", hidVar)
-  # for the summary
-  class(outTable) <- c("ipf",class(outTable))
-
-  invisible(outTable)
-}
-
-
-# # # # # NEW addWeightsAndAttributes function # # # # # 
-# 
 # addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #                                     maxIter, calIter, returnNA, cw, bw,verbose, looseH, hidVar = NULL) {
-#   
+# 
 #   variableKeepingTheCalibWeight <- cw
 #   representativeHouseholdForCalibration <- OriginalSortingVariable <-
 #     outTable <- copy(dat_original)
-#   
-#   formP <- getFormulas(conP, w = variableKeepingTheCalibWeight) 
-#   # [[1]] calibWeight ~ amonat + abl + bsex + alter
-#   # [[2]] calibWeight ~ amonat + bstaathr
-#   # [[3]] calibWeight ~ amonat + abl + bsex + verwerb1
-#   formH <- getFormulas(conH, w = variableKeepingTheCalibWeight) #calibWeight ~ amonat + abl + wg
-#   
+# 
+#   formP <- getFormulas(conP, w = variableKeepingTheCalibWeight)
+#   formH <- getFormulas(conH, w = variableKeepingTheCalibWeight)
+# 
 #   # general information
 #   setattr(outTable, "iterations", min(maxIter, calIter))
-#   
+# 
 #   # input constraints
 #   setattr(outTable, "conP", conP)
 #   setattr(outTable, "conH", conH)
-#   
+# 
 #   # adjusted constraints (conP, conH according to the calibrated weights)
-#   conP_adj <- lapply(formP, xtabs, dat) # für monat 5 und 6 = 0
+#   conP_adj <- lapply(formP, xtabs, dat)
 #   conH_adj <- lapply(
 #     formH, xtabs, dat[representativeHouseholdForCalibration == 1])
 #   setattr(outTable, "conP_adj", conP_adj)
 #   setattr(outTable, "conH_adj", conH_adj)
-#   
+# 
 #   # tolerances
 #   setattr(outTable, "epsP", epsP)
 #   setattr(outTable, "epsH", epsH)
-#   
+# 
 #   setkey(dat, OriginalSortingVariable)
-#   
-#   
+# 
+# 
 #   # convergence
-#   # m <- (hrParameters$monat - 1) %% 3 + 1
-#   
-#   if (is.finite(hrParameters$monat)) {
-#     m <- (hrParameters$monat - 1) %% 3 + 1
-#   } else {
-#     m <- (hrParameters$monate - 1) %% 3 + 1
-#   }
-#   
-#   
 #   conP_converged <- sapply(seq_along(conP), function(i) {
 #     epsP_current <- switch(is.list(epsP) + 1, epsP, epsP[[i]])
-#     conP_zero <- conP[[i]] == 0
+#     conP_zero <- conP[[i]]==0
 #     cond1 <- abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]]
-#     
-#     # Index von "amonat"
-#     amonat_dim_index <- which(names(dimnames(conP[[i]])) == "amonat")
-#     
-#     # prüfe ob "amonat" vorhanden ist
-#     if (length(amonat_dim_index) > 0) {
-#       
-#       # Eum welchen Monat im Qaurtal geht es
-#       # m <- match(hrParameters$monat, dimnames(conP[[i]])[[amonat_dim_index]])
-#       
-#       # subset bauen: nur der Monate/ die Monate die relevant sind
-#       num_dims <- length(dim(conP[[i]]))
-#       indices <- c(rep(list(TRUE), num_dims))
-#       indices[[amonat_dim_index]] <- m
-#       
-#       subset_conP_zero <- do.call("[", c(list(conP_zero), indices))
-#       subset_cond1 <- do.call("[", c(list(cond1), indices))
-#       
-#       return(all(subset_conP_zero == TRUE | subset_cond1 == TRUE))
-#     } else {
-#       # Fallback-Lösung für quartalsweise
-#       return(all(conP_zero == TRUE | cond1 == TRUE))
-#     }
+#     all(conP_zero==TRUE | cond1==TRUE)
 #   })
-#   
 #   if(looseH){
-#     
+# 
 #     inc <- function(x){
 #       10^(floor(log10(x))-1) * 9.99
 #     }
-#     
+# 
 #     conH_converged <- sapply(seq_along(conH), function(i) {
 #       epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
 #       if(verbose){
-#         message(paste("For looseH=TRUE epsH+",inc(epsH_current),"is allowed as tolerance for the convergence (-> ", epsH_current + inc(epsH_current), ")"))
+#         message(paste("For looseH=TRUE epsH+",inc(epsH_current),"is allowed as tolerance for the convergence."))
 #       }
 #       conH_zero <- conH[[i]] ==0
 #       cond1 <- abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= (epsH_current + inc(epsH_current))
-#       
-#       # Index der Dimension "amonat"
-#       num_dims <- length(dim(conH[[i]]))
-#       amonat_dim_index <- which(names(dimnames(conH[[i]])) == "amonat")
-#       
-#       if (length(amonat_dim_index) > 0) {
-#         # Berechne korrekten Indexpositionen 
-#         # m <- match(hrParameters$monat, dimnames(conH[[i]])[[amonat_dim_index]])
-#         # Erstelle eine Liste von Index-Vektoren für dynamisches Subsetting
-#         indices <- c(rep(list(TRUE), num_dims))
-#         indices[[amonat_dim_index]] <- m
-#         
-#         subset_conH_zero <- do.call("[", c(list(conH_zero), indices))
-#         subset_cond1 <- do.call("[", c(list(cond1), indices))
-#         
-#         result <- all(subset_conH_zero == TRUE | subset_cond1 == TRUE)
-#       } else {
-#         # Fallback-Lösung für Constraints ohne amonat-Dimension
-#         result <- all(conH_zero == TRUE | cond1 == TRUE)
-#       }
-#       
-#       message(paste("all(conH_zero==TRUE | cond1==TRUE): ", result))
-#       return(result)
+#       all(conH_zero==TRUE | cond1==TRUE)
 #     })
 #   }else{
 #     conH_converged <- sapply(seq_along(conH), function(i) {
 #       epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
 #       conH_zero <- conH[[i]] ==0
 #       cond1 <- abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]]
-#       
-#       # NEUE, ROBUSTERERE LOGIK FÜR H-CONSTRAINTS
-#       num_dims <- length(dim(conH[[i]]))
-#       # Ermittle den Index der Dimension namens "amonat"
-#       amonat_dim_index <- which(names(dimnames(conH[[i]])) == "amonat")
-#       
-#       if (length(amonat_dim_index) > 0) {
-#         # Berechne die korrekten Indexpositionen mit match()
-#         # m <- match(hrParameters$monat, dimnames(conH[[i]])[[amonat_dim_index]])
-#         # Liste von Index-Vektoren
-#         indices <- c(rep(list(TRUE), num_dims))
-#         indices[[amonat_dim_index]] <- m
-#         
-#         subset_conH_zero <- do.call("[", c(list(conH_zero), indices))
-#         subset_cond1 <- do.call("[", c(list(cond1), indices))
-#         
-#         return(all(subset_conH_zero == TRUE | subset_cond1 == TRUE))
-#       } else {
-#         # Fallback-Lösung für quartal
-#         return(all(conH_zero == TRUE | cond1 == TRUE))
-#       }
+#       all(conH_zero==TRUE | cond1==TRUE)
 #     })
 #   }
-#   
-#   
 #   converged <- all(conP_converged) && all(conH_converged)
 #   setattr(outTable, "converged", converged)
 #   if (verbose) {
@@ -622,17 +449,17 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #     else
 #       message("No convergence reached")
 #   }
-#   
+# 
 #   # add calibrated weights. Use setkey to make sure the indexes match
 #   setkey(dat, OriginalSortingVariable)
-#   
+# 
 #   if (!converged & returnNA) {
 #     outTable[, c(variableKeepingTheCalibWeight) := NA]
 #   } else {
 #     outTable[, c(variableKeepingTheCalibWeight) :=
 #                dat[[variableKeepingTheCalibWeight]]]
 #   }
-#   
+# 
 #   # formulas
 #   setattr(outTable, "formP", formP)
 #   setattr(outTable, "formH", formH)
@@ -640,9 +467,217 @@ addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
 #   setattr(outTable, "hid", hidVar)
 #   # for the summary
 #   class(outTable) <- c("ipf",class(outTable))
-#   
+# 
 #   invisible(outTable)
 # }
+
+
+# # # # # NEW addWeightsAndAttributes function # # # # # 
+# 
+addWeightsAndAttributes <- function(dat, conP, conH, epsP, epsH, dat_original,
+                                    maxIter, calIter, returnNA, cw, bw,verbose, looseH, hidVar = NULL) {
+  
+  variableKeepingTheCalibWeight <- cw
+  representativeHouseholdForCalibration <- OriginalSortingVariable <-
+    outTable <- copy(dat_original)
+  
+  formP <- getFormulas(conP, w = variableKeepingTheCalibWeight) 
+  # [[1]] calibWeight ~ amonat + abl + bsex + alter
+  # [[2]] calibWeight ~ amonat + bstaathr
+  # [[3]] calibWeight ~ amonat + abl + bsex + verwerb1
+  formH <- getFormulas(conH, w = variableKeepingTheCalibWeight) #calibWeight ~ amonat + abl + wg
+  
+  # general information
+  setattr(outTable, "iterations", min(maxIter, calIter))
+  
+  # input constraints
+  setattr(outTable, "conP", conP)
+  setattr(outTable, "conH", conH)
+  
+  # adjusted constraints (conP, conH according to the calibrated weights)
+  conP_adj <- lapply(formP, xtabs, dat) # für monat 5 und 6 = 0
+  conH_adj <- lapply(
+    formH, xtabs, dat[representativeHouseholdForCalibration == 1])
+  setattr(outTable, "conP_adj", conP_adj)
+  setattr(outTable, "conH_adj", conH_adj)
+  
+  # tolerances
+  setattr(outTable, "epsP", epsP)
+  setattr(outTable, "epsH", epsH)
+  
+  setkey(dat, OriginalSortingVariable)
+  
+  
+  # convergence
+  
+  # if (is.finite(hrParameters$monat)) {
+  #   m <- (hrParameters$monat - 1) %% 3 + 1
+  # } else {
+  #   m <- (hrParameters$monate - 1) %% 3 + 1
+  # }
+  
+  # new logic for m
+  # Step 1: Find the indices of the 'amonat' dimension in the constraints
+  amonat_dim_indices_P <- sapply(conP, function(x) which(names(dimnames(x)) == "amonat"))
+  amonat_dim_indices_H <- sapply(conH, function(x) which(names(dimnames(x)) == "amonat"))
+  
+  # Step 2: Extract the relevant months based on the adjusted values
+  # First for conP
+  m_list_P <- mapply(function(adj_table, amonat_index) {
+    if (length(amonat_index) > 0) {
+      # find indices of months with at least one non-zero value
+      relevant_months <- which(apply(adj_table, amonat_index, function(y) any(y != 0)))
+      return(relevant_months)
+    } else {
+      return(NULL)
+    }
+  }, conP_adj, amonat_dim_indices_P, SIMPLIFY = FALSE)
+  
+  # Then for conH
+  m_list_H <- mapply(function(adj_table, amonat_index) {
+    if (length(amonat_index) > 0) {
+      relevant_months <- which(apply(adj_table, amonat_index, function(y) any(y != 0)))
+      return(relevant_months)
+    } else {
+      return(NULL)
+    }
+  }, conH_adj, amonat_dim_indices_H, SIMPLIFY = FALSE)
+  
+  # Step 3: Combine all relevant month indices and remove duplicates
+  m <- unique(c(unlist(m_list_P), unlist(m_list_H)))
+  
+  # Fallback: If no 'amonat' dimension exists or all values are 0, use index 1
+  if (is.null(m) || length(m) == 0) {
+    m <- 1
+  }
+  
+  
+  conP_converged <- sapply(seq_along(conP), function(i) {
+    epsP_current <- switch(is.list(epsP) + 1, epsP, epsP[[i]])
+    conP_zero <- conP[[i]] == 0
+    cond1 <- abs(conP[[i]] - conP_adj[[i]]) <= epsP_current * conP[[i]]
+    
+    # Index of "amonat"
+    amonat_dim_index <- which(names(dimnames(conP[[i]])) == "amonat")
+    
+    # check if "amonat" is present
+    if (length(amonat_dim_index) > 0) {
+      
+      # which month in the quarter?
+      # m <- match(hrParameters$monat, dimnames(conP[[i]])[[amonat_dim_index]])
+      
+      # build subset: only the relevant month(s)
+      num_dims <- length(dim(conP[[i]]))
+      indices <- c(rep(list(TRUE), num_dims))
+      indices[[amonat_dim_index]] <- m
+      
+      subset_conP_zero <- do.call("[", c(list(conP_zero), indices))
+      subset_cond1 <- do.call("[", c(list(cond1), indices))
+      
+      return(all(subset_conP_zero == TRUE | subset_cond1 == TRUE))
+    } else {
+      # Fallback solution for quarterly data
+      return(all(conP_zero == TRUE | cond1 == TRUE))
+    }
+  })
+  
+  if(looseH){
+    
+    inc <- function(x){
+      10^(floor(log10(x))-1) * 9.99
+    }
+    
+    conH_converged <- sapply(seq_along(conH), function(i) {
+      epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
+      if(verbose){
+        message(paste("For looseH=TRUE epsH+",inc(epsH_current),"is allowed as tolerance for the convergence (-> ", epsH_current + inc(epsH_current), ")"))
+      }
+      conH_zero <- conH[[i]] ==0
+      cond1 <- abs(conH[[i]] - conH_adj[[i]])/conH[[i]] <= (epsH_current + inc(epsH_current))
+      
+      # Index der Dimension "amonat"
+      num_dims <- length(dim(conH[[i]]))
+      amonat_dim_index <- which(names(dimnames(conH[[i]])) == "amonat")
+      
+      if (length(amonat_dim_index) > 0) {
+        # Berechne korrekten Indexpositionen 
+        # m <- match(hrParameters$monat, dimnames(conH[[i]])[[amonat_dim_index]])
+        # Erstelle eine Liste von Index-Vektoren für dynamisches Subsetting
+        indices <- c(rep(list(TRUE), num_dims))
+        indices[[amonat_dim_index]] <- m
+        
+        subset_conH_zero <- do.call("[", c(list(conH_zero), indices))
+        subset_cond1 <- do.call("[", c(list(cond1), indices))
+        
+        result <- all(subset_conH_zero == TRUE | subset_cond1 == TRUE)
+      } else {
+        # Fallback-Lösung für Constraints ohne amonat-Dimension
+        result <- all(conH_zero == TRUE | cond1 == TRUE)
+      }
+      
+      message(paste("all(conH_zero==TRUE | cond1==TRUE): ", result))
+      return(result)
+    })
+  }else{
+    conH_converged <- sapply(seq_along(conH), function(i) {
+      epsH_current <- switch(is.list(epsH) + 1, epsH, epsH[[i]])
+      conH_zero <- conH[[i]] ==0
+      cond1 <- abs(conH[[i]] - conH_adj[[i]]) <= epsH_current * conH[[i]]
+      
+      # NEUE, ROBUSTERERE LOGIK FÜR H-CONSTRAINTS
+      num_dims <- length(dim(conH[[i]]))
+      # Ermittle den Index der Dimension namens "amonat"
+      amonat_dim_index <- which(names(dimnames(conH[[i]])) == "amonat")
+      
+      if (length(amonat_dim_index) > 0) {
+        # Berechne die korrekten Indexpositionen mit match()
+        # m <- match(hrParameters$monat, dimnames(conH[[i]])[[amonat_dim_index]])
+        # Liste von Index-Vektoren
+        indices <- c(rep(list(TRUE), num_dims))
+        indices[[amonat_dim_index]] <- m
+        
+        subset_conH_zero <- do.call("[", c(list(conH_zero), indices))
+        subset_cond1 <- do.call("[", c(list(cond1), indices))
+        
+        return(all(subset_conH_zero == TRUE | subset_cond1 == TRUE))
+      } else {
+        # Fallback-Lösung für quartal
+        return(all(conH_zero == TRUE | cond1 == TRUE))
+      }
+    })
+  }
+  
+  
+  converged <- all(conP_converged) && all(conH_converged)
+  setattr(outTable, "converged", converged)
+  if (verbose) {
+    if (converged)
+      message("Convergence reached")
+    else
+      message("No convergence reached")
+  }
+  
+  # add calibrated weights. Use setkey to make sure the indexes match
+  setkey(dat, OriginalSortingVariable)
+  
+  if (!converged & returnNA) {
+    outTable[, c(variableKeepingTheCalibWeight) := NA]
+  } else {
+    outTable[, c(variableKeepingTheCalibWeight) :=
+               dat[[variableKeepingTheCalibWeight]]]
+  }
+  
+  # formulas
+  setattr(outTable, "formP", formP)
+  setattr(outTable, "formH", formH)
+  setattr(outTable, "baseweight", bw)
+  setattr(outTable, "hid", hidVar)
+  # for the summary
+  class(outTable) <- c("ipf",class(outTable))
+  
+  invisible(outTable)
+}
+
 
 
 
