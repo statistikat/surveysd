@@ -1,4 +1,4 @@
-#' Generate summary output for an IPF calibration.
+#' Generate summary output for an IPF calibration
 ipf_summary_calibres <- function(ipf_result, av) {
   
   # 1. INITIAL SETUP
@@ -56,14 +56,9 @@ ipf_summary_calibres <- function(ipf_result, av) {
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
-    # cat("dim(calib_results):", dim(calib_results), "\n")
-    cat("dim(original_dt):", dim(original_dt), "\n")
     merged_results <- merge(calib_results, original_dt, by = group_vars, all.x = TRUE)
-    cat("dim(merged_results):", dim(merged_results), "\n")
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
-    cat("dim(merged_results):", dim(merged_results), "\n")
-    
     
     # EPSP Handling
     if (!is.null(av$epsP) && i <= length(av$epsP) && !is.null(av$epsP[[i]])) {
@@ -111,7 +106,7 @@ ipf_summary_calibres <- function(ipf_result, av) {
     calib_results <- tmp_calib_data[
       , .(
         N = .N,
-        CalibMargin = sum(get(calibWeightName))
+        CalibMargin = sum(get(calibWeightName) / as.numeric(wg))
       ),
       by = group_vars
     ]
@@ -148,6 +143,8 @@ ipf_summary_calibres <- function(ipf_result, av) {
   
   return(results_list)
 }
+
+
 
 
 #' @title Generate Summary Output for IPF Calibration
@@ -329,6 +326,8 @@ summary.ipf <- function(object, ...){
   
   # Appends the original tables to the custom tables.
   output <- append(output, original_output)
+  
+  class(output) <- "summary.ipf"
   
   return(output)
 }
