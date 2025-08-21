@@ -1,4 +1,4 @@
-#' Generate summary output for an IPF calibration
+#' Generate summary output for an IPF calibration.
 ipf_summary_calibres <- function(ipf_result, av) {
   
   # 1. INITIAL SETUP
