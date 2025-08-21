@@ -64,6 +64,9 @@ ipf_summary_calibres <- function(ipf_result, av) {
     tmp_calib_data <- copy(ipf_result)
     tmp_calib_data[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
+    # rhs_vars <- all.vars(formP_list[[i]])
+    # numericalWeightingVar <- if (length(rhs_vars) > 1) rhs_vars[1] else NULL
+    
     calib_results <- tmp_calib_data[
       , .(
         N = .N,
@@ -87,8 +90,8 @@ ipf_summary_calibres <- function(ipf_result, av) {
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
-    if (has_eps_values) {
-      epsP_value <- av$epsP[[i]] # Access directly from av
+    if (!is.null(av$epsP) && i <= length(av$epsP) && !is.null(av$epsP[[i]])) {
+      epsP_value <- av$epsP[[i]]
       merged_results[, epsP := epsP_value]
       merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
     } else {
@@ -149,7 +152,11 @@ ipf_summary_calibres <- function(ipf_result, av) {
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
-    if (has_eps_values) {
+    # Finden Sie den Block, der mit "if (has_eps_values)" beginnt.
+    # ...
+    # Fügen Sie diesen Code ein:
+    
+    if (!is.null(av$epsH) && i <= length(av$epsH) && !is.null(av$epsH[[i]])) {
       epsH_obj <- av$epsH[[i]] # Access directly from av
       
       if (length(group_vars) == 1) {
