@@ -50,14 +50,20 @@ ipf_summary_calibres <- function(ipf_result, av) {
       ),
       by = group_vars
     ]
+    #cat("calib_results:", calib_results, "\n")
     
     original_dt <- as.data.table(conP_list[[i]])
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
-    merged_results <- merge(calib_results, original_dt, by = group_vars, all.y = TRUE)
+    # cat("dim(calib_results):", dim(calib_results), "\n")
+    cat("dim(original_dt):", dim(original_dt), "\n")
+    merged_results <- merge(calib_results, original_dt, by = group_vars, all.x = TRUE)
+    cat("dim(merged_results):", dim(merged_results), "\n")
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
+    cat("dim(merged_results):", dim(merged_results), "\n")
+    
     
     # EPSP Handling
     if (!is.null(av$epsP) && i <= length(av$epsP) && !is.null(av$epsP[[i]])) {
@@ -82,6 +88,8 @@ ipf_summary_calibres <- function(ipf_result, av) {
     }
     
     merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
+    print(merged_results)
+    
     final_table_p <- merged_results[N > 0][order(N)]
     results_list[[constraint_name]] <- final_table_p
   }
@@ -112,7 +120,7 @@ ipf_summary_calibres <- function(ipf_result, av) {
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
-    merged_results <- merge(calib_results, original_dt, by = group_vars, all.y = TRUE)
+    merged_results <- merge(calib_results, original_dt, by = group_vars, all.x = TRUE)
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
