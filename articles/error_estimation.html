@@ -67,7 +67,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Error estimation</h1>
             
-            <h4 data-toc-skip class="date">2025-08-20</h4>
+            <h4 data-toc-skip class="date">2025-08-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/statistikat/surveysd/blob/master/vignettes/error_estimation.Rmd" class="external-link"><code>vignettes/error_estimation.Rmd</code></a></small>
       <div class="d-none name"><code>error_estimation.Rmd</code></div>
@@ -96,25 +96,31 @@ to the documentation of those functions for more detail.</p>
 <span><span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">10</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span>
 <span>                           strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
 <span><span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span>,</span>
-<span>                          epsP <span class="op">=</span> <span class="fl">1e-2</span>, epsH <span class="op">=</span> <span class="fl">2.5e-2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">dat_boot_calib</span><span class="op">[</span>, <span class="va">onePerson</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">hid</span><span class="op">)</span><span class="op">]</span></span>
+<span>                          epsP <span class="op">=</span> <span class="fl">1e-2</span>, epsH <span class="op">=</span> <span class="fl">2.5e-2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in ipf(dat = copy(dat[, mget(c(g, select.var))]), conP = conP, conH =</span></span>
+<span><span class="co">## conH, : Not converged in 200 steps</span></span></code></pre>
+<pre><code><span><span class="co">## Calibration failed for bootstrap replicates w3 </span></span>
+<span><span class="co">## Corresponding bootstrap replicates will be discarded</span></span>
+<span><span class="co">## Returning 9 calibrated bootstrap weights</span></span></code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_boot_calib</span><span class="op">[</span>, <span class="va">onePerson</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">hid</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co">## print part of the dataset</span></span>
 <span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">povertyRisk</span>, <span class="va">eqIncome</span>, <span class="va">onePerson</span>, <span class="va">pWeight</span>, <span class="va">w1</span>, <span class="va">w2</span>, <span class="va">w3</span>, <span class="va">w4</span>, <span class="va">w5</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##     year povertyRisk eqIncome onePerson  pWeight          w1        w2</span></span>
-<span><span class="co">##    &lt;num&gt;      &lt;lgcl&gt;    &lt;num&gt;    &lt;lgcl&gt;    &lt;num&gt;       &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010       FALSE 16090.69     FALSE 504.5696 1022.016774 0.4576255</span></span>
-<span><span class="co">## 2:  2010       FALSE 16090.69     FALSE 504.5696 1022.016774 0.4576255</span></span>
-<span><span class="co">## 3:  2010       FALSE 16090.69     FALSE 504.5696 1022.016774 0.4576255</span></span>
-<span><span class="co">## 4:  2010       FALSE 27076.24     FALSE 493.3824    0.444842 0.4495505</span></span>
-<span><span class="co">## 5:  2010       FALSE 27076.24     FALSE 493.3824    0.444842 0.4495505</span></span>
-<span><span class="co">##           w3        w4        w5</span></span>
-<span><span class="co">##        &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">## 1: 0.4481608 1013.6749 0.4552359</span></span>
-<span><span class="co">## 2: 0.4481608 1013.6749 0.4552359</span></span>
-<span><span class="co">## 3: 0.4481608 1013.6749 0.4552359</span></span>
-<span><span class="co">## 4: 0.4385888  992.5045 0.4464127</span></span>
-<span><span class="co">## 5: 0.4385888  992.5045 0.4464127</span></span></code></pre>
+<pre><code><span><span class="co">##     year povertyRisk eqIncome onePerson  pWeight          w1       w2</span></span>
+<span><span class="co">##    &lt;num&gt;      &lt;lgcl&gt;    &lt;num&gt;    &lt;lgcl&gt;    &lt;num&gt;       &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010       FALSE 16090.69     FALSE 504.5696   0.4474822 1025.910</span></span>
+<span><span class="co">## 2:  2010       FALSE 16090.69     FALSE 504.5696   0.4474822 1025.910</span></span>
+<span><span class="co">## 3:  2010       FALSE 16090.69     FALSE 504.5696   0.4474822 1025.910</span></span>
+<span><span class="co">## 4:  2010       FALSE 27076.24     FALSE 493.3824 983.8905845 1002.231</span></span>
+<span><span class="co">## 5:  2010       FALSE 27076.24     FALSE 493.3824 983.8905845 1002.231</span></span>
+<span><span class="co">##             w3          w4           w5</span></span>
+<span><span class="co">##          &lt;num&gt;       &lt;num&gt;        &lt;num&gt;</span></span>
+<span><span class="co">## 1:   0.4450813 995.7771076 1006.3937959</span></span>
+<span><span class="co">## 2:   0.4450813 995.7771076 1006.3937959</span></span>
+<span><span class="co">## 3:   0.4450813 995.7771076 1006.3937959</span></span>
+<span><span class="co">## 4: 977.3074985   0.4330742    0.4378805</span></span>
+<span><span class="co">## 5: 977.3074985   0.4330742    0.4378805</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="estimator-functions">Estimator functions<a class="anchor" aria-label="anchor" href="#estimator-functions"></a>
@@ -124,38 +130,38 @@ to the documentation of those functions for more detail.</p>
 analysis. There are two built-in estimator functions
 <code><a href="../reference/PointEstimates.html">weightedSum()</a></code> and <code><a href="../reference/PointEstimates.html">weightedRatio()</a></code> which can be
 used as follows.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span></span>
 <span><span class="va">totalIncome</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"eqIncome"</span>, fun <span class="op">=</span> <span class="va">weightedSum</span><span class="op">)</span></span></code></pre></div>
 <p>Those functions calculate the ratio of persons at risk of poverty (in
 percent) and the total income. By default, the results are calculated
 separately for each reference period.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRate</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
 <span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422       0.3595936</span></span>
-<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393       0.3894999</span></span>
-<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515       0.5292502</span></span>
-<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013       0.6023818</span></span>
-<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556       0.5291344</span></span>
-<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640       0.4157769</span></span>
-<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315       0.4740073</span></span>
-<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019       0.5154012</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422       0.5270691</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393       0.3874091</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515       0.4766350</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013       0.5530805</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556       0.4480311</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640       0.4478586</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315       0.4738048</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019       0.5273047</span></span></code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">totalIncome</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
 <span><span class="co">##     year     n       N estimate_type val_eqIncome stE_eqIncome</span></span>
 <span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;        &lt;num&gt;        &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010 14827 8182222        direct 162750998071   1054863128</span></span>
-<span><span class="co">## 2:  2011 14827 8182222        direct 161926931417   1054498786</span></span>
-<span><span class="co">## 3:  2012 14827 8182222        direct 162576509628   1606073752</span></span>
-<span><span class="co">## 4:  2013 14827 8182222        direct 163199507862   1585557733</span></span>
-<span><span class="co">## 5:  2014 14827 8182222        direct 163986275009   1539269742</span></span>
-<span><span class="co">## 6:  2015 14827 8182222        direct 163416275447   1022145652</span></span>
-<span><span class="co">## 7:  2016 14827 8182222        direct 162706205137   1318241407</span></span>
-<span><span class="co">## 8:  2017 14827 8182222        direct 164314959107    902852175</span></span></code></pre>
+<span><span class="co">## 1:  2010 14827 8182222        direct 162750998071    997696068</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct 161926931417    646597840</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct 162576509628    847862472</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct 163199507862   1166368307</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct 163986275009    834100158</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct 163416275447   1143590484</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct 162706205137    738731722</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct 164314959107   1215298596</span></span></code></pre>
 <p>Columns that use the <code>val_</code> prefix denote the point
 estimate belonging to the “main weight” of the dataset, which is
 <code>pWeight</code> in case of the dataset used here.</p>
@@ -171,7 +177,7 @@ calculated with bootstrap replicates. The replicates result in using
 <p>In order to define a custom estimator function to be used in
 <code>fun</code>, the function needs to have at least two arguments like
 the example below.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## define custom estimator</span></span>
 <span><span class="va">myWeightedSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">w</span><span class="op">)</span></span>
@@ -191,7 +197,7 @@ this case <code>year</code>) and for each weight column (in this case
 <p>Custom estimators using additional parameters can also be supplied
 and parameter <code>add.arg</code> can be used to set the additional
 arguments for the custom estimator.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## use add.arg-argument</span></span>
 <span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span>, <span class="va">b</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">w</span><span class="op">*</span><span class="va">b</span><span class="op">)</span></span>
@@ -204,15 +210,15 @@ arguments for the custom estimator.</p>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
 <span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010 14827 8182222        direct        273683.9       13902.765</span></span>
-<span><span class="co">## 2:  2011 14827 8182222        direct        261883.6       14443.806</span></span>
-<span><span class="co">## 3:  2012 14827 8182222        direct        243083.9       13847.898</span></span>
-<span><span class="co">## 4:  2013 14827 8182222        direct        238004.4       14603.968</span></span>
-<span><span class="co">## 5:  2014 14827 8182222        direct        218572.1        8920.738</span></span>
-<span><span class="co">## 6:  2015 14827 8182222        direct        219984.1        9717.381</span></span>
-<span><span class="co">## 7:  2016 14827 8182222        direct        201753.9        8837.153</span></span>
-<span><span class="co">## 8:  2017 14827 8182222        direct        196881.2        9468.858</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<span><span class="co">## 1:  2010 14827 8182222        direct        273683.9        13701.61</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        261883.6        15932.74</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        243083.9        15315.01</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        238004.4        15673.86</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        218572.1        10579.04</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        219984.1        12958.38</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        201753.9        12867.73</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        196881.2        12189.36</span></span></code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compare with direct computation</span></span>
 <span><span class="va">compare.value</span> <span class="op">&lt;-</span> <span class="va">dat_boot_calib</span><span class="op">[</span>,<span class="fu">fun</span><span class="op">(</span><span class="va">povertyRisk</span>,<span class="va">pWeight</span>,b<span class="op">=</span><span class="va">onePerson</span><span class="op">)</span>,</span>
 <span>                                 by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span><span class="op">)</span><span class="op">]</span></span>
@@ -243,7 +249,7 @@ $$</span></p>
 <p>The estimator can then be applied to the new variable
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>y</mi><mi>R</mi><mi>i</mi><mi>s</mi><msub><mi>k</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">povertyRisk_w</annotation></semantics></math>.
 This can be realized using a custom estimator function.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># custom estimator to first derive poverty threshold </span></span>
 <span><span class="co"># and then estimate a weighted ratio</span></span>
 <span><span class="va">povmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span></span>
@@ -275,7 +281,7 @@ are supplied one should use parameters <code>fun.adjust.var</code> and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>y</mi><mi>R</mi><mi>i</mi><mi>s</mi><msub><mi>k</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">povertyRisk_w</annotation></semantics></math>
 is first calculated for each <code>period</code> and then used for each
 grouping in <code>group</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># using fun.adjust.var and adjust.var to estimate povmd60 indicator</span></span>
 <span><span class="co"># for each period and bootstrap weight before applying the weightedRatio</span></span>
 <span><span class="va">povmd2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">w</span><span class="op">)</span> <span class="op">{</span></span>
@@ -295,30 +301,30 @@ grouping in <code>group</code>.</p>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, gender, estimate_type&gt;</span></span>
 <span><span class="co">##      year     n       N gender estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##     &lt;num&gt; &lt;int&gt;   &lt;num&gt; &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">##  1:  2010  7267 3979572   male        direct        12.02660       0.3965164</span></span>
-<span><span class="co">##  2:  2010  7560 4202650 female        direct        16.73351       0.3398821</span></span>
-<span><span class="co">##  3:  2010 14827 8182222   &lt;NA&gt;        direct        14.44422       0.3322175</span></span>
-<span><span class="co">##  4:  2011  7267 3979572   male        direct        12.81921       0.2192191</span></span>
-<span><span class="co">##  5:  2011  7560 4202650 female        direct        16.62488       0.4794072</span></span>
-<span><span class="co">##  6:  2011 14827 8182222   &lt;NA&gt;        direct        14.77393       0.3160307</span></span>
-<span><span class="co">##  7:  2012  7267 3979572   male        direct        13.76065       0.3120313</span></span>
-<span><span class="co">##  8:  2012  7560 4202650 female        direct        16.26147       0.5079486</span></span>
-<span><span class="co">##  9:  2012 14827 8182222   &lt;NA&gt;        direct        15.04515       0.3888711</span></span>
-<span><span class="co">## 10:  2013  7267 3979572   male        direct        13.88962       0.4085894</span></span>
-<span><span class="co">## 11:  2013  7560 4202650 female        direct        15.83754       0.5583851</span></span>
-<span><span class="co">## 12:  2013 14827 8182222   &lt;NA&gt;        direct        14.89013       0.4675804</span></span>
-<span><span class="co">## 13:  2014  7267 3979572   male        direct        14.50351       0.3568501</span></span>
-<span><span class="co">## 14:  2014  7560 4202650 female        direct        15.75353       0.5782596</span></span>
-<span><span class="co">## 15:  2014 14827 8182222   &lt;NA&gt;        direct        15.14556       0.4368668</span></span>
-<span><span class="co">## 16:  2015  7267 3979572   male        direct        15.12289       0.3945854</span></span>
-<span><span class="co">## 17:  2015  7560 4202650 female        direct        15.92796       0.4968355</span></span>
-<span><span class="co">## 18:  2015 14827 8182222   &lt;NA&gt;        direct        15.53640       0.3845973</span></span>
-<span><span class="co">## 19:  2016  7267 3979572   male        direct        14.57968       0.5439733</span></span>
-<span><span class="co">## 20:  2016  7560 4202650 female        direct        15.55989       0.4400002</span></span>
-<span><span class="co">## 21:  2016 14827 8182222   &lt;NA&gt;        direct        15.08315       0.4344907</span></span>
-<span><span class="co">## 22:  2017  7267 3979572   male        direct        14.94816       0.5570335</span></span>
-<span><span class="co">## 23:  2017  7560 4202650 female        direct        15.86717       0.5816643</span></span>
-<span><span class="co">## 24:  2017 14827 8182222   &lt;NA&gt;        direct        15.42019       0.5299708</span></span>
+<span><span class="co">##  1:  2010  7267 3979572   male        direct        12.02660       0.4847427</span></span>
+<span><span class="co">##  2:  2010  7560 4202650 female        direct        16.73351       0.3942573</span></span>
+<span><span class="co">##  3:  2010 14827 8182222   &lt;NA&gt;        direct        14.44422       0.3831507</span></span>
+<span><span class="co">##  4:  2011  7267 3979572   male        direct        12.81921       0.3187155</span></span>
+<span><span class="co">##  5:  2011  7560 4202650 female        direct        16.62488       0.3738723</span></span>
+<span><span class="co">##  6:  2011 14827 8182222   &lt;NA&gt;        direct        14.77393       0.3223062</span></span>
+<span><span class="co">##  7:  2012  7267 3979572   male        direct        13.76065       0.2859919</span></span>
+<span><span class="co">##  8:  2012  7560 4202650 female        direct        16.26147       0.5679499</span></span>
+<span><span class="co">##  9:  2012 14827 8182222   &lt;NA&gt;        direct        15.04515       0.3738454</span></span>
+<span><span class="co">## 10:  2013  7267 3979572   male        direct        13.88962       0.4774437</span></span>
+<span><span class="co">## 11:  2013  7560 4202650 female        direct        15.83754       0.6443811</span></span>
+<span><span class="co">## 12:  2013 14827 8182222   &lt;NA&gt;        direct        14.89013       0.4842724</span></span>
+<span><span class="co">## 13:  2014  7267 3979572   male        direct        14.50351       0.6853320</span></span>
+<span><span class="co">## 14:  2014  7560 4202650 female        direct        15.75353       0.6146861</span></span>
+<span><span class="co">## 15:  2014 14827 8182222   &lt;NA&gt;        direct        15.14556       0.5642172</span></span>
+<span><span class="co">## 16:  2015  7267 3979572   male        direct        15.12289       0.5878841</span></span>
+<span><span class="co">## 17:  2015  7560 4202650 female        direct        15.92796       0.4336972</span></span>
+<span><span class="co">## 18:  2015 14827 8182222   &lt;NA&gt;        direct        15.53640       0.4447793</span></span>
+<span><span class="co">## 19:  2016  7267 3979572   male        direct        14.57968       0.5670821</span></span>
+<span><span class="co">## 20:  2016  7560 4202650 female        direct        15.55989       0.4526653</span></span>
+<span><span class="co">## 21:  2016 14827 8182222   &lt;NA&gt;        direct        15.08315       0.4651711</span></span>
+<span><span class="co">## 22:  2017  7267 3979572   male        direct        14.94816       0.6280384</span></span>
+<span><span class="co">## 23:  2017  7560 4202650 female        direct        15.86717       0.4630222</span></span>
+<span><span class="co">## 24:  2017 14827 8182222   &lt;NA&gt;        direct        15.42019       0.4778929</span></span>
 <span><span class="co">##      year     n       N gender estimate_type val_povertyRisk stE_povertyRisk</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -327,30 +333,30 @@ grouping in <code>group</code>.</p>
 <p>In case an estimator should be applied to several columns of the
 dataset, <code>var</code> can be set to a vector containing all
 necessary columns.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">multipleRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span><span class="op">)</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span></span>
 <span><span class="va">multipleRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
 <span><span class="co">##     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422       0.4176121</span></span>
-<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393       0.4243820</span></span>
-<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515       0.4450229</span></span>
-<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013       0.5242510</span></span>
-<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556       0.4222739</span></span>
-<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640       0.4888124</span></span>
-<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315       0.4182965</span></span>
-<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019       0.6123756</span></span>
+<span><span class="co">## 1:  2010 14827 8182222        direct        14.44422       0.4486606</span></span>
+<span><span class="co">## 2:  2011 14827 8182222        direct        14.77393       0.3936171</span></span>
+<span><span class="co">## 3:  2012 14827 8182222        direct        15.04515       0.4783872</span></span>
+<span><span class="co">## 4:  2013 14827 8182222        direct        14.89013       0.4780918</span></span>
+<span><span class="co">## 5:  2014 14827 8182222        direct        15.14556       0.5589814</span></span>
+<span><span class="co">## 6:  2015 14827 8182222        direct        15.53640       0.4843245</span></span>
+<span><span class="co">## 7:  2016 14827 8182222        direct        15.08315       0.3827949</span></span>
+<span><span class="co">## 8:  2017 14827 8182222        direct        15.42019       0.5234875</span></span>
 <span><span class="co">##    val_onePerson stE_onePerson</span></span>
 <span><span class="co">##            &lt;num&gt;         &lt;num&gt;</span></span>
-<span><span class="co">## 1:      14.85737     0.4176121</span></span>
-<span><span class="co">## 2:      14.85737     0.4243820</span></span>
-<span><span class="co">## 3:      14.85737     0.4450229</span></span>
-<span><span class="co">## 4:      14.85737     0.5242510</span></span>
-<span><span class="co">## 5:      14.85737     0.4222739</span></span>
-<span><span class="co">## 6:      14.85737     0.4888124</span></span>
-<span><span class="co">## 7:      14.85737     0.4182965</span></span>
-<span><span class="co">## 8:      14.85737     0.6123756</span></span></code></pre>
+<span><span class="co">## 1:      14.85737     0.4486606</span></span>
+<span><span class="co">## 2:      14.85737     0.3936171</span></span>
+<span><span class="co">## 3:      14.85737     0.4783872</span></span>
+<span><span class="co">## 4:      14.85737     0.4780918</span></span>
+<span><span class="co">## 5:      14.85737     0.5589814</span></span>
+<span><span class="co">## 6:      14.85737     0.4843245</span></span>
+<span><span class="co">## 7:      14.85737     0.3827949</span></span>
+<span><span class="co">## 8:      14.85737     0.5234875</span></span></code></pre>
 <p>Here we see the relative number of persons at risk of poverty and the
 relative number of one-person households.</p>
 </div>
@@ -364,13 +370,13 @@ variable as a string that refers to a column name (usually a factor) in
 <code>dat</code>. If set, all estimators are not only split by the
 reference period but also by the grouping variable. For simplicity, only
 one reference period of the above data is used.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2010</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">att</span>  <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"period"</span>, <span class="st">"weights"</span>, <span class="st">"b.rep"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="va">att</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, <span class="va">att</span><span class="op">)</span></span></code></pre></div>
 <p>To calculate the ratio of persons at risk of poverty for each federal
 state of Austria, <code>group = "region"</code> can be used.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, group <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
 <span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, region, estimate_type&gt;</span></span>
@@ -388,16 +394,16 @@ state of Austria, <code>group = "region"</code> can be used.</p>
 <span><span class="co">## 10:  2010 14827 8182222          &lt;NA&gt;        direct        14.44422</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;num&gt;</span></span>
-<span><span class="co">##  1:       2.1460335</span></span>
-<span><span class="co">##  2:       2.9066235</span></span>
-<span><span class="co">##  3:       1.8534790</span></span>
-<span><span class="co">##  4:       1.3315777</span></span>
-<span><span class="co">##  5:       2.3298718</span></span>
-<span><span class="co">##  6:       1.5747415</span></span>
-<span><span class="co">##  7:       1.2847476</span></span>
-<span><span class="co">##  8:       0.7622154</span></span>
-<span><span class="co">##  9:       1.3509606</span></span>
-<span><span class="co">## 10:       0.3595936</span></span></code></pre>
+<span><span class="co">##  1:       3.3991522</span></span>
+<span><span class="co">##  2:       2.3620627</span></span>
+<span><span class="co">##  3:       1.8341926</span></span>
+<span><span class="co">##  4:       1.9594194</span></span>
+<span><span class="co">##  5:       2.2114469</span></span>
+<span><span class="co">##  6:       1.4586851</span></span>
+<span><span class="co">##  7:       1.4168992</span></span>
+<span><span class="co">##  8:       0.5100449</span></span>
+<span><span class="co">##  9:       0.7019211</span></span>
+<span><span class="co">## 10:       0.5270691</span></span></code></pre>
 <p>The last row with <code>region = NA</code> denotes the aggregate over
 all regions. Note that the columns <code>N</code> and <code>n</code> now
 show the weighted and unweighted number of persons in each region.</p>
@@ -417,7 +423,7 @@ our grouping variables and show three options on how
 each gender. The number of rows in the output is therefore</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>12</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.</annotation></semantics></math></p>
 <p>The last row is again the estimate for the whole period.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
@@ -438,18 +444,18 @@ each gender. The number of rows in the output is therefore</p>
 <span><span class="co">## 12:  2010 14827 8182222   &lt;NA&gt;          &lt;NA&gt;        direct        14.44422</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;num&gt;</span></span>
-<span><span class="co">##  1:       2.1460335</span></span>
-<span><span class="co">##  2:       2.9066235</span></span>
-<span><span class="co">##  3:       1.8534790</span></span>
-<span><span class="co">##  4:       1.3315777</span></span>
-<span><span class="co">##  5:       2.3298718</span></span>
-<span><span class="co">##  6:       1.5747415</span></span>
-<span><span class="co">##  7:       1.2847476</span></span>
-<span><span class="co">##  8:       0.7622154</span></span>
-<span><span class="co">##  9:       1.3509606</span></span>
-<span><span class="co">## 10:       0.3963167</span></span>
-<span><span class="co">## 11:       0.4012714</span></span>
-<span><span class="co">## 12:       0.3595936</span></span></code></pre>
+<span><span class="co">##  1:       3.3991522</span></span>
+<span><span class="co">##  2:       2.3620627</span></span>
+<span><span class="co">##  3:       1.8341926</span></span>
+<span><span class="co">##  4:       1.9594194</span></span>
+<span><span class="co">##  5:       2.2114469</span></span>
+<span><span class="co">##  6:       1.4586851</span></span>
+<span><span class="co">##  7:       1.4168992</span></span>
+<span><span class="co">##  8:       0.5100449</span></span>
+<span><span class="co">##  9:       0.7019211</span></span>
+<span><span class="co">## 10:       0.5873095</span></span>
+<span><span class="co">## 11:       0.5651648</span></span>
+<span><span class="co">## 12:       0.5270691</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="option-2-all-combinations-of-region-and-gender">Option 2: All combinations of <code>region</code> and
@@ -458,7 +464,7 @@ each gender. The number of rows in the output is therefore</p>
 <p>Split the data by all combinations of the two grouping variables.
 This will result in a larger output-table of the size</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>⋅</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>⋅</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>19</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.</annotation></semantics></math></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
@@ -486,25 +492,25 @@ This will result in a larger output-table of the size</p>
 <span><span class="co">## 19:  2010 14827 8182222.0   &lt;NA&gt;          &lt;NA&gt;        direct       14.444218</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;num&gt;</span></span>
-<span><span class="co">##  1:       2.0262298</span></span>
-<span><span class="co">##  2:       2.9673642</span></span>
-<span><span class="co">##  3:       3.6077796</span></span>
-<span><span class="co">##  4:       2.9050846</span></span>
-<span><span class="co">##  5:       1.2572558</span></span>
-<span><span class="co">##  6:       2.3980507</span></span>
-<span><span class="co">##  7:       1.1948104</span></span>
-<span><span class="co">##  8:       1.6810920</span></span>
-<span><span class="co">##  9:       2.1284136</span></span>
-<span><span class="co">## 10:       2.8942260</span></span>
-<span><span class="co">## 11:       1.5389433</span></span>
-<span><span class="co">## 12:       1.4590961</span></span>
-<span><span class="co">## 13:       1.7827068</span></span>
-<span><span class="co">## 14:       1.3364761</span></span>
-<span><span class="co">## 15:       1.2811310</span></span>
-<span><span class="co">## 16:       0.9253973</span></span>
-<span><span class="co">## 17:       0.9597967</span></span>
-<span><span class="co">## 18:       1.4953372</span></span>
-<span><span class="co">## 19:       0.3595936</span></span></code></pre>
+<span><span class="co">##  1:       3.1646697</span></span>
+<span><span class="co">##  2:       3.8897842</span></span>
+<span><span class="co">##  3:       2.6647476</span></span>
+<span><span class="co">##  4:       2.7081376</span></span>
+<span><span class="co">##  5:       1.9178036</span></span>
+<span><span class="co">##  6:       1.8838821</span></span>
+<span><span class="co">##  7:       2.1096798</span></span>
+<span><span class="co">##  8:       1.9910819</span></span>
+<span><span class="co">##  9:       2.4959129</span></span>
+<span><span class="co">## 10:       2.2702111</span></span>
+<span><span class="co">## 11:       1.1800110</span></span>
+<span><span class="co">## 12:       1.3589333</span></span>
+<span><span class="co">## 13:       1.8695588</span></span>
+<span><span class="co">## 14:       1.7127098</span></span>
+<span><span class="co">## 15:       0.7922700</span></span>
+<span><span class="co">## 16:       0.8264087</span></span>
+<span><span class="co">## 17:       0.6345035</span></span>
+<span><span class="co">## 18:       0.6702610</span></span>
+<span><span class="co">## 19:       0.5270691</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="option-3-cobination-of-option-1-and-option-2">Option 3: Cobination of Option 1 and Option 2<a class="anchor" aria-label="anchor" href="#option-3-cobination-of-option-1-and-option-2"></a>
@@ -518,7 +524,7 @@ for</p>
 </ul>
 <p>The number of rows in the output is therefore</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">periods</mtext></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>⋅</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">regions</mtext></msub><mo>+</mo><msub><mi>n</mi><mtext mathvariant="normal">genders</mtext></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>9</mn><mo>⋅</mo><mn>2</mn><mo>+</mo><mn>9</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>30</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.</annotation></semantics></math></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
@@ -558,36 +564,36 @@ for</p>
 <span><span class="co">##      year     n         N gender        region estimate_type val_povertyRisk</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;num&gt;</span></span>
-<span><span class="co">##  1:       2.0262298</span></span>
-<span><span class="co">##  2:       2.9673642</span></span>
-<span><span class="co">##  3:       3.6077796</span></span>
-<span><span class="co">##  4:       2.9050846</span></span>
-<span><span class="co">##  5:       1.2572558</span></span>
-<span><span class="co">##  6:       2.3980507</span></span>
-<span><span class="co">##  7:       1.1948104</span></span>
-<span><span class="co">##  8:       2.1460335</span></span>
-<span><span class="co">##  9:       1.6810920</span></span>
-<span><span class="co">## 10:       2.1284136</span></span>
-<span><span class="co">## 11:       2.8942260</span></span>
-<span><span class="co">## 12:       2.9066235</span></span>
-<span><span class="co">## 13:       1.8534790</span></span>
-<span><span class="co">## 14:       1.3315777</span></span>
-<span><span class="co">## 15:       1.5389433</span></span>
-<span><span class="co">## 16:       1.4590961</span></span>
-<span><span class="co">## 17:       1.7827068</span></span>
-<span><span class="co">## 18:       1.3364761</span></span>
-<span><span class="co">## 19:       2.3298718</span></span>
-<span><span class="co">## 20:       1.2811310</span></span>
-<span><span class="co">## 21:       0.9253973</span></span>
-<span><span class="co">## 22:       0.9597967</span></span>
-<span><span class="co">## 23:       1.4953372</span></span>
-<span><span class="co">## 24:       1.5747415</span></span>
-<span><span class="co">## 25:       1.2847476</span></span>
-<span><span class="co">## 26:       0.7622154</span></span>
-<span><span class="co">## 27:       1.3509606</span></span>
-<span><span class="co">## 28:       0.3963167</span></span>
-<span><span class="co">## 29:       0.4012714</span></span>
-<span><span class="co">## 30:       0.3595936</span></span>
+<span><span class="co">##  1:       3.1646697</span></span>
+<span><span class="co">##  2:       3.8897842</span></span>
+<span><span class="co">##  3:       2.6647476</span></span>
+<span><span class="co">##  4:       2.7081376</span></span>
+<span><span class="co">##  5:       1.9178036</span></span>
+<span><span class="co">##  6:       1.8838821</span></span>
+<span><span class="co">##  7:       2.1096798</span></span>
+<span><span class="co">##  8:       3.3991522</span></span>
+<span><span class="co">##  9:       1.9910819</span></span>
+<span><span class="co">## 10:       2.4959129</span></span>
+<span><span class="co">## 11:       2.2702111</span></span>
+<span><span class="co">## 12:       2.3620627</span></span>
+<span><span class="co">## 13:       1.8341926</span></span>
+<span><span class="co">## 14:       1.9594194</span></span>
+<span><span class="co">## 15:       1.1800110</span></span>
+<span><span class="co">## 16:       1.3589333</span></span>
+<span><span class="co">## 17:       1.8695588</span></span>
+<span><span class="co">## 18:       1.7127098</span></span>
+<span><span class="co">## 19:       2.2114469</span></span>
+<span><span class="co">## 20:       0.7922700</span></span>
+<span><span class="co">## 21:       0.8264087</span></span>
+<span><span class="co">## 22:       0.6345035</span></span>
+<span><span class="co">## 23:       0.6702610</span></span>
+<span><span class="co">## 24:       1.4586851</span></span>
+<span><span class="co">## 25:       1.4168992</span></span>
+<span><span class="co">## 26:       0.5100449</span></span>
+<span><span class="co">## 27:       0.7019211</span></span>
+<span><span class="co">## 28:       0.5873095</span></span>
+<span><span class="co">## 29:       0.5651648</span></span>
+<span><span class="co">## 30:       0.5270691</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span></code></pre>
 </div>
 </div>
@@ -601,7 +607,7 @@ of poverty rates between <code>gender = "male"</code> and
 utilised. Setting <code>group.diff = TRUE</code> the differences and the
 standard error of these differences for all variables defined in
 <code>groups</code> will be calculated.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span>,</span>
 <span>                             group.diff <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -661,55 +667,55 @@ standard error of these differences for all variables defined in
 <span><span class="co">##      year       n         N        gender                        region</span></span>
 <span><span class="co">##        estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">##  1:           direct     19.53983651       2.1460335</span></span>
-<span><span class="co">##  2: group difference      3.00252634       4.2809445</span></span>
-<span><span class="co">##  3:           direct     16.53731017       2.9066235</span></span>
-<span><span class="co">##  4: group difference      5.75249330       2.9745881</span></span>
-<span><span class="co">##  5: group difference      6.45356876       2.8857763</span></span>
-<span><span class="co">##  6: group difference     -2.74996696       3.9856367</span></span>
-<span><span class="co">##  7: group difference     -3.45104242       2.7853277</span></span>
-<span><span class="co">##  8:           direct     13.78734321       1.8534790</span></span>
-<span><span class="co">##  9: group difference      4.23164602       2.8470911</span></span>
-<span><span class="co">## 10: group difference     -0.70107546       2.4768388</span></span>
-<span><span class="co">## 11: group difference     -1.22911968       4.2090570</span></span>
-<span><span class="co">## 12:           direct     13.08626775       1.3315777</span></span>
-<span><span class="co">## 13: group difference     -1.52084728       2.3515107</span></span>
-<span><span class="co">## 14: group difference     -2.22192274       3.2433283</span></span>
-<span><span class="co">## 15:           direct     15.30819049       2.3298718</span></span>
-<span><span class="co">## 16: group difference      5.16519923       2.4414820</span></span>
-<span><span class="co">## 17: group difference      2.30515330       2.2248717</span></span>
-<span><span class="co">## 18: group difference     -2.16267289       3.8733847</span></span>
-<span><span class="co">## 19: group difference      0.69737304       3.4666474</span></span>
-<span><span class="co">## 20: group difference     -0.58729407       2.3492896</span></span>
-<span><span class="co">## 21: group difference     -3.44734000       2.5816632</span></span>
-<span><span class="co">## 22: group difference      5.69621369       2.2238776</span></span>
-<span><span class="co">## 23: group difference      8.65006312       2.0651816</span></span>
-<span><span class="co">## 24: group difference     -1.28836953       1.9736662</span></span>
-<span><span class="co">## 25: group difference     -4.14841546       1.7753980</span></span>
-<span><span class="co">## 26: group difference     -2.69368735       2.7994747</span></span>
-<span><span class="co">## 27: group difference     -5.64753678       3.2949364</span></span>
-<span><span class="co">## 28: group difference     -0.93355321       2.5596658</span></span>
-<span><span class="co">## 29: group difference     -1.92649272       2.7754571</span></span>
-<span><span class="co">## 30: group difference      0.05627961       2.4455387</span></span>
-<span><span class="co">## 31: group difference      2.89756982       1.9327682</span></span>
-<span><span class="co">## 32: group difference     -0.75735506       1.3913074</span></span>
-<span><span class="co">## 33: group difference      2.19649436       2.3566252</span></span>
-<span><span class="co">## 34: group difference     -1.46456768       2.5972218</span></span>
-<span><span class="co">## 35: group difference      4.41841710       2.1439560</span></span>
-<span><span class="co">## 36:           direct     14.37463728       1.5747415</span></span>
-<span><span class="co">## 37: group difference     -2.86004593       1.7595663</span></span>
-<span><span class="co">## 38:           direct     17.23468321       1.2847476</span></span>
-<span><span class="co">## 39: group difference     -0.53101447       1.7685158</span></span>
-<span><span class="co">## 40: group difference      3.48486389       2.5489809</span></span>
-<span><span class="co">## 41: group difference     -3.39106040       1.5263767</span></span>
-<span><span class="co">## 42: group difference     -6.34490982       2.1448797</span></span>
-<span><span class="co">## 43:           direct     13.84362281       0.7622154</span></span>
-<span><span class="co">## 44: group difference      2.95384943       1.8007411</span></span>
-<span><span class="co">## 45:           direct     10.88977339       1.3509606</span></span>
-<span><span class="co">## 46:           direct     12.02659998       0.3963167</span></span>
-<span><span class="co">## 47: group difference     -4.70690810       0.3218875</span></span>
-<span><span class="co">## 48:           direct     16.73350808       0.4012714</span></span>
-<span><span class="co">## 49:           direct     14.44421817       0.3595936</span></span>
+<span><span class="co">##  1:           direct     19.53983651       3.3991522</span></span>
+<span><span class="co">##  2: group difference      3.00252634       4.4890631</span></span>
+<span><span class="co">##  3:           direct     16.53731017       2.3620627</span></span>
+<span><span class="co">##  4: group difference      5.75249330       4.1975326</span></span>
+<span><span class="co">##  5: group difference      6.45356876       3.0539134</span></span>
+<span><span class="co">##  6: group difference     -2.74996696       3.6206158</span></span>
+<span><span class="co">##  7: group difference     -3.45104242       3.5988502</span></span>
+<span><span class="co">##  8:           direct     13.78734321       1.8341926</span></span>
+<span><span class="co">##  9: group difference      4.23164602       4.4681770</span></span>
+<span><span class="co">## 10: group difference     -0.70107546       2.7972395</span></span>
+<span><span class="co">## 11: group difference     -1.22911968       3.8654808</span></span>
+<span><span class="co">## 12:           direct     13.08626775       1.9594194</span></span>
+<span><span class="co">## 13: group difference     -1.52084728       2.5416485</span></span>
+<span><span class="co">## 14: group difference     -2.22192274       2.7594977</span></span>
+<span><span class="co">## 15:           direct     15.30819049       2.2114469</span></span>
+<span><span class="co">## 16: group difference      5.16519923       3.6039864</span></span>
+<span><span class="co">## 17: group difference      2.30515330       3.6009324</span></span>
+<span><span class="co">## 18: group difference     -2.16267289       2.8637972</span></span>
+<span><span class="co">## 19: group difference      0.69737304       2.3743461</span></span>
+<span><span class="co">## 20: group difference     -0.58729407       2.3165526</span></span>
+<span><span class="co">## 21: group difference     -3.44734000       1.9904090</span></span>
+<span><span class="co">## 22: group difference      5.69621369       3.1218080</span></span>
+<span><span class="co">## 23: group difference      8.65006312       3.0035391</span></span>
+<span><span class="co">## 24: group difference     -1.28836953       2.5145765</span></span>
+<span><span class="co">## 25: group difference     -4.14841546       2.3878714</span></span>
+<span><span class="co">## 26: group difference     -2.69368735       2.4681264</span></span>
+<span><span class="co">## 27: group difference     -5.64753678       2.4296656</span></span>
+<span><span class="co">## 28: group difference     -0.93355321       3.1420647</span></span>
+<span><span class="co">## 29: group difference     -1.92649272       2.6290236</span></span>
+<span><span class="co">## 30: group difference      0.05627961       1.9652603</span></span>
+<span><span class="co">## 31: group difference      2.89756982       1.8031549</span></span>
+<span><span class="co">## 32: group difference     -0.75735506       1.9223843</span></span>
+<span><span class="co">## 33: group difference      2.19649436       2.0354113</span></span>
+<span><span class="co">## 34: group difference     -1.46456768       2.5638175</span></span>
+<span><span class="co">## 35: group difference      4.41841710       2.4601908</span></span>
+<span><span class="co">## 36:           direct     14.37463728       1.4586851</span></span>
+<span><span class="co">## 37: group difference     -2.86004593       1.8618960</span></span>
+<span><span class="co">## 38:           direct     17.23468321       1.4168992</span></span>
+<span><span class="co">## 39: group difference     -0.53101447       1.0945146</span></span>
+<span><span class="co">## 40: group difference      3.48486389       1.8391376</span></span>
+<span><span class="co">## 41: group difference     -3.39106040       1.4503756</span></span>
+<span><span class="co">## 42: group difference     -6.34490982       1.3856792</span></span>
+<span><span class="co">## 43:           direct     13.84362281       0.5100449</span></span>
+<span><span class="co">## 44: group difference      2.95384943       0.8351912</span></span>
+<span><span class="co">## 45:           direct     10.88977339       0.7019211</span></span>
+<span><span class="co">## 46:           direct     12.02659998       0.5873095</span></span>
+<span><span class="co">## 47: group difference     -4.70690810       0.4610436</span></span>
+<span><span class="co">## 48:           direct     16.73350808       0.5651648</span></span>
+<span><span class="co">## 49:           direct     14.44421817       0.5270691</span></span>
 <span><span class="co">##        estimate_type val_povertyRisk stE_povertyRisk</span></span></code></pre>
 <p>The resulting output table contains 49 rows. 12 rows for all the
 direct estimators</p>
@@ -751,7 +757,7 @@ be calculated.</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mn>1</mn><mo>=</mo><mn>1</mn></mrow><mrow><mn>9</mn><mo>−</mo><mn>1</mn></mrow></munderover><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>9</mn><mo>⋅</mo><mn>1</mn><mo>=</mo><mn>81</mn></mrow><annotation encoding="application/x-tex">2\cdot(\sum\limits_{1=1}^{9-1}i) + 9\cdot1 = 81</annotation></semantics></math></p>
 <p>results with respect to the differences. The Output contains an
 additional column <code>estimate_type</code> and</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat2</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                             group.diff <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -770,24 +776,24 @@ calculated using parameter <code>period.diff</code>.
 <code>NULL</code>) specifying for which <code>period</code>s the
 differences should be calcualed for. The inputs should be specified in
 the form <code>"period2" - "period1"</code>.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             period.diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2017 - 2016"</span>, <span class="st">"2016 - 2015"</span>, <span class="st">"2015 - 2014"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
 <span><span class="co">##         year     n       N     estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##       &lt;char&gt; &lt;num&gt;   &lt;num&gt;            &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">## 1:      2014 14827 8182222            direct      15.1455601       0.5291344</span></span>
-<span><span class="co">## 2:      2015 14827 8182222            direct      15.5364014       0.4157769</span></span>
-<span><span class="co">## 3: 2015-2014 14827 8182222 period difference       0.3908413       0.3681536</span></span>
-<span><span class="co">## 4:      2016 14827 8182222            direct      15.0831502       0.4740073</span></span>
-<span><span class="co">## 5: 2016-2015 14827 8182222 period difference      -0.4532512       0.5779232</span></span>
-<span><span class="co">## 6:      2017 14827 8182222            direct      15.4201916       0.5154012</span></span>
-<span><span class="co">## 7: 2017-2016 14827 8182222 period difference       0.3370414       0.4852712</span></span></code></pre>
+<span><span class="co">## 1:      2014 14827 8182222            direct      15.1455601       0.4480311</span></span>
+<span><span class="co">## 2:      2015 14827 8182222            direct      15.5364014       0.4478586</span></span>
+<span><span class="co">## 3: 2015-2014 14827 8182222 period difference       0.3908413       0.3521572</span></span>
+<span><span class="co">## 4:      2016 14827 8182222            direct      15.0831502       0.4738048</span></span>
+<span><span class="co">## 5: 2016-2015 14827 8182222 period difference      -0.4532512       0.3592894</span></span>
+<span><span class="co">## 6:      2017 14827 8182222            direct      15.4201916       0.5273047</span></span>
+<span><span class="co">## 7: 2017-2016 14827 8182222 period difference       0.3370414       0.2163653</span></span></code></pre>
 <p>If additional grouping variables are supplied to
 <code><a href="../reference/calc.stError.html">calc.stError()</a></code> die differences across <code>period</code>s
 are also carried out for all variables in <code>group</code>.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             group <span class="op">=</span> <span class="st">"gender"</span>,</span>
 <span>                             period.diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2017 - 2016"</span>, <span class="st">"2016 - 2015"</span>, <span class="st">"2015 - 2014"</span><span class="op">)</span><span class="op">)</span></span>
@@ -819,27 +825,27 @@ are also carried out for all variables in <code>group</code>.</p>
 <span><span class="co">##          year     n       N gender     estimate_type val_povertyRisk</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;num&gt;</span></span>
-<span><span class="co">##  1:       0.4498554</span></span>
-<span><span class="co">##  2:       0.6674462</span></span>
-<span><span class="co">##  3:       0.5291344</span></span>
-<span><span class="co">##  4:       0.3874346</span></span>
-<span><span class="co">##  5:       0.5512531</span></span>
-<span><span class="co">##  6:       0.4157769</span></span>
-<span><span class="co">##  7:       0.4069369</span></span>
-<span><span class="co">##  8:       0.3842908</span></span>
-<span><span class="co">##  9:       0.3681536</span></span>
-<span><span class="co">## 10:       0.5876578</span></span>
-<span><span class="co">## 11:       0.4666331</span></span>
-<span><span class="co">## 12:       0.4740073</span></span>
-<span><span class="co">## 13:       0.6707173</span></span>
-<span><span class="co">## 14:       0.5325647</span></span>
-<span><span class="co">## 15:       0.5779232</span></span>
-<span><span class="co">## 16:       0.6221793</span></span>
-<span><span class="co">## 17:       0.4847754</span></span>
-<span><span class="co">## 18:       0.5154012</span></span>
-<span><span class="co">## 19:       0.5194239</span></span>
-<span><span class="co">## 20:       0.4733315</span></span>
-<span><span class="co">## 21:       0.4852712</span></span>
+<span><span class="co">##  1:       0.6133835</span></span>
+<span><span class="co">##  2:       0.4828868</span></span>
+<span><span class="co">##  3:       0.4480311</span></span>
+<span><span class="co">##  4:       0.6097891</span></span>
+<span><span class="co">##  5:       0.3711825</span></span>
+<span><span class="co">##  6:       0.4478586</span></span>
+<span><span class="co">##  7:       0.3257510</span></span>
+<span><span class="co">##  8:       0.4525163</span></span>
+<span><span class="co">##  9:       0.3521572</span></span>
+<span><span class="co">## 10:       0.5678502</span></span>
+<span><span class="co">## 11:       0.4702997</span></span>
+<span><span class="co">## 12:       0.4738048</span></span>
+<span><span class="co">## 13:       0.4037554</span></span>
+<span><span class="co">## 14:       0.4118243</span></span>
+<span><span class="co">## 15:       0.3592894</span></span>
+<span><span class="co">## 16:       0.6784856</span></span>
+<span><span class="co">## 17:       0.4736168</span></span>
+<span><span class="co">## 18:       0.5273047</span></span>
+<span><span class="co">## 19:       0.3408953</span></span>
+<span><span class="co">## 20:       0.1699518</span></span>
+<span><span class="co">## 21:       0.2163653</span></span>
 <span><span class="co">##     stE_povertyRisk</span></span></code></pre>
 </div>
 <div class="section level2">
@@ -850,23 +856,23 @@ are also carried out for all variables in <code>group</code>.</p>
 only odd integer values. The resulting table will contain the direct
 estimates as well as rolling averages of length
 <code>period.mean</code>.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             period.mean <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">povertyRates</span><span class="op">$</span><span class="va">Estimates</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, estimate_type&gt;</span></span>
 <span><span class="co">##              year     n       N  estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##            &lt;char&gt; &lt;num&gt;   &lt;num&gt;         &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">## 1:           2014 14827 8182222         direct        15.14556       0.5291344</span></span>
-<span><span class="co">## 2: 2014_2015_2016 14827 8182222 period average        15.25504       0.3259271</span></span>
-<span><span class="co">## 3:           2015 14827 8182222         direct        15.53640       0.4157769</span></span>
-<span><span class="co">## 4: 2015_2016_2017 14827 8182222 period average        15.34658       0.3509869</span></span>
-<span><span class="co">## 5:           2016 14827 8182222         direct        15.08315       0.4740073</span></span>
-<span><span class="co">## 6:           2017 14827 8182222         direct        15.42019       0.5154012</span></span></code></pre>
+<span><span class="co">## 1:           2014 14827 8182222         direct        15.14556       0.4480311</span></span>
+<span><span class="co">## 2: 2014_2015_2016 14827 8182222 period average        15.25504       0.4090587</span></span>
+<span><span class="co">## 3:           2015 14827 8182222         direct        15.53640       0.4478586</span></span>
+<span><span class="co">## 4: 2015_2016_2017 14827 8182222 period average        15.34658       0.4544507</span></span>
+<span><span class="co">## 5:           2016 14827 8182222         direct        15.08315       0.4738048</span></span>
+<span><span class="co">## 6:           2017 14827 8182222         direct        15.42019       0.5273047</span></span></code></pre>
 <p>if in addition the parameters <code>group</code> and/or
 <code>period.diff</code> are specified then differences and groupings of
 averages will be calculated.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">povertyRates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="va">year</span><span class="op">&gt;</span><span class="fl">2013</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>, fun <span class="op">=</span> <span class="va">weightedRatio</span>, </span>
 <span>                             period.mean <span class="op">=</span> <span class="fl">3</span>, period.diff <span class="op">=</span> <span class="st">"2016 - 2015"</span>,</span>
 <span>                             group <span class="op">=</span> <span class="st">"gender"</span><span class="op">)</span></span>
@@ -901,30 +907,30 @@ averages will be calculated.</p>
 <span><span class="co">##               year     n       N gender                      estimate_type</span></span>
 <span><span class="co">##     val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##               &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">##  1:     14.50350682       0.4498554</span></span>
-<span><span class="co">##  2:     15.75353283       0.6674462</span></span>
-<span><span class="co">##  3:     15.14556006       0.5291344</span></span>
-<span><span class="co">##  4:     14.73535987       0.2850116</span></span>
-<span><span class="co">##  5:     15.74712982       0.4638359</span></span>
-<span><span class="co">##  6:     15.25503720       0.3259271</span></span>
-<span><span class="co">##  7:     15.12289042       0.3874346</span></span>
-<span><span class="co">##  8:     15.92796296       0.5512531</span></span>
-<span><span class="co">##  9:     15.53640136       0.4157769</span></span>
-<span><span class="co">## 10:     14.88357729       0.4228084</span></span>
-<span><span class="co">## 11:     15.78500836       0.3938403</span></span>
-<span><span class="co">## 12:     15.34658105       0.3509869</span></span>
-<span><span class="co">## 13:     14.57968239       0.5876578</span></span>
-<span><span class="co">## 14:     15.55989368       0.4666331</span></span>
-<span><span class="co">## 15:     15.08315018       0.4740073</span></span>
-<span><span class="co">## 16:     -0.54320803       0.6707173</span></span>
-<span><span class="co">## 17:     -0.36806928       0.5325647</span></span>
-<span><span class="co">## 18:     -0.45325118       0.5779232</span></span>
-<span><span class="co">## 19:      0.14821741       0.2742414</span></span>
-<span><span class="co">## 20:      0.03787854       0.2363176</span></span>
-<span><span class="co">## 21:      0.09154385       0.2486341</span></span>
-<span><span class="co">## 22:     14.94815906       0.6221793</span></span>
-<span><span class="co">## 23:     15.86716845       0.4847754</span></span>
-<span><span class="co">## 24:     15.42019160       0.5154012</span></span>
+<span><span class="co">##  1:     14.50350682       0.6133835</span></span>
+<span><span class="co">##  2:     15.75353283       0.4828868</span></span>
+<span><span class="co">##  3:     15.14556006       0.4480311</span></span>
+<span><span class="co">##  4:     14.73535987       0.5579253</span></span>
+<span><span class="co">##  5:     15.74712982       0.3559449</span></span>
+<span><span class="co">##  6:     15.25503720       0.4090587</span></span>
+<span><span class="co">##  7:     15.12289042       0.6097891</span></span>
+<span><span class="co">##  8:     15.92796296       0.3711825</span></span>
+<span><span class="co">##  9:     15.53640136       0.4478586</span></span>
+<span><span class="co">## 10:     14.88357729       0.5893327</span></span>
+<span><span class="co">## 11:     15.78500836       0.3972314</span></span>
+<span><span class="co">## 12:     15.34658105       0.4544507</span></span>
+<span><span class="co">## 13:     14.57968239       0.5678502</span></span>
+<span><span class="co">## 14:     15.55989368       0.4702997</span></span>
+<span><span class="co">## 15:     15.08315018       0.4738048</span></span>
+<span><span class="co">## 16:     -0.54320803       0.4037554</span></span>
+<span><span class="co">## 17:     -0.36806928       0.4118243</span></span>
+<span><span class="co">## 18:     -0.45325118       0.3592894</span></span>
+<span><span class="co">## 19:      0.14821741       0.1133492</span></span>
+<span><span class="co">## 20:      0.03787854       0.1740948</span></span>
+<span><span class="co">## 21:      0.09154385       0.1343757</span></span>
+<span><span class="co">## 22:     14.94815906       0.6784856</span></span>
+<span><span class="co">## 23:     15.86716845       0.4736168</span></span>
+<span><span class="co">## 24:     15.42019160       0.5273047</span></span>
 <span><span class="co">##     val_povertyRisk stE_povertyRisk</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
