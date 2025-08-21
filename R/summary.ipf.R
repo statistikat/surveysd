@@ -1,88 +1,57 @@
-#' Generate summary output for a ipf calibration
-
+#' Generate summary output for an IPF calibration
 ipf_summary_calibres <- function(ipf_result, av) {
   
-  # This function analyzes the results of an IPF (Iterative Proportional Fitting) calibration.
-  # It creates summary tables for each constraint used.
-  
   # 1. INITIAL SETUP
-  # ----------------------------------------------------------------------
-  
-  # Determine the name of the calibrated weight column
   calibWeightName <- NULL
   
   if (any(names(av) == "conP")) {
-    formula_name <- as.character(av$formP[1][[1]])[2]
-    if (formula_name %in% names(ipf_result)) {
-      calibWeightName <- formula_name
-    }
+    formula_name <- as.character(av$formP[[1]])[2]
+    if (formula_name %in% names(ipf_result)) calibWeightName <- formula_name
   }
   
   if (is.null(calibWeightName) && any(names(av) == "conH")) {
-    formula_name <- as.character(av$formH[1][[1]])[2]
-    if (formula_name %in% names(ipf_result)) {
-      calibWeightName <- formula_name
-    }
+    formula_name <- as.character(av$formH[[1]])[2]
+    if (formula_name %in% names(ipf_result)) calibWeightName <- formula_name
   }
   
-  # 2. If the name wasn't found in the formula, fall back to common names.
   if (is.null(calibWeightName)) {
     if ("gew2" %in% names(ipf_result)) {
       calibWeightName <- "gew2"
     } else if ("gew1" %in% names(ipf_result)) {
       calibWeightName <- "gew1"
     } else {
-      stop("Could not determine the name of the calibrated weight column. Please check that a weight column exists in the data and is correctly specified in the IPF formulas.")
+      stop("Could not determine the name of the calibrated weight column.")
     }
   }
   
-  # Check if epsilon values exist in the object.
   has_eps_values <- !is.null(av$epsP) && !is.null(av$epsH)
-  if (!has_eps_values) {
-    cat("Warning: Epsilon values not found. Skipping maxFac calculations.\n")
-  }
+  if (!has_eps_values) cat("Warning: Epsilon values not found. Skipping maxFac calculations.\n")
   
-  # Initialize a list to store the final summary tables for each constraint.
   results_list <- list()
   
-  # ----------------------------------------------------------------------
-  # 2. PROCESSING THE PERSON CONSTRAINTS (conP)
-  # ----------------------------------------------------------------------
-  
+  # 2. PROCESSING PERSON CONSTRAINTS (conP)
   conP_list <- av$conP
   formP_list <- av$formP
   
-  for (i in 1:length(conP_list)) {
+  for (i in seq_along(conP_list)) {
     
     constraint_name <- names(conP_list)[i]
-    if (is.null(constraint_name) || is.na(constraint_name) || nchar(constraint_name) == 0) {
-      constraint_name <- paste0("conP", i)
-    }
+    if (is.null(constraint_name) || nchar(constraint_name) == 0) constraint_name <- paste0("conP", i)
     
     group_vars <- names(attr(conP_list[[i]], "dimnames"))
     
     tmp_calib_data <- copy(ipf_result)
     tmp_calib_data[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
-    # rhs_vars <- all.vars(formP_list[[i]])
-    # numericalWeightingVar <- if (length(rhs_vars) > 1) rhs_vars[1] else NULL
-    
     calib_results <- tmp_calib_data[
       , .(
         N = .N,
-        CalibMargin = {
-          # if (!is.null(numericalWeightingVar) && numericalWeightingVar %in% names(tmp_calib_data)) {
-          #   sum(get(calibWeightName) * get(numericalWeightingVar))
-          # } else {
-          sum(get(calibWeightName))
-          # }
-        }
+        CalibMargin = sum(get(calibWeightName))
       ),
       by = group_vars
     ]
     
-    original_xtabs <- conP_list[[i]]
-    original_dt <- as.data.table(original_xtabs)
+    original_dt <- as.data.table(conP_list[[i]])
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
@@ -90,32 +59,41 @@ ipf_summary_calibres <- function(ipf_result, av) {
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
+    # EPSP Handling
     if (!is.null(av$epsP) && i <= length(av$epsP) && !is.null(av$epsP[[i]])) {
-      epsP_value <- av$epsP[[i]]
-      merged_results[, epsP := epsP_value]
-      merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
+      epsP_obj <- av$epsP[[i]]
+      if (length(epsP_obj) == 1) {
+        merged_results[, epsP := as.numeric(epsP_obj)]
+      } else {
+        epsP_dt_long <- as.data.table(as.table(as.array(epsP_obj)))
+        expected_names <- c(group_vars, "epsP")
+        if (ncol(epsP_dt_long) == length(expected_names)) {
+          setnames(epsP_dt_long, names(epsP_dt_long), expected_names)
+        } else {
+          setnames(epsP_dt_long, ncol(epsP_dt_long), "epsP")
+        }
+        if (nrow(epsP_dt_long) > 0) {
+          epsP_dt_long[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
+        }
+        merged_results <- merge(merged_results, epsP_dt_long, by = group_vars, all.x = TRUE)
+      }
     } else {
       merged_results[, epsP := NA_real_]
-      merged_results[, maxFac := NA_real_]
     }
     
+    merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
     final_table_p <- merged_results[N > 0][order(N)]
     results_list[[constraint_name]] <- final_table_p
   }
   
-  # ----------------------------------------------------------------------
-  # 3. PROCESSING THE HOUSEHOLD CONSTRAINTS (conH)
-  # ----------------------------------------------------------------------
-  
+  # 3. PROCESSING HOUSEHOLD CONSTRAINTS (conH)
   conH_list <- av$conH
   formH_list <- av$formH
   
-  for (i in 1:length(conH_list)) {
+  for (i in seq_along(conH_list)) {
     
     constraint_name <- names(conH_list)[i]
-    if (is.null(constraint_name) || is.na(constraint_name) || nchar(constraint_name) == 0) {
-      constraint_name <- paste0("conH", i)
-    }
+    if (is.null(constraint_name) || nchar(constraint_name) == 0) constraint_name <- paste0("conH", i)
     
     group_vars <- names(attr(conH_list[[i]], "dimnames"))
     
@@ -125,26 +103,12 @@ ipf_summary_calibres <- function(ipf_result, av) {
     calib_results <- tmp_calib_data[
       , .(
         N = .N,
-        CalibMargin = {
-          if ("wg" %in% group_vars) {
-            sum(get(calibWeightName) / as.numeric(wg))
-          } else {
-            rhs_vars <- all.vars(formH_list[[i]])
-            numericalWeightingVar <- if (length(rhs_vars) > 1) rhs_vars[2] else NULL
-            
-            if (!is.null(numericalWeightingVar) && numericalWeightingVar %in% names(tmp_calib_data)) {
-              # sum(get(calibWeightName) * as.numeric(get(numericalWeightingVar)))
-              # } else {
-              sum(get(calibWeightName))
-            }
-          }
-        }
+        CalibMargin = sum(get(calibWeightName))
       ),
       by = group_vars
     ]
     
-    original_xtabs <- conH_list[[i]]
-    original_dt <- as.data.table(original_xtabs)
+    original_dt <- as.data.table(conH_list[[i]])
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
@@ -152,62 +116,31 @@ ipf_summary_calibres <- function(ipf_result, av) {
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
+    # EPSH Handling
     if (!is.null(av$epsH) && i <= length(av$epsH) && !is.null(av$epsH[[i]])) {
-      epsH_obj <- av$epsH[[i]] # Access directly from av
-      
-      if (length(group_vars) == 1) {
-        epsH_dt_long <- data.table(
-          `id_var` = names(epsH_obj),
-          epsH = as.numeric(epsH_obj)
-        )
-        setnames(epsH_dt_long, "id_var", group_vars[1])
-        
-      } else if (length(group_vars) == 2) {
-        id_vars_melt <- group_vars[1]
-        epsH_dt <- as.data.table(epsH_obj, keep.rownames = id_vars_melt)
-        epsH_dt_long <- melt(
-          epsH_dt, 
-          id.vars = id_vars_melt, 
-          value.name = "epsH"
-        )
-        setnames(epsH_dt_long, "variable", group_vars[2])
-        
+      epsH_dt_long <- as.data.table(as.table(as.array(av$epsH[[i]])))
+      expected_names <- c(group_vars, "epsH")
+      if (length(expected_names) == ncol(epsH_dt_long)) {
+        setnames(epsH_dt_long, names(epsH_dt_long), expected_names)
       } else {
-        epsH_dt_long <- as.data.table(as.table(epsH_obj))
-        actual_dim_names <- names(epsH_dt_long)[1:(ncol(epsH_dt_long)-1)]
-        setnames(epsH_dt_long, names(epsH_dt_long), c(actual_dim_names, "epsH"))
+        setnames(epsH_dt_long, ncol(epsH_dt_long), "epsH")
       }
-      
-      if (nrow(epsH_dt_long) > 0) {
-        for (col in group_vars) {
-          epsH_dt_long[[col]] <- as.character(epsH_dt_long[[col]])
-        }
-      } else {
-        empty_dt_list <- vector("list", length(group_vars) + 1)
-        names(empty_dt_list) <- c(group_vars, "epsH")
-        
-        for(j in 1:length(group_vars)) {
-          empty_dt_list[[j]] <- character(0)
-        }
-        empty_dt_list[["epsH"]] <- numeric(0)
-        
-        epsH_dt_long <- as.data.table(empty_dt_list)
+      if (nrow(epsH_dt_long) > 0 && length(group_vars)) {
+        epsH_dt_long[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
       }
-      
       merged_results <- merge(merged_results, epsH_dt_long, by = group_vars, all.x = TRUE)
-      merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
-      
     } else {
-      merged_results[, epsH := NA_real_]
-      merged_results[, maxFac := NA_real_]
+      merged_results[, `:=`(epsH = NA_real_)]
     }
     
+    merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
     final_table_h <- merged_results[N > 0][order(N)]
     results_list[[constraint_name]] <- final_table_h
   }
   
   return(results_list)
 }
+
 
 #' @title Generate Summary Output for IPF Calibration
 #'
