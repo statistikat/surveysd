@@ -86,7 +86,7 @@ ipf_summary_calibres <- function(ipf_result, av) {
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
-    merged_results <- merge(calib_results, original_dt, by = group_vars, all = TRUE)
+    merged_results <- merge(calib_results, original_dt, by = group_vars, all.y = TRUE)
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
@@ -148,13 +148,9 @@ ipf_summary_calibres <- function(ipf_result, av) {
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
     original_dt[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
     
-    merged_results <- merge(calib_results, original_dt, by = group_vars, all = TRUE)
+    merged_results <- merge(calib_results, original_dt, by = group_vars, all.y = TRUE)
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
-    
-    # Finden Sie den Block, der mit "if (has_eps_values)" beginnt.
-    # ...
-    # Fügen Sie diesen Code ein:
     
     if (!is.null(av$epsH) && i <= length(av$epsH) && !is.null(av$epsH[[i]])) {
       epsH_obj <- av$epsH[[i]] # Access directly from av
