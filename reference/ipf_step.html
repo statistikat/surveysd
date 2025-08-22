@@ -102,17 +102,17 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class="r-in"><span>  household <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">classLabels</span>, <span class="va">nobs</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dat</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       weight household</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2.4149019         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  1.3266757         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  2.0894635         a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  5.5934418         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  1.1439288         a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  1.3688767         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.3856704         c</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  4.8186591         a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  5.4764644         c</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 1.6470400         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        weight household</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.75075883         b</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.25290450         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  1.21568478         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  1.45342678         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  3.69924644         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.41072691         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  1.10672721         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  1.14010963         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.11692923         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.03229428         b</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## create targets (same lenght as classLabels!)</span></span></span>
 <span class="r-in"><span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fl">3</span><span class="op">:</span><span class="fl">5</span></span></span>
@@ -120,17 +120,17 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class="r-in"><span><span class="co">## calculate weights</span></span></span>
 <span class="r-in"><span><span class="va">new_weight</span> <span class="op">&lt;-</span> <span class="fu">ipf_step</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">weight</span>, <span class="va">dat</span><span class="op">$</span><span class="va">household</span>, <span class="va">targets</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">new_weight</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       weight household new_weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2.4149019         b  0.9024385</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  1.3266757         b  0.4957730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  2.0894635         a  0.7784837</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  5.5934418         b  2.0902452</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  1.1439288         a  0.4262003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  1.3688767         b  0.5115433</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.3856704         c  0.2567994</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  4.8186591         a  1.7953161</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  5.4764644         c  3.6465155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 1.6470400         c  1.0966851</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        weight household new_weight</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.75075883         b  3.8350340</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.25290450         a  0.1159104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  1.21568478         c  2.1327293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  1.45342678         a  0.6661302</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  3.69924644         a  1.6954277</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.41072691         c  0.7205563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  1.10672721         c  1.9415803</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  1.14010963         a  0.5225317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.11692923         c  0.2051341</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.03229428         b  0.1649660</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## check solution</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">xtabs</a></span><span class="op">(</span><span class="va">new_weight</span> <span class="op">~</span> <span class="va">dat</span><span class="op">$</span><span class="va">household</span><span class="op">)</span></span></span>
@@ -142,16 +142,16 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class="r-in"><span><span class="fu">ipf_step_ref</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">weight</span>, <span class="va">dat</span><span class="op">$</span><span class="va">household</span>, <span class="va">targets</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dat</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       weight household</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.9024385         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.4957730         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.7784837         a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  2.0902452         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.4262003         a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.5115433         b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.2567994         c</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  1.7953161         a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  3.6465155         c</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 1.0966851         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  3.8350340         b</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.1159104         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  2.1327293         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.6661302         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  1.6954277         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.7205563         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  1.9415803         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.5225317         a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.2051341         c</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.1649660         b</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">############# multidimensional ipu ##############</span></span></span>
 <span class="r-in"><span></span></span>
@@ -166,16 +166,16 @@ designed to make <code>ipf_step</code> work with contingency tables produced by 
 <span class="r-in"><span><span class="va">cf</span> <span class="op">&lt;-</span> <span class="fu">combine_factors</span><span class="op">(</span><span class="va">tips</span>, <span class="va">con</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">tips</span>, <span class="va">cf</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">tips</span><span class="op">)</span>, <span class="fl">10</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,<span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       time    sex smoker day cf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    Lunch   Male    Yes Mon  8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   Dinner Female     No Sun  9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    Lunch   Male    Yes Mon  8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2.1  Lunch   Male    Yes Mon  8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    Lunch   Male     No Tue 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2.2  Lunch   Male    Yes Mon  8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3.1  Lunch   Male     No Tue 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2.3  Lunch   Male    Yes Mon  8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2.4  Lunch   Male    Yes Mon  8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    Lunch   Male     No Tue 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2.5  Lunch   Male    Yes Mon  8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3.1  Lunch   Male     No Tue 20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2.6  Lunch   Male    Yes Mon  8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3.2  Lunch   Male     No Tue 20</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## adjust weights</span></span></span>
 <span class="r-in"><span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">tips</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">5</span></span></span>
