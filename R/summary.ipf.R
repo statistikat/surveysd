@@ -31,7 +31,6 @@ ipf_summary_calibres <- function(ipf_result, av) {
   
   # 2. PROCESSING PERSON CONSTRAINTS (conP)
   conP_list <- av$conP
-  formP_list <- av$formP
   
   for (i in seq_along(conP_list)) {
     
@@ -50,7 +49,6 @@ ipf_summary_calibres <- function(ipf_result, av) {
       ),
       by = group_vars
     ]
-    #cat("calib_results:", calib_results, "\n")
     
     original_dt <- as.data.table(conP_list[[i]])
     setnames(original_dt, names(original_dt), c(group_vars, "PopMargin"))
@@ -60,38 +58,32 @@ ipf_summary_calibres <- function(ipf_result, av) {
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
-    # EPSP Handling
-    if (!is.null(av$epsP) && i <= length(av$epsP) && !is.null(av$epsP[[i]])) {
-      epsP_obj <- av$epsP[[i]]
+    # --- GEÄNDERT: EPSP Handling ---
+    if (!is.null(av$epsP)) {
+      epsP_obj <- if (is.list(av$epsP)) av$epsP[[i]] else av$epsP
       if (length(epsP_obj) == 1) {
         merged_results[, epsP := as.numeric(epsP_obj)]
       } else {
+        # EPSP-Matrix wird "aufgelöst" in long-Format
         epsP_dt_long <- as.data.table(as.table(as.array(epsP_obj)))
-        expected_names <- c(group_vars, "epsP")
-        if (ncol(epsP_dt_long) == length(expected_names)) {
-          setnames(epsP_dt_long, names(epsP_dt_long), expected_names)
-        } else {
-          setnames(epsP_dt_long, ncol(epsP_dt_long), "epsP")
-        }
-        if (nrow(epsP_dt_long) > 0) {
-          epsP_dt_long[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
-        }
-        merged_results <- merge(merged_results, epsP_dt_long, by = group_vars, all.x = TRUE)
+        # Merge nur nach tatsächlich vorhandenen Variablen → verhindert NA
+        merge_vars <- intersect(names(epsP_dt_long), group_vars)
+        setnames(epsP_dt_long, c(merge_vars, "epsP"))
+        epsP_dt_long[, (merge_vars) := lapply(.SD, as.character), .SDcols = merge_vars]
+        merged_results <- merge(merged_results, epsP_dt_long, by = merge_vars, all.x = TRUE)
       }
     } else {
       merged_results[, epsP := NA_real_]
     }
     
     merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
-    print(merged_results)
+    merged_results <- merged_results[order(is.na(PopMargin), N)]
+    results_list[[constraint_name]] <- merged_results[N > 0]
     
-    final_table_p <- merged_results[N > 0][order(N)]
-    results_list[[constraint_name]] <- final_table_p
   }
   
   # 3. PROCESSING HOUSEHOLD CONSTRAINTS (conH)
   conH_list <- av$conH
-  formH_list <- av$formH
   
   for (i in seq_along(conH_list)) {
     
@@ -102,6 +94,13 @@ ipf_summary_calibres <- function(ipf_result, av) {
     
     tmp_calib_data <- copy(ipf_result)
     tmp_calib_data[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
+    
+    hid <- attr(ipf_result, "hid") 
+    if (!is.null(hid) && hid %in% names(tmp_calib_data)) {
+      tmp_calib_data[, `:=`(wg, .N), by = hid]
+    } else {
+      tmp_calib_data[, `:=`(wg, 1L)]
+    }
     
     calib_results <- tmp_calib_data[
       , .(
@@ -119,26 +118,26 @@ ipf_summary_calibres <- function(ipf_result, av) {
     merged_results[is.na(N), N := 0]
     merged_results[is.na(CalibMargin), CalibMargin := 0]
     
-    # EPSH Handling
-    if (!is.null(av$epsH) && i <= length(av$epsH) && !is.null(av$epsH[[i]])) {
-      epsH_dt_long <- as.data.table(as.table(as.array(av$epsH[[i]])))
-      expected_names <- c(group_vars, "epsH")
-      if (length(expected_names) == ncol(epsH_dt_long)) {
-        setnames(epsH_dt_long, names(epsH_dt_long), expected_names)
+    # --- GEÄNDERT: EPSH Handling ---
+    # Ziel: auch "teilweise aufgelöste" EPSH-Matrizen korrekt zuordnen
+    if (!is.null(av$epsH)) {
+      epsH_obj <- if (is.list(av$epsH)) av$epsH[[i]] else av$epsH
+      if (length(epsH_obj) == 1) {
+        merged_results[, epsH := as.numeric(epsH_obj)]
       } else {
-        setnames(epsH_dt_long, ncol(epsH_dt_long), "epsH")
+        epsH_dt_long <- as.data.table(as.table(as.array(epsH_obj)))
+        merge_vars <- intersect(names(epsH_dt_long), group_vars)
+        setnames(epsH_dt_long, c(merge_vars, "epsH"))
+        epsH_dt_long[, (merge_vars) := lapply(.SD, as.character), .SDcols = merge_vars]
+        merged_results <- merge(merged_results, epsH_dt_long, by = merge_vars, all.x = TRUE)
       }
-      if (nrow(epsH_dt_long) > 0 && length(group_vars)) {
-        epsH_dt_long[, (group_vars) := lapply(.SD, as.character), .SDcols = group_vars]
-      }
-      merged_results <- merge(merged_results, epsH_dt_long, by = group_vars, all.x = TRUE)
     } else {
-      merged_results[, `:=`(epsH = NA_real_)]
+      merged_results[, epsH := NA_real_]
     }
     
     merged_results[, maxFac := abs(1 - CalibMargin / PopMargin)]
-    final_table_h <- merged_results[N > 0][order(N)]
-    results_list[[constraint_name]] <- final_table_h
+    merged_results <- merged_results[order(is.na(PopMargin), N)]
+    results_list[[constraint_name]] <- merged_results[N > 0]
   }
   
   return(results_list)
@@ -326,6 +325,9 @@ summary.ipf <- function(object, ...){
   
   # Appends the original tables to the custom tables.
   output <- append(output, original_output)
+  
+  # ---- NEW: Append all formulas as the last element ----
+  output[["all_formulas"]] <- formulas
   
   class(output) <- "summary.ipf"
   
