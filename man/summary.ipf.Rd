@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.ipf.R
 \name{summary.ipf}
 \alias{summary.ipf}
-\title{Generate summary output for a ipf calibration}
+\title{Generate Summary Output for IPF Calibration}
 \usage{
 \method{summary}{ipf}(object, ...)
 }
@@ -15,7 +15,25 @@
 a list of the following outputs
 }
 \description{
-Generate summary output for a ipf calibration
+Generates a detailed summary of an Iterative Proportional Fitting (IPF) calibration, providing a complete tool for evaluating the calibration's success and the validity of the resulting weights.
+
+The output is a list of data.tables for a comprehensive evaluation, including:
+
+\strong{Calibration Results:}
+\itemize{
+\item \verb{calib_results_conP_*} and \verb{calib_results_conH_*}: Key diagnostic tables that compare calibrated margins to population targets and assess the goodness of fit via metrics like \code{maxFac}.
+}
+
+\strong{Data and Diagnostics:}
+\itemize{
+\item \verb{weighted data}: An excerpt of the final dataset with the calculated calibration weights.
+\item \verb{distribution of the weights}: A statistical overview of the weight distribution (min, max, CV).
+}
+
+\strong{Detailed Margin Comparisons:}
+\itemize{
+\item \verb{conP_*}, \verb{conH_*}, \verb{*_adjusted}, \verb{*_original}, \verb{*_rel_diff_*}: Tables that compare original sample margins, calibrated margins, and population targets, along with their relative differences.
+}
 }
 \examples{
 
@@ -34,17 +52,14 @@ conH1 <- xtabs(pWeight ~ hsize + region, data = eusilc)
 # simple usage ------------------------------------------
 
 calibweights1 <- ipf(
-  eusilc,
-  conP = list(conP1, conP2, eqIncome = conP3),
-  bound = NULL,
-  verbose = TRUE
+ eusilc,
+ conP = list(conP1, conP2, eqIncome = conP3),
+ bound = NULL,
+ verbose = TRUE
 )
 output <- summary(calibweights1)
 # the output can easily be exported to an Excel file, e.g. with
 # library(openxlsx)
 # write.xlsx(output, "SummaryIPF.xlsx")
 }
-}
-\author{
-Laura Gruber
 }

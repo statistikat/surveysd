@@ -1,9 +1,18 @@
 #' Print method for IPF calibration summary
 #'
-#' This function provides a concise summary of an IPF (Iterative Proportional Fitting) calibration object. 
-#' It automatically extracts the calibration weight from `all_formulas`, computes the Kish factor for the weights, and prints the first 10 rows of any `calib_results_` tables. 
-#' Useful for a quick overview of calibration results.
-#' Additional details can be explored with `str()` or `names()`.
+#' Provides a concise summary of an IPF (Iterative Proportional Fitting) calibration summary object. 
+#' It extracts the calibration weight from `all_formulas`, computes the Kish factor for the weights, 
+#' and prints the first 10 rows of any `calib_results_` tables. 
+#' Useful for a quick overview of calibration results. Additional details can be explored with `str()` or `names()`.
+#'
+#' @param x An object of class \code{summary.ipf}, as returned by \code{\link{summary.ipf}}.
+#' @param ... Additional arguments (currently ignored).
+#'
+#' @return The input object \code{x}, invisibly (for chaining).
+#' @method print summary.ipf
+#' @export
+#' @importFrom surveysd kishFactor
+
 
 print.summary.ipf <- function(x, ...) {
   cat("IPF Calibration Summary (Short Version)\n")

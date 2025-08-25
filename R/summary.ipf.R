@@ -1,8 +1,23 @@
-#' Generate summary output for an IPF calibration
+#' @title Internal function: Generate summary output for an IPF calibration
+#'
+#' @description
+#' This function is used internally by \code{summary.ipf} to generate detailed
+#' tables for calibration diagnostics.
+#'
+#' @param ipf_result An object of class \code{ipf} containing the calibration results.
+#' @param av A list of auxiliary information used in calibration, including
+#' constraints (\code{conP}, \code{conH}) and tolerance values (\code{epsP}, \code{epsH}).
+#'
+#' @return A named list of data.tables containing calibration diagnostics for
+#' each constraint.
+#'
+#' @keywords internal
+#' @noRd
+
 ipf_summary_calibres <- function(ipf_result, av) {
   
   # 1. INITIAL SETUP
-  calibWeightName <- NULL
+  calibWeightName <- wg <- N <- CalibMargin <- PopMargin <- epsP <- epsH <- maxFac <- NULL
   
   if (any(names(av) == "conP")) {
     formula_name <- as.character(av$formP[[1]])[2]
