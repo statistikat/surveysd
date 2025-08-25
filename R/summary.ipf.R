@@ -17,7 +17,7 @@
 ipf_summary_calibres <- function(ipf_result, av) {
   
   # 1. INITIAL SETUP
-  calibWeightName <- wg <- N <- CalibMargin <- PopMargin <- epsP <- epsH <- maxFac <- NULL
+  . <- calibWeightName <- wg <- N <- CalibMargin <- PopMargin <- epsP <- epsH <- maxFac <- NULL
   
   if (any(names(av) == "conP")) {
     formula_name <- as.character(av$formP[[1]])[2]
