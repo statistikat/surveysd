@@ -34,6 +34,7 @@ reference:
     - cpp_mean
     - computeLinear
     - summary.ipf
+    - print.summary.ipf
 
 development:
   mode: release
