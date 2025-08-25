@@ -120,20 +120,13 @@ household level).</p>
 <code class="sourceCode R"><span><span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span>,</span>
 <span>                          epsP <span class="op">=</span> <span class="fl">1e-2</span>, epsH <span class="op">=</span> <span class="fl">2.5e-2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">dat_boot_calib</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu">.</span><span class="op">(</span><span class="va">year</span>, <span class="va">povertyRisk</span>, <span class="va">gender</span>, <span class="va">pWeight</span>, <span class="va">w1</span>, <span class="va">w2</span>, <span class="va">w3</span>, <span class="va">w4</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##     year povertyRisk gender  pWeight       w1           w2        w3</span></span>
-<span><span class="co">##    &lt;num&gt;      &lt;lgcl&gt; &lt;fctr&gt;    &lt;num&gt;    &lt;num&gt;        &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010       FALSE female 504.5696 999.9857    0.4547979 0.4486785</span></span>
-<span><span class="co">## 2:  2010       FALSE   male 504.5696 999.9857    0.4547979 0.4486785</span></span>
-<span><span class="co">## 3:  2010       FALSE   male 504.5696 999.9857    0.4547979 0.4486785</span></span>
-<span><span class="co">## 4:  2010       FALSE female 493.3824 976.5142 1000.1243659 0.4387304</span></span>
-<span><span class="co">## 5:  2010       FALSE   male 493.3824 976.5142 1000.1243659 0.4387304</span></span>
-<span><span class="co">##              w4</span></span>
-<span><span class="co">##           &lt;num&gt;</span></span>
-<span><span class="co">## 1: 1008.6905620</span></span>
-<span><span class="co">## 2: 1008.6905620</span></span>
-<span><span class="co">## 3: 1008.6905620</span></span>
-<span><span class="co">## 4:    0.4387304</span></span>
-<span><span class="co">## 5:    0.4387304</span></span></code></pre>
+<pre><code><span><span class="co">##     year povertyRisk gender  pWeight       w1        w2        w3          w4</span></span>
+<span><span class="co">##    &lt;num&gt;      &lt;lgcl&gt; &lt;fctr&gt;    &lt;num&gt;    &lt;num&gt;     &lt;num&gt;     &lt;num&gt;       &lt;num&gt;</span></span>
+<span><span class="co">## 1:  2010       FALSE female 504.5696 1012.751 1000.9546 1017.7194   0.4486785</span></span>
+<span><span class="co">## 2:  2010       FALSE   male 504.5696 1012.751 1000.9546 1017.7194   0.4486785</span></span>
+<span><span class="co">## 3:  2010       FALSE   male 504.5696 1012.751 1000.9546 1017.7194   0.4486785</span></span>
+<span><span class="co">## 4:  2010       FALSE female 493.3824  991.835  977.1554  994.7312 986.3259754</span></span>
+<span><span class="co">## 5:  2010       FALSE   male 493.3824  991.835  977.1554  994.7312 986.3259754</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="estimate-with-respect-to-a-grouping-variable">Estimate with respect to a grouping variable<a class="anchor" aria-label="anchor" href="#estimate-with-respect-to-a-grouping-variable"></a>
@@ -146,12 +139,12 @@ household level).</p>
 <pre><code><span><span class="co">## Key: &lt;year, n, N, gender, estimate_type&gt;</span></span>
 <span><span class="co">##     year     n       N gender estimate_type val_povertyRisk stE_povertyRisk</span></span>
 <span><span class="co">##    &lt;num&gt; &lt;int&gt;   &lt;num&gt; &lt;fctr&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">## 1:  2010  7267 3979572   male        direct        12.02660       0.5341340</span></span>
-<span><span class="co">## 2:  2010  7560 4202650 female        direct        16.73351       0.6908160</span></span>
-<span><span class="co">## 3:  2010 14827 8182222   &lt;NA&gt;        direct        14.44422       0.5625953</span></span>
-<span><span class="co">## 4:  2011  7267 3979572   male        direct        12.81921       0.4617005</span></span>
-<span><span class="co">## 5:  2011  7560 4202650 female        direct        16.62488       0.7611958</span></span>
-<span><span class="co">## 6:  2011 14827 8182222   &lt;NA&gt;        direct        14.77393       0.5731397</span></span></code></pre>
+<span><span class="co">## 1:  2010  7267 3979572   male        direct        12.02660       0.4322361</span></span>
+<span><span class="co">## 2:  2010  7560 4202650 female        direct        16.73351       0.6491033</span></span>
+<span><span class="co">## 3:  2010 14827 8182222   &lt;NA&gt;        direct        14.44422       0.4834113</span></span>
+<span><span class="co">## 4:  2011  7267 3979572   male        direct        12.81921       0.4561002</span></span>
+<span><span class="co">## 5:  2011  7560 4202650 female        direct        16.62488       0.5526392</span></span>
+<span><span class="co">## 6:  2011 14827 8182222   &lt;NA&gt;        direct        14.77393       0.4119640</span></span></code></pre>
 <p>The output contains estimates (<code>val_povertyRisk</code>) as well
 as standard errors (<code>stE_povertyRisk</code>) measured in percent.
 The rows with <code>gender = NA</code> denotes the aggregate over all
@@ -178,12 +171,12 @@ both.</p>
 <span><span class="co">## 6:  2010   484 282307.3 female   Salzburg        direct       17.939382</span></span>
 <span><span class="co">##    stE_povertyRisk</span></span>
 <span><span class="co">##              &lt;num&gt;</span></span>
-<span><span class="co">## 1:        2.556968</span></span>
-<span><span class="co">## 2:        1.855550</span></span>
-<span><span class="co">## 3:        2.196601</span></span>
-<span><span class="co">## 4:        2.136676</span></span>
-<span><span class="co">## 5:        1.452777</span></span>
-<span><span class="co">## 6:        2.091627</span></span></code></pre>
+<span><span class="co">## 1:        2.741725</span></span>
+<span><span class="co">## 2:        2.780299</span></span>
+<span><span class="co">## 3:        1.942390</span></span>
+<span><span class="co">## 4:        3.242969</span></span>
+<span><span class="co">## 5:        1.714206</span></span>
+<span><span class="co">## 6:        1.431476</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## skipping 54 more rows</span></span></code></pre></div>
 </div>
