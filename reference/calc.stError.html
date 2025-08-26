@@ -15,7 +15,7 @@ results in a reduction of the standard error."><meta property="og:image" content
 
     <a class="navbar-brand me-2" href="../index.html">surveysd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -361,9 +361,9 @@ standard error \(\sigma\).</p>
 <span class="r-in"><span><span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="draw.bootstrap.html">draw.bootstrap</a></span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">3</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span></span>
 <span class="r-in"><span>                           strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 3 steps</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 2 steps</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 3 steps</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 2 steps</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
@@ -376,10 +376,10 @@ standard error \(\sigma\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;year, n, N, estimate_type&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  2010 14827 8182222        direct        14.44422      0.38120278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  2011 14827 8182222        direct        14.77393      0.19014741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  2012 14827 8182222        direct        15.04515      0.30984499</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  2013 14827 8182222        direct        14.89013      0.09470123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  2010 14827 8182222        direct        14.44422       0.2424686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  2011 14827 8182222        direct        14.77393       0.4938574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  2012 14827 8182222        direct        15.04515       0.7151242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  2013 14827 8182222        direct        14.89013       0.5502622</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate weightedRatio for povertyRisk and fraction of one-person</span></span></span>
 <span class="r-in"><span><span class="co"># households per period</span></span></span>
@@ -426,46 +426,46 @@ standard error \(\sigma\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 59308:    0.0    0.00      0      0   0.00      0      0      0   1.5 24680.877</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           db090  pWeight  year povertyRisk           w1           w2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;    &lt;num&gt; &lt;num&gt;      &lt;lgcl&gt;        &lt;num&gt;        &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1: 504.5696 504.5696  2010       FALSE  996.7220127 1004.5905029</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2: 504.5696 504.5696  2010       FALSE  996.7220127 1004.5905029</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3: 504.5696 504.5696  2010       FALSE  996.7220127 1004.5905029</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4: 493.3824 493.3824  2010       FALSE  970.4064272  983.5696923</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5: 493.3824 493.3824  2010       FALSE  970.4064272  983.5696923</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1: 504.5696 504.5696  2010       FALSE 1010.0367917 1019.8653190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2: 504.5696 504.5696  2010       FALSE 1010.0367917 1019.8653190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3: 504.5696 504.5696  2010       FALSE 1010.0367917 1019.8653190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4: 493.3824 493.3824  2010       FALSE    0.4391042    0.4432897</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5: 493.3824 493.3824  2010       FALSE    0.4391042    0.4432897</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59304: 556.4260 556.4260  2013       FALSE    0.9686900    0.9821049</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59305: 643.2557 643.2557  2013        TRUE 1298.8886416    0.6094867</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59306: 679.7288 679.7288  2013       FALSE    0.6002560    0.6066118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59307: 567.1544 567.1544  2013       FALSE    0.5061777    0.5066514</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59308: 567.1544 567.1544  2013       FALSE    0.5061777    0.5066514</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59304: 556.4260 556.4260  2013       FALSE 1118.2920196 1117.0181229</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59305: 643.2557 643.2557  2013        TRUE    0.6098719 1307.6692487</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59306: 679.7288 679.7288  2013       FALSE    0.6065684 1344.5191954</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59307: 567.1544 567.1544  2013       FALSE 1139.3411452    0.5048718</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59308: 567.1544 567.1544  2013       FALSE 1139.3411452    0.5048718</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  w3 onePerson</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;num&gt;    &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1: 1011.8736598     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2: 1011.8736598     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3: 1011.8736598     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:    0.4398594     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:    0.4398594     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1: 1003.5115657     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2: 1003.5115657     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3: 1003.5115657     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:    0.4368103     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:    0.4368103     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59304: 1114.5042887     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59305:    0.6105825      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59306:    0.6017452      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59307: 1135.4821194     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59308: 1135.4821194     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59304:    0.9747311     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59305:    0.6045009      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59306:    0.6024658      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59307: 1130.4695823     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59308: 1130.4695823     FALSE</span>
 <span class="r-in"><span><span class="va">err.est</span> <span class="op">&lt;-</span> <span class="fu">calc.stError</span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"povertyRisk"</span>, <span class="st">"onePerson"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                        fun <span class="op">=</span> <span class="va">weightedRatio</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">err.est</span><span class="op">$</span><span class="va">Estimates</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;year, n, N, estimate_type&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     year     n       N estimate_type val_povertyRisk stE_povertyRisk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;num&gt; &lt;int&gt;   &lt;num&gt;        &lt;char&gt;           &lt;num&gt;           &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  2010 14827 8182222        direct        14.44422       0.4012011</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  2011 14827 8182222        direct        14.77393       0.3585430</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  2012 14827 8182222        direct        15.04515       0.3213391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  2013 14827 8182222        direct        14.89013       0.4147207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  2010 14827 8182222        direct        14.44422       0.3310333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  2011 14827 8182222        direct        14.77393       0.3612276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  2012 14827 8182222        direct        15.04515       0.4772911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  2013 14827 8182222        direct        14.89013       0.5019817</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    val_onePerson stE_onePerson</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;num&gt;         &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      14.85737     0.4012011</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      14.85737     0.3585430</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      14.85737     0.3213391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      14.85737     0.4147207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      14.85737     0.3310333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      14.85737     0.3612276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      14.85737     0.4772911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      14.85737     0.5019817</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># estimate weightedRatio for povertyRisk per period and gender and</span></span></span>
@@ -565,90 +565,90 @@ standard error \(\sigma\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      year     n         N gender        region estimate_type val_povertyRisk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     stE_povertyRisk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:      2.86149400</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      1.55157299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:      0.86890963</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      1.78675242</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      0.51627338</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      0.85316471</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      1.95859553</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      1.65354380</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      0.32232663</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      0.53718864</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      0.37161820</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      1.49489127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      0.68565616</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      0.15916206</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      0.50975496</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      0.84913956</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      1.02763560</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:      0.29354711</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:      0.47050146</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:      0.28947897</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:      0.38120278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:      1.41888045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:      1.59041359</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:      1.53923444</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:      2.75694405</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:      1.27589831</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:      2.65577355</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:      2.75363759</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:      2.94485738</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:      0.42752314</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:      0.86094500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:      0.50359740</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:      0.08835137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:      1.16159969</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:      0.10227701</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:      1.72171420</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:      1.11214389</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:      1.07817667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:      0.76631868</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:      0.29607002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:      0.26065638</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:      0.19014741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43:      2.30071341</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44:      2.40310648</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45:      3.29660339</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46:      4.36726352</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47:      1.55519391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48:      1.94497119</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49:      1.31631872</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50:      0.79266015</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51:      1.11959282</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52:      0.45353712</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53:      0.56232549</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54:      1.18846281</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55:      1.33474095</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56:      0.79250745</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57:      1.79774674</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58:      0.90887444</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59:      1.15652153</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60:      2.12851702</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61:      0.23572799</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62:      0.41394705</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63:      0.30984499</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64:      0.98306733</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65:      2.13387053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66:      1.68385441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67:      4.36092118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68:      0.68745408</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69:      1.37030300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70:      1.38918200</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71:      0.34657443</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72:      2.81716635</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73:      2.57103122</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74:      0.63916672</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75:      0.74296241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76:      0.99185072</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77:      1.21376418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78:      1.14922595</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79:      0.74007998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80:      1.83908799</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81:      0.80810833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82:      0.21231248</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83:      0.04199429</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84:      0.09470123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       0.3636587</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       2.9344265</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       1.9707942</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       2.2973120</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       0.8505477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       2.7163711</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       3.2077841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       3.3161077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       2.5542453</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       2.0821510</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:       1.9022381</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:       1.4189007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:       2.0974064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:       1.3507311</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:       1.1404179</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:       0.6306523</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:       0.9759974</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:       0.9076112</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:       0.2217247</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:       0.4380536</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:       0.2424686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:       2.8674415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:       1.3695907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:       0.9522285</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:       2.9367308</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:       0.9499316</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:       1.9669503</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:       3.2197435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:       3.0794463</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:       1.2407275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:       0.8690269</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:       2.0977648</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:       1.3615681</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:       1.7508168</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:       1.7919056</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:       2.0762980</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:       0.8156563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:       0.5815993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:       1.1081313</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:       0.3319115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:       0.6300760</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42:       0.4938574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43:       2.9316474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44:       0.3987781</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45:       1.7784132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46:       1.8701760</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47:       1.5245010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48:       1.6631447</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49:       1.8815040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50:       1.5917511</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51:       1.1872442</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52:       0.9508647</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53:       1.9170521</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54:       1.1759496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55:       1.8775838</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56:       0.7922573</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57:       2.2133510</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58:       0.8859085</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59:       0.9029416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60:       0.7983439</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61:       0.6321314</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62:       0.7995905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63:       0.7151242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64:       1.0166289</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65:       1.8203535</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66:       2.7975517</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67:       4.1925544</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68:       0.1851418</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69:       0.4842811</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70:       0.8912344</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71:       0.9810135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72:       1.0089876</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73:       1.1222991</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74:       1.6176943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75:       1.3570803</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76:       0.9579322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77:       2.1858612</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78:       1.5189821</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79:       0.7139385</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80:       0.5761457</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81:       0.5028099</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82:       0.5561538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83:       0.5441841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84:       0.5502622</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     stE_povertyRisk</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># use average over 3 periods for standard error estimation</span></span></span>
@@ -673,14 +673,14 @@ standard error \(\sigma\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8:           2013 14827 8182222                             direct</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    val_povertyRisk stE_povertyRisk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;num&gt;           &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      14.4442182      0.38120278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      14.7544308      0.28396603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      14.7739255      0.19014741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      14.9030692      0.15654018</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      15.0451487      0.30984499</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       0.2712233      0.14150531</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:       0.1486385      0.15179557</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8:      14.8901335      0.09470123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      14.4442182       0.2424686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      14.7544308       0.4717391</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      14.7739255       0.4938574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      14.9030692       0.5706585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      15.0451487       0.7151242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       0.2712233       0.3207665</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:       0.1486385       0.1347625</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8:      14.8901335       0.5502622</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># for more examples see https://statistikat.github.io/surveysd/articles/error_estimation.html</span></span></span>
 <span class="r-in"><span></span></span>

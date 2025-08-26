@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">surveysd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,36 @@
       <small>Source: <a href="https://github.com/statistikat/surveysd/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.0.0" id="surveysd-200">surveysd 2.0.0<a class="anchor" aria-label="anchor" href="#surveysd-200"></a></h2>
+<ul><li><p>Fixed issue if parameter <code>period</code> was type <code>haven::labelled</code> in <code><a href="../reference/calc.stError.html">calc.stError()</a></code>.</p></li>
+<li><p>Refactored code to make use of new <code>data.table</code> variable <code>env</code>. Makes code more readable and stable.</p></li>
+<li>
+<p><code><a href="../reference/calc.stError.html">calc.stError()</a></code> has new parameter <code>group.diff</code>. If <code>group.diff=TRUE</code> differences between values defined in <code>group</code> will also be calculated. For instance</p>
+<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statistikat/surveysd" class="external-link">surveysd</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">4</span>,prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.bootstrap.html">draw.bootstrap</a></span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">3</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span>
+<span>                           strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># estimate weightedRatio for povertyRisk per period</span></span>
+<span><span class="va">err.est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc.stError.html">calc.stError</a></span><span class="op">(</span><span class="va">dat_boot_calib</span>, var <span class="op">=</span> <span class="st">"povertyRisk"</span>,</span>
+<span>                        fun <span class="op">=</span> <span class="va">weightedRatio</span>, group <span class="op">=</span> <span class="st">"gender"</span>,</span>
+<span>                        group.diff <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
+<p>will produce difference in poverty rate between <code>male</code> and <code>female</code>, in addition to other estimates.</p>
+</li>
+<li><p>Updated <a href="https://statistikat.github.io/surveysd/articles/error_estimation.html">vignette</a> accordingly.</p></li>
+<li><p>Fixed bug with parameter <code>adjust.var</code> and <code>fun.adjust.var</code> in function <code><a href="../reference/calc.stError.html">calc.stError()</a></code>.</p></li>
+<li><p>Changed parameter <code>national</code> to <code>relative.share</code> in <code><a href="../reference/calc.stError.html">calc.stError()</a></code> included a <code>deprecate</code>-message if <code>national = TRUE</code> is supplied.<br></p></li>
+<li><p>Fixed issue with parameter <code>looseH</code> in function <code><a href="../reference/ipf.html">ipf()</a></code>.</p></li>
+<li><p>Fixed bug that variables names created by internal functions where not properly cleaned up before returning <code>data.table</code> output.</p></li>
+<li><p>Improved <code><a href="../reference/summary.ipf.html">summary.ipf()</a></code> and included <code><a href="../reference/print.summary.ipf.html">print.summary.ipf()</a></code> in order to make the output of <code><a href="../reference/ipf.html">ipf()</a></code> as well as convergence issues when using <code><a href="../reference/ipf.html">ipf()</a></code> more intuitive.</p></li>
+<li><p>New parameter <code>method</code> in <code><a href="../reference/draw.bootstrap.html">draw.bootstrap()</a></code> and <code><a href="../reference/rescaled.bootstrap.html">rescaled.bootstrap()</a></code>. Can bei either <code>"Preston"</code> or <code>"Rao-Wu"</code>, see <code>?draw.bootstrap()</code> or the new <a href="https://statistikat.github.io/surveysd/articles/raowu.html">vignette</a>.</p></li>
+<li><p><code><a href="../reference/draw.bootstrap.html">draw.bootstrap()</a></code> can now be used to draw bootstrap replicates if bootstrap replicates where drawn for previous year with parameter <code>already.selected</code>. <code>already.selected</code> expects a list of <code>data.table</code>s indicating if a record was already included in a bootstrap replicates in the previous <code>period</code></p></li>
+<li><p>New function <code><a href="../reference/get.selection.html">get.selection()</a></code> to create input for parameter <code>already.selected</code> in <code><a href="../reference/draw.bootstrap.html">draw.bootstrap()</a></code>.</p></li>
+<li><p>Updated and included (more) unit tests.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.2" id="surveysd-132">surveysd 1.3.2<a class="anchor" aria-label="anchor" href="#surveysd-132"></a></h2>
 <ul><li>
