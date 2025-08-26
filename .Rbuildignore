@@ -11,3 +11,4 @@ pkgdown
 ^docs$
 ^pkgdown$
 ^\.github$ 
+.github

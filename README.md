@@ -2,7 +2,7 @@
 # surveysd <img src="man/figures/logo.png" align="right" alt="" />
 
 [![Travis build
-status](https://img.shields.io/travis/statistikat/surveysd.svg?logo=travis)](https://travis-ci.org/statistikat/surveysd)
+status](https://img.shields.io/travis/statistikat/surveysd.svg?logo=travis)](https://app.travis-ci.com/statistikat/surveysd)
 [![Coverage
 Status](https://img.shields.io/coveralls/github/statistikat/surveysd.svg?colorB=red&logo=codecov)](https://coveralls.io/github/statistikat/surveysd?branch=master)
 [![Lifecycle:
@@ -13,6 +13,7 @@ commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg?logo=
 bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd)
 [![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
 [![CRAN](https://img.shields.io/cran/v/surveysd.svg?colorB=green&logo=R&logoColor=blue&label=CRAN)](https://CRAN.R-project.org/package=surveysd)
+[![R-CMD-check](https://github.com/statistikat/surveysd/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/statistikat/surveysd/actions/workflows/R-CMD-check.yaml)
 
 [![Mentioned in Awesome Official
 Statistics](https://awesome.re/mentioned-badge.svg)](https://github.com/SNStatComp/awesome-official-statistics-software)
@@ -44,22 +45,22 @@ A typical workflow with this package consists of three steps. To see
 these concepts in practice, please refer to the [getting started
 vignette](https://statistikat.github.io/surveysd/articles/surveysd.html).
 
-  - Calibrated weights can be generated with the function `ipf()` using
-    an iterative proportional updating algorithm.
-  - Bootstrap samples are drawn with rescaled bootstrapping in the
-    function `draw.bootstrap()`.
-  - These samples can then be calibrated with an iterative proportional
-    updating algorithm using `recalib()`.
-  - Finally, estimation functions can be applied over all bootstrap
-    replicates with `calc.stError()`.
+- Calibrated weights can be generated with the function `ipf()` using an
+  iterative proportional updating algorithm.
+- Bootstrap samples are drawn with rescaled bootstrapping in the
+  function `draw.bootstrap()`.
+- These samples can then be calibrated with an iterative proportional
+  updating algorithm using `recalib()`.
+- Finally, estimation functions can be applied over all bootstrap
+  replicates with `calc.stError()`.
 
 ## Further reading
 
 More information can be found on the [github-pages
 site](https://statistikat.github.io/surveysd/) for surveysd.
 
-  - The methodology is covered in the [methodology
-    vignette](https://statistikat.github.io/surveysd/articles/methodology.html).
-  - A more comprehensive documentation of `calc.stError()` is available
-    in the [error estimation
-    vignette](https://statistikat.github.io/surveysd/articles/error_estimation.html).
+- The methodology is covered in the [methodology
+  vignette](https://statistikat.github.io/surveysd/articles/methodology.html).
+- A more comprehensive documentation of `calc.stError()` is available in
+  the [error estimation
+  vignette](https://statistikat.github.io/surveysd/articles/error_estimation.html).

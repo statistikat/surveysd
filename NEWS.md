@@ -1,3 +1,35 @@
+# surveysd 2.0.0
+* Fixed issue if parameter `period` was type `haven::labelled` in `calc.stError()`.
+* Refactored code to make use of new `data.table` variable `env`. Makes code more readable and stable.
+* `calc.stError()` has new parameter `group.diff`. If `group.diff=TRUE` differences between values defined in `group` will also be calculated. For instance 
+
+  ```
+  library(surveysd)
+  set.seed(1234)
+  eusilc <- demo.eusilc(n = 4,prettyNames = TRUE)
+  dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
+                             strata = "region", period = "year")
+  dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
+  
+  # estimate weightedRatio for povertyRisk per period
+  err.est <- calc.stError(dat_boot_calib, var = "povertyRisk",
+                          fun = weightedRatio, group = "gender",
+                          group.diff = TRUE)
+  ```
+
+  will produce difference in poverty rate between `male` and `female`, in addition to other estimates.
+* Updated [vignette](https://statistikat.github.io/surveysd/articles/error_estimation.html) accordingly.
+* Fixed bug with parameter `adjust.var` and `fun.adjust.var` in function `calc.stError()`.
+* Changed parameter `national` to `relative.share` in `calc.stError()` included a `deprecate`-message if `national = TRUE` is supplied.  
+* Fixed issue with parameter `looseH` in function `ipf()`.
+* Fixed bug that variables names created by internal functions where not properly cleaned up before returning `data.table` output.
+* Improved `summary.ipf()` and included `print.summary.ipf()` in order to make the output of `ipf()` as well as convergence issues when using `ipf()` more intuitive.
+* New parameter `method` in `draw.bootstrap()` and `rescaled.bootstrap()`. Can bei either `"Preston"` or `"Rao-Wu"`, see `?draw.bootstrap()` or the new [vignette](https://statistikat.github.io/surveysd/articles/raowu.html). 
+* `draw.bootstrap()` can now be used to draw bootstrap replicates if bootstrap replicates where drawn for previous year with parameter `already.selected`. `already.selected` expects a list of `data.table`s indicating if a record was already included in a bootstrap replicates in the previous `period`
+* New function `get.selection()` to create input for parameter `already.selected` in `draw.bootstrap()`.
+* Updated and included (more) unit tests.
+
+
 # surveysd 1.3.2
 
 * `rescaled.bootstrap()` has additional parameter `period` which is identical to the one in `draw.bootstrap`. If `period` is not `NULL` the boostraps will be drawn such that in each period and strata/cluster only $\floor{\frac{n}{2}}$ records are drawn. This produces more consisten results and should make calibration afterwards easier.
