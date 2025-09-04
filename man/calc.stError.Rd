@@ -24,8 +24,7 @@ calc.stError(
   cv.limit = 10,
   p = NULL,
   add.arg = NULL,
-  national = FALSE,
-  new_method = TRUE
+  national = FALSE
 )
 }
 \arguments{
@@ -104,8 +103,6 @@ examples.}
 
 \item{national}{DEPRECATED use \code{relative.share} instead! boolean, if TRUE point estimates resulting from fun will be
 divided by the point estimate at the national level.}
-
-\item{new_method}{used for testing new implementation; will be removed with new release.}
 }
 \value{
 Returns a list containing:

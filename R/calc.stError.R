@@ -65,8 +65,7 @@
 #'   examples.
 #' @param national DEPRECATED use `relative.share` instead! boolean, if TRUE point estimates resulting from fun will be
 #'   divided by the point estimate at the national level.
-#' @param new_method used for testing new implementation; will be removed with new release.
-
+#'
 #' @details `calc.stError` takes survey data (`dat`) and returns point estimates
 #' as well as their standard Errors defined by `fun` and `var` for each sample
 #' period in `dat`. `dat` must be household data where household members
@@ -279,7 +278,7 @@ calc.stError <- function(
     group = NULL, group.diff = FALSE, fun.adjust.var = NULL, adjust.var = NULL,
     period.diff = NULL, period.mean = NULL, bias = FALSE, 
     size.limit = 20, cv.limit = 10, p = NULL,
-    add.arg = NULL, national = FALSE, new_method = TRUE) {
+    add.arg = NULL, national = FALSE) {
   
   stE_high <- stE <- val <- as.formula <- est_type <- n_inc <-
     stE_roll <- n <- size <- est <- estimate_type <- NULL
@@ -789,14 +788,14 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
           unique(na.omit(l))
         }
       )
+      roll.miss[[name_weights]] <- c(weights, b.weights)
       roll.est <- data.table(expand.grid(roll.miss))
       
-      if (nrow(roll.est) > nrow(var.est)) {
-        var.est <- merge(roll.est, var.est, by = c(by.eval),
+      if (nrow(roll.est) > nrow(unique(var.est, by=c(name_var, period, z, name_weights)))) {
+        var.est <- merge(roll.est, var.est, by = c(name_var, period, z, name_weights),
                          all.x = TRUE)
         setkeyv(var.est, period)
-        var.est[is.na(V1), N := 0]
-        var.est[is.na(V1), n := 0]
+        var.est[is.na(var_est), c("N","n") := .(0, 0), env = list(var_est = var_est)]
       }
     }
     
@@ -908,7 +907,7 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
     if(group.diff == TRUE & length(z)>0){
       var.est <- rbind(var.est, diff.group.est, fill = TRUE, ignore.attr=TRUE)
     }
-    
+    var.est <- var.est[n>0] # ~ groups without any observations in them are discarded 
     
     # ----------------------------------
     # specify small groups
@@ -916,7 +915,7 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
     
     var.est.small <- var.est[help_direct_estimate == TRUE & N < size.limit]
     if (nrow(var.est.small) > 0) {
-      small.group <- var.est.small[, .SD, .SDcols=c(period, z)]
+      small.group <- unique(var.est.small[, .SD, .SDcols=c(period, z)])
       cat(paste0("For grouping by ", paste(c(period, z), collapse = "~"),
                  ": \n"))
       if (nrow(var.est.small[N < size.limit]) > 10) {
