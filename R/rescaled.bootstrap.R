@@ -121,7 +121,7 @@ rescaled.bootstrap <- function(
   
   InitialOrder <- N <- SINGLE_BOOT_FLAG <- SINGLE_BOOT_FLAG_FINAL <- f <-
     n_prev <- n_draw_prev <- sum_prev <- n_draw <- strata_i <- 
-    V1 <- fpc_i <- . <- new.var_col <- new_var <- NULL  
+    V1 <- fpc_i <- . <- new.var_col <- new.var <- NULL  
   
   dat <- copy(dat)
   method <- method[1]
@@ -223,7 +223,7 @@ rescaled.bootstrap <- function(
     if (any(!return.value %in% c("data", "replicates", "selection"))) {
       stop("return.value can only take the values 'data', 'replicates' or 'selection'")
     }
-    
+
     # check single.PSU
     if (is.null(single.PSU) || !single.PSU %in% c("merge", "mean")) {
       warning("single.PSU was not set to either 'merge' or 'mean'!\n Bootstrap",
@@ -306,7 +306,7 @@ rescaled.bootstrap <- function(
                               clust.val = clust.val)]
     singles <- singles[V1==1]
     if (nrow(singles) > 0) {
-      higher.stages <- c(strata[1:(i - 1)], cluster[1:(i - 1)])
+      higher.stages <- c(head(strata,i-1), head(cluster,i-1))
       by.val.tail <- tail(by.val,1)
       firstStage <- length(higher.stages) == 0
       if (firstStage) {
@@ -319,12 +319,12 @@ rescaled.bootstrap <- function(
       if (method == "Preston") {
         if (single.PSU == "merge") { # strata with only one PSU are merged with the nearest smaller stratum to avoid issues in the bootstrap procedure.
           
-          if (return.value == "data") {
+          if ("data" %in% return.value) {
             by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
             fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
             
-            set(dat, i = by.val.orig, value = dat[[by.val.tail]])
-            set(dat, i = fpc_orig, value = dat[[fpc[i]]])
+            set(dat, j = by.val.orig, value = dat[[by.val.tail]])
+            set(dat, j = fpc_orig, value = dat[[fpc[i]]])
           }
           
           setkeyv(dat, higher.stages)
@@ -343,11 +343,11 @@ rescaled.bootstrap <- function(
           if(any(is.na(next.PSU[[new.var]]))){
             if(firstStage){
               next.PSU[is.na(new.var_col), c(new.var) := head(higher.stages, 1),      
-                       env = list(new.var_col = new_var,
+                       env = list(new.var_col = new.var,
                                   higher.stages = higher.stages)]
             }else{
               next.PSU[is.na(new.var_col), c(new.var) := head(by.val.tail,1),      
-                       env = list(new.var_col = new_var,
+                       env = list(new.var_col = new.var,
                                   by.val.tail = by.val.tail)]
             }
           }
@@ -362,7 +362,7 @@ rescaled.bootstrap <- function(
           # sum over margins
           fpc.i_ADD <- paste0(fpc[i], "_ADD")
           dat[!is.na(new.var), c(fpc.i_ADD) := 
-                sum(fpc_i[!duplicated(by.val.tail)]), by = c(new.var),
+                sum(fpc_i[!duplicated(by.val.tail)]), by = .(new.var),
               env = list(new.var = new.var,
                          fpc_i = fpc[i],
                          by.val.tail = by.val.tail)]
@@ -370,7 +370,7 @@ rescaled.bootstrap <- function(
           # assign to new group
           dat[!is.na(new.var), c(by.val.tail) := new.var, 
               env = list(new.var = new.var)]
-          dat[ c(fpc[i]) := fpc_i[is.na(new.var)][1], by=c(by.val),
+          dat[ ,c(fpc[i]) := fpc_i[is.na(new.var)][1], by=c(by.val),
                env = list(new.var = new.var)]
           dat[!is.na(new.var), c(fpc[i]) := fpc.i_ADD,
               env = list(new.var = new.var,
@@ -406,12 +406,12 @@ rescaled.bootstrap <- function(
       } else if (method == "Rao-Wu") {
         if (single.PSU == "merge") {
           
-          if (return.value == "data") {
+          if ("data" %in% return.value) {
             by.val.orig <- paste0(by.val.tail, "_ORIGINALSINGLES")
             fpc_orig <- paste0(fpc[i], "_ORIGINALSINGLES")
             
-            set(dat, i = by.val.orig, value = dat[[by.val.tail]])
-            set(dat, i = fpc_orig, value = dat[[fpc[i]]])
+            set(dat, j = by.val.orig, value = dat[[by.val.tail]])
+            set(dat, j = fpc_orig, value = dat[[fpc[i]]])
           }
           
           setkeyv(dat, higher.stages)
@@ -430,11 +430,11 @@ rescaled.bootstrap <- function(
           if(any(is.na(next.PSU[[new.var]]))){
             if(firstStage){
               next.PSU[is.na(new.var_col), c(new.var) := head(higher.stages, 1),
-                       env = list(new.var_col = new_var,
+                       env = list(new.var_col = new.var,
                                   higher.stages = higher.stages)]
             }else{
               next.PSU[is.na(new.var_col), c(new.var) := head(by.val.tail,1),
-                       env = list(new.var_col = new_var,
+                       env = list(new.var_col = new.var,
                                   by.val.tail = by.val.tail)]
             }
           }
