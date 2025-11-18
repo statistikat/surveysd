@@ -1,0 +1,154 @@
+# surveysd
+
+[![Travis build
+status](https://img.shields.io/travis/statistikat/surveysd.svg?logo=travis)](https://app.travis-ci.com/statistikat/surveysd)
+[![Coverage
+Status](https://img.shields.io/coveralls/github/statistikat/surveysd.svg?colorB=red&logo=codecov)](https://coveralls.io/github/statistikat/surveysd?branch=master)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-maturing-blue.svg?logo=github)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![GitHub last
+commit](https://img.shields.io/github/last-commit/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd/commits/master)
+[![GitHub code size in
+bytes](https://img.shields.io/github/languages/code-size/statistikat/surveysd.svg?logo=github)](https://github.com/statistikat/surveysd)
+[![Downloads](http://cranlogs.r-pkg.org/badges/surveysd)](https://CRAN.R-project.org/package=surveysd)
+[![CRAN](https://img.shields.io/cran/v/surveysd.svg?colorB=green&logo=R&logoColor=blue&label=CRAN)](https://CRAN.R-project.org/package=surveysd)
+[![R-CMD-check](https://github.com/statistikat/surveysd/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/statistikat/surveysd/actions/workflows/R-CMD-check.yaml)
+
+[![Mentioned in Awesome Official
+Statistics](https://awesome.re/mentioned-badge.svg)](https://github.com/SNStatComp/awesome-official-statistics-software)
+
+This is the development place for the R-package `surveysd`. The package
+can be used to estimate the standard deviation of estimates in complex
+surveys using bootstrap weights.
+
+## Installation
+
+``` r
+# Install release version from CRAN
+install.packages("surveysd")
+
+# Install development version from GitHub
+devtools::install_github("statistikat/surveysd")
+```
+
+## Concept
+
+Bootstrapping has long been around and used widely to estimate
+confidence intervals and standard errors of point estimates. This
+package aims to combine all necessary steps for applying a calibrated
+bootstrapping procedure with custom estimating functions.
+
+## Workflow
+
+A typical workflow with this package consists of three steps. To see
+these concepts in practice, please refer to the [getting started
+vignette](https://statistikat.github.io/surveysd/articles/surveysd.html).
+
+- Calibrated weights can be generated with the function
+  [`ipf()`](https://statistikat.github.io/surveysd/reference/ipf.md)
+  using an iterative proportional updating algorithm.
+- Bootstrap samples are drawn with rescaled bootstrapping in the
+  function
+  [`draw.bootstrap()`](https://statistikat.github.io/surveysd/reference/draw.bootstrap.md).
+- These samples can then be calibrated with an iterative proportional
+  updating algorithm using
+  [`recalib()`](https://statistikat.github.io/surveysd/reference/recalib.md).
+- Finally, estimation functions can be applied over all bootstrap
+  replicates with
+  [`calc.stError()`](https://statistikat.github.io/surveysd/reference/calc.stError.md).
+
+## Further reading
+
+More information can be found on the [github-pages
+site](https://statistikat.github.io/surveysd/) for surveysd.
+
+- The methodology is covered in the [methodology
+  vignette](https://statistikat.github.io/surveysd/articles/methodology.html).
+- A more comprehensive documentation of
+  [`calc.stError()`](https://statistikat.github.io/surveysd/reference/calc.stError.md)
+  is available in the [error estimation
+  vignette](https://statistikat.github.io/surveysd/articles/error_estimation.html).
+
+# Package index
+
+## data import
+
+- [`demo.eusilc()`](https://statistikat.github.io/surveysd/reference/demo.eusilc.md)
+  : Generate multiple years of EU-SILC data
+
+## bootstrapping and calibration
+
+Functions to draw bootstrap samples and calibrate each sample accoring
+to population totals. The methods used in these function relate to a
+rescaled bootstrap as described in
+[`vignette("methodology")`](https://statistikat.github.io/surveysd/articles/methodology.md).
+
+- [`ipf()`](https://statistikat.github.io/surveysd/reference/ipf.md) :
+  Iterative Proportional Fitting
+- [`draw.bootstrap()`](https://statistikat.github.io/surveysd/reference/draw.bootstrap.md)
+  : Draw bootstrap replicates
+- [`rescaled.bootstrap()`](https://statistikat.github.io/surveysd/reference/rescaled.bootstrap.md)
+  : Draw bootstrap replicates
+- [`generate.HHID()`](https://statistikat.github.io/surveysd/reference/generate.HHID.md)
+  : Generate new houshold ID for survey data with rotating panel design
+  taking into account split households
+- [`get.selection()`](https://statistikat.github.io/surveysd/reference/get.selection.md)
+  : Get sample selection (~deltas) from drawn bootstrap replicates
+- [`recalib()`](https://statistikat.github.io/surveysd/reference/recalib.md)
+  : Calibrate weights
+
+## estimation of standard errors
+
+Apply estimators to each sample to generate standard errors as well as
+confidence intervals. See
+[`vignette("error_estimation")`](https://statistikat.github.io/surveysd/articles/error_estimation.md)
+for more details.
+
+- [`weightedRatio()`](https://statistikat.github.io/surveysd/reference/PointEstimates.md)
+  [`weightedSum()`](https://statistikat.github.io/surveysd/reference/PointEstimates.md)
+  : Weighted Point Estimates
+- [`calc.stError()`](https://statistikat.github.io/surveysd/reference/calc.stError.md)
+  : Calcualte point estimates and their standard errors using bootstrap
+  weights.
+- [`plot(`*`<surveysd>`*`)`](https://statistikat.github.io/surveysd/reference/plot.surveysd.md)
+  : Plot surveysd-Objects
+- [`print(`*`<surveysd>`*`)`](https://statistikat.github.io/surveysd/reference/print.surveysd.md)
+  : Print function for surveysd objects
+
+## utility functions
+
+Misc helper functions that are used in or related to
+[`ipf()`](https://statistikat.github.io/surveysd/reference/ipf.md).
+
+- [`ipf_step_ref()`](https://statistikat.github.io/surveysd/reference/ipf_step.md)
+  [`ipf_step()`](https://statistikat.github.io/surveysd/reference/ipf_step.md)
+  [`ipf_step_f()`](https://statistikat.github.io/surveysd/reference/ipf_step.md)
+  [`combine_factors()`](https://statistikat.github.io/surveysd/reference/ipf_step.md)
+  : Perform one step of iterative proportional updating
+- [`kishFactor()`](https://statistikat.github.io/surveysd/reference/kishFactor.md)
+  : Kish Factor
+- [`geometric_mean_reference()`](https://statistikat.github.io/surveysd/reference/cpp_mean.md)
+  : Calculate mean by factors
+- [`computeLinear()`](https://statistikat.github.io/surveysd/reference/computeFrac.md)
+  [`computeLinearG1_old()`](https://statistikat.github.io/surveysd/reference/computeFrac.md)
+  [`computeLinearG1()`](https://statistikat.github.io/surveysd/reference/computeFrac.md)
+  [`computeFrac()`](https://statistikat.github.io/surveysd/reference/computeFrac.md)
+  : Numerical weighting functions
+- [`summary(`*`<ipf>`*`)`](https://statistikat.github.io/surveysd/reference/summary.ipf.md)
+  : Generate Summary Output for IPF Calibration
+- [`print(`*`<summary.ipf>`*`)`](https://statistikat.github.io/surveysd/reference/print.summary.ipf.md)
+  : Print method for IPF calibration summary
+
+# Articles
+
+### All vignettes
+
+- [Error
+  estimation](https://statistikat.github.io/surveysd/articles/error_estimation.md):
+- [Iterative Proportional
+  Fitting](https://statistikat.github.io/surveysd/articles/ipf.md):
+- [Methodology](https://statistikat.github.io/surveysd/articles/methodology.md):
+- [Rao-Wu Bootstrap in
+  surveysd](https://statistikat.github.io/surveysd/articles/raowu.md):
+- [Introduction to
+  surveysd](https://statistikat.github.io/surveysd/articles/surveysd.md):
