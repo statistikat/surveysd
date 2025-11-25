@@ -173,7 +173,7 @@ dat_boot <- draw.bootstrap(eusilc, REP = 1, hid = "hid",
 # calibrate weight for bootstrap replicates
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
                           verbose = TRUE)
-#> Iteration stopped after 3 steps
+#> Iteration stopped after 2 steps
 #> Convergence reached
 
 
@@ -203,7 +203,7 @@ dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
 # calibrate on gender x age
 dat_boot_calib <- recalib(dat_boot, conP.var = list(c("gender", "age")),
                           conH.var = NULL, verbose = TRUE)
-#> Iteration stopped after 6 steps
+#> Iteration stopped after 5 steps
 #> Convergence reached
 
 # identical
@@ -212,7 +212,7 @@ conP <- list(conP1)
 dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
                           conH.var = NULL, conP = conP,
                           conH = NULL, verbose = TRUE)
-#> Iteration stopped after 6 steps
+#> Iteration stopped after 5 steps
 #> Convergence reached
                                                      
 ```

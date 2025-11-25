@@ -16,7 +16,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/statistikat/surveysd/blob/2.0.0/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/statistikat/surveysd/blob/master/DESCRIPTION)
 
 Gussenbauer J, Kowarik A, Vattheuer E, de Cillia G (2025). *surveysd:
 Survey Standard Error Estimation for Cumulated Estimates and their

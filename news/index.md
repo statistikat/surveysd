@@ -2,6 +2,8 @@
 
 ## surveysd 2.0.0
 
+CRAN release: 2025-08-26
+
 - Fixed issue if parameter `period` was type `haven::labelled` in
   [`calc.stError()`](https://statistikat.github.io/surveysd/reference/calc.stError.md).
 
@@ -124,6 +126,8 @@
 
 ## surveysd 1.1.0
 
+CRAN release: 2019-07-15
+
 - uncouple surveysd from simPop
   - use
     [`demo.eusilc()`](https://statistikat.github.io/surveysd/reference/demo.eusilc.md)
@@ -158,6 +162,8 @@
   ([\#12](https://github.com/statistikat/surveysd/issues/12))
 
 ## surveysd 1.0.0
+
+CRAN release: 2019-01-25
 
 - copy `simPop::ipu2()` and some related functions to surveysd.
   - add bugfixes for ported functions

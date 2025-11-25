@@ -155,7 +155,8 @@ setDTthreads(1)
 set.seed(1234)
 eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 
-eusilc[,N.households:=uniqueN(hid),by=region]
+eusilc[,N.households := sum(pWeight[!duplicated(hid)]),
+                                  by = .(region, year)]
 #>          hid  hsize        region    pid       age gender   ecoStat citizenship
 #>        <int> <fctr>        <fctr>  <int>    <fctr> <fctr>    <fctr>      <fctr>
 #>     1:     1      3         Tyrol    101   (25,45] female part time          AT
@@ -196,22 +197,22 @@ eusilc[,N.households:=uniqueN(hid),by=region]
 #> 14826:    0.00      0      0   0.00      0      0      0   1.5 16288.30
 #> 14827:    0.00      0      0   0.00      0      0      0   1.5 16288.30
 #>           db090  pWeight  year povertyRisk N.households
-#>           <num>    <num> <num>      <lgcl>        <int>
-#>     1: 504.5696 504.5696  2010       FALSE          496
-#>     2: 504.5696 504.5696  2010       FALSE          496
-#>     3: 504.5696 504.5696  2010       FALSE          496
-#>     4: 493.3824 493.3824  2010       FALSE          496
-#>     5: 493.3824 493.3824  2010       FALSE          496
+#>           <num>    <num> <num>      <lgcl>        <num>
+#>     1: 504.5696 504.5696  2010       FALSE       279017
+#>     2: 504.5696 504.5696  2010       FALSE       279017
+#>     3: 504.5696 504.5696  2010       FALSE       279017
+#>     4: 493.3824 493.3824  2010       FALSE       279017
+#>     5: 493.3824 493.3824  2010       FALSE       279017
 #>    ---                                                 
-#> 14823: 556.4260 556.4260  2010       FALSE         1131
-#> 14824: 643.2557 643.2557  2010       FALSE         1068
-#> 14825: 679.7288 679.7288  2010       FALSE          496
-#> 14826: 567.1544 567.1544  2010       FALSE          496
-#> 14827: 567.1544 567.1544  2010       FALSE          496
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region",
-                                       cluster="hid",fpc="N.households")
+#> 14823: 556.4260 556.4260  2010       FALSE       647361
+#> 14824: 643.2557 643.2557  2010       FALSE       567011
+#> 14825: 679.7288 679.7288  2010       FALSE       279017
+#> 14826: 567.1544 567.1544  2010       FALSE       279017
+#> 14827: 567.1544 567.1544  2010       FALSE       279017
+eusilc.bootstrap <- rescaled.bootstrap(eusilc, REP = 10, strata = "region",
+                                       cluster = "hid", fpc = "N.households")
 
-eusilc[,new_strata:=paste(region,hsize,sep="_")]
+eusilc[,new_strata := paste(region,hsize,sep="_")]
 #>          hid  hsize        region    pid       age gender   ecoStat citizenship
 #>        <int> <fctr>        <fctr>  <int>    <fctr> <fctr>    <fctr>      <fctr>
 #>     1:     1      3         Tyrol    101   (25,45] female part time          AT
@@ -252,19 +253,19 @@ eusilc[,new_strata:=paste(region,hsize,sep="_")]
 #> 14826:    0.00      0      0   0.00      0      0      0   1.5 16288.30
 #> 14827:    0.00      0      0   0.00      0      0      0   1.5 16288.30
 #>           db090  pWeight  year povertyRisk N.households      new_strata
-#>           <num>    <num> <num>      <lgcl>        <int>          <char>
-#>     1: 504.5696 504.5696  2010       FALSE          496         Tyrol_3
-#>     2: 504.5696 504.5696  2010       FALSE          496         Tyrol_3
-#>     3: 504.5696 504.5696  2010       FALSE          496         Tyrol_3
-#>     4: 493.3824 493.3824  2010       FALSE          496         Tyrol_4
-#>     5: 493.3824 493.3824  2010       FALSE          496         Tyrol_4
+#>           <num>    <num> <num>      <lgcl>        <num>          <char>
+#>     1: 504.5696 504.5696  2010       FALSE       279017         Tyrol_3
+#>     2: 504.5696 504.5696  2010       FALSE       279017         Tyrol_3
+#>     3: 504.5696 504.5696  2010       FALSE       279017         Tyrol_3
+#>     4: 493.3824 493.3824  2010       FALSE       279017         Tyrol_4
+#>     5: 493.3824 493.3824  2010       FALSE       279017         Tyrol_4
 #>    ---                                                                 
-#> 14823: 556.4260 556.4260  2010       FALSE         1131 Lower Austria_4
-#> 14824: 643.2557 643.2557  2010       FALSE         1068 Upper Austria_1
-#> 14825: 679.7288 679.7288  2010       FALSE          496         Tyrol_1
-#> 14826: 567.1544 567.1544  2010       FALSE          496         Tyrol_2
-#> 14827: 567.1544 567.1544  2010       FALSE          496         Tyrol_2
-eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
+#> 14823: 556.4260 556.4260  2010       FALSE       647361 Lower Austria_4
+#> 14824: 643.2557 643.2557  2010       FALSE       567011 Upper Austria_1
+#> 14825: 679.7288 679.7288  2010       FALSE       279017         Tyrol_1
+#> 14826: 567.1544 567.1544  2010       FALSE       279017         Tyrol_2
+#> 14827: 567.1544 567.1544  2010       FALSE       279017         Tyrol_2
+eusilc[,N.housholds := sum(pWeight[!duplicated(hid)]), by = new_strata]
 #>          hid  hsize        region    pid       age gender   ecoStat citizenship
 #>        <int> <fctr>        <fctr>  <int>    <fctr> <fctr>    <fctr>      <fctr>
 #>     1:     1      3         Tyrol    101   (25,45] female part time          AT
@@ -305,32 +306,32 @@ eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
 #> 14826:    0.00      0      0   0.00      0      0      0   1.5 16288.30
 #> 14827:    0.00      0      0   0.00      0      0      0   1.5 16288.30
 #>           db090  pWeight  year povertyRisk N.households      new_strata
-#>           <num>    <num> <num>      <lgcl>        <int>          <char>
-#>     1: 504.5696 504.5696  2010       FALSE          496         Tyrol_3
-#>     2: 504.5696 504.5696  2010       FALSE          496         Tyrol_3
-#>     3: 504.5696 504.5696  2010       FALSE          496         Tyrol_3
-#>     4: 493.3824 493.3824  2010       FALSE          496         Tyrol_4
-#>     5: 493.3824 493.3824  2010       FALSE          496         Tyrol_4
+#>           <num>    <num> <num>      <lgcl>        <num>          <char>
+#>     1: 504.5696 504.5696  2010       FALSE       279017         Tyrol_3
+#>     2: 504.5696 504.5696  2010       FALSE       279017         Tyrol_3
+#>     3: 504.5696 504.5696  2010       FALSE       279017         Tyrol_3
+#>     4: 493.3824 493.3824  2010       FALSE       279017         Tyrol_4
+#>     5: 493.3824 493.3824  2010       FALSE       279017         Tyrol_4
 #>    ---                                                                 
-#> 14823: 556.4260 556.4260  2010       FALSE         1131 Lower Austria_4
-#> 14824: 643.2557 643.2557  2010       FALSE         1068 Upper Austria_1
-#> 14825: 679.7288 679.7288  2010       FALSE          496         Tyrol_1
-#> 14826: 567.1544 567.1544  2010       FALSE          496         Tyrol_2
-#> 14827: 567.1544 567.1544  2010       FALSE          496         Tyrol_2
+#> 14823: 556.4260 556.4260  2010       FALSE       647361 Lower Austria_4
+#> 14824: 643.2557 643.2557  2010       FALSE       567011 Upper Austria_1
+#> 14825: 679.7288 679.7288  2010       FALSE       279017         Tyrol_1
+#> 14826: 567.1544 567.1544  2010       FALSE       279017         Tyrol_2
+#> 14827: 567.1544 567.1544  2010       FALSE       279017         Tyrol_2
 #>        N.housholds
-#>              <int>
-#>     1:          79
-#>     2:          79
-#>     3:          79
-#>     4:         102
-#>     5:         102
+#>              <num>
+#>     1:       39861
+#>     2:       39861
+#>     3:       39861
+#>     4:       50325
+#>     5:       50325
 #>    ---            
-#> 14823:         169
-#> 14824:         262
-#> 14825:         118
-#> 14826:         149
-#> 14827:         149
-eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
-                                       cluster="hid",fpc="N.households")
+#> 14823:       94036
+#> 14824:      168533
+#> 14825:       80208
+#> 14826:       84506
+#> 14827:       84506
+eusilc.bootstrap <- rescaled.bootstrap(eusilc, REP = 10, strata = c("new_strata"),
+                                       cluster = "hid", fpc = "N.households")
 
 ```
