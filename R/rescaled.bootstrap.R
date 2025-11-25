@@ -93,14 +93,15 @@
 #' set.seed(1234)
 #' eusilc <- demo.eusilc(n = 1,prettyNames = TRUE)
 #' 
-#' eusilc[,N.households:=uniqueN(hid),by=region]
-#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata="region",
-#'                                        cluster="hid",fpc="N.households")
+#' eusilc[,N.households := sum(pWeight[!duplicated(hid)]),
+#'                                   by = .(region, year)]
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc, REP = 10, strata = "region",
+#'                                        cluster = "hid", fpc = "N.households")
 #' 
-#' eusilc[,new_strata:=paste(region,hsize,sep="_")]
-#' eusilc[,N.housholds:=uniqueN(hid),by=new_strata]
-#' eusilc.bootstrap <- rescaled.bootstrap(eusilc,REP=10,strata=c("new_strata"),
-#'                                        cluster="hid",fpc="N.households")
+#' eusilc[,new_strata := paste(region,hsize,sep="_")]
+#' eusilc[,N.housholds := sum(pWeight[!duplicated(hid)]), by = new_strata]
+#' eusilc.bootstrap <- rescaled.bootstrap(eusilc, REP = 10, strata = c("new_strata"),
+#'                                        cluster = "hid", fpc = "N.households")
 #'
 #'
 
@@ -584,10 +585,7 @@ rescaled.bootstrap <- function(
           replicate(REP, draw.without.replacement(n[1], n_draw[1]), simplify = FALSE)
         ), by = c(by.val)]
       } else if (method == "Rao-Wu") {
-        print("Debugging draw.without.replacement:")
-        print(paste("n:", n))
-        print(paste("n_draw:", n_draw))
-        
+
         # Sampling with replacement
         dati[, c(deltai) := as.data.table(
           replicate(REP, draw.with.replacement(n[1], n_draw[1]), simplify = FALSE)
