@@ -18,7 +18,7 @@
 Source:
 [`DESCRIPTION`](https://github.com/statistikat/surveysd/blob/master/DESCRIPTION)
 
-Gussenbauer J, Kowarik A, Vattheuer E, de Cillia G (2025). *surveysd:
+Gussenbauer J, Kowarik A, Vattheuer E, de Cillia G (2026). *surveysd:
 Survey Standard Error Estimation for Cumulated Estimates and their
 Differences in Complex Panel Designs*. R package version 2.0.1,
 <https://github.com/statistikat/surveysd>.
@@ -26,7 +26,7 @@ Differences in Complex Panel Designs*. R package version 2.0.1,
     @Manual{,
       title = {surveysd: Survey Standard Error Estimation for Cumulated Estimates and their Differences in Complex Panel Designs},
       author = {Johannes Gussenbauer and Alexander Kowarik and Eileen Vattheuer and Gregor {de Cillia}},
-      year = {2025},
+      year = {2026},
       note = {R package version 2.0.1},
       url = {https://github.com/statistikat/surveysd},
     }

@@ -123,7 +123,7 @@ record/cluster was drawn in the respective sampling stage for the i-th boostrap 
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/statistikat/surveysd" class="external-link">surveysd</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/openmp-utils.html" class="external-link">setDTthreads</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/openmp-utils.html" class="external-link">setDTthreads</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span>, prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -139,17 +139,17 @@ record/cluster was drawn in the respective sampling stage for the i-th boostrap 
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;region, hid&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           region   hid delta_1_1 delta_1_2 delta_1_3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;fctr&gt; &lt;int&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1: Burgenland    12      TRUE      TRUE      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1: Burgenland    12      TRUE     FALSE      TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    2: Burgenland    59      TRUE     FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: Burgenland   112     FALSE     FALSE      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: Burgenland   135      TRUE     FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3: Burgenland   112     FALSE      TRUE      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4: Burgenland   135      TRUE      TRUE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    5: Burgenland   170      TRUE      TRUE      TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5996: Vorarlberg  7384      TRUE     FALSE      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5997: Vorarlberg  7396     FALSE     FALSE      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5998: Vorarlberg  7437      TRUE     FALSE      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5999: Vorarlberg  7445     FALSE     FALSE      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6000: Vorarlberg  7488     FALSE      TRUE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5996: Vorarlberg  7384      TRUE      TRUE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5997: Vorarlberg  7396     FALSE     FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5998: Vorarlberg  7437      TRUE      TRUE      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5999: Vorarlberg  7445     FALSE     FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6000: Vorarlberg  7488      TRUE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## draw bootstrap replicates for year 2012</span></span></span>

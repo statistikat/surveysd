@@ -173,14 +173,14 @@ dat_boot <- draw.bootstrap(eusilc, REP = 1, hid = "hid",
 # calibrate weight for bootstrap replicates
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
                           verbose = TRUE)
-#> Iteration stopped after 2 steps
+#> Iteration stopped after 1 steps
 #> Convergence reached
 
 
 # calibrate on other variables
 dat_boot_calib <- recalib(dat_boot, conP.var = c("gender", "age"),
                           conH.var = c("region", "hsize"), verbose = TRUE)
-#> Iteration stopped after 3 steps
+#> Iteration stopped after 4 steps
 #> Convergence reached
 
 # supply contingency tables directly
@@ -196,7 +196,7 @@ conH <- list(conH1,conH2)
 dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
                           conH.var = NULL, conP = conP,
                           conH = conH, verbose = TRUE)
-#> Iteration stopped after 3 steps
+#> Iteration stopped after 4 steps
 #> Convergence reached
 
 

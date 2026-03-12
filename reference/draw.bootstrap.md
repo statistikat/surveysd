@@ -211,8 +211,8 @@ the American Statistical Association 83 (401): 231–41.
 
 ## See also
 
-[`data.table`](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
-for more information on data.table objects.
+[`data.table`](https://rdrr.io/pkg/data.table/man/data.table.html) for
+more information on data.table objects.
 
 ## Author
 
