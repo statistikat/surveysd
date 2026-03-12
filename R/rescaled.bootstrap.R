@@ -378,9 +378,7 @@ rescaled.bootstrap <- function(
                          fpc.i_ADD = fpc.i_ADD)]
           
           dat[, c(new.var, paste0(fpc[i], "_ADD")) := NULL]
-        } 
-        
-        else if (single.PSU == "mean") {  # if single = mean: Marks the affected observations with a SINGLE_BOOT_FLAG in order to simply take the average of other replicates later in the bootstrap process.
+        } else if (single.PSU == "mean") {  # if single = mean: Marks the affected observations with a SINGLE_BOOT_FLAG in order to simply take the average of other replicates later in the bootstrap process.
           
           singles[, SINGLE_BOOT_FLAG := paste(higher.stages, .GRP, sep = "-"),  
                   by = c(higher.stages)]
@@ -394,9 +392,7 @@ rescaled.bootstrap <- function(
           }
           dat[, SINGLE_BOOT_FLAG := NULL]
           
-        } 
-        
-        else {
+        } else {
           message("Single PSUs detected at the following stages:\n")
           dat.print <- dat[,sum(!duplicated(clust.val)), by=c(by.val),
                            env = list(clust.val = clust.val)]
@@ -552,7 +548,6 @@ rescaled.bootstrap <- function(
           stop("Invalid method specified: ", method)
         }
       }, n = n, n_draw = n_draw), by = c(by.val), .SDcols = c(deltai)]
-      
       
       dati_check <- dati[, lapply(.SD, function(z, n_draw) {
         sum(z) == n_draw[1]
@@ -782,6 +777,7 @@ draw.with.replacement <- function(n, n_draw, delta = NULL) {
     delta <- rep(0, n)  # Set all units to 0 (not yet drawn)
     delta[is.na(delta)] <- 0
   }
+  delta <- as.numeric(delta)
   
   if (is.na(n_draw) || n_draw > n) {
     stop("Error: Invalid n_draw value.")
@@ -822,12 +818,18 @@ draw.with.replacement <- function(n, n_draw, delta = NULL) {
     delta[is.na(delta)] <- 0   
   }
   
-  return(delta)
+  return(as.numeric(delta))
 }
 
 
 change.random.value <- function(delta,changeVal=0,nChanges=1){
   
+  if(nChanges == 0){
+    # dont change anything
+    return(delta)
+  }
+  
+  # change a 0 -> 1 or 1 -> 0
   changeVal2 <- fifelse(changeVal==0,1,0) 
   set2NA <- which(delta==changeVal & !is.na(delta))
   if(length(set2NA)>1){
