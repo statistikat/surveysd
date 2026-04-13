@@ -147,7 +147,7 @@
 #' library(data.table)
 #' setDTthreads(1)
 #' set.seed(1234)
-#' eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
+#' eusilc <- demo.eusilc(n = 2, prettyNames = TRUE)
 #'
 #' ## draw replicates without stratification or clustering
 #' dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
@@ -158,7 +158,7 @@
 #'   eusilc, REP = 1, hid = "hid", weights = "pWeight",
 #'   strata = "region", period = "year")
 #'
-#' ## use multi-level clustering
+#' ## stratification by multiple variables
 #' dat_boot <- draw.bootstrap(
 #'   eusilc, REP = 1, hid = "hid", weights = "pWeight",
 #'   strata = c("region", "hsize"), period = "year")
@@ -465,10 +465,21 @@ draw.bootstrap <- function(
     # dat[, occurence_first_period := min(get(period)), 
     #     by = .(hid, hid_survey_segment_help)]
     
-    select.first.occurence <- paste0(c(hid,"hid_survey_segment_help", w.names), collapse = ",")
     dat.first.occurence <- unique(dat[period==occurence_first_period, .SD,
                                       .SDcols = c(hid,"hid_survey_segment_help", w.names),
                                       env = list(period = period)])
+    dupl.HID <- dat.first.occurence[,.N,by=.(HID)][N>1]
+    if(nrow(dupl.HID)>0){
+      # duplicated HID
+      # 2 or more HID started in same survey year ~ period and merged together
+      # choose 1 row randomly
+      dat.first.occurence[, keep := TRUE]
+      hid_set <- dupl.HID[[hid]]
+      dat.first.occurence[hid %in% hid_set, keep := sample(c(rep(TRUE,1),rep(FALSE,.N-1))) , by=.(hid), env = list(hid = hid)]
+      dat.first.occurence <- dat.first.occurence[keep == TRUE]
+      dat.first.occurence[, keep := NULL]
+    }
+    
     # select_cols <- c(hid, "hid_survey_segment_help", w.names)
     # dat.first.occurence <- unique(
     #   dat[get(period) == occurence_first_period, 
@@ -478,7 +489,8 @@ draw.bootstrap <- function(
     dat[, c(w.names) := NULL]
     dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
     dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
-    dat[, hid := paste0(hid,"_orig"), env = list(hid = hid)]
+    dat[, hid := hid_orig, env = list(hid = hid,
+                                      hid_orig = paste0(hid,"_orig"))]
     # dat[, (hid) := paste0(get(hid), "_orig")]
     dat[, c(paste0(hid, "_orig")) := NULL]
   }
