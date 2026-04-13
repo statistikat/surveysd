@@ -225,7 +225,7 @@ library(surveysd)
 library(data.table)
 setDTthreads(1)
 set.seed(1234)
-eusilc <- demo.eusilc(n = 3, prettyNames = TRUE)
+eusilc <- demo.eusilc(n = 2, prettyNames = TRUE)
 
 ## draw replicates without stratification or clustering
 dat_boot <- draw.bootstrap(eusilc, REP = 1, weights = "pWeight",
@@ -236,7 +236,7 @@ dat_boot <- draw.bootstrap(
   eusilc, REP = 1, hid = "hid", weights = "pWeight",
   strata = "region", period = "year")
 
-## use multi-level clustering
+## stratification by multiple variables
 dat_boot <- draw.bootstrap(
   eusilc, REP = 1, hid = "hid", weights = "pWeight",
   strata = c("region", "hsize"), period = "year")
@@ -252,11 +252,11 @@ eusilc[, pidsplit := pid]
 #>     4:     2      4         Tyrol    201   (25,45] female  domestic          AT
 #>     5:     2      4         Tyrol    202   (25,45]   male full time          AT
 #>    ---                                                                         
-#> 44477:  8999      4 Lower Austria 899904 (-Inf,16] female education          AT
-#> 44478:  9000      1 Upper Austria 900001   (25,45] female full time          AT
-#> 44479:  5999      1         Tyrol 599901   (25,45]   male full time          AT
-#> 44480:  7500      2         Tyrol 750001   (45,65]   male full time          AT
-#> 44481:  7500      2         Tyrol 750002   (45,65] female  disabled          AT
+#> 29650:  5997      4 Lower Austria 599704 (-Inf,16] female education          AT
+#> 29651:  5998      1 Upper Austria 599801   (25,45] female full time          AT
+#> 29652:  5999      1         Tyrol 599901   (25,45]   male full time          AT
+#> 29653:  7500      2         Tyrol 750001   (45,65]   male full time          AT
+#> 29654:  7500      2         Tyrol 750002   (45,65] female  disabled          AT
 #>          py010n py050n  py090n py100n py110n py120n py130n py140n hy040n
 #>           <num>  <num>   <num>  <num>  <num>  <num>  <num>  <num>  <num>
 #>     1:  9756.25      0    0.00      0      0      0      0      0 4273.9
@@ -265,11 +265,11 @@ eusilc[, pidsplit := pid]
 #>     4: 12487.03      0    0.00      0      0      0      0      0    0.0
 #>     5: 42821.23      0    0.00      0      0      0      0      0    0.0
 #>    ---                                                                  
-#> 44477:     0.00      0    0.00      0      0      0      0      0    0.0
-#> 44478: 13962.56      0    0.00      0      0      0      0      0    0.0
-#> 44479: 14685.18      0    0.00      0      0      0      0      0    0.0
-#> 44480: 20606.82      0    0.00      0      0      0      0      0    0.0
-#> 44481:     0.00      0 3825.63      0      0      0      0      0    0.0
+#> 29650:     0.00      0    0.00      0      0      0      0      0    0.0
+#> 29651: 13962.56      0    0.00      0      0      0      0      0    0.0
+#> 29652: 14685.18      0    0.00      0      0      0      0      0    0.0
+#> 29653: 20606.82      0    0.00      0      0      0      0      0    0.0
+#> 29654:     0.00      0 3825.63      0      0      0      0      0    0.0
 #>         hy050n hy070n hy080n hy090n hy110n hy130n hy145n  eqSS eqIncome
 #>          <num>  <num>  <num>  <num>  <num>  <num>  <num> <num>    <num>
 #>     1: 2428.11      0      0  33.39      0      0      0   1.8 16090.69
@@ -278,11 +278,11 @@ eusilc[, pidsplit := pid]
 #>     4: 1549.72      0      0   2.13      0      0      0   2.1 27076.24
 #>     5: 1549.72      0      0   2.13      0      0      0   2.1 27076.24
 #>    ---                                                                 
-#> 44477: 1955.19      0      0   0.00      0      0      0   2.5 26970.02
-#> 44478:    0.00      0      0 424.85      0      0      0   1.0 20242.09
-#> 44479:    0.00      0      0 120.65      0      0      0   1.0 14805.83
-#> 44480:    0.00      0      0   0.00      0      0      0   1.5 24680.88
-#> 44481:    0.00      0      0   0.00      0      0      0   1.5 24680.88
+#> 29650: 1955.19      0      0   0.00      0      0      0   2.5 26508.20
+#> 29651:    0.00      0      0 424.85      0      0      0   1.0 14387.41
+#> 29652:    0.00      0      0 120.65      0      0      0   1.0 14805.83
+#> 29653:    0.00      0      0   0.00      0      0      0   1.5 24680.88
+#> 29654:    0.00      0      0   0.00      0      0      0   1.5 24680.88
 #>           db090  pWeight  year povertyRisk pidsplit
 #>           <num>    <num> <num>      <lgcl>    <int>
 #>     1: 504.5696 504.5696  2010       FALSE      101
@@ -291,11 +291,11 @@ eusilc[, pidsplit := pid]
 #>     4: 493.3824 493.3824  2010       FALSE      201
 #>     5: 493.3824 493.3824  2010       FALSE      202
 #>    ---                                             
-#> 44477: 556.4260 556.4260  2012       FALSE   899904
-#> 44478: 643.2557 643.2557  2012       FALSE   900001
-#> 44479: 679.7288 679.7288  2012       FALSE   599901
-#> 44480: 567.1544 567.1544  2012       FALSE   750001
-#> 44481: 567.1544 567.1544  2012       FALSE   750002
+#> 29650: 556.4260 556.4260  2011       FALSE   599704
+#> 29651: 643.2557 643.2557  2011       FALSE   599801
+#> 29652: 679.7288 679.7288  2011       FALSE   599901
+#> 29653: 567.1544 567.1544  2011       FALSE   750001
+#> 29654: 567.1544 567.1544  2011       FALSE   750002
 year <- eusilc[, unique(year)]
 year <- year[-1]
 leaf_out <- c()
@@ -322,9 +322,10 @@ dat_boot <- draw.bootstrap(
   eusilc, REP = 1, hid = "hid", weights = "pWeight",
   strata = c("region", "hsize"), period = "year", split = TRUE,
   pid = "pidsplit")
+#> Error in eval(bysub, x, parent.frame()): object 'HID' not found
 # split households were considered e.g. household and
 # split household were both selected or not selected
 dat_boot[, data.table::uniqueN(w1), by = pidsplit][V1 > 1]
-#> Empty data.table (0 rows and 2 cols): pidsplit,V1
+#> Error in eval(bysub, parent.frame(), parent.frame()): object 'pidsplit' not found
 
 ```

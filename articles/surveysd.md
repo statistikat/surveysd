@@ -50,20 +50,13 @@ dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
 dat_boot_calib[1:5, .(year, povertyRisk, gender, pWeight, w1, w2, w3, w4)]
 ```
 
-    ##     year povertyRisk gender  pWeight        w1           w2        w3
-    ##    <num>      <lgcl> <fctr>    <num>     <num>        <num>     <num>
-    ## 1:  2010       FALSE female 504.5696 0.4486785 1000.7365437 0.4486785
-    ## 2:  2010       FALSE   male 504.5696 0.4486785 1000.7365437 0.4486785
-    ## 3:  2010       FALSE   male 504.5696 0.4486785 1000.7365437 0.4486785
-    ## 4:  2010       FALSE female 493.3824 0.4387304    0.4347704 0.4387304
-    ## 5:  2010       FALSE   male 493.3824 0.4387304    0.4347704 0.4387304
-    ##              w4
-    ##           <num>
-    ## 1: 1008.6905620
-    ## 2: 1008.6905620
-    ## 3: 1008.6905620
-    ## 4:    0.4387304
-    ## 5:    0.4387304
+    ##     year povertyRisk gender  pWeight           w1        w2        w3        w4
+    ##    <num>      <lgcl> <fctr>    <num>        <num>     <num>     <num>     <num>
+    ## 1:  2010       FALSE female 504.5696 1008.6905620 0.4472360 0.4486785 0.4439291
+    ## 2:  2010       FALSE   male 504.5696 1008.6905620 0.4472360 0.4486785 0.4439291
+    ## 3:  2010       FALSE   male 504.5696 1008.6905620 0.4472360 0.4486785 0.4439291
+    ## 4:  2010       FALSE female 493.3824    0.4387304 0.4368836 0.4387304 0.4337201
+    ## 5:  2010       FALSE   male 493.3824    0.4387304 0.4368836 0.4387304 0.4337201
 
 ### Estimate with respect to a grouping variable
 
@@ -78,12 +71,12 @@ err.est$Estimates
     ## Key: <year, n, N, gender, estimate_type>
     ##     year     n       N gender estimate_type val_povertyRisk stE_povertyRisk
     ##    <num> <int>   <num> <fctr>        <char>           <num>           <num>
-    ## 1:  2010  7267 3979572   male        direct        12.02660       0.5630758
-    ## 2:  2010  7560 4202650 female        direct        16.73351       0.5333158
-    ## 3:  2010 14827 8182222   <NA>        direct        14.44422       0.4782918
-    ## 4:  2011  7267 3979572   male        direct        12.81921       0.7520229
-    ## 5:  2011  7560 4202650 female        direct        16.62488       0.6807982
-    ## 6:  2011 14827 8182222   <NA>        direct        14.77393       0.6579318
+    ## 1:  2010  7267 3979572   male        direct        12.02660       0.4223479
+    ## 2:  2010  7560 4202650 female        direct        16.73351       0.5220639
+    ## 3:  2010 14827 8182222   <NA>        direct        14.44422       0.4186470
+    ## 4:  2011  7267 3979572   male        direct        12.81921       0.7436088
+    ## 5:  2011  7560 4202650 female        direct        16.62488       0.6910113
+    ## 6:  2011 14827 8182222   <NA>        direct        14.77393       0.6570398
 
 The output contains estimates (`val_povertyRisk`) as well as standard
 errors (`stE_povertyRisk`) measured in percent. The rows with
@@ -112,12 +105,12 @@ head(err.est$Estimates)
     ## 6:  2010   484 282307.3 female   Salzburg        direct       17.939382
     ##    stE_povertyRisk
     ##              <num>
-    ## 1:        2.686503
-    ## 2:        3.970766
-    ## 3:        3.088223
-    ## 4:        3.365607
-    ## 5:        1.455159
-    ## 6:        2.105383
+    ## 1:        2.590851
+    ## 2:        3.053824
+    ## 3:        2.634967
+    ## 4:        2.715704
+    ## 5:        1.690359
+    ## 6:        2.836068
 
 ``` r
 ## skipping 54 more rows

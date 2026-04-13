@@ -271,7 +271,7 @@ data.table objects.</p></div>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/openmp-utils.html" class="external-link">setDTthreads</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span>, prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="fu"><a href="demo.eusilc.html">demo.eusilc</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">2</span>, prettyNames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## draw replicates without stratification or clustering</span></span></span>
 <span class="r-in"><span><span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu">draw.bootstrap</span><span class="op">(</span><span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">1</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span></span>
@@ -282,7 +282,7 @@ data.table objects.</p></div>
 <span class="r-in"><span>  <span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">1</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span></span>
 <span class="r-in"><span>  strata <span class="op">=</span> <span class="st">"region"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## use multi-level clustering</span></span></span>
+<span class="r-in"><span><span class="co">## stratification by multiple variables</span></span></span>
 <span class="r-in"><span><span class="va">dat_boot</span> <span class="op">&lt;-</span> <span class="fu">draw.bootstrap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">1</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span></span>
 <span class="r-in"><span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"region"</span>, <span class="st">"hsize"</span><span class="op">)</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span></span>
@@ -298,11 +298,11 @@ data.table objects.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2      4         Tyrol    201   (25,45] female  domestic          AT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2      4         Tyrol    202   (25,45]   male full time          AT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44477:  8999      4 Lower Austria 899904 (-Inf,16] female education          AT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44478:  9000      1 Upper Austria 900001   (25,45] female full time          AT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44479:  5999      1         Tyrol 599901   (25,45]   male full time          AT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44480:  7500      2         Tyrol 750001   (45,65]   male full time          AT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44481:  7500      2         Tyrol 750002   (45,65] female  disabled          AT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29650:  5997      4 Lower Austria 599704 (-Inf,16] female education          AT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29651:  5998      1 Upper Austria 599801   (25,45] female full time          AT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29652:  5999      1         Tyrol 599901   (25,45]   male full time          AT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29653:  7500      2         Tyrol 750001   (45,65]   male full time          AT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29654:  7500      2         Tyrol 750002   (45,65] female  disabled          AT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          py010n py050n  py090n py100n py110n py120n py130n py140n hy040n</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;  &lt;num&gt;   &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:  9756.25      0    0.00      0      0      0      0      0 4273.9</span>
@@ -311,11 +311,11 @@ data.table objects.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     4: 12487.03      0    0.00      0      0      0      0      0    0.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     5: 42821.23      0    0.00      0      0      0      0      0    0.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44477:     0.00      0    0.00      0      0      0      0      0    0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44478: 13962.56      0    0.00      0      0      0      0      0    0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44479: 14685.18      0    0.00      0      0      0      0      0    0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44480: 20606.82      0    0.00      0      0      0      0      0    0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44481:     0.00      0 3825.63      0      0      0      0      0    0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29650:     0.00      0    0.00      0      0      0      0      0    0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29651: 13962.56      0    0.00      0      0      0      0      0    0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29652: 14685.18      0    0.00      0      0      0      0      0    0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29653: 20606.82      0    0.00      0      0      0      0      0    0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29654:     0.00      0 3825.63      0      0      0      0      0    0.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         hy050n hy070n hy080n hy090n hy110n hy130n hy145n  eqSS eqIncome</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt; &lt;num&gt;    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1: 2428.11      0      0  33.39      0      0      0   1.8 16090.69</span>
@@ -324,11 +324,11 @@ data.table objects.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     4: 1549.72      0      0   2.13      0      0      0   2.1 27076.24</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     5: 1549.72      0      0   2.13      0      0      0   2.1 27076.24</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44477: 1955.19      0      0   0.00      0      0      0   2.5 26970.02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44478:    0.00      0      0 424.85      0      0      0   1.0 20242.09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44479:    0.00      0      0 120.65      0      0      0   1.0 14805.83</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44480:    0.00      0      0   0.00      0      0      0   1.5 24680.88</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44481:    0.00      0      0   0.00      0      0      0   1.5 24680.88</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29650: 1955.19      0      0   0.00      0      0      0   2.5 26508.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29651:    0.00      0      0 424.85      0      0      0   1.0 14387.41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29652:    0.00      0      0 120.65      0      0      0   1.0 14805.83</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29653:    0.00      0      0   0.00      0      0      0   1.5 24680.88</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29654:    0.00      0      0   0.00      0      0      0   1.5 24680.88</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           db090  pWeight  year povertyRisk pidsplit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;    &lt;num&gt; &lt;num&gt;      &lt;lgcl&gt;    &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1: 504.5696 504.5696  2010       FALSE      101</span>
@@ -337,11 +337,11 @@ data.table objects.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     4: 493.3824 493.3824  2010       FALSE      201</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     5: 493.3824 493.3824  2010       FALSE      202</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44477: 556.4260 556.4260  2012       FALSE   899904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44478: 643.2557 643.2557  2012       FALSE   900001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44479: 679.7288 679.7288  2012       FALSE   599901</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44480: 567.1544 567.1544  2012       FALSE   750001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44481: 567.1544 567.1544  2012       FALSE   750002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29650: 556.4260 556.4260  2011       FALSE   599704</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29651: 643.2557 643.2557  2011       FALSE   599801</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29652: 679.7288 679.7288  2011       FALSE   599901</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29653: 567.1544 567.1544  2011       FALSE   750001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29654: 567.1544 567.1544  2011       FALSE   750002</span>
 <span class="r-in"><span><span class="va">year</span> <span class="op">&lt;-</span> <span class="va">eusilc</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">year</span> <span class="op">&lt;-</span> <span class="va">year</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">leaf_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span></span></span>
@@ -368,10 +368,11 @@ data.table objects.</p></div>
 <span class="r-in"><span>  <span class="va">eusilc</span>, REP <span class="op">=</span> <span class="fl">1</span>, hid <span class="op">=</span> <span class="st">"hid"</span>, weights <span class="op">=</span> <span class="st">"pWeight"</span>,</span></span>
 <span class="r-in"><span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"region"</span>, <span class="st">"hsize"</span><span class="op">)</span>, period <span class="op">=</span> <span class="st">"year"</span>, split <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  pid <span class="op">=</span> <span class="st">"pidsplit"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(bysub, x, parent.frame()):</span> object 'HID' not found</span>
 <span class="r-in"><span><span class="co"># split households were considered e.g. household and</span></span></span>
 <span class="r-in"><span><span class="co"># split household were both selected or not selected</span></span></span>
 <span class="r-in"><span><span class="va">dat_boot</span><span class="op">[</span>, <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/duplicated.html" class="external-link">uniqueN</a></span><span class="op">(</span><span class="va">w1</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">pidsplit</span><span class="op">]</span><span class="op">[</span><span class="va">V1</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Empty data.table (0 rows and 2 cols): pidsplit,V1</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(bysub, parent.frame(), parent.frame()):</span> object 'pidsplit' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
