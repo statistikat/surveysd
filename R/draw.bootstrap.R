@@ -436,7 +436,7 @@ draw.bootstrap <- function(
   }
   for(p in periods){
 
-      dat_boot <- rescaled.bootstrap(dat[.(p),on=c(period)],
+    dat_boot <- rescaled.bootstrap(dat[.(p),on=c(period)],
                                    method = method, 
                                    REP = REP, strata = strata_design, cluster = cluster_design,
                                    fpc = totals_design, single.PSU = single.PSU, return.value = c("replicates","selection"),
@@ -468,14 +468,15 @@ draw.bootstrap <- function(
     dat.first.occurence <- unique(dat[period==occurence_first_period, .SD,
                                       .SDcols = c(hid,"hid_survey_segment_help", w.names),
                                       env = list(period = period)])
-    dupl.HID <- dat.first.occurence[,.N,by=.(HID)][N>1]
-    if(nrow(dupl.HID)>0){
+    dupl.HID <- dat.first.occurence[,.N,by=.(HID, hid_survey_segment_help)][N>1]
+    if(nrow(dupl.HID) > 0){
       # duplicated HID
       # 2 or more HID started in same survey year ~ period and merged together
       # choose 1 row randomly
       dat.first.occurence[, keep := TRUE]
       hid_set <- dupl.HID[[hid]]
-      dat.first.occurence[hid %in% hid_set, keep := sample(c(rep(TRUE,1),rep(FALSE,.N-1))) , by=.(hid), env = list(hid = hid)]
+      dat.first.occurence[dupl.HID, draw_randomly := TRUE, on=.(HID, hid_survey_segment_help)]
+      dat.first.occurence[draw_randomly == TRUE, keep := sample(c(rep(TRUE,1),rep(FALSE,.N-1))), by=.(hid), env = list(hid = hid)]
       dat.first.occurence <- dat.first.occurence[keep == TRUE]
       dat.first.occurence[, keep := NULL]
     }
@@ -488,6 +489,17 @@ draw.bootstrap <- function(
     
     dat[, c(w.names) := NULL]
     dat <- merge(dat, dat.first.occurence, by = c(hid, "hid_survey_segment_help"), all.x = TRUE)
+    
+    # check if any missing values occur
+    if(any(is.na(dat[[w.names[1]]]))){
+      stop("Missing values generated while dealing with split households.\nPlease report bug in ",
+           "https://github.com/statistikat/surveysd")
+    }
+    if(nrow(dat[, .N, by = c(pid, period)][N > 1]) > 1){
+      stop("Duplicated ", pid," generated while dealing with split households.\nPlease report bug in ",
+           "https://github.com/statistikat/surveysd")
+    }
+    
     dat[, c("occurence_first_period","hid_survey_segment_help") := NULL]
     dat[, hid := hid_orig, env = list(hid = hid,
                                       hid_orig = paste0(hid,"_orig"))]
