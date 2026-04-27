@@ -195,28 +195,35 @@ dat_boot <- draw.bootstrap(
   strata = c("region", "hsize"), period = "year")
 
 
-# create spit households
+# create split households
 eusilc[, pidsplit := pid]
 year <- eusilc[, unique(year)]
 year <- year[-1]
 leaf_out <- c()
 for(y in year) {
-  split.person <- eusilc[
-    year == (y-1) & !duplicated(hid) & !(hid \%in\% leaf_out),
-    sample(pid, 20)
-  ]
-  overwrite.person <- eusilc[
-    (year == (y)) & !duplicated(hid) & !(hid \%in\% leaf_out),
-    .(pid = sample(pid, 20))
-  ]
-  overwrite.person[, c("pidsplit", "year_curr") := .(split.person, y)]
+split.person <- eusilc[
+  year == (y-1) & !duplicated(hid) & !(hid \%in\% leaf_out),
+  sample(pid, 20)
+]
+overwrite.person <- eusilc[
+  (year == (y)) & !duplicated(hid) & !(hid \%in\% leaf_out),
+  .(pid = sample(pid, 20))
+]
+overwrite.person[, c("pidsplit", "year_curr") := .(split.person, y)]
 
-  eusilc[overwrite.person, pidsplit := i.pidsplit,
-         on = .(pid, year >= year_curr)]
-  leaf_out <- c(leaf_out,
-                eusilc[pid \%in\% c(overwrite.person$pid,
-                                  overwrite.person$pidsplit),
-                unique(hid)])
+eusilc[overwrite.person, pidsplit := i.pidsplit,
+       on = .(pid, year >= year_curr)]
+
+# assign new PID to avoid duplicates in pidsplit
+eusilc[overwrite.person, change_pid := TRUE, 
+       on = .(pid = pidsplit, year >= year_curr)]
+eusilc[change_pid == TRUE, pidsplit := as.integer(paste0(hid, 99))]
+eusilc[, change_pid := NULL]
+
+leaf_out <- c(leaf_out,
+              eusilc[pid \%in\% c(overwrite.person$pid,
+                                overwrite.person$pidsplit),
+                     unique(hid)])
 }
 
 dat_boot <- draw.bootstrap(
