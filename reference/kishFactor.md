@@ -39,5 +39,5 @@ Alexander Kowarik
 kishFactor(rep(1,10))
 #> [1] 1
 kishFactor(rlnorm(10))
-#> [1] 1.357884
+#> [1] 1.373754
 ```

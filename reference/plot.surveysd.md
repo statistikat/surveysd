@@ -78,9 +78,9 @@ dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
 #> Iteration stopped after 3 steps
 #> Convergence reached
-#> Iteration stopped after 1 steps
+#> Iteration stopped after 2 steps
 #> Convergence reached
-#> Iteration stopped after 3 steps
+#> Iteration stopped after 2 steps
 #> Convergence reached
 
 # estimate weightedRatio for povmd60 per period

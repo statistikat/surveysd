@@ -87,17 +87,17 @@ print(dat_selection)
 #> Key: <region, hid>
 #>           region   hid delta_1_1 delta_1_2 delta_1_3
 #>           <fctr> <int>    <lgcl>    <lgcl>    <lgcl>
-#>    1: Burgenland    12     FALSE      TRUE     FALSE
-#>    2: Burgenland    59      TRUE     FALSE     FALSE
-#>    3: Burgenland   112     FALSE     FALSE     FALSE
-#>    4: Burgenland   135     FALSE     FALSE      TRUE
-#>    5: Burgenland   170      TRUE      TRUE     FALSE
+#>    1: Burgenland    12     FALSE     FALSE      TRUE
+#>    2: Burgenland    59     FALSE     FALSE      TRUE
+#>    3: Burgenland   112     FALSE      TRUE     FALSE
+#>    4: Burgenland   135     FALSE      TRUE     FALSE
+#>    5: Burgenland   170      TRUE      TRUE      TRUE
 #>   ---                                               
-#> 5996: Vorarlberg  7384      TRUE     FALSE     FALSE
-#> 5997: Vorarlberg  7396      TRUE      TRUE      TRUE
-#> 5998: Vorarlberg  7437     FALSE      TRUE     FALSE
-#> 5999: Vorarlberg  7445      TRUE      TRUE      TRUE
-#> 6000: Vorarlberg  7488     FALSE      TRUE      TRUE
+#> 5996: Vorarlberg  7384      TRUE      TRUE      TRUE
+#> 5997: Vorarlberg  7396     FALSE     FALSE     FALSE
+#> 5998: Vorarlberg  7437     FALSE     FALSE      TRUE
+#> 5999: Vorarlberg  7445      TRUE      TRUE     FALSE
+#> 6000: Vorarlberg  7488     FALSE      TRUE     FALSE
 #> 
 
 ## draw bootstrap replicates for year 2012
