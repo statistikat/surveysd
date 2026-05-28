@@ -26,6 +26,7 @@ geometric_mean_reference(w, classes)
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 
 ## create random data

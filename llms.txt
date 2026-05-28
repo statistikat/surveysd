@@ -24,6 +24,7 @@ surveys using bootstrap weights.
 ## Installation
 
 ``` r
+
 # Install release version from CRAN
 install.packages("surveysd")
 

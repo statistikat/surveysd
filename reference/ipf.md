@@ -171,13 +171,13 @@ no convergence has been reached in `maxIter` steps, and `returnNA` is
 `NA`s. The attributes of the table are attributes derived from the
 `data.table` class as well as the following.
 
-|                                |                                                                                           |
-|--------------------------------|-------------------------------------------------------------------------------------------|
-| `converged`                    | Did the algorithm converge in `maxIter` steps?                                            |
-| `iterations`                   | The number of iterations performed.                                                       |
-| `conP`, `conH`, `epsP`, `epsH` | See Arguments.                                                                            |
-| `conP_adj`, `conH_adj`         | Adjusted versions of `conP` and `conH`                                                    |
-| `formP`, `formH`               | Formulas that were used to calculate `conP_adj` and `conH_adj` based on the output table. |
+|  |  |
+|----|----|
+| `converged` | Did the algorithm converge in `maxIter` steps? |
+| `iterations` | The number of iterations performed. |
+| `conP`, `conH`, `epsP`, `epsH` | See Arguments. |
+| `conP_adj`, `conH_adj` | Adjusted versions of `conP` and `conH` |
+| `formP`, `formH` | Formulas that were used to calculate `conP_adj` and `conH_adj` based on the output table. |
 
 ## Details
 

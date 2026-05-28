@@ -5,7 +5,7 @@ This vignette explains the usage of the
 function, which has been used for calibrating the labour force survey of
 Austria for several years. It is based on the Iterative Proportional
 Fitting algorithm and gives some flexibility about the details of the
-implementation. See (Meraner, Gumprecht, and Kowarik 2016) or
+implementation. See (Meraner et al. 2016) or
 [`vignette("methodology")`](https://statistikat.github.io/surveysd/articles/methodology.md)
 for more details.
 
@@ -19,6 +19,7 @@ weight of one for all observations of the population and a weight of ten
 for all observations of the sample.
 
 ``` r
+
 library(surveysd)
 population <- demo.eusilc(1, prettyNames = TRUE)
 population[, pWeight := 1]
@@ -34,6 +35,7 @@ the ones of `population`. We can see that this is currently not the
 case.
 
 ``` r
+
 (gender_distribution <- xtabs(pWeight ~ gender, population))
 #> gender
 #>   male female 
@@ -51,6 +53,7 @@ differences between the gender distributions. We can pass
 obtain modified weights.
 
 ``` r
+
 pop_sample_c <- ipf(pop_sample, conP = list(gender_distribution), w = "pWeight")
 ```
 
@@ -58,6 +61,7 @@ The resulting dataset, `pop_sample_c` is similar to `pop_sample` but has
 an additional column with the adjusted weights.
 
 ``` r
+
 dim(pop_sample)
 #> [1] 1482   30
 dim(pop_sample_c)
@@ -70,6 +74,7 @@ We can now calculate the weighted number of males and females according
 to this new weight. This will result in a match for the constraints.
 
 ``` r
+
 xtabs(calibWeight ~ gender, pop_sample_c)
 #> gender
 #>   male female 
@@ -84,6 +89,7 @@ In this simple case, `ipf` just performs a post stratification step.
 This means, that all males and all females have the same weight.
 
 ``` r
+
 xtabs(~ calibWeight + gender, pop_sample_c)
 #>                   gender
 #> calibWeight        male female
@@ -101,6 +107,7 @@ and females for each age group. The numbers from the original population
 can be obtained with [`xtabs()`](https://rdrr.io/r/stats/xtabs.html).
 
 ``` r
+
 (con_ga <- xtabs(pWeight ~ gender + age, population))
 #>         age
 #> gender   (-Inf,16] (16,25] (25,45] (45,65] (65, Inf]
@@ -119,6 +126,7 @@ contingency table `con_ga` to
 again resolve this.
 
 ``` r
+
 pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga), w = "pWeight")
 xtabs(pWeight ~ gender + age, population)
 #>         age
@@ -138,6 +146,7 @@ Now we assume that we know the number of persons living in each nuts2
 region from registry data.
 
 ``` r
+
 registry_table <- xtabs(pWeight ~ region, population)
 ```
 
@@ -147,6 +156,7 @@ or `gender`. Therefore, the two contingency tables (`con_ga` and
 by supplying a list to `conP`
 
 ``` r
+
 pop_sample_c2 <- ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight")
 xtabs(pWeight ~ gender + age, population)
 #>         age
@@ -185,6 +195,7 @@ necessary to supply `hid`, which defines the column names that contains
 household ids.
 
 ``` r
+
 (conH1 <- xtabs(pWeight ~ hsize + region, data = population[!duplicated(hid)]))
 #>      region
 #> hsize Burgenland Carinthia Lower Austria Salzburg Styria Tyrol Upper Austria
@@ -235,6 +246,7 @@ return with a warning that indicates that a convergence could not be
 reached.
 
 ``` r
+
 ipf(pop_sample, conP = list(con_ga, registry_table), w = "pWeight",
     verbose = TRUE, epsP = 0.01)
 #> Iteration stopped after 3 steps

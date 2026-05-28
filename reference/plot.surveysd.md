@@ -66,6 +66,7 @@ plot(
 ## Examples
 
 ``` r
+
 library(surveysd)
 
 set.seed(1234)
@@ -76,12 +77,93 @@ dat_boot <- draw.bootstrap(eusilc, REP = 3, hid = "hid", weights = "pWeight",
 
 # calibrate weight for bootstrap replicates
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region")
-#> Iteration stopped after 3 steps
-#> Convergence reached
 #> Iteration stopped after 2 steps
 #> Convergence reached
+#> 10:Not yet converged for P-Constraint1
+#> 10:Not yet converged for H-Constraint1
+#> 20:Not yet converged for P-Constraint1
+#> 20:Not yet converged for H-Constraint1
+#> 30:Not yet converged for P-Constraint1
+#> 30:Not yet converged for H-Constraint1
+#> 40:Not yet converged for P-Constraint1
+#> 40:Not yet converged for H-Constraint1
+#> 50:Not yet converged for P-Constraint1
+#> 50:Not yet converged for H-Constraint1
+#> 60:Not yet converged for P-Constraint1
+#> 60:Not yet converged for H-Constraint1
+#> 70:Not yet converged for P-Constraint1
+#> 70:Not yet converged for H-Constraint1
+#> 80:Not yet converged for P-Constraint1
+#> 80:Not yet converged for H-Constraint1
+#> 90:Not yet converged for P-Constraint1
+#> 90:Not yet converged for H-Constraint1
+#> 100:Not yet converged for P-Constraint1
+#>      year gender     maxFac     N  epsP CalibMargin PopMargin
+#>    <fctr> <fctr>      <num> <int> <num>       <num>     <num>
+#> 1:   2012 female 0.02173678  7560  0.01     4111298   4202650
+#> 2:   2012   male 0.02173678  7267  0.01     3893069   3979572
+#> 3:   2011 female 0.01108823  7560  0.01     4156050   4202650
+#> 4:   2011   male 0.01108823  7267  0.01     3935445   3979572
+#> -----------------------------------------
+#> 100:Not yet converged for H-Constraint1
+#>      year        region     maxFac     N  epsH sumCalibWeight PopMargin
+#>    <fctr>        <fctr>      <num> <int> <num>          <num>     <num>
+#> 1:   2012        Vienna 0.02221976  2322  0.02       831191.4    813124
+#> 2:   2012 Upper Austria 0.02221976  2805  0.02       579609.8    567011
+#> 3:   2012 Lower Austria 0.02221976  2804  0.02       661745.2    647361
+#> 4:   2012        Styria 0.02221976  2295  0.02       501261.8    490366
+#> 5:   2012     Carinthia 0.02221976  1078  0.02       238939.8    233746
+#> 6:   2012      Salzburg 0.02221976   924  0.02       224560.2    219679
+#> 7:   2012    Vorarlberg 0.02221976   733  0.02       148216.8    144995
+#> 8:   2012    Burgenland 0.02221976   549  0.02       112286.8    109846
+#> 9:   2012         Tyrol 0.02221976  1317  0.02       285216.7    279017
+#> -----------------------------------------
+#> 110:Not yet converged for P-Constraint1
+#> 110:Not yet converged for H-Constraint1
+#> 120:Not yet converged for P-Constraint1
+#> 120:Not yet converged for H-Constraint1
+#> 130:Not yet converged for P-Constraint1
+#> 130:Not yet converged for H-Constraint1
+#> 140:Not yet converged for P-Constraint1
+#> 140:Not yet converged for H-Constraint1
+#> 150:Not yet converged for P-Constraint1
+#> 150:Not yet converged for H-Constraint1
+#> 160:Not yet converged for P-Constraint1
+#> 160:Not yet converged for H-Constraint1
+#> 170:Not yet converged for P-Constraint1
+#> 170:Not yet converged for H-Constraint1
+#> 180:Not yet converged for P-Constraint1
+#> 180:Not yet converged for H-Constraint1
+#> 190:Not yet converged for P-Constraint1
+#> 190:Not yet converged for H-Constraint1
+#> 200:Not yet converged for P-Constraint1
+#>      year gender     maxFac     N  epsP CalibMargin PopMargin
+#>    <fctr> <fctr>      <num> <int> <num>       <num>     <num>
+#> 1:   2012 female 0.02173678  7560  0.01     4111298   4202650
+#> 2:   2012   male 0.02173678  7267  0.01     3893069   3979572
+#> 3:   2011   male 0.01108823  7267  0.01     3935445   3979572
+#> 4:   2011 female 0.01108823  7560  0.01     4156050   4202650
+#> -----------------------------------------
+#> 200:Not yet converged for H-Constraint1
+#>      year        region     maxFac     N  epsH sumCalibWeight PopMargin
+#>    <fctr>        <fctr>      <num> <int> <num>          <num>     <num>
+#> 1:   2012        Vienna 0.02221976  2322  0.02       831191.4    813124
+#> 2:   2012      Salzburg 0.02221976   924  0.02       224560.2    219679
+#> 3:   2012         Tyrol 0.02221976  1317  0.02       285216.7    279017
+#> 4:   2012 Upper Austria 0.02221976  2805  0.02       579609.8    567011
+#> 5:   2012 Lower Austria 0.02221976  2804  0.02       661745.2    647361
+#> 6:   2012    Vorarlberg 0.02221976   733  0.02       148216.8    144995
+#> 7:   2012    Burgenland 0.02221976   549  0.02       112286.8    109846
+#> 8:   2012        Styria 0.02221976  2295  0.02       501261.8    490366
+#> 9:   2012     Carinthia 0.02221976  1078  0.02       238939.8    233746
+#> -----------------------------------------
+#> Warning: Not converged in 200 steps
+#> No convergence reached
 #> Iteration stopped after 2 steps
 #> Convergence reached
+#> Calibration failed for bootstrap replicates w2 
+#> Corresponding bootstrap replicates will be discarded
+#> Returning 2 calibrated bootstrap weights
 
 # estimate weightedRatio for povmd60 per period
 group <- list("gender", "region", c("gender", "region"))

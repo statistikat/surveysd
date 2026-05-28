@@ -160,6 +160,7 @@ Johannes Gussenbauer, Alexander Kowarik, Statistics Austria
 ## Examples
 
 ``` r
+
 library(surveysd)
 library(data.table)
 setDTthreads(1)

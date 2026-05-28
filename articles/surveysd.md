@@ -13,6 +13,7 @@ created with
 [`demo.eusilc()`](https://statistikat.github.io/surveysd/reference/demo.eusilc.md)
 
 ``` r
+
 library(surveysd)
 
 set.seed(1234)
@@ -35,6 +36,7 @@ Use stratified resampling without replacement to generate 10 samples.
 Those samples are consistent with respect to the reference periods.
 
 ``` r
+
 dat_boot <- draw.bootstrap(eusilc, REP = 10, hid = "hid", weights = "pWeight", 
                            strata = "region", period = "year")
 ```
@@ -45,25 +47,26 @@ Calibrate each sample according to the distribution of `gender` (on a
 personal level) and `region` (on a household level).
 
 ``` r
+
 dat_boot_calib <- recalib(dat_boot, conP.var = "gender", conH.var = "region",
                           epsP = 1e-2, epsH = 2.5e-2, verbose = FALSE)
 dat_boot_calib[1:5, .(year, povertyRisk, gender, pWeight, w1, w2, w3, w4)]
 ```
 
-    ##     year povertyRisk gender  pWeight        w1           w2           w3
-    ##    <num>      <lgcl> <fctr>    <num>     <num>        <num>        <num>
-    ## 1:  2010       FALSE female 504.5696 0.4445050 1008.6905620 1008.6905620
-    ## 2:  2010       FALSE   male 504.5696 0.4445050 1008.6905620 1008.6905620
-    ## 3:  2010       FALSE   male 504.5696 0.4445050 1008.6905620 1008.6905620
-    ## 4:  2010       FALSE female 493.3824 0.4343499    0.4387304    0.4387304
-    ## 5:  2010       FALSE   male 493.3824 0.4343499    0.4387304    0.4387304
-    ##              w4
-    ##           <num>
-    ## 1: 1008.6905620
-    ## 2: 1008.6905620
-    ## 3: 1008.6905620
-    ## 4:    0.4387304
-    ## 5:    0.4387304
+    ##     year povertyRisk gender  pWeight          w1        w2        w3
+    ##    <num>      <lgcl> <fctr>    <num>       <num>     <num>     <num>
+    ## 1:  2010       FALSE female 504.5696   0.4486785 0.4486785 0.4418691
+    ## 2:  2010       FALSE   male 504.5696   0.4486785 0.4486785 0.4418691
+    ## 3:  2010       FALSE   male 504.5696   0.4486785 0.4486785 0.4418691
+    ## 4:  2010       FALSE female 493.3824 986.3259754 0.4387304 0.4324347
+    ## 5:  2010       FALSE   male 493.3824 986.3259754 0.4387304 0.4324347
+    ##             w4
+    ##          <num>
+    ## 1:   0.4476402
+    ## 2:   0.4476402
+    ## 3:   0.4476402
+    ## 4: 985.4985479
+    ## 5: 985.4985479
 
 ### Estimate with respect to a grouping variable
 
@@ -71,6 +74,7 @@ Estimate relative amount of persons at risk of poverty per period and
 `gender`.
 
 ``` r
+
 err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = "gender")
 err.est$Estimates
 ```
@@ -78,12 +82,12 @@ err.est$Estimates
     ## Key: <year, n, N, gender, estimate_type>
     ##     year     n       N gender estimate_type val_povertyRisk stE_povertyRisk
     ##    <num> <int>   <num> <fctr>        <char>           <num>           <num>
-    ## 1:  2010  7267 3979572   male        direct        12.02660       0.3778576
-    ## 2:  2010  7560 4202650 female        direct        16.73351       0.5325296
-    ## 3:  2010 14827 8182222   <NA>        direct        14.44422       0.3949044
-    ## 4:  2011  7267 3979572   male        direct        12.81921       0.4062872
-    ## 5:  2011  7560 4202650 female        direct        16.62488       0.4957299
-    ## 6:  2011 14827 8182222   <NA>        direct        14.77393       0.4205985
+    ## 1:  2010  7267 3979572   male        direct        12.02660       0.4270547
+    ## 2:  2010  7560 4202650 female        direct        16.73351       0.6593126
+    ## 3:  2010 14827 8182222   <NA>        direct        14.44422       0.4646358
+    ## 4:  2011  7267 3979572   male        direct        12.81921       0.4085553
+    ## 5:  2011  7560 4202650 female        direct        16.62488       0.3913382
+    ## 6:  2011 14827 8182222   <NA>        direct        14.77393       0.3375585
 
 The output contains estimates (`val_povertyRisk`) as well as standard
 errors (`stE_povertyRisk`) measured in percent. The rows with
@@ -96,6 +100,7 @@ Estimate relative amount of persons at risk of poverty per period for
 each `region`, `gender`, and combination of both.
 
 ``` r
+
 group <- list("gender", "region", c("gender", "region"))
 err.est <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio, group = group)
 head(err.est$Estimates)
@@ -112,13 +117,14 @@ head(err.est$Estimates)
     ## 6:  2010   484 282307.3 female   Salzburg        direct       17.939382
     ##    stE_povertyRisk
     ##              <num>
-    ## 1:        2.617916
-    ## 2:        2.994327
-    ## 3:        1.295960
-    ## 4:        2.285268
-    ## 5:        2.220322
-    ## 6:        3.819274
+    ## 1:        1.875742
+    ## 2:        3.229354
+    ## 3:        3.316295
+    ## 4:        3.293173
+    ## 5:        1.238320
+    ## 6:        1.836177
 
 ``` r
+
 ## skipping 54 more rows
 ```

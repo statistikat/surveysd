@@ -9,25 +9,29 @@ introduces an alternative rescaling method based on the Rao-Wu bootstrap
 ### Mathematical Formulation
 
 More formally, the replicate weights are constructed as follows:
-$$w_{hi}^{*} = \left( 1 - \lambda_{h} + \lambda_{h} \cdot \frac{n_{h}}{m_{h}} \cdot r_{hi}^{*} \right) \cdot w_{hi}$$
+``` math
+w^*_{hi} = \left(1 - \lambda_h + \lambda_h \cdot \frac{n_h}{m_h} \cdot r^*_{hi} \right) \cdot w_{hi}
+```
 with
-$$\lambda_{h} = \sqrt{\frac{m_{h}\left( 1 - f_{h} \right)}{n_{h} - 1}}$$
+``` math
+ \lambda_h = \sqrt{\frac{m_h(1 - f_h)}{n_h - 1}}
+```
 where:  
-- $w_{hi}$ is the design weight for PSU $i$ in stratum $h$,
-$w_{h} = N_{h}/n_{h}$ is the average design weight for the entire
-stratum $h$,  
-- $N_{h}$ is the total number of units in stratum $h$,  
-- $n_{h}$ is the number of PSUs in the original sample for stratum
-$h$,  
-- $r_{hi}^{*} \in \{ 0,1,2,\ldots\}$ is a **resampling indicator** that
-represents how many times PSU $i$ in stratum $h$ was drawn in the
+- $`w_{hi}`$ is the design weight for PSU $`i`$ in stratum $`h`$,
+$`w_h = N_h / n_h`$ is the average design weight for the entire stratum
+$`h`$,  
+- $`N_h`$ is the total number of units in stratum $`h`$,  
+- $`n_h`$ is the number of PSUs in the original sample for stratum
+$`h`$,  
+- $`r^*_{hi} \in \{0, 1, 2, \dots\}`$ is a **resampling indicator** that
+represents how many times PSU $`i`$ in stratum $`h`$ was drawn in the
 bootstrap ,  
-- $m_{h} = n_{h} - 1$ is the **number of units** to be drawn in each
-replicate for stratum $h$,  
-- $\lambda_{h}$ is the **scaling factor** used to adjust the weights
+- $`m_h = n_h - 1`$ is the **number of units** to be drawn in each
+replicate for stratum $`h`$,  
+- $`\lambda_h`$ is the **scaling factor** used to adjust the weights
 during the bootstrap process,  
-- and $f_{h} = n_{h}/N_{h}$ is the **sampling fraction** in stratum
-$h$.  
+- and $`f_h = n_h / N_h`$ is the **sampling fraction** in stratum
+$`h`$.  
 
 ### Use of Rao-Wu
 
@@ -70,6 +74,7 @@ the total and other statistics of interest.
 #### Load Dataset
 
 ``` r
+
 library(surveysd)
 
 set.seed(1234)
@@ -84,6 +89,7 @@ For the bootstrap select ‘method = “Rao-Wu”’. Otherwise the default
 “Preston” is used.
 
 ``` r
+
 dat_boot_rw <- draw.bootstrap(eusilc, 
                               method = "Rao-Wu",
                               REP = 10, 
@@ -99,6 +105,7 @@ Calibrate each sample according to the distribution of `gender` (on a
 personal level) and `region` (on a household level).
 
 ``` r
+
 dat_boot_calib <- recalib(dat_boot_rw, 
                           conP.var = "gender", 
                           conH.var = "region",

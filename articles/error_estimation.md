@@ -21,6 +21,7 @@ and
 Please refer to the documentation of those functions for more detail.
 
 ``` r
+
 library(surveysd)
 
 set.seed(1234)
@@ -35,20 +36,20 @@ dat_boot_calib[, onePerson := nrow(.SD) == 1, by = .(year, hid)]
 dat_boot_calib[1:5, .(year, povertyRisk, eqIncome, onePerson, pWeight, w1, w2, w3, w4, w5)]
 ```
 
-    ##     year povertyRisk eqIncome onePerson  pWeight        w1        w2       w3
-    ##    <num>      <lgcl>    <num>    <lgcl>    <num>     <num>     <num>    <num>
-    ## 1:  2010       FALSE 16090.69     FALSE 504.5696 1008.3934 1009.8592 994.3005
-    ## 2:  2010       FALSE 16090.69     FALSE 504.5696 1008.3934 1009.8592 994.3005
-    ## 3:  2010       FALSE 16090.69     FALSE 504.5696 1008.3934 1009.8592 994.3005
-    ## 4:  2010       FALSE 27076.24     FALSE 493.3824  986.3884  988.5337 970.5717
-    ## 5:  2010       FALSE 27076.24     FALSE 493.3824  986.3884  988.5337 970.5717
-    ##             w4          w5
-    ##          <num>       <num>
-    ## 1:   0.4486785   0.4483583
-    ## 2:   0.4486785   0.4483583
-    ## 3:   0.4486785   0.4483583
-    ## 4: 986.3259754 986.7902508
-    ## 5: 986.3259754 986.7902508
+    ##     year povertyRisk eqIncome onePerson  pWeight        w1           w2
+    ##    <num>      <lgcl>    <num>    <lgcl>    <num>     <num>        <num>
+    ## 1:  2010       FALSE 16090.69     FALSE 504.5696 0.4495442 1018.4209956
+    ## 2:  2010       FALSE 16090.69     FALSE 504.5696 0.4495442 1018.4209956
+    ## 3:  2010       FALSE 16090.69     FALSE 504.5696 0.4495442 1018.4209956
+    ## 4:  2010       FALSE 27076.24     FALSE 493.3824 0.4400811    0.4435496
+    ## 5:  2010       FALSE 27076.24     FALSE 493.3824 0.4400811    0.4435496
+    ##              w3        w4        w5
+    ##           <num>     <num>     <num>
+    ## 1:    0.4563241 1018.0365 1014.2728
+    ## 2:    0.4563241 1018.0365 1014.2728
+    ## 3:    0.4563241 1018.0365 1014.2728
+    ## 4: 1004.6546437  996.7352  991.6438
+    ## 5: 1004.6546437  996.7352  991.6438
 
 ## Estimator functions
 
@@ -62,6 +63,7 @@ and
 which can be used as follows.
 
 ``` r
+
 povertyRate <- calc.stError(dat_boot_calib, var = "povertyRisk", fun = weightedRatio)
 totalIncome <- calc.stError(dat_boot_calib, var = "eqIncome", fun = weightedSum)
 ```
@@ -71,36 +73,38 @@ percent) and the total income. By default, the results are calculated
 separately for each reference period.
 
 ``` r
+
 povertyRate$Estimates
 ```
 
     ## Key: <year, n, N, estimate_type>
     ##     year     n       N estimate_type val_povertyRisk stE_povertyRisk
     ##    <num> <int>   <num>        <char>           <num>           <num>
-    ## 1:  2010 14827 8182222        direct        14.44422       0.4994614
-    ## 2:  2011 14827 8182222        direct        14.77393       0.5423031
-    ## 3:  2012 14827 8182222        direct        15.04515       0.5284992
-    ## 4:  2013 14827 8182222        direct        14.89013       0.5096764
-    ## 5:  2014 14827 8182222        direct        15.14556       0.2991989
-    ## 6:  2015 14827 8182222        direct        15.53640       0.4535801
-    ## 7:  2016 14827 8182222        direct        15.08315       0.5579456
-    ## 8:  2017 14827 8182222        direct        15.42019       0.4418556
+    ## 1:  2010 14827 8182222        direct        14.44422       0.4870459
+    ## 2:  2011 14827 8182222        direct        14.77393       0.4681504
+    ## 3:  2012 14827 8182222        direct        15.04515       0.5262892
+    ## 4:  2013 14827 8182222        direct        14.89013       0.4103840
+    ## 5:  2014 14827 8182222        direct        15.14556       0.5730706
+    ## 6:  2015 14827 8182222        direct        15.53640       0.5898293
+    ## 7:  2016 14827 8182222        direct        15.08315       0.6587510
+    ## 8:  2017 14827 8182222        direct        15.42019       0.5523229
 
 ``` r
+
 totalIncome$Estimates
 ```
 
     ## Key: <year, n, N, estimate_type>
     ##     year     n       N estimate_type val_eqIncome stE_eqIncome
     ##    <num> <int>   <num>        <char>        <num>        <num>
-    ## 1:  2010 14827 8182222        direct 162750998071    817890258
-    ## 2:  2011 14827 8182222        direct 161926931417   1076528291
-    ## 3:  2012 14827 8182222        direct 162576509628    883288940
-    ## 4:  2013 14827 8182222        direct 163199507862   1300162990
-    ## 5:  2014 14827 8182222        direct 163986275009   1188318870
-    ## 6:  2015 14827 8182222        direct 163416275447   1402463629
-    ## 7:  2016 14827 8182222        direct 162706205137   1802143140
-    ## 8:  2017 14827 8182222        direct 164314959107   1452673082
+    ## 1:  2010 14827 8182222        direct 162750998071   1063566038
+    ## 2:  2011 14827 8182222        direct 161926931417   1124145955
+    ## 3:  2012 14827 8182222        direct 162576509628   1151735587
+    ## 4:  2013 14827 8182222        direct 163199507862   1239755314
+    ## 5:  2014 14827 8182222        direct 163986275009   1438317853
+    ## 6:  2015 14827 8182222        direct 163416275447   1265193194
+    ## 7:  2016 14827 8182222        direct 162706205137   1791694154
+    ## 8:  2017 14827 8182222        direct 164314959107   1493090390
 
 Columns that use the `val_` prefix denote the point estimate belonging
 to the “main weight” of the dataset, which is `pWeight` in case of the
@@ -119,6 +123,7 @@ In order to define a custom estimator function to be used in `fun`, the
 function needs to have at least two arguments like the example below.
 
 ``` r
+
 ## define custom estimator
 myWeightedSum <- function(x, w) {
   sum(x*w)
@@ -142,6 +147,7 @@ parameter `add.arg` can be used to set the additional arguments for the
 custom estimator.
 
 ``` r
+
 ## use add.arg-argument
 fun <- function(x, w, b) {
   sum(x*w*b)
@@ -156,16 +162,17 @@ err.est$Estimates
     ## Key: <year, n, N, estimate_type>
     ##     year     n       N estimate_type val_povertyRisk stE_povertyRisk
     ##    <num> <int>   <num>        <char>           <num>           <num>
-    ## 1:  2010 14827 8182222        direct        273683.9       16742.747
-    ## 2:  2011 14827 8182222        direct        261883.6       16709.309
-    ## 3:  2012 14827 8182222        direct        243083.9       12409.354
-    ## 4:  2013 14827 8182222        direct        238004.4       13207.809
-    ## 5:  2014 14827 8182222        direct        218572.1       10919.737
-    ## 6:  2015 14827 8182222        direct        219984.1       11522.910
-    ## 7:  2016 14827 8182222        direct        201753.9        6682.329
-    ## 8:  2017 14827 8182222        direct        196881.2        9736.695
+    ## 1:  2010 14827 8182222        direct        273683.9        10326.14
+    ## 2:  2011 14827 8182222        direct        261883.6        15066.53
+    ## 3:  2012 14827 8182222        direct        243083.9        12427.14
+    ## 4:  2013 14827 8182222        direct        238004.4        14244.40
+    ## 5:  2014 14827 8182222        direct        218572.1        16236.51
+    ## 6:  2015 14827 8182222        direct        219984.1        15714.66
+    ## 7:  2016 14827 8182222        direct        201753.9        14081.41
+    ## 8:  2017 14827 8182222        direct        196881.2        13005.26
 
 ``` r
+
 # compare with direct computation
 compare.value <- dat_boot_calib[,fun(povertyRisk,pWeight,b=onePerson),
                                  by=c("year")]
@@ -183,16 +190,17 @@ In our example the variable `povertyRisk` is a boolean and is `TRUE` if
 the income is less than 60% of the weighted median income. Thus it
 directly depends on the original weight vector `pWeight`. To further
 reduce the estimated error one should calculate for each bootstrap
-replicate weight $w$ the weighted median income $medIncome_{w}$ and then
-define $povertyRisk_{w}$ as
+replicate weight $`w`$ the weighted median income $`medIncome_{w}`$ and
+then define $`povertyRisk_w`$ as
 
 \$\$ povertyRisk_w = \cases{1 \quad\text{if Income}\<0.6\cdot
 medIncome\_{w}\\ 0 \quad\text{else}} \$\$
 
-The estimator can then be applied to the new variable $povertyRisk_{w}$.
+The estimator can then be applied to the new variable $`povertyRisk_w`$.
 This can be realized using a custom estimator function.
 
 ``` r
+
 # custom estimator to first derive poverty threshold 
 # and then estimate a weighted ratio
 povmd <- function(x, w) {
@@ -223,10 +231,11 @@ err.est$Estimates
 The approach shown above is only valid if no grouping variables are
 supplied (parameter `group = NULL`). If grouping variables are supplied
 one should use parameters `fun.adjust.var` and `adjust.var` such that
-the $povertyRisk_{w}$ is first calculated for each `period` and then
+the $`povertyRisk_w`$ is first calculated for each `period` and then
 used for each grouping in `group`.
 
 ``` r
+
 # using fun.adjust.var and adjust.var to estimate povmd60 indicator
 # for each period and bootstrap weight before applying the weightedRatio
 povmd2 <- function(x, w) {
@@ -248,30 +257,30 @@ err.est$Estimates
     ## Key: <year, n, N, gender, estimate_type>
     ##      year     n       N gender estimate_type val_povertyRisk stE_povertyRisk
     ##     <num> <int>   <num> <fctr>        <char>           <num>           <num>
-    ##  1:  2010  7267 3979572   male        direct        12.02660       0.7209698
-    ##  2:  2010  7560 4202650 female        direct        16.73351       0.8206665
-    ##  3:  2010 14827 8182222   <NA>        direct        14.44422       0.7306447
-    ##  4:  2011  7267 3979572   male        direct        12.81921       0.6267636
-    ##  5:  2011  7560 4202650 female        direct        16.62488       0.7831936
-    ##  6:  2011 14827 8182222   <NA>        direct        14.77393       0.6620239
-    ##  7:  2012  7267 3979572   male        direct        13.76065       0.7806750
-    ##  8:  2012  7560 4202650 female        direct        16.26147       0.6796535
-    ##  9:  2012 14827 8182222   <NA>        direct        15.04515       0.6641714
-    ## 10:  2013  7267 3979572   male        direct        13.88962       0.7289111
-    ## 11:  2013  7560 4202650 female        direct        15.83754       0.6208327
-    ## 12:  2013 14827 8182222   <NA>        direct        14.89013       0.6248273
-    ## 13:  2014  7267 3979572   male        direct        14.50351       0.6812974
-    ## 14:  2014  7560 4202650 female        direct        15.75353       0.6020011
-    ## 15:  2014 14827 8182222   <NA>        direct        15.14556       0.5190542
-    ## 16:  2015  7267 3979572   male        direct        15.12289       0.8073622
-    ## 17:  2015  7560 4202650 female        direct        15.92796       0.6095414
-    ## 18:  2015 14827 8182222   <NA>        direct        15.53640       0.6731459
-    ## 19:  2016  7267 3979572   male        direct        14.57968       0.5562541
-    ## 20:  2016  7560 4202650 female        direct        15.55989       0.5560422
-    ## 21:  2016 14827 8182222   <NA>        direct        15.08315       0.5059573
-    ## 22:  2017  7267 3979572   male        direct        14.94816       0.6827284
-    ## 23:  2017  7560 4202650 female        direct        15.86717       0.4570184
-    ## 24:  2017 14827 8182222   <NA>        direct        15.42019       0.5162693
+    ##  1:  2010  7267 3979572   male        direct        12.02660       0.6010477
+    ##  2:  2010  7560 4202650 female        direct        16.73351       0.5253349
+    ##  3:  2010 14827 8182222   <NA>        direct        14.44422       0.5452923
+    ##  4:  2011  7267 3979572   male        direct        12.81921       0.3852197
+    ##  5:  2011  7560 4202650 female        direct        16.62488       0.4643487
+    ##  6:  2011 14827 8182222   <NA>        direct        14.77393       0.3526977
+    ##  7:  2012  7267 3979572   male        direct        13.76065       0.3280911
+    ##  8:  2012  7560 4202650 female        direct        16.26147       0.5048134
+    ##  9:  2012 14827 8182222   <NA>        direct        15.04515       0.3242155
+    ## 10:  2013  7267 3979572   male        direct        13.88962       0.3890518
+    ## 11:  2013  7560 4202650 female        direct        15.83754       0.3652004
+    ## 12:  2013 14827 8182222   <NA>        direct        14.89013       0.2320007
+    ## 13:  2014  7267 3979572   male        direct        14.50351       0.4781513
+    ## 14:  2014  7560 4202650 female        direct        15.75353       0.5178532
+    ## 15:  2014 14827 8182222   <NA>        direct        15.14556       0.3351887
+    ## 16:  2015  7267 3979572   male        direct        15.12289       0.4082734
+    ## 17:  2015  7560 4202650 female        direct        15.92796       0.5146221
+    ## 18:  2015 14827 8182222   <NA>        direct        15.53640       0.3875363
+    ## 19:  2016  7267 3979572   male        direct        14.57968       0.6079382
+    ## 20:  2016  7560 4202650 female        direct        15.55989       0.4085159
+    ## 21:  2016 14827 8182222   <NA>        direct        15.08315       0.4365740
+    ## 22:  2017  7267 3979572   male        direct        14.94816       0.5445202
+    ## 23:  2017  7560 4202650 female        direct        15.86717       0.4637367
+    ## 24:  2017 14827 8182222   <NA>        direct        15.42019       0.3620280
     ##      year     n       N gender estimate_type val_povertyRisk stE_povertyRisk
     ##     <num> <int>   <num> <fctr>        <char>           <num>           <num>
 
@@ -281,6 +290,7 @@ In case an estimator should be applied to several columns of the
 dataset, `var` can be set to a vector containing all necessary columns.
 
 ``` r
+
 multipleRates <- calc.stError(dat_boot_calib, var = c("povertyRisk", "onePerson"), fun = weightedRatio)
 multipleRates$Estimates
 ```
@@ -288,24 +298,24 @@ multipleRates$Estimates
     ## Key: <year, n, N, estimate_type>
     ##     year     n       N estimate_type val_povertyRisk stE_povertyRisk
     ##    <num> <int>   <num>        <char>           <num>           <num>
-    ## 1:  2010 14827 8182222        direct        14.44422       0.4241295
-    ## 2:  2011 14827 8182222        direct        14.77393       0.4678877
-    ## 3:  2012 14827 8182222        direct        15.04515       0.4395027
-    ## 4:  2013 14827 8182222        direct        14.89013       0.4465173
-    ## 5:  2014 14827 8182222        direct        15.14556       0.4598655
-    ## 6:  2015 14827 8182222        direct        15.53640       0.6066235
-    ## 7:  2016 14827 8182222        direct        15.08315       0.5918450
-    ## 8:  2017 14827 8182222        direct        15.42019       0.5678204
+    ## 1:  2010 14827 8182222        direct        14.44422       0.5205799
+    ## 2:  2011 14827 8182222        direct        14.77393       0.4713899
+    ## 3:  2012 14827 8182222        direct        15.04515       0.4890214
+    ## 4:  2013 14827 8182222        direct        14.89013       0.3550902
+    ## 5:  2014 14827 8182222        direct        15.14556       0.4368583
+    ## 6:  2015 14827 8182222        direct        15.53640       0.4595126
+    ## 7:  2016 14827 8182222        direct        15.08315       0.4770273
+    ## 8:  2017 14827 8182222        direct        15.42019       0.4967381
     ##    val_onePerson stE_onePerson
     ##            <num>         <num>
-    ## 1:      14.85737     0.4241295
-    ## 2:      14.85737     0.4678877
-    ## 3:      14.85737     0.4395027
-    ## 4:      14.85737     0.4465173
-    ## 5:      14.85737     0.4598655
-    ## 6:      14.85737     0.6066235
-    ## 7:      14.85737     0.5918450
-    ## 8:      14.85737     0.5678204
+    ## 1:      14.85737     0.5205799
+    ## 2:      14.85737     0.4713899
+    ## 3:      14.85737     0.4890214
+    ## 4:      14.85737     0.3550902
+    ## 5:      14.85737     0.4368583
+    ## 6:      14.85737     0.4595126
+    ## 7:      14.85737     0.4770273
+    ## 8:      14.85737     0.4967381
 
 Here we see the relative number of persons at risk of poverty and the
 relative number of one-person households.
@@ -320,6 +330,7 @@ the grouping variable. For simplicity, only one reference period of the
 above data is used.
 
 ``` r
+
 dat2 <- subset(dat_boot_calib, year == 2010)
 for (att  in c("period", "weights", "b.rep"))
   attr(dat2, att) <- attr(dat_boot_calib, att)
@@ -329,6 +340,7 @@ To calculate the ratio of persons at risk of poverty for each federal
 state of Austria, `group = "region"` can be used.
 
 ``` r
+
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, group = "region")
 povertyRates$Estimates
 ```
@@ -348,16 +360,16 @@ povertyRates$Estimates
     ## 10:  2010 14827 8182222          <NA>        direct        14.44422
     ##     stE_povertyRisk
     ##               <num>
-    ##  1:       3.1213609
-    ##  2:       3.6543645
-    ##  3:       1.6961499
-    ##  4:       1.6615381
-    ##  5:       1.5693442
-    ##  6:       1.2124916
-    ##  7:       1.6298781
-    ##  8:       1.1783523
-    ##  9:       0.8352651
-    ## 10:       0.4994614
+    ##  1:       3.1266184
+    ##  2:       2.5191202
+    ##  3:       1.4057442
+    ##  4:       1.2566878
+    ##  5:       1.5583374
+    ##  6:       0.9570281
+    ##  7:       1.1891203
+    ##  8:       1.4469831
+    ##  9:       0.5877504
+    ## 10:       0.4870459
 
 The last row with `region = NA` denotes the aggregate over all regions.
 Note that the columns `N` and `n` now show the weighted and unweighted
@@ -379,11 +391,14 @@ can be called.
 Calculate the point estimate and standard error for each region and each
 gender. The number of rows in the output is therefore
 
-$$n_{\text{periods}} \cdot \left( n_{\text{regions}} + n_{\text{genders}} + 1 \right) = 1 \cdot (9 + 2 + 1) = 12.$$
+``` math
+n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12.
+```
 
 The last row is again the estimate for the whole period.
 
 ``` r
+
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = c("gender", "region"))
 povertyRates$Estimates
@@ -406,27 +421,30 @@ povertyRates$Estimates
     ## 12:  2010 14827 8182222   <NA>          <NA>        direct        14.44422
     ##     stE_povertyRisk
     ##               <num>
-    ##  1:       3.1213609
-    ##  2:       3.6543645
-    ##  3:       1.6961499
-    ##  4:       1.6615381
-    ##  5:       1.5693442
-    ##  6:       1.2124916
-    ##  7:       1.6298781
-    ##  8:       1.1783523
-    ##  9:       0.8352651
-    ## 10:       0.5518400
-    ## 11:       0.5568304
-    ## 12:       0.4994614
+    ##  1:       3.1266184
+    ##  2:       2.5191202
+    ##  3:       1.4057442
+    ##  4:       1.2566878
+    ##  5:       1.5583374
+    ##  6:       0.9570281
+    ##  7:       1.1891203
+    ##  8:       1.4469831
+    ##  9:       0.5877504
+    ## 10:       0.5352061
+    ## 11:       0.4751811
+    ## 12:       0.4870459
 
 #### Option 2: All combinations of `region` and `gender`
 
 Split the data by all combinations of the two grouping variables. This
 will result in a larger output-table of the size
 
-$$n_{\text{periods}} \cdot \left( n_{\text{regions}} \cdot n_{\text{genders}} + 1 \right) = 1 \cdot (9 \cdot 2 + 1) = 19.$$
+``` math
+n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + 1) = 1\cdot(9\cdot2 + 1)= 19.
+```
 
 ``` r
+
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = list(c("gender", "region")))
 povertyRates$Estimates
@@ -456,25 +474,25 @@ povertyRates$Estimates
     ## 19:  2010 14827 8182222.0   <NA>          <NA>        direct       14.444218
     ##     stE_povertyRisk
     ##               <num>
-    ##  1:       2.7065796
-    ##  2:       3.6716257
-    ##  3:       3.2837774
-    ##  4:       4.1607519
-    ##  5:       1.6332349
-    ##  6:       1.8511215
-    ##  7:       1.4933280
-    ##  8:       2.2421538
-    ##  9:       2.0021563
-    ## 10:       1.5326161
-    ## 11:       1.4252407
-    ## 12:       1.3568826
-    ## 13:       1.4990928
-    ## 14:       2.0586947
-    ## 15:       0.7935347
-    ## 16:       1.3765863
-    ## 17:       1.3166973
-    ## 18:       1.0042404
-    ## 19:       0.4994614
+    ##  1:       2.7704209
+    ##  2:       3.9951237
+    ##  3:       2.0709277
+    ##  4:       3.1751896
+    ##  5:       1.0026851
+    ##  6:       1.9648330
+    ##  7:       0.8729911
+    ##  8:       1.8371955
+    ##  9:       1.6995377
+    ## 10:       1.7168648
+    ## 11:       1.1536798
+    ## 12:       1.2269278
+    ## 13:       1.0467337
+    ## 14:       1.4061286
+    ## 15:       0.7462068
+    ## 16:       1.5110522
+    ## 17:       1.5454188
+    ## 18:       0.6944340
+    ## 19:       0.4870459
 
 #### Option 3: Cobination of Option 1 and Option 2
 
@@ -486,9 +504,12 @@ In this case, the estimates and standard errors are calculated for
 
 The number of rows in the output is therefore
 
-$$n_{\text{periods}} \cdot \left( n_{\text{regions}} \cdot n_{\text{genders}} + n_{\text{regions}} + n_{\text{genders}} + 1 \right) = 1 \cdot (9 \cdot 2 + 9 + 2 + 1) = 30.$$
+``` math
+n_\text{periods}\cdot(n_\text{regions} \cdot n_\text{genders} + n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9\cdot2 + 9 + 2 + 1) = 30.
+```
 
 ``` r
+
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = list("gender", "region", c("gender", "region")))
 povertyRates$Estimates
@@ -531,36 +552,36 @@ povertyRates$Estimates
     ##     <num> <int>     <num> <fctr>        <fctr>        <char>           <num>
     ##     stE_povertyRisk
     ##               <num>
-    ##  1:       2.7065796
-    ##  2:       3.6716257
-    ##  3:       3.2837774
-    ##  4:       4.1607519
-    ##  5:       1.6332349
-    ##  6:       1.8511215
-    ##  7:       1.4933280
-    ##  8:       3.1213609
-    ##  9:       2.2421538
-    ## 10:       2.0021563
-    ## 11:       1.5326161
-    ## 12:       3.6543645
-    ## 13:       1.6961499
-    ## 14:       1.6615381
-    ## 15:       1.4252407
-    ## 16:       1.3568826
-    ## 17:       1.4990928
-    ## 18:       2.0586947
-    ## 19:       1.5693442
-    ## 20:       0.7935347
-    ## 21:       1.3765863
-    ## 22:       1.3166973
-    ## 23:       1.0042404
-    ## 24:       1.2124916
-    ## 25:       1.6298781
-    ## 26:       1.1783523
-    ## 27:       0.8352651
-    ## 28:       0.5518400
-    ## 29:       0.5568304
-    ## 30:       0.4994614
+    ##  1:       2.7704209
+    ##  2:       3.9951237
+    ##  3:       2.0709277
+    ##  4:       3.1751896
+    ##  5:       1.0026851
+    ##  6:       1.9648330
+    ##  7:       0.8729911
+    ##  8:       3.1266184
+    ##  9:       1.8371955
+    ## 10:       1.6995377
+    ## 11:       1.7168648
+    ## 12:       2.5191202
+    ## 13:       1.4057442
+    ## 14:       1.2566878
+    ## 15:       1.1536798
+    ## 16:       1.2269278
+    ## 17:       1.0467337
+    ## 18:       1.4061286
+    ## 19:       1.5583374
+    ## 20:       0.7462068
+    ## 21:       1.5110522
+    ## 22:       1.5454188
+    ## 23:       0.6944340
+    ## 24:       0.9570281
+    ## 25:       1.1891203
+    ## 26:       1.4469831
+    ## 27:       0.5877504
+    ## 28:       0.5352061
+    ## 29:       0.4751811
+    ## 30:       0.4870459
     ##     stE_povertyRisk
     ##               <num>
 
@@ -573,6 +594,7 @@ differences and the standard error of these differences for all
 variables defined in `groups` will be calculated.
 
 ``` r
+
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = c("gender", "region"),
                              group.diff = TRUE)
@@ -635,62 +657,64 @@ povertyRates$Estimates
     ##     <num>   <num>     <num>        <fctr>                        <fctr>
     ##        estimate_type val_povertyRisk stE_povertyRisk
     ##               <char>           <num>           <num>
-    ##  1:           direct     19.53983651       3.1213609
-    ##  2: group difference      3.00252634       3.9826457
-    ##  3:           direct     16.53731017       3.6543645
-    ##  4: group difference      5.75249330       2.7675080
-    ##  5: group difference      6.45356876       3.6893226
-    ##  6: group difference     -2.74996696       3.3456727
-    ##  7: group difference     -3.45104242       4.5768779
-    ##  8:           direct     13.78734321       1.6961499
-    ##  9: group difference      4.23164602       3.2020441
-    ## 10: group difference     -0.70107546       2.3879594
-    ## 11: group difference     -1.22911968       4.4621508
-    ## 12:           direct     13.08626775       1.6615381
-    ## 13: group difference     -1.52084728       2.2352304
-    ## 14: group difference     -2.22192274       2.4450528
-    ## 15:           direct     15.30819049       1.5693442
-    ## 16: group difference      5.16519923       2.6758064
-    ## 17: group difference      2.30515330       3.6809959
-    ## 18: group difference     -2.16267289       3.7624870
-    ## 19: group difference      0.69737304       4.1476630
-    ## 20: group difference     -0.58729407       1.3918461
-    ## 21: group difference     -3.44734000       2.1573575
-    ## 22: group difference      5.69621369       3.6091838
-    ## 23: group difference      8.65006312       3.4420400
-    ## 24: group difference     -1.28836953       2.2623856
-    ## 25: group difference     -4.14841546       1.6104009
-    ## 26: group difference     -2.69368735       4.3249978
-    ## 27: group difference     -5.64753678       3.8880216
-    ## 28: group difference     -0.93355321       1.4447259
-    ## 29: group difference     -1.92649272       2.2767974
-    ## 30: group difference      0.05627961       2.6743572
-    ## 31: group difference      2.89756982       2.1008437
-    ## 32: group difference     -0.75735506       2.3008094
-    ## 33: group difference      2.19649436       1.7496991
-    ## 34: group difference     -1.46456768       1.8641591
-    ## 35: group difference      4.41841710       1.3512934
-    ## 36:           direct     14.37463728       1.2124916
-    ## 37: group difference     -2.86004593       1.9193332
-    ## 38:           direct     17.23468321       1.6298781
-    ## 39: group difference     -0.53101447       1.7280658
-    ## 40: group difference      3.48486389       1.7270734
-    ## 41: group difference     -3.39106040       2.1462485
-    ## 42: group difference     -6.34490982       1.8389406
-    ## 43:           direct     13.84362281       1.1783523
-    ## 44: group difference      2.95384943       1.5282520
-    ## 45:           direct     10.88977339       0.8352651
-    ## 46:           direct     12.02659998       0.5518400
-    ## 47: group difference     -4.70690810       0.4601531
-    ## 48:           direct     16.73350808       0.5568304
-    ## 49:           direct     14.44421817       0.4994614
+    ##  1:           direct     19.53983651       3.1266184
+    ##  2: group difference      3.00252634       2.8738229
+    ##  3:           direct     16.53731017       2.5191202
+    ##  4: group difference      5.75249330       3.3604045
+    ##  5: group difference      6.45356876       3.1290843
+    ##  6: group difference     -2.74996696       2.1299172
+    ##  7: group difference     -3.45104242       2.3954782
+    ##  8:           direct     13.78734321       1.4057442
+    ##  9: group difference      4.23164602       3.5835310
+    ## 10: group difference     -0.70107546       2.0964861
+    ## 11: group difference     -1.22911968       3.4427964
+    ## 12:           direct     13.08626775       1.2566878
+    ## 13: group difference     -1.52084728       2.9001091
+    ## 14: group difference     -2.22192274       1.6410810
+    ## 15:           direct     15.30819049       1.5583374
+    ## 16: group difference      5.16519923       3.3717837
+    ## 17: group difference      2.30515330       3.3625710
+    ## 18: group difference     -2.16267289       2.7473845
+    ## 19: group difference      0.69737304       2.6411691
+    ## 20: group difference     -0.58729407       1.4503823
+    ## 21: group difference     -3.44734000       1.9544547
+    ## 22: group difference      5.69621369       2.9175679
+    ## 23: group difference      8.65006312       3.1045882
+    ## 24: group difference     -1.28836953       1.6741699
+    ## 25: group difference     -4.14841546       2.0734294
+    ## 26: group difference     -2.69368735       2.2753413
+    ## 27: group difference     -5.64753678       2.8165638
+    ## 28: group difference     -0.93355321       2.1428360
+    ## 29: group difference     -1.92649272       1.6987955
+    ## 30: group difference      0.05627961       1.9867856
+    ## 31: group difference      2.89756982       1.6274952
+    ## 32: group difference     -0.75735506       1.4224268
+    ## 33: group difference      2.19649436       1.3455762
+    ## 34: group difference     -1.46456768       2.0335444
+    ## 35: group difference      4.41841710       1.6128280
+    ## 36:           direct     14.37463728       0.9570281
+    ## 37: group difference     -2.86004593       1.7358244
+    ## 38:           direct     17.23468321       1.1891203
+    ## 39: group difference     -0.53101447       2.0780716
+    ## 40: group difference      3.48486389       1.1972567
+    ## 41: group difference     -3.39106040       1.7956024
+    ## 42: group difference     -6.34490982       1.5124559
+    ## 43:           direct     13.84362281       1.4469831
+    ## 44: group difference      2.95384943       1.3285575
+    ## 45:           direct     10.88977339       0.5877504
+    ## 46:           direct     12.02659998       0.5352061
+    ## 47: group difference     -4.70690810       0.2917232
+    ## 48:           direct     16.73350808       0.4751811
+    ## 49:           direct     14.44421817       0.4870459
     ##        estimate_type val_povertyRisk stE_povertyRisk
     ##               <char>           <num>           <num>
 
 The resulting output table contains 49 rows. 12 rows for all the direct
 estimators
 
-$$n_{\text{periods}} \cdot \left( n_{\text{regions}} + n_{\text{genders}} + 1 \right) = 1 \cdot (9 + 2 + 1) = 12,$$
+``` math
+n_\text{periods}\cdot(n_\text{regions} + n_\text{genders} + 1) = 1\cdot(9 + 2 + 1) = 12,
+```
 
 and another 37 for all the differences within the variable `"gender"`
 and `"region"` seperately. Variable `"gender"` has 2 unique values
@@ -698,7 +722,9 @@ and `"region"` seperately. Variable `"gender"` has 2 unique values
 `gender = "female"` and variable `"region"` has 9 unique values
 (`unique(dat2$region)`) resulting in
 
-$$8 + 7 + 6 + 5 + 4 + 3 + 2 + 1 = \sum\limits_{1 = 1}^{9 - 1}i = 36$$
+``` math
+8 + 7 + 6 + 5 + 4 + 3 + 2 + 1  = \sum\limits_{1=1}^{9-1}i = 36
+```
 
 estimates. Thus the output contains 1 + 36 = 37 estimates with respect
 to group differences.
@@ -720,12 +746,15 @@ The difference between `gender = "female" & region = "Vienna"` and
 
 Thus this leads to
 
-$$2 \cdot \left( \sum\limits_{1 = 1}^{9 - 1}i \right) + 9 \cdot 1 = 81$$
+``` math
+2\cdot(\sum\limits_{1=1}^{9-1}i) + 9\cdot1 = 81
+```
 
 results with respect to the differences. The Output contains an
 additional column `estimate_type` and
 
 ``` r
+
 povertyRates <- calc.stError(dat2, var = "povertyRisk", fun = weightedRatio, 
                              group = list(c("gender", "region")),
                              group.diff = TRUE)
@@ -746,6 +775,7 @@ calcualed for. The inputs should be specified in the form
 `"period2" - "period1"`.
 
 ``` r
+
 povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
                              period.diff = c("2017 - 2016", "2016 - 2015", "2015 - 2014"))
 povertyRates$Estimates
@@ -754,13 +784,13 @@ povertyRates$Estimates
     ## Key: <year, n, N, estimate_type>
     ##         year     n       N     estimate_type val_povertyRisk stE_povertyRisk
     ##       <char> <num>   <num>            <char>           <num>           <num>
-    ## 1:      2014 14827 8182222            direct      15.1455601       0.2991989
-    ## 2:      2015 14827 8182222            direct      15.5364014       0.4535801
-    ## 3: 2015-2014 14827 8182222 period difference       0.3908413       0.3071445
-    ## 4:      2016 14827 8182222            direct      15.0831502       0.5579456
-    ## 5: 2016-2015 14827 8182222 period difference      -0.4532512       0.3136365
-    ## 6:      2017 14827 8182222            direct      15.4201916       0.4418556
-    ## 7: 2017-2016 14827 8182222 period difference       0.3370414       0.3906463
+    ## 1:      2014 14827 8182222            direct      15.1455601       0.5730706
+    ## 2:      2015 14827 8182222            direct      15.5364014       0.5898293
+    ## 3: 2015-2014 14827 8182222 period difference       0.3908413       0.2948520
+    ## 4:      2016 14827 8182222            direct      15.0831502       0.6587510
+    ## 5: 2016-2015 14827 8182222 period difference      -0.4532512       0.4110622
+    ## 6:      2017 14827 8182222            direct      15.4201916       0.5523229
+    ## 7: 2017-2016 14827 8182222 period difference       0.3370414       0.4040967
 
 If additional grouping variables are supplied to
 [`calc.stError()`](https://statistikat.github.io/surveysd/reference/calc.stError.md)
@@ -768,6 +798,7 @@ die differences across `period`s are also carried out for all variables
 in `group`.
 
 ``` r
+
 povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
                              group = "gender",
                              period.diff = c("2017 - 2016", "2016 - 2015", "2015 - 2014"))
@@ -802,27 +833,27 @@ povertyRates$Estimates
     ##        <char> <num>   <num> <fctr>            <char>           <num>
     ##     stE_povertyRisk
     ##               <num>
-    ##  1:       0.6078110
-    ##  2:       0.3091646
-    ##  3:       0.2991989
-    ##  4:       0.5868318
-    ##  5:       0.4291275
-    ##  6:       0.4535801
-    ##  7:       0.4466221
-    ##  8:       0.3142400
-    ##  9:       0.3071445
-    ## 10:       0.6043845
-    ## 11:       0.5977259
-    ## 12:       0.5579456
-    ## 13:       0.3362520
-    ## 14:       0.3394283
-    ## 15:       0.3136365
-    ## 16:       0.5973075
-    ## 17:       0.4163046
-    ## 18:       0.4418556
-    ## 19:       0.4080650
-    ## 20:       0.4550391
-    ## 21:       0.3906463
+    ##  1:       0.6530638
+    ##  2:       0.7060278
+    ##  3:       0.5730706
+    ##  4:       0.6248211
+    ##  5:       0.6499586
+    ##  6:       0.5898293
+    ##  7:       0.4073282
+    ##  8:       0.2890679
+    ##  9:       0.2948520
+    ## 10:       0.7814707
+    ## 11:       0.6493501
+    ## 12:       0.6587510
+    ## 13:       0.4012669
+    ## 14:       0.4760649
+    ## 15:       0.4110622
+    ## 16:       0.6585141
+    ## 17:       0.6730055
+    ## 18:       0.5523229
+    ## 19:       0.5335413
+    ## 20:       0.4019970
+    ## 21:       0.4040967
     ##     stE_povertyRisk
     ##               <num>
 
@@ -834,6 +865,7 @@ table will contain the direct estimates as well as rolling averages of
 length `period.mean`.
 
 ``` r
+
 povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
                              period.mean = 3)
 povertyRates$Estimates
@@ -842,17 +874,18 @@ povertyRates$Estimates
     ## Key: <year, n, N, estimate_type>
     ##              year     n       N  estimate_type val_povertyRisk stE_povertyRisk
     ##            <char> <num>   <num>         <char>           <num>           <num>
-    ## 1:           2014 14827 8182222         direct        15.14556       0.2991989
-    ## 2: 2014_2015_2016 14827 8182222 period average        15.25504       0.4026225
-    ## 3:           2015 14827 8182222         direct        15.53640       0.4535801
-    ## 4: 2015_2016_2017 14827 8182222 period average        15.34658       0.4477532
-    ## 5:           2016 14827 8182222         direct        15.08315       0.5579456
-    ## 6:           2017 14827 8182222         direct        15.42019       0.4418556
+    ## 1:           2014 14827 8182222         direct        15.14556       0.5730706
+    ## 2: 2014_2015_2016 14827 8182222 period average        15.25504       0.5554299
+    ## 3:           2015 14827 8182222         direct        15.53640       0.5898293
+    ## 4: 2015_2016_2017 14827 8182222 period average        15.34658       0.5300991
+    ## 5:           2016 14827 8182222         direct        15.08315       0.6587510
+    ## 6:           2017 14827 8182222         direct        15.42019       0.5523229
 
 if in addition the parameters `group` and/or `period.diff` are specified
 then differences and groupings of averages will be calculated.
 
 ``` r
+
 povertyRates <- calc.stError(dat_boot_calib[year>2013], var = "povertyRisk", fun = weightedRatio, 
                              period.mean = 3, period.diff = "2016 - 2015",
                              group = "gender")
@@ -890,29 +923,29 @@ povertyRates$Estimates
     ##             <char> <num>   <num> <fctr>                             <char>
     ##     val_povertyRisk stE_povertyRisk
     ##               <num>           <num>
-    ##  1:     14.50350682      0.60781099
-    ##  2:     15.75353283      0.30916456
-    ##  3:     15.14556006      0.29919886
-    ##  4:     14.73535987      0.54920225
-    ##  5:     15.74712982      0.39881365
-    ##  6:     15.25503720      0.40262253
-    ##  7:     15.12289042      0.58683179
-    ##  8:     15.92796296      0.42912745
-    ##  9:     15.53640136      0.45358012
-    ## 10:     14.88357729      0.56253900
-    ## 11:     15.78500836      0.43312646
-    ## 12:     15.34658105      0.44775317
-    ## 13:     14.57968239      0.60438452
-    ## 14:     15.55989368      0.59772594
-    ## 15:     15.08315018      0.55794565
-    ## 16:     -0.54320803      0.33625196
-    ## 17:     -0.36806928      0.33942832
-    ## 18:     -0.45325118      0.31363650
-    ## 19:      0.14821741      0.12692329
-    ## 20:      0.03787854      0.17207396
-    ## 21:      0.09154385      0.09289758
-    ## 22:     14.94815906      0.59730750
-    ## 23:     15.86716845      0.41630461
-    ## 24:     15.42019160      0.44185558
+    ##  1:     14.50350682       0.6530638
+    ##  2:     15.75353283       0.7060278
+    ##  3:     15.14556006       0.5730706
+    ##  4:     14.73535987       0.6356076
+    ##  5:     15.74712982       0.6046596
+    ##  6:     15.25503720       0.5554299
+    ##  7:     15.12289042       0.6248211
+    ##  8:     15.92796296       0.6499586
+    ##  9:     15.53640136       0.5898293
+    ## 10:     14.88357729       0.6088052
+    ## 11:     15.78500836       0.5799993
+    ## 12:     15.34658105       0.5300991
+    ## 13:     14.57968239       0.7814707
+    ## 14:     15.55989368       0.6493501
+    ## 15:     15.08315018       0.6587510
+    ## 16:     -0.54320803       0.4012669
+    ## 17:     -0.36806928       0.4760649
+    ## 18:     -0.45325118       0.4110622
+    ## 19:      0.14821741       0.2344867
+    ## 20:      0.03787854       0.2812838
+    ## 21:      0.09154385       0.2191141
+    ## 22:     14.94815906       0.6585141
+    ## 23:     15.86716845       0.6730055
+    ## 24:     15.42019160       0.5523229
     ##     val_povertyRisk stE_povertyRisk
     ##               <num>           <num>

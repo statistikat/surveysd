@@ -51,6 +51,7 @@ a list of the following outputs
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 # load data
 eusilc <- demo.eusilc(n = 1, prettyNames = TRUE)
