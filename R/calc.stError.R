@@ -319,7 +319,8 @@ calc.stError <- function(
               c.names = c.names)
   
   # check var
-  if(is.null(var)){
+  varNULL <- is.null(var)
+  if(varNULL){
     var <- generateRandomName(20, colnames(dat))
     dat[, c(var) := 1]
     removeCols <- c(removeCols, var)
@@ -519,7 +520,7 @@ calc.stError <- function(
     removeCols2 <- removeCols[removeCols %in% colnames(outx)]
     outx[, c(removeCols2) := NULL]
     
-    if(var %in% removeCols){
+    if(varNULL){
       outx[,est:="N"]
       var <- "N"
     }
@@ -980,7 +981,6 @@ help_diff_group <- function(var.est, by.eval, var_est, diff.group, diff.column){
   return(var.est.diff)
   
 }
-
 
 
 
