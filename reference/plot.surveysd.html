@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">surveysd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,93 +117,12 @@ coloured grey.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calibrate weight for bootstrap replicates</span></span></span>
 <span class="r-in"><span><span class="va">dat_boot_calib</span> <span class="op">&lt;-</span> <span class="fu"><a href="recalib.html">recalib</a></span><span class="op">(</span><span class="va">dat_boot</span>, conP.var <span class="op">=</span> <span class="st">"gender"</span>, conH.var <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 1 steps</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 2 steps</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 20:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 20:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 30:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 30:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 40:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 40:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 50:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 50:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 60:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 60:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 70:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 70:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 80:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 80:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 90:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 90:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 100:Not yet converged for P-Constraint1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      year gender     maxFac     N  epsP CalibMargin PopMargin</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;fctr&gt; &lt;fctr&gt;      &lt;num&gt; &lt;int&gt; &lt;num&gt;       &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   2012 female 0.02173678  7560  0.01     4111298   4202650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   2012   male 0.02173678  7267  0.01     3893069   3979572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   2011 female 0.01108823  7560  0.01     4156050   4202650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   2011   male 0.01108823  7267  0.01     3935445   3979572</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> -----------------------------------------</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 100:Not yet converged for H-Constraint1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      year        region     maxFac     N  epsH sumCalibWeight PopMargin</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;fctr&gt;        &lt;fctr&gt;      &lt;num&gt; &lt;int&gt; &lt;num&gt;          &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   2012        Vienna 0.02221976  2322  0.02       831191.4    813124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   2012 Upper Austria 0.02221976  2805  0.02       579609.8    567011</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   2012 Lower Austria 0.02221976  2804  0.02       661745.2    647361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   2012        Styria 0.02221976  2295  0.02       501261.8    490366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   2012     Carinthia 0.02221976  1078  0.02       238939.8    233746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:   2012      Salzburg 0.02221976   924  0.02       224560.2    219679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:   2012    Vorarlberg 0.02221976   733  0.02       148216.8    144995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8:   2012    Burgenland 0.02221976   549  0.02       112286.8    109846</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9:   2012         Tyrol 0.02221976  1317  0.02       285216.7    279017</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> -----------------------------------------</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 110:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 110:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 120:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 120:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 130:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 130:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 140:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 140:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 150:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 150:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 160:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 160:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 170:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 170:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 180:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 180:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 190:Not yet converged for P-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 190:Not yet converged for H-Constraint1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 200:Not yet converged for P-Constraint1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      year gender     maxFac     N  epsP CalibMargin PopMargin</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;fctr&gt; &lt;fctr&gt;      &lt;num&gt; &lt;int&gt; &lt;num&gt;       &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   2012 female 0.02173678  7560  0.01     4111298   4202650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   2012   male 0.02173678  7267  0.01     3893069   3979572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   2011   male 0.01108823  7267  0.01     3935445   3979572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   2011 female 0.01108823  7560  0.01     4156050   4202650</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> -----------------------------------------</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 200:Not yet converged for H-Constraint1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      year        region     maxFac     N  epsH sumCalibWeight PopMargin</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;fctr&gt;        &lt;fctr&gt;      &lt;num&gt; &lt;int&gt; &lt;num&gt;          &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   2012        Vienna 0.02221976  2322  0.02       831191.4    813124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   2012      Salzburg 0.02221976   924  0.02       224560.2    219679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   2012         Tyrol 0.02221976  1317  0.02       285216.7    279017</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   2012 Upper Austria 0.02221976  2805  0.02       579609.8    567011</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   2012 Lower Austria 0.02221976  2804  0.02       661745.2    647361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:   2012    Vorarlberg 0.02221976   733  0.02       148216.8    144995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:   2012    Burgenland 0.02221976   549  0.02       112286.8    109846</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8:   2012        Styria 0.02221976  2295  0.02       501261.8    490366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9:   2012     Carinthia 0.02221976  1078  0.02       238939.8    233746</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> -----------------------------------------</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not converged in 200 steps</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No convergence reached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 2 steps</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration stopped after 1 steps</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Convergence reached</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Calibration failed for bootstrap replicates w2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Corresponding bootstrap replicates will be discarded</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Returning 2 calibrated bootstrap weights</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># estimate weightedRatio for povmd60 per period</span></span></span>
 <span class="r-in"><span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"region"</span><span class="op">)</span><span class="op">)</span></span></span>

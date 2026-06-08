@@ -61,16 +61,16 @@ dat = data.frame(
 )
 dat
 #>       weight household
-#> 1  3.5593264         a
-#> 2  0.3192965         b
-#> 3  4.9140467         a
-#> 4  0.9747069         c
-#> 5  2.4586285         b
-#> 6  1.2461800         b
-#> 7  2.9306996         b
-#> 8  4.7771154         c
-#> 9  0.8780809         c
-#> 10 7.0632484         b
+#> 1  0.5576980         c
+#> 2  0.8425436         c
+#> 3  0.3242787         c
+#> 4  0.3566463         b
+#> 5  1.2358038         b
+#> 6  0.7556135         b
+#> 7  0.2727777         b
+#> 8  0.3612536         c
+#> 9  7.5454078         a
+#> 10 2.8940572         b
 
 ## create targets (same lenght as classLabels!)
 targets <- 3:5
@@ -79,16 +79,16 @@ targets <- 3:5
 new_weight <- ipf_step(dat$weight, dat$household, targets)
 cbind(dat, new_weight)
 #>       weight household new_weight
-#> 1  3.5593264         a 1.26018046
-#> 2  0.3192965         b 0.09111008
-#> 3  4.9140467         a 1.73981954
-#> 4  0.9747069         c 0.73508382
-#> 5  2.4586285         b 0.70156063
-#> 6  1.2461800         b 0.35559289
-#> 7  2.9306996         b 0.83626437
-#> 8  4.7771154         c 3.60270374
-#> 9  0.8780809         c 0.66221244
-#> 10 7.0632484         b 2.01547203
+#> 1  0.5576980         c  1.3369090
+#> 2  0.8425436         c  2.0197387
+#> 3  0.3242787         c  0.7773583
+#> 4  0.3566463         b  0.2586784
+#> 5  1.2358038         b  0.8963384
+#> 6  0.7556135         b  0.5480525
+#> 7  0.2727777         b  0.1978479
+#> 8  0.3612536         c  0.8659940
+#> 9  7.5454078         a  3.0000000
+#> 10 2.8940572         b  2.0990828
 
 ## check solution
 xtabs(new_weight ~ dat$household)
@@ -99,17 +99,17 @@ xtabs(new_weight ~ dat$household)
 ## calculate weights "by reference"
 ipf_step_ref(dat$weight, dat$household, targets)
 dat
-#>        weight household
-#> 1  1.26018046         a
-#> 2  0.09111008         b
-#> 3  1.73981954         a
-#> 4  0.73508382         c
-#> 5  0.70156063         b
-#> 6  0.35559289         b
-#> 7  0.83626437         b
-#> 8  3.60270374         c
-#> 9  0.66221244         c
-#> 10 2.01547203         b
+#>       weight household
+#> 1  1.3369090         c
+#> 2  2.0197387         c
+#> 3  0.7773583         c
+#> 4  0.2586784         b
+#> 5  0.8963384         b
+#> 6  0.5480525         b
+#> 7  0.1978479         b
+#> 8  0.8659940         c
+#> 9  3.0000000         a
+#> 10 2.0990828         b
 
 ############# multidimensional ipu ##############
 
@@ -128,12 +128,12 @@ cbind(tips, cf)[sample(nrow(tips), 10, replace = TRUE),]
 #> 2    Lunch   Male    Yes Mon  8
 #> 3.1  Lunch   Male     No Tue 20
 #> 2.1  Lunch   Male    Yes Mon  8
-#> 2.2  Lunch   Male    Yes Mon  8
-#> 2.3  Lunch   Male    Yes Mon  8
-#> 3.2  Lunch   Male     No Tue 20
-#> 2.4  Lunch   Male    Yes Mon  8
 #> 1   Dinner Female     No Sun  9
-#> 2.5  Lunch   Male    Yes Mon  8
+#> 1.1 Dinner Female     No Sun  9
+#> 2.2  Lunch   Male    Yes Mon  8
+#> 1.2 Dinner Female     No Sun  9
+#> 1.3 Dinner Female     No Sun  9
+#> 2.3  Lunch   Male    Yes Mon  8
 
 ## adjust weights
 weight <- rnorm(nrow(tips)) + 5
