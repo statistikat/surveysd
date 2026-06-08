@@ -47,18 +47,28 @@ test_that("test para - data", {
     "dat must be a data.frame or data.table"
   )
 
+  res1 <- calc.stError(eusilc, var = "povmd60", group = c("rb090", "db040"))
+  res2 <- calc.stError(
+    eusilc,
+    var = c("povmd60", "eqIncome"),
+    group = c("rb090", "db040")
+  )
+  
   expect_equal(
-    length(calc.stError(eusilc, var = "povmd60", group = c("rb090", "db040"))),
+    length(res1),
     5L
   )
   expect_equal(
-    length(calc.stError(
-      eusilc,
-      var = c("povmd60", "eqIncome"),
-      group = c("rb090", "db040")
-    )),
+    length(res2),
     5L
   )
+  
+  expect_equal(nrow(res1$Estimates) == nrow(res2$Estimates), TRUE)
+  expect_equal(nrow(res1$smallGroups) == nrow(res2$smallGroups), TRUE)
+  
+  expect_equal(all.equal(res1$Estimates[, .(val_povmd60, stE_povmd60)],
+                         res2$Estimates[, .(val_povmd60, stE_povmd60)]), TRUE)
+  
   expect_equal(
     length(calc.stError(
       eusilc_no_period,

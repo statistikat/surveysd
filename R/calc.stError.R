@@ -928,7 +928,7 @@ run.stError <- function(dat, period, var, weights, b.weights = paste0("w", 1:100
       }
     }
     
-    by.eval2 <- c(period, z)
+    by.eval2 <- c(period, z, name_var, "est_type")
 
     if (!is.null(p)) {
       sd.est <- var.est[help_direct_estimate == FALSE, as.list(
