@@ -61,16 +61,16 @@ dat = data.frame(
 )
 dat
 #>       weight household
-#> 1  0.5576980         c
-#> 2  0.8425436         c
-#> 3  0.3242787         c
-#> 4  0.3566463         b
-#> 5  1.2358038         b
-#> 6  0.7556135         b
-#> 7  0.2727777         b
-#> 8  0.3612536         c
-#> 9  7.5454078         a
-#> 10 2.8940572         b
+#> 1  4.7813119         c
+#> 2  3.5922757         a
+#> 3  0.2989931         c
+#> 4  1.3826568         a
+#> 5  0.4640565         c
+#> 6  1.0878661         c
+#> 7  0.6580569         c
+#> 8  0.4801766         b
+#> 9  1.6592395         b
+#> 10 8.0503568         b
 
 ## create targets (same lenght as classLabels!)
 targets <- 3:5
@@ -79,16 +79,16 @@ targets <- 3:5
 new_weight <- ipf_step(dat$weight, dat$household, targets)
 cbind(dat, new_weight)
 #>       weight household new_weight
-#> 1  0.5576980         c  1.3369090
-#> 2  0.8425436         c  2.0197387
-#> 3  0.3242787         c  0.7773583
-#> 4  0.3566463         b  0.2586784
-#> 5  1.2358038         b  0.8963384
-#> 6  0.7556135         b  0.5480525
-#> 7  0.2727777         b  0.1978479
-#> 8  0.3612536         c  0.8659940
-#> 9  7.5454078         a  3.0000000
-#> 10 2.8940572         b  2.0990828
+#> 1  4.7813119         c  3.2792354
+#> 2  3.5922757         a  2.1662258
+#> 3  0.2989931         c  0.2050627
+#> 4  1.3826568         a  0.8337742
+#> 5  0.4640565         c  0.3182705
+#> 6  1.0878661         c  0.7461068
+#> 7  0.6580569         c  0.4513246
+#> 8  0.4801766         b  0.1884935
+#> 9  1.6592395         b  0.6513352
+#> 10 8.0503568         b  3.1601713
 
 ## check solution
 xtabs(new_weight ~ dat$household)
@@ -100,16 +100,16 @@ xtabs(new_weight ~ dat$household)
 ipf_step_ref(dat$weight, dat$household, targets)
 dat
 #>       weight household
-#> 1  1.3369090         c
-#> 2  2.0197387         c
-#> 3  0.7773583         c
-#> 4  0.2586784         b
-#> 5  0.8963384         b
-#> 6  0.5480525         b
-#> 7  0.1978479         b
-#> 8  0.8659940         c
-#> 9  3.0000000         a
-#> 10 2.0990828         b
+#> 1  3.2792354         c
+#> 2  2.1662258         a
+#> 3  0.2050627         c
+#> 4  0.8337742         a
+#> 5  0.3182705         c
+#> 6  0.7461068         c
+#> 7  0.4513246         c
+#> 8  0.1884935         b
+#> 9  0.6513352         b
+#> 10 3.1601713         b
 
 ############# multidimensional ipu ##############
 
@@ -124,16 +124,16 @@ con <- xtabs(~., tips)
 cf <- combine_factors(tips, con)
 cbind(tips, cf)[sample(nrow(tips), 10, replace = TRUE),]
 #>       time    sex smoker day cf
-#> 3    Lunch   Male     No Tue 20
 #> 2    Lunch   Male    Yes Mon  8
-#> 3.1  Lunch   Male     No Tue 20
-#> 2.1  Lunch   Male    Yes Mon  8
 #> 1   Dinner Female     No Sun  9
 #> 1.1 Dinner Female     No Sun  9
+#> 2.1  Lunch   Male    Yes Mon  8
 #> 2.2  Lunch   Male    Yes Mon  8
 #> 1.2 Dinner Female     No Sun  9
-#> 1.3 Dinner Female     No Sun  9
 #> 2.3  Lunch   Male    Yes Mon  8
+#> 2.4  Lunch   Male    Yes Mon  8
+#> 2.5  Lunch   Male    Yes Mon  8
+#> 1.3 Dinner Female     No Sun  9
 
 ## adjust weights
 weight <- rnorm(nrow(tips)) + 5

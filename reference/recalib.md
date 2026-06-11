@@ -204,7 +204,7 @@ dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
 # calibrate on gender x age
 dat_boot_calib <- recalib(dat_boot, conP.var = list(c("gender", "age")),
                           conH.var = NULL, verbose = TRUE)
-#> Iteration stopped after 7 steps
+#> Iteration stopped after 8 steps
 #> Convergence reached
 
 # identical
@@ -213,7 +213,7 @@ conP <- list(conP1)
 dat_boot_calib <- recalib(dat_boot, conP.var = NULL,
                           conH.var = NULL, conP = conP,
                           conH = NULL, verbose = TRUE)
-#> Iteration stopped after 7 steps
+#> Iteration stopped after 8 steps
 #> Convergence reached
                                                      
 ```

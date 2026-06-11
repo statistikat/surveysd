@@ -1,5 +1,12 @@
 # Methodology
 
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     %notin%
+
 In the following we present the methodology in `surveysd` by applying
 the workflow described in
 [`vignette("surveysd")`](https://statistikat.github.io/surveysd/articles/surveysd.md)

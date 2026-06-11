@@ -1,5 +1,12 @@
 # Rao-Wu Bootstrap in surveysd
 
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     %notin%
+
 In the following we describe an extension of the methodology implemented
 in `surveysd`. While the default rescaling method described in
 `vignette("Methodology")` follows the approach of Preston, this vignette
