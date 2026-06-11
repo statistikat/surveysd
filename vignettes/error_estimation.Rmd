@@ -15,6 +15,9 @@ vignette: >
 ```{r setup, include=FALSE}
 options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+setDTthreads(1)
 ```
 
 For the most part, this document will present the functionalities of the function 
@@ -27,6 +30,7 @@ In order to use a dataset with `calc.stError()`, several weight columns have to 
 weight column corresponds to a bootstrap sample. In the following examples, we will use the data 
 from `demo.eusilc()` and attach the bootstrap weights using `draw.bootstrap()` and `recalib()`. Please 
 refer to the documentation of those functions for more detail.
+
 
 ```{r}
 library(surveysd)

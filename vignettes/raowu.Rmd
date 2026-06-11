@@ -12,6 +12,9 @@ bibliography: lib.bib
 ```{r, echo = FALSE}
 options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(eval = FALSE)
+
+library(data.table)
+setDTthreads(1)
 ```
 
 In the following we describe an extension of the methodology implemented in `surveysd`.

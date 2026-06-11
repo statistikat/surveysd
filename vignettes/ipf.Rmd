@@ -15,6 +15,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(data.table)
+setDTthreads(1)
 ```
 
 This vignette explains the usage of the `ipf()` function, which has been used for calibrating the labour force survey of Austria for several years.
